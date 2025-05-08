@@ -1,0 +1,170 @@
+<?php
+
+namespace App\Models;
+
+use CodeIgniter\Model;
+
+class BlogModel extends Model
+{
+    protected $table            = 'blogs';
+    protected $primaryKey       = 'id';
+
+    protected $useAutoIncrement = true;
+
+    protected $useSoftDeletes = true;
+
+    protected $useTimestamps = true;
+    protected $dateFormat = 'datetime';
+    protected $createdField  = 'created_at';
+    protected $updatedField  = 'updated_at';
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->session = session();
+        $this->db = db_connect();
+        $this->request = \Config\Services::request();
+        $this->db->query("SET sql_mode = ''");
+    }
+
+    //input values
+    public function input_values()
+    {
+        $data = array(
+            'name' => $this->request->getVar('name'),
+            'content' => $this->request->getVar('content')
+        );
+        return $data;
+    }
+
+    //add user
+    public function add_blog($img_name)
+    {
+
+        $data = $this->input_values();
+
+        //secure password
+        $data['name'] = $this->request->getVar('name');
+        $data['clean_url'] = cleanURL(str_replace(' ','-',strtolower($this->request->getVar('name'))));
+        $data["content"] = $this->request->getVar('content');
+        $data['status'] = $this->request->getVar('status');
+		$data['image'] = $img_name;
+        $data['created_at'] = date('Y-m-d H:i:s');
+
+        return $this->protect(false)->insert($data);
+    }
+
+    //edit email template
+    public function edit_blog($id,$img_name)
+    {
+        $blog = $this->get_blog_by_id($id);
+        if (!empty($blog)) {
+            $data = array(
+                'name' => $this->request->getVar('name'),
+				'clean_url' => cleanURL(str_replace(' ','-',strtolower($this->request->getVar('name')))),
+                'content' => $this->request->getVar('content'),
+                'status' => $this->request->getVar('status'),
+                'image' => $img_name
+            );
+
+            return $this->protect(false)->update($blog->id, $data);
+        }
+    }
+
+    //ban email template
+    public function ban_blog($id)
+    {
+        $id = clean_number($id);
+        $blog = $this->get_blog_by_id($id);
+        if (!empty($blog)) {
+
+            $data = array(
+                'status' => 0
+            );
+            return $this->protect(false)->update($blog->id, $data);
+        } else {
+            return false;
+        }
+    }
+
+    //remove email template ban
+    public function remove_blog_ban($id)
+    {
+        $id = clean_number($id);
+        $blog = $this->get_blog_by_id($id);
+
+        if (!empty($blog)) {
+
+            $data = array(
+                'status' => 1
+            );
+
+            return $this->protect(false)->update($blog->id, $data);
+        } else {
+            return false;
+        }
+    }
+
+    //get email template by id
+    public function get_blog($clean_url)
+    {
+        $sql = "SELECT * FROM blogs WHERE blogs.clean_url = ?";
+        $query = $this->db->query($sql, array($clean_url));
+        return $query->getRow();
+    }
+    public function get_blog_by_id($id)
+    {
+        $sql = "SELECT * FROM blogs WHERE blogs.id = ?";
+        $query = $this->db->query($sql, array(clean_number($id)));
+        return $query->getRow();
+    }
+    public function get_all_blog()
+    {
+        $sql = "SELECT * FROM blogs WHERE status = 1 AND deleted_at IS NULL";
+        $query = $this->db->query($sql);
+        return $query->getResultArray();
+    }
+
+    //delete email template
+    public function delete_blog($id)
+    {
+        $id = clean_number($id);
+        $blog = $this->get_blog_by_id($id);
+        if (!empty($blog)) {
+            //delete email template
+            return $this->where('id', $id)->delete();
+        }
+        return false;
+    }
+
+    public function blogPaginate()
+    {
+        $request = service('request');
+        $show = 15;
+        if ($request->getGet('show')) {
+            $show = $request->getGet('show');
+        }
+
+        $paginateData = $this->select('blogs.*');
+
+        $search = trim($request->getGet('search') ?? '');
+        if (!empty($search)) {
+            $this->builder()->groupStart()
+                ->like('blogs.name', clean_str($search))
+                ->groupEnd();
+        }
+
+        $status = trim($request->getGet('status') ?? '');
+        if ($status != null && ($status == 1 || $status == 2)) {
+            $this->builder()->where('blogs.status', clean_number($status));
+        }
+
+        $result = $paginateData->paginate($show, 'default');
+
+        return [
+            'blog'  =>  $result,
+            'pager'     => $this->pager,
+        ];
+    }
+}

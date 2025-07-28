@@ -104,6 +104,97 @@ $(document).ready(function() {
         }
     });
 
+		
+	/* --------------------------------------------------------------
+   1.  Grab the form and start jQuery‑Validate
+-------------------------------------------------------------- */
+const $form = $('#aircraft-add-form-1');
+
+$form.validate({
+    /* keep your existing options ---------------------------- */
+    ignore         : ':hidden:not([class~=selectized]),:hidden > .selectized, .selectize-control .selectize-input input',
+    errorElement   : 'label',
+    errorClass     : 'error text-danger',
+    errorPlacement : placeDynamicError,
+    highlight      : highlightDynamicGroup,
+    unhighlight    : unhighlightDynamicGroup,
+
+    rules:  {
+        /* keep your old rules */
+        password : { minlength: 4 },
+        mobile_no: { phoneUS:true, minlength:10, maxlength:10 }
+        /* we will inject the dynamic “checkbox‑group” rules below */
+    },
+    messages: {}
+});
+
+/* --------------------------------------------------------------
+   2.  Loop over every checkbox array called dynamic_fields[ID][]
+       ‑ If any one of the checkboxes in that array has the
+         HTML5  required  attribute, we treat the whole array
+         as “at least one required”.
+-------------------------------------------------------------- */
+const added = new Set();                     // avoid duplicates
+
+$('input[type="checkbox"][name^="dynamic_fields["]').each(function () {
+
+    const name = this.name;                  //  e.g.  dynamic_fields[61][]
+    if (added.has(name)) return;             // already processed
+
+    if ($(this).prop('required')) {          // server decided it's required
+        /* 2a) Tell jQuery‑Validate this *group* is required */
+        $form.validate().settings.rules[name] = { required: true };
+
+        /* 2b) Provide a message */
+        $form.validate().settings.messages[name] = {
+            required: 'Please choose at least one option.'
+        };
+    }
+
+    added.add(name);
+});
+
+/* --------------------------------------------------------------
+   3.  Helper functions
+-------------------------------------------------------------- */
+
+/* Put the error under the legend that sits in the same .services-group
+   (works for every dynamic group, so long as you follow the markup below)
+-----------------------------------------------------------------*/
+function placeDynamicError(error, element) {
+    if (element.attr('name').startsWith('dynamic_fields[')) {
+        const $group = element.closest('.services-group');
+        $group.find('.dyn-error-holder').first()
+              .html(error)                   // replace old error if any
+              .removeClass('d-none');
+    } else {
+        element.before(error);               // your original behaviour
+    }
+}
+
+/* Add red border to the whole group */
+function highlightDynamicGroup(element) {
+    if (element.name.startsWith('dynamic_fields[')) {
+        $(element).closest('.services-group').addClass('error-border');
+    } else {
+        $(element).addClass('error');
+    }
+}
+
+/* Remove border/message once *any* box is checked */
+function unhighlightDynamicGroup(element) {
+    if (element.name.startsWith('dynamic_fields[')) {
+        const $group   = $(element).closest('.services-group');
+        const groupName = element.name;
+        if ($group.find('input[name="'+groupName+'"]:checked').length) {
+            $group.removeClass('error-border')
+                  .find('.dyn-error-holder').addClass('d-none');
+        }
+    } else {
+        $(element).removeClass('error');
+    }
+}
+
     $("#provider-form-edit").validate({
         ignore: ":hidden:not(#location_id)",
         rules: {

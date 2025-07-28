@@ -31,7 +31,7 @@
 				</div>
                 <?php echo form_close(); ?>
                 <!--<p class="mt-3 mb-1 text-center">
-                    <a class="dblue" href="<?php echo base_url() ?>/providerauth/login"><?php echo trans('login') ?></a>
+                    <a class="dblue" href="<?php echo base_url() ?>/login"><?php echo trans('login') ?></a>
                 </p>-->
 			</div>
         </div>

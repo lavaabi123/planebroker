@@ -5,9 +5,6 @@
 		<tr>
 			<td class="wrapper">
 				<table role="presentation" border="0" cellpadding="0" cellspacing="0">
-				<tr>					
-					<td><img src="<?php echo base_url()."/assets/img/welcome.jpg"; ?>" alt="" width="100%" style="display: block;" /></td>
-				</tr>
 					<tr>
 						<td>
 							<h1 style="text-decoration: none; font-size: 24px;line-height: 28px;font-weight: bold;margin-top:25px;"><?php echo trans("Subscription Payment Failed"); ?></h1>
@@ -15,9 +12,9 @@
 								<!--<p>
 									Hi <?php //echo $to_name; ?>,<br>
 								</p>-->
-								<p>Your subscription payment was unsuccessful, which puts your account at risk of being downgraded to a free account. Please log into your account and update your payment information.</p>
+								<p>Your subscription payment was unsuccessful, which puts your account at risk of being downgraded. Please log into your account and update your payment information.</p>
 								<p style='text-align: center;margin-top: 30px;'>
-									<a href="<?php echo base_url('providerauth/login'); ?>" style='font-size: 14px;text-decoration: none;padding: 14px 40px;background-color: #000;color: #ffffff !important; border-radius: 3px;'>Login</a>
+									<a href="<?php echo base_url('login'); ?>" style='font-size: 14px;text-decoration: none;padding: 14px 40px;background-color: #000;color: #ffffff !important; border-radius: 3px;'>Login</a>
 								</p>
 								<?php /*if(count($subscriptions) < 1){?>
 										 <p><strong>Subscription payment failed for:</strong> <?php echo date("m/d/Y", strtotime($enddate));?><br></p>

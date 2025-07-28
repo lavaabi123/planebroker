@@ -9,7 +9,7 @@ class FieldsModel extends Model
     protected $DBGroup          = 'default';
     protected $table            = 'fields';
     protected $primaryKey       = 'id';
-    protected $allowedFields = ['name', 'rate_type','skill_name','in_house','seo_title','seo_keywords','seo_description','status','field_type','field_order','field_position','field_options'];
+    protected $allowedFields = ['name', 'rate_type','skill_name','in_house','seo_title','seo_keywords','seo_description','status','field_type','field_order','field_position','field_options','is_filter','filter_order','filter_type'];
 
     // Custom 
     protected $session;
@@ -22,7 +22,7 @@ class FieldsModel extends Model
         $this->request = \Config\Services::request();
     }
 
-    public function DataPaginations()
+    public function DataPaginations($orderby = 'field_order')
     {
 
         $show = 15;
@@ -31,7 +31,7 @@ class FieldsModel extends Model
         }
 
 
-        $paginateData = $this->select('fields.*, 
+        $paginateData = $this->select('fields.*, categories.id as category_id,
 			GROUP_CONCAT(DISTINCT field_categories.category_id) AS category_ids,
 			GROUP_CONCAT(DISTINCT categories.name) AS category_names,
 			GROUP_CONCAT(DISTINCT field_sub_categories.sub_category_id) AS subcategory_ids,
@@ -61,7 +61,19 @@ class FieldsModel extends Model
         if ($status != null && ($status == 1 || $status == 0)) {
             $this->builder()->where('fields.status', clean_number($status));
         }
+		
+        $category_id = trim($this->request->getGet('category_id') ?? '');
+        if ($category_id != null && $category_id != '') {
+            $this->builder()->where('categories.id', clean_number($category_id));
+        }		
+		
+        $field_group = trim($this->request->getGet('field_group') ?? '');
+        if ($field_group != null && $field_group != '') {
+            $this->builder()->where('fields_group.id', clean_number($field_group));
+        }
+		
 		$this->builder()->groupby('fields.id');
+		$this->builder()->orderby('categories.id,fields.'.$orderby);
         $result = $paginateData->asObject()->paginate($show, 'default');
 
         return [
@@ -70,7 +82,7 @@ class FieldsModel extends Model
             'current_page' => $this->pager->getCurrentPage('default'),
         ];
     }
-	public function get_fields()
+	public function get_fields($category_id=1)
     {
 		$db = \Config\Database::connect();
 
@@ -98,8 +110,8 @@ class FieldsModel extends Model
 		$builder->join('fields_group', 'fields_group.id = field_groups.fields_group_id', 'left');
 
 		// WHERE conditions
-		$builder->where('categories.id', 1);
-		$builder->where('categories_sub.id', 1);
+		$builder->where('categories.id', $category_id);
+		//$builder->where('categories_sub.id', 1);
 		$builder->where('fields_group.name IS NOT NULL', null, false); // Raw condition for IS NOT NULL
 
 		// GROUP BY fields.id
@@ -121,7 +133,7 @@ class FieldsModel extends Model
 		}
 		return $groupedFields;
          //return $this->asObject()->where('status',1)->findAll();
-		 //echo $this->db->getLastQuery(); die;
+		 echo $this->db->getLastQuery(); die;
         
     }
 	public function get_fields_by_id($id)
@@ -139,7 +151,8 @@ class FieldsModel extends Model
             'field_type' => $this->request->getVar('field_type'), 
             'field_position' => $this->request->getVar('field_position'), 
             'field_order' => $this->request->getVar('field_order'), 
-            'field_options' => ($this->request->getVar('field_options') != null && count($this->request->getVar('field_options')) > 0) ? json_encode($this->request->getVar('field_options')) : '','status' => $this->request->getVar('status') 
+            'field_options' => ($this->request->getVar('field_options') != null && count($this->request->getVar('field_options')) > 0) ? json_encode($this->request->getVar('field_options')) : '',
+			'status' => $this->request->getVar('status')
         );
         $inserted_id = $this->insert($data);
 	    if(!empty($inserted_id)){
@@ -175,6 +188,13 @@ class FieldsModel extends Model
 		
     }
 
+	public function update_filter($id){
+		$data = array(
+            'is_filter' => $this->request->getVar('is_filter'),
+            'filter_type' => $this->request->getVar('filter_type')
+        );
+		return $this->update($id, $data);
+	}
     //update fields
     public function update_fields($id)
     {
@@ -229,7 +249,27 @@ class FieldsModel extends Model
         $id = clean_number($id);
         $fields = $this->asObject()->find($id);
         if (!empty($fields)) {
-            return $this->delete($fields->id);
+			$this->db->table('field_categories')->where('field_id',$id)->delete();
+			$this->db->table('field_groups')->where('field_id',$id)->delete();
+			$this->db->table('field_sub_categories')->where('field_id',$id)->delete();
+			$this->db->table('products_dynamic_fields')->where('field_id',$id)->delete();
+			$this->db->table('title_fields')->where('field_id',$id)->delete();
+			
+			$products = $this->db->table('products')->get()->getResult();
+			foreach ($products as $product) {
+				$dynamicFields = json_decode($product->dynamic_fields, true);
+
+				if (isset($dynamicFields[$id])) {
+					unset($dynamicFields[$id]);
+
+					$this->db->table('products')->where('id', $product->id)->update([
+						'dynamic_fields' => json_encode($dynamicFields)
+					]);
+				}
+			}
+			
+			
+            return $this->db->table('fields')->where('id',$id)->delete();
         }
         return false;
     }

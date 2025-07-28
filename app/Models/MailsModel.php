@@ -168,7 +168,7 @@ class MailsModel extends Model
         if(!empty($plans)){
             foreach($plans as $plan)
             {
-                $orSql[] = " u.`plan_id` = '".$plan."' ";            
+                $orSql[] = " u.`user_level` = '".$plan."' ";            
             }
         }
                                                                                                         

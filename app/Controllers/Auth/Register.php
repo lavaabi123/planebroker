@@ -167,7 +167,7 @@ class Register extends AuthController
         }
 
         if ($data["user"]->email_status == 1) {
-            return redirect()->to(base_url('/providerauth/login'));
+            return redirect()->to(base_url('/login'));
         }
 
         if ($userModel->verify_email($data["user"])) {

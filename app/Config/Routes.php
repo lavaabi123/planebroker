@@ -37,6 +37,8 @@ $routes->get('/about-us', 'Home::aboutus');
 $routes->get('/faq', 'Home::faq');
 $routes->get('/testimonials', 'Home::testimonials');
 $routes->get('/blog', 'Home::blog');
+$routes->get('/videos', 'Home::videos');
+$routes->get('/news', 'Home::news');
 $routes->get('/blog_detail/(:any)', 'Home::blog_detail/$1');
 $routes->get('/terms', 'Home::terms');
 $routes->get('/privacy', 'Home::privacy');
@@ -46,14 +48,16 @@ $routes->get('/provider/(:any)(/(:num))?', 'Providers::view_profile/$1/$3');
 $routes->get('/provider_gallery/(:num)','Providers::view_gallery/$1');
 $routes->get('/providers/set_session', 'Providers::set_session');
 $routes->get('/providers', 'Providers::providers_list');
-$routes->get('/listings/(:any)/(:num)/(:any)', 'Providers::view_profile/$1/$3');
+$routes->get('/listings/(:any)/(:num)/(:any)', 'Providers::view_profile/$1/$2');
 $routes->get('/listings/(:any)', 'Providers::providers_list/$1');
-$routes->post('/listings/(:any)', 'Providers::providers_list_post/$1');
-$routes->get('/update_call_count/(:num)', 'Home::update_call_count/$1');
+$routes->get('/update_call_count/(:num)/(:any)', 'Home::update_call_count/$1/$2');
+$routes->get('/update_share_count/(:num)/(:any)', 'Home::update_share_count/$1/$2');
 $routes->get('/update_direction_count/(:num)', 'Home::update_direction_count/$1');
 $routes->get('/providers/(:any)(/(:num))?', 'Providers::providers_list/$1/$3');
 $routes->get('/contact', 'Home::contact');
+$routes->get('/captains-club-request', 'Home::captains_club_request');
 $routes->post('/submit-contact', 'Home::submit_contact');
+$routes->post('/submit-captain', 'Home::submit_captain');
 $routes->get('/confirm_mail', 'Providers::confirm_mail');
 $routes->get('/welcome_mail', 'Providers::welcome_mail');
 $routes->get('/reminder_mail', 'Providers::reminder_mail');
@@ -62,7 +66,28 @@ $routes->post('user-signup-post', 'Providerauth\ProviderRegister::provider_regis
 $routes->post('check-email', 'Providerauth\ProviderRegister::check_email');	
 $routes->get('plan', 'Providerauth\ProviderRegister::plan');	
 $routes->get('add-listing', 'Providerauth\ProviderDashboard::add_listing');	
+$routes->get('my-listing', 'Providerauth\ProviderDashboard::my_listing');	
+$routes->get('favorites', 'Providerauth\ProviderDashboard::favorites');	
+$routes->get('analytics', 'Providerauth\ProviderDashboard::analytics');	
+$routes->get('help', 'Providerauth\ProviderDashboard::help');	
+$routes->post('product_delete', 'Providerauth\ProviderDashboard::product_delete');
+$routes->post('change_plan_status', 'Providerauth\ProviderDashboard::change_plan_status');
+$routes->post('product_status_change', 'Providerauth\ProviderDashboard::product_status_change');	
 $routes->post('add-listing-post', 'Providerauth\ProviderRegister::product_add_post');
+$routes->get('billing', 'Providerauth\ProviderDashboard::billing'); 
+$routes->get('subscriptions', 'Providerauth\ProviderDashboard::subscriptions'); 
+$routes->get("messages", 'Providerauth\ProviderDashboard::messages');
+$routes->get('dashboard', 'Providerauth\ProviderDashboard::index');
+$routes->get('account-settings', 'Providerauth\ProviderDashboard::account_settings');
+$routes->get('login', 'Providerauth\ProviderLogin::index');
+$routes->get('logout', 'Providerauth\ProviderLogin::Logout');
+$routes->get('select-plan', 'Providerauth\ProviderRegister::select_plan');
+$routes->get('listing-type', 'Providerauth\ProviderRegister::add_listing');	
+$routes->get('checkout', 'Providerauth\ProviderDashboard::checkout');
+$routes->post('checkout-post', 'Providerauth\ProviderDashboard::checkout_post');
+$routes->get('thankyou', 'Providerauth\ProviderDashboard::thankyou'); 
+$routes->post('favorites_add', 'Providerauth\ProviderDashboard::favorites_add'); 
+$routes->post('remove_favorite', 'Providerauth\ProviderDashboard::remove_favorite'); 
 
 
 $routes->group("api", ["namespace" => "App\Controllers\Api"], function ($routes) {
@@ -98,7 +123,6 @@ $routes->group("auth", ["namespace" => "App\Controllers\Auth"], function ($route
 });
 
 $routes->group("providerauth", ["namespace" => "App\Controllers\Providerauth"], function ($routes) {
-    $routes->get('login', 'ProviderLogin::index');
     $routes->post('login-post', 'ProviderLogin::provider_login_post');
     $routes->post('get-states', 'ProviderRegister::get_states');	
     $routes->get("confirm", 'ProviderRegister::confirm_email');
@@ -106,10 +130,7 @@ $routes->group("providerauth", ["namespace" => "App\Controllers\Providerauth"], 
     $routes->post('forgot-password-post', 'ProviderForgotPassword::forgot_password_post');
     $routes->get('reset-password', 'ProviderResetPassword::index');
     $routes->post('reset-password-post', 'ProviderResetPassword::reset_password_post');
-    $routes->get('logout', 'ProviderLogin::Logout');
-    $routes->get('select-plan', 'ProviderRegister::select_plan');	
 	$routes->get('get-locations', 'ProviderRegister::get_location');
-    $routes->get('dashboard', 'ProviderDashboard::index');
     $routes->get('dashboard1', 'ProviderDashboard::index1');
 	$routes->get('groomer_dashboard', 'ProviderDashboard::groomer_dashboard');
     $routes->get('view-profile', 'ProviderDashboard::view_profile');
@@ -118,23 +139,19 @@ $routes->group("providerauth", ["namespace" => "App\Controllers\Providerauth"], 
     $routes->post('save_report', 'ProviderDashboard::save_report');
     $routes->get('photos', 'ProviderDashboard::photos');
     $routes->post('photos_post', 'ProviderDashboard::photos_post');
+    $routes->post('upload_profile_photo', 'ProviderDashboard::upload_profile_photo');
     $routes->post('photosedit_post', 'ProviderDashboard::photosedit_post');
     $routes->post('photos_delete', 'ProviderDashboard::photos_delete');
-    $routes->get('account-settings', 'ProviderDashboard::account_settings');
     $routes->get('upgrade', 'ProviderDashboard::upgrade');
     $routes->post('get-categories-skills', 'ProviderDashboard::get_categories_skills');
     $routes->post('get-category-offering', 'ProviderDashboard::get_category_offering');
     $routes->post('edit-account-post', 'ProviderDashboard::edit_account_post');
     $routes->post('edit-password-post', 'ProviderDashboard::edit_password_post');
-    $routes->get('checkout', 'ProviderDashboard::checkout');
-    $routes->post('checkout-post', 'ProviderDashboard::checkout_post');
-    $routes->get('billing', 'ProviderDashboard::billing'); 
-    $routes->get('thankyou', 'ProviderDashboard::thankyou'); 
     $routes->get('crop', 'ProviderDashboard::crop'); 
     $routes->get('billing-cancel/(:any)', 'ProviderDashboard::billing_cancel/$1');
+    $routes->get('billing-cancel-refund/(:any)', 'ProviderDashboard::billing_cancel_refund/$1');
     $routes->get('update-card', 'ProviderDashboard::update_card');
     $routes->post('update-card-post', 'ProviderDashboard::update_card_post');
-    $routes->get("messages", 'ProviderDashboard::messages');
     $routes->post('set-location', 'ProviderRegister::set_location');
 	$routes->post('get-location-id', 'ProviderRegister::get_location_id');
     $routes->get('payment_history', 'ProviderDashboard::payment_history');
@@ -157,11 +174,29 @@ $routes->group("admin", ["namespace" => "App\Controllers\Admin"], function ($rou
 	$routes->post('fields_group/delete_fields_group_post', 'FieldGroup::delete_fields_group_post');
 	$routes->post('fields_group/update_order_post', 'FieldGroup::update_order_post');
 	$routes->post('fields/update_order_post', 'Fields::update_order_post');
-
+	$routes->post('fields/update_filter_order_post', 'Fields::update_filter_order_post');
+    $routes->get('users', 'UserManagement::users');
+    $routes->get('add-user', 'UserManagement::add_user');
+    $routes->post('add_user_post', 'UserManagement::add_user_post');
+    $routes->get('edit-user/(:num)/(:num)', 'UserManagement::edit_user/$1/$2');
+    $routes->post('edit_user_post', 'UserManagement::edit_user_post');
+    $routes->post('delete_user_post', 'UserManagement::delete_user_post');
+	
+	$routes->group('listings',  function ($routes) {
+        $routes->get('/', 'UserManagement::listings');
+        $routes->get('all', 'UserManagement::listings');
+        $routes->get('add', 'UserManagement::add_listing');
+        $routes->get('messages', 'UserManagement::provider_messages');
+        $routes->get('sales', 'UserManagement::sales');
+        $routes->get('dynamic-fields', 'Fields::index');
+        $routes->get('filter-fields', 'Fields::filter_fields');
+        $routes->get('change_plan', 'UserManagement::change_plan');
+        $routes->post('change_plan_post', 'UserManagement::change_plan_post');
+	});	
 	
     $routes->group('providers',  function ($routes) {
         $routes->get('administrators', 'UserManagement::administrators', ["filter" => 'check-admin']);
-        $routes->get('list-providers', 'UserManagement::users');
+        $routes->get('listings', 'UserManagement::listings');
         $routes->get('add-provider', 'UserManagement::add_user');
         $routes->get('edit-provider/(:num)/(:num)', 'UserManagement::edit_user/$1/$2');
         $routes->post('add_user_post', 'UserManagement::add_user_post');
@@ -173,9 +208,6 @@ $routes->group("admin", ["namespace" => "App\Controllers\Admin"], function ($rou
         $routes->get('photos', 'UserManagement::photos');
         $routes->post('photos_post', 'UserManagement::photos_post');
         $routes->post('photos_delete', 'UserManagement::photos_delete');
-        $routes->get('provider-messages', 'UserManagement::provider_messages');
-        $routes->get('sales', 'UserManagement::sales');
-        $routes->get('dynamic-fields', 'Fields::index');
     });
 
     $routes->group("role-management", function ($routes) {
@@ -279,6 +311,34 @@ $routes->group("admin", ["namespace" => "App\Controllers\Admin"], function ($rou
         $routes->post('edit_blog_post', 'Blog::edit_blog_post');
         $routes->post('delete_blog_post', 'Blog::delete_blog_post');
     });
+	
+    $routes->group('support', function ($routes) {
+        $routes->get('support', 'Support::index');
+        $routes->get('add-support', 'Support::add_support');
+        $routes->get('edit-support/(:num)', 'Support::edit_support/$1');
+        $routes->post('add_support_post', 'Support::add_support_post');
+        $routes->post('edit_support_post', 'Support::edit_support_post');
+        $routes->post('delete_support_post', 'Support::delete_support_post');
+    });
+    
+    $routes->group('testimonial', function ($routes) {
+        $routes->get('testimonial', 'Testimonial::index');
+        $routes->get('add-testimonial', 'Testimonial::add_testimonial');
+        $routes->get('edit-testimonial/(:num)', 'Testimonial::edit_testimonial/$1');
+        $routes->post('add_testimonial_post', 'Testimonial::add_testimonial_post');
+        $routes->post('edit_testimonial_post', 'Testimonial::edit_testimonial_post');
+        $routes->post('delete_testimonial_post', 'Testimonial::delete_testimonial_post');
+    });
+	
+    $routes->group('video', function ($routes) {
+        $routes->get('video', 'Video::index');
+        $routes->get('add-video', 'Video::add_video');
+        $routes->get('edit-video/(:num)', 'Video::edit_video/$1');
+        $routes->post('add_video_post', 'Video::add_video_post');
+        $routes->post('edit_video_post', 'Video::edit_video_post');
+        $routes->post('delete_video_post', 'Video::delete_video_post');
+    });
+	
     $routes->group('seo', function ($routes) {
         $routes->get('seo', 'Seo::index');
         $routes->get('add-seo', 'Seo::add_seo');
@@ -304,7 +364,20 @@ $routes->group("admin", ["namespace" => "App\Controllers\Admin"], function ($rou
     });
 	
 	$routes->group('contacts', function ($routes) {
-        $routes->get('contacts', 'Contacts::index');       
+        $routes->get('contacts', 'Contacts::index');      
+    });
+    
+    $routes->group('captains', function ($routes) {    
+        $routes->get('captains', 'Contacts::index');    
+    });
+	
+	$routes->group('subscription', function ($routes) {
+        $routes->get('', 'Subscription::index');
+        $routes->get('add-subscription', 'Subscription::add_subscription');
+        $routes->get('edit-subscription/(:num)', 'Subscription::edit_subscription/$1');
+        $routes->post('add_subscription_post', 'Subscription::add_subscription_post');
+        $routes->post('edit_subscription_post', 'Subscription::edit_subscription_post');
+        $routes->post('delete_subscription_post', 'Subscription::delete_subscription_post');
     });
 
 });

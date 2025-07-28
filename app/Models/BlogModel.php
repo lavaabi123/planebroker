@@ -48,6 +48,7 @@ class BlogModel extends Model
         $data['name'] = $this->request->getVar('name');
         $data['clean_url'] = cleanURL(str_replace(' ','-',strtolower($this->request->getVar('name'))));
         $data["content"] = $this->request->getVar('content');
+        $data['category'] = $this->request->getVar('category');
         $data['status'] = $this->request->getVar('status');
 		$data['image'] = $img_name;
         $data['created_at'] = date('Y-m-d H:i:s');
@@ -64,6 +65,7 @@ class BlogModel extends Model
                 'name' => $this->request->getVar('name'),
 				'clean_url' => cleanURL(str_replace(' ','-',strtolower($this->request->getVar('name')))),
                 'content' => $this->request->getVar('content'),
+                'category' => $this->request->getVar('category'),
                 'status' => $this->request->getVar('status'),
                 'image' => $img_name
             );
@@ -119,9 +121,14 @@ class BlogModel extends Model
         $query = $this->db->query($sql, array(clean_number($id)));
         return $query->getRow();
     }
-    public function get_all_blog()
+    public function get_all_blog($cat='')
     {
-        $sql = "SELECT * FROM blogs WHERE status = 1 AND deleted_at IS NULL";
+        if($cat==''){
+            $sql = "SELECT * FROM blogs WHERE status = 1 AND deleted_at IS NULL";
+        }else{
+            $sql = "SELECT * FROM blogs WHERE category=".$cat." AND status = 1 AND deleted_at IS NULL";
+        }
+        
         $query = $this->db->query($sql);
         return $query->getResultArray();
     }
@@ -158,6 +165,10 @@ class BlogModel extends Model
         $status = trim($request->getGet('status') ?? '');
         if ($status != null && ($status == 1 || $status == 2)) {
             $this->builder()->where('blogs.status', clean_number($status));
+        }
+        $category = trim($request->getGet('category') ?? '');
+        if ($category != null && ($category == 1 || $category == 0)) {
+            $this->builder()->where('blogs.category', clean_number($category));
         }
 
         $result = $paginateData->paginate($show, 'default');

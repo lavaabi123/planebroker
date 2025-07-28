@@ -46,6 +46,10 @@ class CategoriesSubModel extends Model
         if ($status != null && ($status == 1 || $status == 0)) {
             $this->builder()->where('categories_sub.status', clean_number($status));
         }
+        $category_id = trim($this->request->getGet('category_id') ?? '');
+        if ($category_id != null && ($category_id >= 1)) {
+            $this->builder()->where('categories_sub.category_id', clean_number($category_id));
+        }
 
         $result = $paginateData->asObject()->paginate($show, 'default');
 
@@ -78,6 +82,12 @@ class CategoriesSubModel extends Model
         return $query->getResult();
         
     }
+	
+	public function get_categories_by_link($link,$where=''){
+		$sql = "SELECT categories_sub.*,categories.name as category_name,categories.permalink FROM categories_sub LEFT JOIN categories ON categories.id = categories_sub.category_id WHERE categories_sub.category_id IN (select id from categories where permalink=?) ".$where;
+        $query = $this->db->query($sql, array($link));
+        return $query->getResult();
+	}
     //add county
     public function add_categories()
     {

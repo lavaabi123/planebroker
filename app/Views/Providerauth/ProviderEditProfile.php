@@ -303,6 +303,8 @@ label#postcode-error, label#locality-error {
 													<label>'.$field->name.'</label>';
 													if($field->field_type == 'Text'){
 														echo '<input type="text" name="dynamic_fields['.$field->name.']" class="form-control" placeholder="'.$field->name.'" value="'. (!empty($dynamic_fields_values[$field->name]) ? $dynamic_fields_values[$field->name] : '').'">';
+													}else if($field->field_type == 'Number'){
+														echo '<input type="number" name="dynamic_fields['.$field->name.']" class="form-control" placeholder="'.$field->name.'" value="'. (!empty($dynamic_fields_values[$field->name]) ? $dynamic_fields_values[$field->name] : '').'">';
 													}else if($field->field_type == 'Textarea'){
 														echo '<textarea name="dynamic_fields['.$field->name.']" class="form-control" placeholder="'.$field->name.'">'. (!empty($dynamic_fields_values[$field->name]) ? $dynamic_fields_values[$field->name] : '').'</textarea>';
 													}else if($field->field_type == 'Checkbox'){
@@ -331,7 +333,7 @@ label#postcode-error, label#locality-error {
 														$decoded_option = !empty($field->field_options) ? json_decode($field->field_options) : array();
 														$option_html = '';
 														if (!empty($decoded_option) && count($decoded_option) > 0) {
-															echo '<select class="form-control" name="dynamic_fields['.$field->name.']"><option value="">--Select--</option>';
+															echo '<select class="form-control" name="dynamic_fields['.$field->name.']"><option value="">--'.$field->name.'--</option>';
 															foreach($decoded_option as $oi => $option){
 																echo '<option value="'.$option.'" '. ((!empty($dynamic_fields_values[$field->name]) && ($option == $dynamic_fields_values[$field->name]) ) ? 'selected' : '').'>'.$option.'</option>';
 															}
@@ -371,7 +373,7 @@ label#postcode-error, label#locality-error {
     margin: 0 auto 25px auto;
     border: 1px solid #eee;" />
         <div id="imageDemo"></div>
-        <button class="btn btn-success d-flex m-auto" id="crop">Crop & Upload</button>
+        <button class="btn btn-success m-auto d-flex justify-content-center" id="crop">Crop & Upload</button>
       </div>
     </div>
   </div>

@@ -69,6 +69,13 @@ class CategoriesModel extends Model
         return $query->getRow();
         
     }
+	public function get_categories_link($id)
+    {
+		$sql = "SELECT * FROM categories WHERE categories.permalink = ?";
+        $query = $this->db->query($sql, array($id));
+        return $query->getRow();
+        
+    }
     //add county
     public function add_categories($img_name = '')
     {

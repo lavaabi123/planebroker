@@ -37,7 +37,26 @@ class ProviderForgotPassword extends ProviderauthController
             return redirect()->to($this->agent->getReferrer())->withInput();
         } else {
             $emailModel = new EmailModel();
-            $emailModel->send_email_reset_password_provider($user->id);
+			$get_email_content = $this->db->table('email_templates')->where('email_title', 'forgot_password')->get()->getRowArray();
+			$emailContent = $get_email_content['content'];
+			$placeholders = [
+				'{user_name}' => $user->fullname,
+				'{reset_password_link}'     => base_url('providerauth/reset-password?token='.$user->token)
+			];
+
+			foreach ($placeholders as $key => $value) {
+				$emailContent = str_replace($key, $value, $emailContent);
+			}
+			$emailModel = new EmailModel();
+			$data_email = array(
+				'subject' => $get_email_content['name'],
+				'content' => $emailContent,
+				'to' => $user->email,
+				'template_path' => "email/email_content",
+			);
+			$emailModel->send_email($data_email);
+			
+            //$emailModel->send_email_reset_password_provider($user->id);
             $this->session->setFlashData('success_form', trans("reset_password_success"));
             return redirect()->to($this->agent->getReferrer());
         }

@@ -5,9 +5,6 @@
 	<tr>
 		<td class="wrapper">
 			<table role="presentation" border="0" cellpadding="0" cellspacing="0">
-				<tr>					
-					<td><img src="<?php echo base_url()."/assets/img/subs_cancellation.jpg"; ?>" alt="" width="100%" style="display: block;" /></td>
-				</tr>
 				<tr>
 					<td>
 						<div class="mailcontent" style="margin-top: 30px;line-height: 20px;font-size: 14px;">
@@ -21,8 +18,6 @@
 <strong>1. Profile Visibility:</strong> Your profile will no longer be visible on Planebroker.com. Customers and potential clients will not be able to access your information on our platform.<br />
 <strong>2. Loss of Analytics and Data:</strong> Unfortunately, with the cancellation of your subscription, access to your analytics and data insights has been discontinued. Any historical data or analytics will no longer be accessible.<br />
 <strong>3. Customer Data and Messages:</strong> Please be aware that upon cancellation, your customer data and messages from clients will be deleted. This includes any correspondence and valuable insights you may have gained from interactions with your customers.</p>
-
-<p>However, please be informed that we value your presence on Planebroker.com, and your profile information will be securely stored in our system. In the event that you decide to return, your profile can be reactivated, and you can resume enjoying the benefits of our platform.</p>
 
 <p>We understand that circumstances change, and we want to assure you that you are welcome back anytime. If you ever wish to renew your subscription, simply log in to your account and follow the renewal process. Your existing profile will be reinstated, and you can continue connecting with clients in no time.</p>
 

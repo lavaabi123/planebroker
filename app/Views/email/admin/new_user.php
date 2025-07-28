@@ -5,9 +5,6 @@
 	<tr>
 		<td class="wrapper">
 			<table role="presentation" border="0" cellpadding="0" cellspacing="0">
-				<tr>					
-					<td><img src="<?php echo base_url()."/assets/img/welcome.jpg"; ?>" alt="" width="100%" style="display: block;" /></td>
-				</tr>
 				<tr>
 					<td style="padding: 20px 0px;">
 					<?php echo $message_text; ?>						

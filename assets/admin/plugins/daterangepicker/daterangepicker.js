@@ -64,9 +64,9 @@
         if (this.element.hasClass('dropup'))
             this.drops = 'up';
 
-        this.buttonClasses = 'btn btn-sm';
-        this.applyButtonClasses = 'btn-primary';
-        this.cancelButtonClasses = 'btn-default';
+        this.buttonClasses = 'btn';
+        this.applyButtonClasses = '';
+        this.cancelButtonClasses = '';
 
         this.locale = {
             direction: 'ltr',

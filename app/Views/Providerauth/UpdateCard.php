@@ -4,15 +4,15 @@
 	display:none;
 }
 </style>
-						<?php if(!empty($cards)){ ?>
+				
 						
-			<div class='row'>
+			<div class='row'>		<?php if(!empty($cards)){ ?>
 				<div class="col-sm-6">
 					<div class="carddetail">
 						<?php 
 						if($cards->data){
 							foreach ( $cards->data as $s => $source ) { ?>
-								<div class="card mb-2">
+								<div class="card mb-2 rounded-5">
 								<div class="d-flex justify-content-between align-items-center p-3">
 								<div class="d-flex justify-content-between align-items-center">
 								<div class="me-3">
@@ -31,12 +31,17 @@
 								<?php } ?>
 								</div>
 								<div class="">
-								<p class="mb-0"><strong><?php echo $source->brand;?> •••• <?php echo $source->last4;?></strong>
+								<p class="mb-0 fs-6 fw-medium"><strong><?php echo $source->brand;?> •••• <?php echo $source->last4;?></strong>
+
 								<?php if($customer->default_source == $source->id){ ?>
-								<span class="badge bg-primary">Default</span>
+
+								<span class="badge bg-primary rounded-5 px-4">Default</span>
+
 								<?php } ?>
+
 								</p>
-								<p class="mb-0">Expires <?php echo date('M',strtotime($source->exp_month)).' '.$source->exp_year; ?></p>
+
+								<p class="mb-0 fs-6 fw-medium">Expires <?php echo date('M',strtotime($source->exp_month)).' '.$source->exp_year; ?></p>
 								</div>
 								</div>
 								<div class="">
@@ -85,49 +90,27 @@
 
 					</div>-->
 				</div>
+				<?php }else{
+					echo '<p class="text-center py-4">No Added Cards Found.</p>';
+				} if(!empty($customerId)){ ?>
 				<div class='col-sm-6 '>
 					<form id="payment-form" action='<?php echo base_url(); ?>/providerauth/update-card-post' method='post'>	
-							<!--<div class="credit-card-input no-js form-group" id="skeuocard">
-							<label for="cc_type">Card Type</label>
-							<select name="cc_type" class="form-control">
-							  <option value="">...</option>
-							  <option value="visa">Visa</option>
-							  <option value="discover">Discover</option>
-							  <option value="mastercard">MasterCard</option>
-							  <option value="maestro">Maestro</option>
-							  <option value="jcb">JCB</option>
-							  <option value="unionpay">China UnionPay</option>
-							  <option value="amex">American Express</option>
-							  <option value="dinersclubintl">Diners Club</option>
-							</select>
-							<label for="cc_number">Card Number</label>
-							<input type="text" class="form-control" name="cc_number" id="cc_number" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" size="19">
-							<label for="cc_exp_month">Expiration Month</label>
-							<input type="text" class="form-control" name="cc_exp_month" id="cc_exp_month" placeholder="00">
-							<label for="cc_exp_year">Expiration Year</label>
-							<input type="text" class="form-control" name="cc_exp_year" id="cc_exp_year" placeholder="00">
-							<label for="cc_name">Cardholder's Name</label>
-							<input type="text" class="form-control" name="cc_name" id="cc_name" placeholder="John Doe">
-							<label for="cc_cvc">Card Validation Code</label>
-							<input type="text" class="form-control" name="cc_cvc" id="cc_cvc" placeholder="123" maxlength="3" size="3">
-						  </div>-->
 						  <div class="form-row">
-							<label for="card-element"><h5>Add card</h5></label>
-							<div id="card-element">
+							<h6 class="card-element mb-3">Add card</h6>
+							<div id="card-element" class="card mb-2 rounded-5 p-3">
 							  <!-- a Stripe Element will be inserted here. -->
 							</div>
 							<!-- Used to display form errors -->
-							<div id="card-errors"></div>
+							<div id="card-errors" class="fs-6 fw-medium"></div>
 						  </div>
 						  <br>						  
 						  <input type="hidden" name="customerId" value="<?php echo $customerId; ?>" />
-						  <input type='submit' value='Save' class='btn'>
+						  <input type='submit' value='Save' class='btn min-w-auto px-5'>
 						  <!--<a href="<?php echo base_url().'/providerauth/update-card/';?>" class="cancel btn">Cancel</a>-->
 					</form>
 				</div>
-				</div><?php }else{
-					echo '<p>No Records Found.</p>';
-				} ?>
+				<?php } ?>
+				</div>
 <div class="loader"></div>
 <script>
 $(function(){

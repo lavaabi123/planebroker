@@ -56,7 +56,7 @@ class Emails extends AdminController
         $num            = $this->request->getVar('num');
         $show           = $this->request->getVar('show');
         $email_verified = $this->request->getVar('email_verified');
-        $plans          = $this->request->getVar('plan');
+        $plans          = $this->request->getVar('user_level');
         $toEmails       = $this->request->getVar('toEmails');
         $toNames        = $this->request->getVar('toNames');
         $subject        = $this->request->getVar('name');

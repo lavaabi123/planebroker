@@ -26,9 +26,32 @@ class Auth implements FilterInterface
     public function before(RequestInterface $request, $arguments = null)
     {
 
-        if (!auth_check()) {
+        /*if (!auth_check()) {
             return redirect()->route('admin/login');
-        }
+        }*/
+		if (!session()->has('user_id')) {
+			helper('cookie');
+			$token = get_cookie('_remember_user_id');
+			if ($token) {
+				$userModel = new \App\Models\UserModel();
+				$user = $userModel->where('id', $token)->first();
+
+				if ($user) {
+					//set user data
+					$user_data = array(
+						'vr_sess_user_id' => $user->id,
+						'vr_sess_user_email' => $user->email,
+						'vr_sess_user_role' => $user->role,
+						'vr_sess_logged_in' => true,
+						'vr_sess_user_ps' => md5($user->password),
+						'vr_sess_email_status' => $user->email_status,
+					);
+					session()->set($user_data);
+				}
+			}
+		}
+
+		return $request;
     }
 
     /**

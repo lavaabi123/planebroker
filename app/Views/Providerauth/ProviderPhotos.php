@@ -116,7 +116,7 @@ border-color: #b3b3b3;
 								} ?>
 							</div>
 						</div>
-						<!--<a href='<?php echo base_url(); ?>/providerauth/dashboard' class='btn mt-5 w-auto m-auto'>I'm Done, Go to my Dashboard</a>-->
+						<!--<a href='<?php echo base_url(); ?>/dashboard' class='btn mt-5 w-auto m-auto'>I'm Done, Go to my Dashboard</a>-->
 					</div>
 				</div>
 			</div>

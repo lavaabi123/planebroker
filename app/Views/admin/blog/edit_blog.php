@@ -87,6 +87,18 @@
                                                 });
                                         </script>
                                     </div>
+                                    
+						<div class="row">
+							<div class="col-6">
+								<div class="form-group mb-3">
+									<label class=" ml-0"><?php echo trans("Category"); ?><span class="required"> *</span></label>
+									<select name="category" class="form-control" required>
+									<option value="0" <?php echo ($blog->category == 0) ? 'selected':''; ?>>Articles</option>
+									<option value="1" <?php echo ($blog->category == 1) ? 'selected':''; ?>>News</option>
+									</select>
+								</div>
+							</div>
+						</div>
 						<div class="row">
 							<div class="col-6">
 								<div class="form-group mb-3">

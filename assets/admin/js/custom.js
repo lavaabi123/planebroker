@@ -432,3 +432,19 @@ function get_contact_messages(message_id) {
         }
     });
 }
+
+function get_captain_messages(message_id) {
+    var data = {
+        "message_id": message_id
+    };
+    data[csrfName] = $.cookie(csrfCookie);
+    $.ajax({
+        type: "POST",
+        url: baseUrl + "/common/get_captain_messages",
+        data: data,
+        success: function (data) {
+            $('#provider-message-content').html(data);
+            $('#modal-provider-message').modal('show');
+        }
+    });
+}

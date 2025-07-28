@@ -51,11 +51,7 @@
                 <!-- form -->
                 <form action="<?php echo lang_base_url(); ?>" class="mb-3">
                     <div class="mb-0 text-center">
-					<?php if($user->plan_id > 1){ ?>
-						<a href="<?php echo base_url('providerauth/dashboard'); ?>"> <button class="btn btn-primary yellowbtn" type="button"><i class="mdi mdi-home me-1"></i> <?php echo trans("Go to Dashboard"); ?> </button></a>
-					<?php }else{ ?>
-                       <a href="<?php echo base_url('providerauth/checkout?plan_id='.$user->register_plan.'&type=trial'); ?>"> <button class="btn btn-primary yellowbtn" type="button"><i class="mdi mdi-home me-1"></i> <?php echo trans("Start Free Trial"); ?> </button></a>
-					<?php } ?>
+						<a href="<?php echo base_url('dashboard'); ?>"> <button class="btn btn-primary yellowbtn" type="button"><i class="mdi mdi-home me-1"></i> <?php echo trans("Go to Dashboard"); ?> </button></a>
                     </div>
                 </form>
             </div>

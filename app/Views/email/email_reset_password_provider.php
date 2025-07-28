@@ -5,9 +5,6 @@
 		<tr>
 			<td class="wrapper">
 				<table role="presentation" border="0" cellpadding="0" cellspacing="0">
-					<tr>					
-						<td><img src="<?php echo base_url()."/assets/img/welcome.jpg"; ?>" alt="" width="100%" style="display: block;" /></td>
-					</tr>
 					<tr>
 						<td>
 							<h1 style="text-decoration: none; font-size: 24px;line-height: 28px;font-weight: bold"><?php echo trans("reset_password"); ?></h1>

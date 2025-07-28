@@ -2,7 +2,7 @@
 <div class="container py-3 mt-3">
 <div class="row w-100 m-auto align-items-center justify-content-between">
 <div class="col-4"><a class="navbar-brand col-sm-3 me-0" href="<?= base_url('/') ?>"><img class="img-fluid" title="CodeIgniter Logo" alt="Visit CodeIgniter.com official website!" src="<?= base_url('assets/img/logo.png') ?>"></a></div>
-<div class="col-8" style="text-align:right"><a class="float-right font-weight-bold text-dark text-decoration-underline fs-7" href="<?php echo base_url('providerauth/login'); ?>">Log In</a></div>
+<div class="col-8" style="text-align:right"><a class="float-right font-weight-bold text-dark text-decoration-underline fs-7" href="<?php echo base_url('login'); ?>">Log In</a></div>
 </div></div>
 <div id="xcd" class="col-12 " >
 	<div id="note" class="note">

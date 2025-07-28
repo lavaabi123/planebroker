@@ -110,10 +110,10 @@ class EmailModel extends Model
 			
 			//To Admin
 			$data_admin = array(
-                'subject' => "New Groomer Email Verified",
+                'subject' => "New User Email Verified",
                 'from_email' => get_general_settings()->admin_email,
                 'to' => get_general_settings()->mail_reply_to,
-				'message_text' => '<p style="color: #000000; font-size:11px; margin-bottom: 5px;">Below Groomer Verified their email successfully.<br><br>Business Name: '.$user->business_name.'<br>Email: '.$user->email.'</p>',
+				'message_text' => '<p style="color: #000000; font-size:11px; margin-bottom: 5px;">Below user Verified their email successfully.<br><br>Business Name: '.$user->business_name.'<br>Email: '.$user->email.'</p>',
                 'template_path' => "email/admin/new_user"
             );
 			$this->send_email($data_admin);
@@ -135,7 +135,7 @@ class EmailModel extends Model
 		
 		//To Admin
 		$data_admin = array(
-			'subject' => "Customer Contacted Groomer",
+			'subject' => "Customer Contacted Admin",
 			'from_email' => get_general_settings()->admin_email,
 			'to' => get_general_settings()->mail_reply_to,
 			'message_text' => $message_text,

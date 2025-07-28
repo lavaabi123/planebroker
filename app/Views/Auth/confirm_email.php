@@ -48,7 +48,7 @@
                 </div>
 
                 <!-- form -->
-                <form action="<?php echo base_url('/providerauth/login'); ?>">
+                <form action="<?php echo base_url('/login'); ?>">
                     <div class="mb-0 d-grid text-center">
                         <button class="btn btn-primary" type="submit"><i class="mdi mdi-home me-1"></i> <?php echo trans("Go Back to the Login Page"); ?> </button>
                     </div>

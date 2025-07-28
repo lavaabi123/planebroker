@@ -51,18 +51,21 @@
                             <div class="form-group mb-3">
                                 <label class="control-label"><?php echo trans('content'); ?><span class="required"> *</span></label>                               
                                 <script src="<?php echo base_url('assets/ckeditor/build/ckeditor.js'); ?>"></script>
-                                <textarea class="form-control text-area" name="content" id="editor" placeholder="<?php echo trans('content'); ?>" required></textarea>
+                                <textarea class="form-control text-area" rows="10" name="content" id="editor" placeholder="<?php echo trans('content'); ?>" required></textarea>
 
                                 <script>                        
                                     ClassicEditor
                                         .create(document.querySelector('#editor'), {
                                             // CKEditor 5 configuration options
-                                            removePlugins: [ 'MediaEmbed' ],
+                                            removePlugins: [ 'MediaEmbed','Title', 'AutoResize' ],
                                             simpleUpload: {
                                                 uploadUrl: "<?php echo base_url('fileupload.php?CKEditorFuncNum=') ?>"
                                             },
                                         })
                                         .then(editor => {
+											const editableElement = editor.ui.view.editable.element;
+											editableElement.style.minHeight = '300px';  // Set fixed height
+											editableElement.style.height = '300px';
                                             console.log('CKEditor 5 initialized:', editor);
                                         })
                                         .catch(error => {
@@ -75,6 +78,7 @@
                         </div>
                         <div class="card-footer clearfix" style="clear: both">
                             <small><strong><span class="required"> *</span> Must be filled</strong></small>
+							<p>Available Variables: <code>{user_name}</code>, <code>{email}</code>, <code>{phone}</code></p>
                         </div>
                         <!-- /.card -->
                     </div>
@@ -89,4 +93,9 @@
 </section>
 <!-- /.content -->
 </div>
+<style>
+.ck.ck-editor__editable.ck-focused:not(.ck-editor__nested-editable){
+	min-height:300px;
+}
+</style>
 <?php echo $this->endSection() ?>

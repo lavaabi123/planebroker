@@ -68,7 +68,7 @@ class CronController extends BaseController
 	public function sendReminderEmail($users){
 		if(!empty($users)){
 			foreach($users as $user){
-				$message = '<p>Find My Groomer will deduct payment for your subscription after 3 days as your trial ends.</p>';
+				$message = '<p>Plane Broker will deduct payment for your subscription after 3 days as your trial ends.</p>';
 				$subject = 'Processing subscriptions';
 				$data = array(
 							'subject'           => $subject,
@@ -281,6 +281,7 @@ class CronController extends BaseController
                         'stripe_invoice_charge_id'        => $stripe_invoice_charge_id,
                         'stripe_invoice_status'           => $stripe_invoice_status,
                         'created_at'                      => $sales_created_at,
+                        'plan_id'                         => $user->plan_id,
                     ];
 
                     $this->usersModel->insert_sales($data_insert);
@@ -699,5 +700,95 @@ class CronController extends BaseController
 				$emailModel->send_email($data);
 			}
 		}		
+	}
+	
+	public function send_add_first_listing_email(){
+		//1hr after registration
+		$get_email_content = $this->db->table('email_templates')->where('email_title', 'add_first_listing')->get()->getRowArray();
+		$emailContent = $get_email_content['content'];
+		
+		$users = $this->usersModel->get_first_listing_users();
+		//echo "<pre>";print_r($users);exit;
+		if(!empty($users)){
+			foreach($users as $user){
+				if($user->email_cc_first == 0){
+					$this->usersModel->update_user_cc_reminder($user->id,$field = 'email_cc_first');
+				}
+		
+				$placeholders = [
+					'{user_name}' => $user->fullname,
+					'{login_url}' => base_url('login'),
+				];
+
+				foreach ($placeholders as $key => $value) {
+					$emailContent = str_replace($key, $value, $emailContent);
+				}
+				$emailModel = new EmailModel();
+				$data_customer = array(
+					'subject' => $get_email_content['name'],
+					'content' => $emailContent,
+					'to' => $user->email,
+					'template_path' => "email/email_content",
+				);
+				$emailModel->send_email($data_customer);
+			}
+		}
+	}
+	public function send_favorite_still_available_email(){
+		//2 weeks once
+		$get_email_content = $this->db->table('email_templates')->where('email_title', 'favorite_still_available')->get()->getRowArray();
+		$emailContent = $get_email_content['content'];
+		
+		$users = $this->usersModel->get_favorite_still_available_users();
+		if(!empty($users)){
+			foreach($users as $user){
+		
+				$placeholders = [
+					'{user_name}' => $user->fullname,
+					'{login_url}' => base_url('login'),
+				];
+
+				foreach ($placeholders as $key => $value) {
+					$emailContent = str_replace($key, $value, $emailContent);
+				}
+				$emailModel = new EmailModel();
+				$data_customer = array(
+					'subject' => $get_email_content['name'],
+					'content' => $emailContent,
+					'to' => $user->email,
+					'template_path' => "email/email_content",
+				);
+				$emailModel->send_email($data_customer);
+			}
+		}
+	}
+	public function send_for_inactive_user_email(){
+		//inactive for a month 
+		$get_email_content = $this->db->table('email_templates')->where('email_title', 'favorite_still_available')->get()->getRowArray();
+		$emailContent = $get_email_content['content'];
+		
+		$users = $this->usersModel->send_for_inactive_user_email();
+		if(!empty($users)){
+			foreach($users as $user){
+		
+				$placeholders = [
+					'{user_name}' => $user->fullname,
+					'{login_url}' => base_url('login'),
+				];
+
+				foreach ($placeholders as $key => $value) {
+					$emailContent = str_replace($key, $value, $emailContent);
+				}
+				$emailModel = new EmailModel();
+				$data_customer = array(
+					'subject' => $get_email_content['name'],
+					'content' => $emailContent,
+					'to' => $user->email,
+					'template_path' => "email/email_content",
+				);
+				$emailModel->send_email($data_customer);
+			}
+		}
+		
 	}
 }

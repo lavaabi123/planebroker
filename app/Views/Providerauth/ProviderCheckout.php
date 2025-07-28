@@ -1,15 +1,16 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
-    <div class="plan bg-gray pt-2 pb-4 pb-xl-5">
+    <div class="bg-grey py-4 pb-xl-5">
         <?php echo $this->include('Common/_messages') ?>
-		<div class="titleSec text-center mb-3 mb-xl-4">
-			<h3 class="title-xl dblue mb-0"><?php echo $title; ?></h3>
-		</div>
+		
 		<div class="container">
+			<div class="titleSec">
+				<h3 class="title-lg fw-bolder my-4"><?php echo $title; ?></h3>
+			</div>
 		<div class='row'>
 			<div class='col-12 col-md-10'>
-			<h6 class='text-lg'><b><i class='fa fa-trophy'></i> Purchase our <?php echo $plan_detail[0]->name; ?> Plan for $<?php echo str_replace('.00', '', $plan_detail[0]->price); ?>/mo.</b></h6>
+			<h6 class='text-lg'><b><i class='fa fa-trophy'></i> Purchase our <?php echo $plan_detail[0]->name; ?> Plan for $<?php echo str_replace('.00', '', $plan_detail[0]->price); ?></b></h6>
 			<?php if($plan_detail[0]->id == 3){ ?>
 			<div class='text-sm'>You are on our highest plan! It can't get any better than this! </div>
 			<?php }else{ ?>
@@ -17,22 +18,22 @@
 			<?php } ?>
 			</div>
 			<div class='col-6 col-md-2'>
-			<a class="btn yellowbtn float-right my-4 my-md-0" href="<?php echo base_url('plan'); ?>">CHANGE PLAN</a>
+			<a class="btn my-4 my-md-0 min-w-auto w-100" href="<?php echo base_url('plan'); ?>">CHANGE PLAN</a>
 			</div>
 		</div>
 			<hr>
 			<div class='row'>
 				<div class='col-12 col-sm-6'>
 					
-					<form id="payment-form" action='<?php echo base_url(); ?>/providerauth/checkout-post' method='post' class="mb-4">
+					<form id="payment-form" action='<?php echo base_url(); ?>/checkout-post' method='post' class="mb-4">
 						<?php 
 						if(!empty($cards)){ ?>
 					<div class="carddetail">
-					<p>Use your saved cards</p>
+						<p class="text-primary fw-medium">Use your saved cards</p>
 						<?php 
 						if(!empty($cards)){
 							foreach ( $cards->data as $s => $source ) { ?>
-								<div class="card mb-2">
+								<div class="card mb-2 rounded-5">
 								<div class="d-flex justify-content-between align-items-center p-3">
 								<div class="d-flex justify-content-between align-items-center">
 								<div class="me-3 form-section"><label class="form-group d-flex justify-content-between align-items-center"><input onclick="show_hide_card(this)" type="radio" name="card_id" value="<?php echo $source->id; ?>" class="" /></label></div>
@@ -67,7 +68,7 @@
 						?>	
 					</div>
 					<p> (or) </p>
-					<div class="card mb-2">
+					<div class="card mb-2 rounded-5">
 						<div class="d-flex justify-content-between align-items-center p-3">
 						<div class="d-flex justify-content-between align-items-center">
 						<div class="me-3 form-section"><label class="form-group d-flex justify-content-between align-items-center"><input onclick="show_hide_card(this)" type="radio" name="card_id" value="new" class="" /></label></div>
@@ -78,34 +79,13 @@
 						</div>
 						</div>
 						</div>
-					</div>		
+					</div>	
+						<input type="hidden" name="customer_id" value="<?php echo $customer->id; ?>" />	
 						<?php } ?>
 						<input type="hidden" name="plan_id" value="<?php echo $plan_detail[0]->id; ?>" />
 						<input type="hidden" name="type" value="<?php echo $type; ?>" />
-							<!--<div class="credit-card-input no-js form-group" id="skeuocard">
-							<label for="cc_type">Card Type</label>
-							<select name="cc_type" class="form-control">
-							  <option value="">...</option>
-							  <option value="visa">Visa</option>
-							  <option value="discover">Discover</option>
-							  <option value="mastercard">MasterCard</option>
-							  <option value="maestro">Maestro</option>
-							  <option value="jcb">JCB</option>
-							  <option value="unionpay">China UnionPay</option>
-							  <option value="amex">American Express</option>
-							  <option value="dinersclubintl">Diners Club</option>
-							</select>
-							<label for="cc_number">Card Number</label>
-							<input type="text" class="form-control" name="cc_number" id="cc_number" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" size="19">
-							<label for="cc_exp_month">Expiration Month</label>
-							<input type="text" class="form-control" name="cc_exp_month" id="cc_exp_month" placeholder="00">
-							<label for="cc_exp_year">Expiration Year</label>
-							<input type="text" class="form-control" name="cc_exp_year" id="cc_exp_year" placeholder="00">
-							<label for="cc_name">Cardholder's Name</label>
-							<input type="text" class="form-control" name="cc_name" id="cc_name" placeholder="John Doe">
-							<label for="cc_cvc">Card Validation Code</label>
-							<input type="text" class="form-control" name="cc_cvc" id="cc_cvc" placeholder="123" maxlength="3" size="3">
-						  </div> -->
+						<input type="hidden" name="sale_id" value="<?php echo !empty($_GET['sale_id']) ? $_GET['sale_id']:''; ?>" />
+						<input type="hidden" name="payment_type" value="<?php echo !empty($_GET['payment_type'])?$_GET['payment_type']:''; ?>" />
 					<div class="s-hide" style="display:<?php echo !empty($cards) ? 'none' : ''; ?>">
 					<?php if(!empty($cards)){ ?>					
 					<p>Please enter your new credit card information below</p>
@@ -123,34 +103,32 @@
 					</div>
 			  <br>
 			  <?php if(!empty($type) && $type=='trial'){ ?>
-			  <div class='text-sm'><i>Your first charge will take place on <?php echo date('F jS, Y', strtotime("+1 month")); ?>. You will be billed monthly. Cancel anytime by going to the billing page.</i></div>
+			  <div class='text-sm'><i>Your first charge will take place on <?php echo date('F jS, Y', strtotime("+1 month")); ?>. You will be billed every <?= $plan_detail[0]->no_of_weeks ?> weeks. Cancel anytime by going to the billing page on your dashboard.</i></div>
 			  <?php }else{ ?>
-			  <div class='text-sm'><i>You will be billed monthly. Cancel anytime by going to the billing page.</i></div>
+			  <div class='text-sm'><i>You will be billed every <?= $plan_detail[0]->no_of_weeks ?> weeks. Cancel anytime by going to the billing page on your dashboard.</i></div>
 			  <?php } ?>
 			  
 						  <br>
-						  <div class='text-lg'>Total: $<?php echo str_replace('.00', '', $plan_detail[0]->price); ?>/mo.</div>
+						  <div class='text-lg'>Total: <span class="fs-3 fw-bolder">$<?php echo str_replace('.00', '', $plan_detail[0]->price); ?></span></div>
 						  <br>
 						  <input type="hidden" name="plan_amount" value="<?php echo str_replace('.00', '', $plan_detail[0]->price); ?>" />
-						  <input type='submit' value='<?php echo (!empty($type) && $type=='trial') ? 'Start Free Trial' : 'Pay Now'; ?>' class='btn'>
+						  
+						  <input type='submit' value='<?php echo (!empty($type) && $type=='trial') ? 'Start Free Trial' : 'Pay Now'; ?>' class='btn card-submit-btn' style="display: <?php echo !empty($cards) ? 'none' : 'block' ; ?>	">
 					</form>
+					<!--
 					<p class="text-center">(or)<p>
 					
 					<?php
 					$paypalPriceId = '';
 					$clientId = env('paypal.sdk.client');
-					if($plan_detail[0]->id == 2 && $type == 'trial'){
-						$paypalPriceId = env('paypalPriceId2t');
-					}else if($plan_detail[0]->id == 2 && $type != 'trial'){
-						$paypalPriceId = env('paypalPriceId2');
-					}else if($plan_detail[0]->id == 3 && $type == 'trial'){
-						$paypalPriceId = env('paypalPriceId3t');
-					}else if($plan_detail[0]->id == 3 && $type != 'trial'){
-						$paypalPriceId = env('paypalPriceId3');
+					if($type == 'trial'){
+						$paypalPriceId = $plan_detail[0]->paypal_plan_id_with_trial;
+					}else{
+						$paypalPriceId = $plan_detail[0]->paypal_plan_id_without_trial;
 					}					
 					?>					
 					<div id="paypal-button-container-<?php echo $paypalPriceId; ?>"></div>
-					<script src="https://www.paypal.com/sdk/js?client-id=<?php echo $clientId; ?>&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+					<script src="https://www.sandbox.paypal.com/sdk/js?client-id=<?php echo $clientId; ?>&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
 					<script>
 					  paypal.Buttons({
 						  style: {
@@ -171,7 +149,7 @@
 								url: '<?php echo base_url(); ?>/providerauth/paypal-success',
 								type: 'POST',
 								dataType: 'JSON',
-								data: {response:data,type:'<?php echo $type; ?>',plan_id:'<?php echo $plan_detail[0]->id; ?>'},
+								data: {response:data,type:'<?php echo $type; ?>',plan_id:'<?php echo $plan_detail[0]->id; ?>',payment_type:'<?php echo !empty($_GET['payment_type'])?$_GET['payment_type']:''; ?>',sale_id:'<?php echo !empty($_GET['sale_id'])?$_GET['sale_id']:''; ?>',user_id:'<?php echo !empty(session()->get('vr_sess_user_id')) ? session()->get('vr_sess_user_id'):''; ?>'},
 								error: function() {
 									Swal.fire({
 										text: "Something is wrong. Please try again!",
@@ -188,7 +166,7 @@
 											confirmButtonColor: "#34c38f",
 											confirmButtonText: "<?php echo trans("ok"); ?>",
 										}).then(function() {
-											window.location.href = "<?php echo base_url(); ?>/providerauth/billing";
+											window.location.href = "<?php echo base_url(); ?>/add-listing?sale_id="+res.sale_id+"&payment_type=paypal";
 										})
 									}else{
 										Swal.fire({
@@ -203,19 +181,21 @@
 						  }
 					  }).render('#paypal-button-container-<?php echo $paypalPriceId; ?>'); // Renders the PayPal button
 					</script>
-					
+					-->
 				</div>
 				<div class='col-12 col-sm-6'>
-					<table class="table table-striped" width="100%">
+					<table class="table table-striped include-plan" width="100%">
 						<thead>
-							<tr><th>What's Included with this Plan</th><td></td></tr>
+							<tr><th>What's Included with this Plan</th><th></th></tr>
 						</thead>
 						<tbody>
-						<?php if($plan_detail[0]->id != 2){ ?>
-							<tr style="display :<?php echo ($plan_detail[0]->id == 2) ? 'none' : ''; ?>"><td><div>4 week listing on PlaneBroker.com</div></td><td class="text-center"><i class="fa fa-check"></i></td></tr>
-						<?php } ?>
-							<tr><td><div>10 photos / docs</div></td><td class="text-center"><i class="fa fa-check"></i></td></tr>
-							<tr><td><div>No Video</div></td><td class="text-center"><i class="fa fa-check"></i></td></tr>
+							<tr style="display :<?php echo ($plan_detail[0]->id == 2) ? 'none' : ''; ?>"><td><div><?= $plan_detail[0]->no_of_weeks ?> week listing on PlaneBroker.com</div></td><td class="text-center"><i class="fa fa-check"></i></td></tr>
+							<tr><td><div><?= $plan_detail[0]->no_of_photos ?> photos / docs</div></td><td class="text-center"><i class="fa fa-check"></i></td></tr>
+							<tr><td><div><?php echo !empty($plan_detail[0]->no_of_videos) ? $plan_detail[0]->no_of_videos.' Videos' : 'No Video';  ?></div></td><td class="text-center"><i class="fa fa-<?php echo !empty($plan_detail[0]->no_of_videos) ? 'check' : 'close';  ?>"></i></td></tr>
+							<tr><td><div><?php echo !empty($plan_detail[0]->is_featured_listing) ? 'Featured Listing on Homepage' : 'Not a featured listing';  ?></div></td><td class="text-center"><i class="fa fa-<?php echo !empty($plan_detail[0]->is_featured_listing) ? 'check' : 'close';  ?>"></i></td></tr>
+							<tr><td><div><?php echo !empty($plan_detail[0]->is_premium_listing) ? 'Premium listing' : 'Not a premium listing';  ?></div></td><td class="text-center"><i class="fa fa-<?php echo !empty($plan_detail[0]->is_premium_listing) ? 'check' : 'close';  ?>"></i></td></tr>
+							
+							
 							
 						</tbody>
 					</table>						
@@ -238,6 +218,7 @@ function show_hide_card(_this){
 	}else{
 		$('.s-hide').hide();
 	}
+	$('.card-submit-btn').show();
 }
 </script>		
 <?= $this->endSection() ?>

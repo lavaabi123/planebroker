@@ -45,33 +45,37 @@
                                     <div class="row">
                                         <div class="col-6">
                                             <div class="form-group mb-3">
-                                                <label><?php echo trans("subject"); ?><span class="required"> *</span></label>
+                                                <label class="ml-0"><?php echo trans("subject"); ?><span class="required"> *</span></label>
                                                  <input type="text" name="name" class="form-control auth-form-input" placeholder="<?php echo trans("subject"); ?>" value="<?php echo html_escape($emailtemplate->name); ?>" required>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="form-group mb-3">
-                                        <label class="control-label"><?php echo trans('content'); ?><span class="required"> *</span></label>                               
+                                        <label class="control-label ml-0"><?php echo trans('content'); ?><span class="required"> *</span></label>    <br />   
+										Available Variables: <?php echo $emailtemplate->available_variables; ?>                        
                                         <script src="<?php echo base_url('assets/ckeditor/build/ckeditor.js'); ?>"></script>
                                         <textarea class="form-control text-area" name="content" id="editor" placeholder="<?php echo trans('content'); ?>" required><?php echo html_escape($emailtemplate->content); ?></textarea>
 
-                                        <script>                        
-                                            ClassicEditor
-                                                .create(document.querySelector('#editor'), {
-                                                    // CKEditor 5 configuration options
-                                                    removePlugins: [ 'MediaEmbed' ],
-                                                    simpleUpload: {
-                                                        uploadUrl: "<?php echo base_url('fileupload.php?CKEditorFuncNum=') ?>"
-                                                    },
-                                                })
-                                                .then(editor => {
-                                                    console.log('CKEditor 5 initialized:', editor);
-                                                })
-                                                .catch(error => {
-                                                    console.error('Error initializing CKEditor 5:', error);
-                                                });
-                                        </script>
+                                         <script>                        
+                                    ClassicEditor
+                                        .create(document.querySelector('#editor'), {
+                                            // CKEditor 5 configuration options
+                                            removePlugins: [ 'MediaEmbed','Title', 'AutoResize' ],
+                                            simpleUpload: {
+                                                uploadUrl: "<?php echo base_url('fileupload.php?CKEditorFuncNum=') ?>"
+                                            },
+                                        })
+                                        .then(editor => {
+											const editableElement = editor.ui.view.editable.element;
+											editableElement.style.minHeight = '300px';  // Set fixed height
+											editableElement.style.height = '300px';
+                                            console.log('CKEditor 5 initialized:', editor);
+                                        })
+                                        .catch(error => {
+                                            console.error('Error initializing CKEditor 5:', error);
+                                        });
+                                </script>
                                     </div>
                         <div class="form-group mb-3 float-right">
                             <button type="submit" id="single_submit" name="validate" class="btn btn-primary"><?php echo trans('save_changes'); ?></button>
@@ -91,4 +95,9 @@
 </section>
 <!-- /.content -->
 </div>
+<style>
+.ck.ck-editor__editable.ck-focused:not(.ck-editor__nested-editable), .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused){
+	min-height:300px;
+}
+</style>
 <?php echo $this->endSection() ?>

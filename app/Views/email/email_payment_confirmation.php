@@ -5,9 +5,6 @@
 	<tr>
 		<td class="wrapper">
 			<table role="presentation" border="0" cellpadding="0" cellspacing="0">
-				<tr>					
-					<td><img src="<?php echo base_url()."/assets/img/welcome.jpg"; ?>" alt="" width="100%" style="display: block;" /></td>
-				</tr>
 				<tr>
 					<td>
 						<h2 style="font-size: 36px;line-height: 36px;font-weight: bold;margin-bottom:25px;text-align:center"><?php echo "Payment Confirmation"; ?></h2>

@@ -59,6 +59,17 @@ Dashboard content
 .table-bordered td, .table-bordered th {
     font-size: 13px;
 }
+.small-box.bg-white {
+    border: 2px solid;
+    border-radius: 30px;
+    overflow: hidden;
+}
+.small-box h3 {
+    font-weight: 900;
+}
+.small-box.bg-white:hover {
+    box-shadow: 2px 2px 8px #00000044;
+}
 </style>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -104,68 +115,68 @@ Dashboard content
                 <!-- ./col -->
                 <div class="col-lg-3 col-6">
                     <!-- small box -->
-                    <div class="small-box bg-white">
+                    <div class="small-box bg-white" style="border-color:#eca241;">
                         <div class="icon">
-                            <span class="avatar avatar-md avatar-rounded" style="background:#ff6c00">
+                            <span class="avatar avatar-md avatar-rounded" style="background:#eca241">
 									<i class="fa fa-users fs-16"></i>
 							</span> 
                         </div>
                         <div class="inner">
-                            <h3 id="total_registrations">&nbsp;</h3>
+                            <h3 id="total_registrations" style="color:#eca241;">&nbsp;</h3>
 
                             <p>User Registrations</p>
                         </div>
-                        <a href="<?php echo admin_url().'/providers/list-providers'; ?>" class="small-box-footer" style="background:#ff6c00">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        <a href="<?php echo admin_url().'users'; ?>" class="small-box-footer" style="background:#eca241;">More info <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
                 <!-- ./col -->
                 <div class="col-lg-3 col-6">
                     <!-- small box -->
-                    <div class="small-box bg-white">
+                    <div class="small-box bg-white" style="border-color:#43ac3e;">
                         <div class="icon">
-							<span class="avatar avatar-md avatar-rounded" style="background:#26bf94">
+							<span class="avatar avatar-md avatar-rounded" style="background:#43ac3e">
 									<i class="fa fa-shopping-bag fs-16"></i>
 							</span>                            
                         </div>
                         <div class="inner">
-                            <h3 id="totalAmountPaid">&nbsp;</h3>
+                            <h3 id="totalAmountPaid" style="color:#43ac3e;">&nbsp;</h3>
                             <p>Sales</p>
                         </div>
-                        <a href="<?php echo admin_url().'/providers/sales'; ?>" class="small-box-footer" style="background:#26bf94">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        <a href="<?php echo admin_url().'listings/sales'; ?>" class="small-box-footer" style="background:#43ac3e">More info <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
                 <!-- ./col -->
 				<div class="col-lg-3 col-6">
                     <!-- small box -->
-                    <div class="small-box bg-white">
+                    <div class="small-box bg-white" style="border-color:#2379d0;">
                         <div class="icon">
-                            <span class="avatar avatar-md avatar-rounded" style="background:#f5b849">
+                            <span class="avatar avatar-md avatar-rounded" style="background:#2379d0">
 									<i class="fa fa-user-plus fs-16"></i>
 							</span>   
                         </div>
                         <div class="inner">
-                            <h3 id="totalStandard">&nbsp;</h3>
+                            <h3 id="totalStandard" style="color:#2379d0;">&nbsp;</h3>
 
                             <p>Standard Users</p>
                         </div>
-                        <a href="<?php echo admin_url().'/providers/list-providers?plan_id=2'; ?>" class="small-box-footer" style="background:#f5b849">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        <a href="<?php echo admin_url().'users?user_level=0'; ?>" class="small-box-footer" style="background:#2379d0">More info <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
                 <!-- ./col -->
                 <div class="col-lg-3 col-6">
                     <!-- small box -->
-                    <div class="small-box bg-white">
+                    <div class="small-box bg-white" style="border-color:#e66c00;">
                         <div class="icon">
-                            <span class="avatar avatar-md avatar-rounded" style="background:#23b7e5">
+                            <span class="avatar avatar-md avatar-rounded" style="background:#e66c00">
 									<i class="fa fa-user-shield fs-16"></i>
 							</span> 
                         </div>
                         <div class="inner">
-                            <h3 id="totalPremium">&nbsp;</h3>
+                            <h3 id="totalPremium" style="color:#e66c00;">&nbsp;</h3>
 
-                            <p>Premium Users</p>
+                            <p>Captain's Club Members</p>
                         </div>
-                        <a href="<?php echo admin_url().'/providers/list-providers?plan_id=3'; ?>" class="small-box-footer" style="background:#23b7e5">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        <a href="<?php echo admin_url().'users?user_level=1'; ?>" class="small-box-footer" style="background:#e66c00">More info <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
                 <!-- ./col -->
@@ -265,8 +276,8 @@ Dashboard content
 								foreach($recent_payments as $recent_payment){ if(!empty($recent_payment->provider)){	?>
 								<tr>
 									<td><?php echo $recent_payment->provider; ?></td>
-									<td><?php echo formatted_date($recent_payment->stripe_subscription_start_date,'m/d/Y'); ?></td>
-									<td><?php echo formatted_date($recent_payment->stripe_subscription_end_date,'m/d/Y'); ?></td>
+									<td><?php echo ($recent_payment->stripe_subscription_start_date != NULL) ? formatted_date($recent_payment->stripe_subscription_start_date,'m/d/Y') : '-'; ?></td>
+									<td><?php echo ($recent_payment->stripe_subscription_end_date != NULL) ? formatted_date($recent_payment->stripe_subscription_end_date,'m/d/Y') : '-'; ?></td>
 									<td><?php echo '$ '.$recent_payment->stripe_subscription_amount_paid; ?></td>
 									<td><?php echo formatted_date($recent_payment->created_at,'m/d/Y'); ?></td>
 								</tr>

@@ -10,9 +10,16 @@ use App\Models\CategoriesModel;
 use App\Models\ClientTypesModel;
 use App\Models\EmailModel;
 use App\Models\CategoriesSkillsModel;
+use App\Models\ProductModel;
+use App\Models\SubscriptionModel;
+use App\Models\PlansModel;
 
 class ProviderRegister extends ProviderauthController
 {
+    public function __construct()
+    {
+        $this->subscriptionModel = new SubscriptionModel();
+    }
     public function index()
     {
 		
@@ -58,58 +65,6 @@ class ProviderRegister extends ProviderauthController
         $this->reset_flash_data();
         $userModel = new UsersModel();
 
-
-        /*$rules = [
-            'fullname' => [
-                'label'  => trans('fullname'),
-                'rules'  => 'required|min_length[4]|max_length[100]',
-                'errors' => [
-                    'required' => trans('form_validation_required'),
-                    'min_length' => trans('form_validation_min_length'),
-                    'max_length' => trans('form_validation_max_length'),
-                ],
-            ],
-            'username' => [
-                'label'  => trans('username'),
-                'rules'  => 'required|min_length[4]|max_length[100]',
-                'errors' => [
-                    'required' => trans('form_validation_required'),
-                    'min_length' => trans('form_validation_min_length'),
-                    'max_length' => trans('form_validation_max_length'),
-                ],
-            ],
-
-            'email'    => [
-                'label'  => trans('email'),
-                'rules'  => 'required|max_length[200]|valid_email',
-                'errors' => [
-                    'required' => trans('form_validation_required'),
-                    'min_length' => trans('form_validation_min_length'),
-                    'max_length' => trans('form_validation_max_length'),
-                    'valid_email' => 'Please check the Email field. It does not appear to be valid.',
-                ],
-            ],
-            'password' => [
-                'label'  => trans('password'),
-                'rules'  => 'required|min_length[4]',
-                'errors' => [
-                    'required' => trans('form_validation_required'),
-                    'min_length' => trans('form_validation_min_length'),
-                ],
-            ],
-            'confirm_password' => [
-                'label'  => trans('password'),
-                'rules'  => 'required|min_length[4]|matches[password]',
-                'errors' => [
-                    'required' => trans('form_validation_required'),
-                    'min_length' => trans('form_validation_min_length'),
-                    'matches' => 'Password Not Match!',
-
-                ],
-            ],
-
-        ];*/
-
 			
         if (!empty($this->request->getVar('check_bot'))) {
             $email = $this->request->getVar('email');
@@ -132,11 +87,16 @@ class ProviderRegister extends ProviderauthController
                     $this->session->setFlashData('success_form', trans("msg_register_success"));
                 }
                 if ($userModel->is_logged_in()) {
-                    if($this->session->get('vr_sess_user_role') > 1){
-                        return redirect()->to(base_url('plan'));
-                    }/*else{
-                        return redirect()->to(admin_url());
-                    }*/
+						
+						// Redirect to intended page after login
+						$redirect = (session()->get('redirect_after_login')) ? session()->get('redirect_after_login') : '';
+						if ($redirect) {
+							session()->remove('redirect_after_login');
+							return redirect()->to($redirect);
+						} else {
+							return redirect()->to(base_url('dashboard')); 
+						}
+                    
                 }
 
                 return redirect()->to($this->agent->getReferrer());
@@ -154,26 +114,61 @@ class ProviderRegister extends ProviderauthController
 	
     public function product_add_post()
     {
-
         $this->reset_flash_data();
         $userModel = new UsersModel();
-        if (!empty($this->request->getVar('check_bot'))) {      
-			//add product
-            $user = $userModel->add_product();
-
-			//echo "<pre>";print_r($this->request);exit;      
-            if ($user) {
-                $this->session->setFlashData('success_form', trans("Product Added Successfully!"));
-                return redirect()->to($this->agent->getReferrer());
-            } else {
-                //error
-                $this->session->setFlashData('errors_form', trans("Error while adding product."));
-                return redirect()->to($this->agent->getReferrer())->withInput();
-            }
-        } else {
-            $this->session->setFlashData('errors_form', 'You are not a human!');
-            return redirect()->to($this->agent->getReferrer())->withInput()->with('error', 'You are not a human!');
-        }
+		if(!empty($this->request->getVar('listing_from')) && $this->request->getVar('listing_from')== 'admin'){
+			
+			//insert product
+			$user = $userModel->add_product();
+			if ($user) {
+				if(!empty($this->request->getVar('product_id'))){
+					$this->session->setFlashData('success', trans("Listing Updated Successfully!"));
+				}else{
+					$this->session->setFlashData('success', trans("Listing Added Successfully!"));	
+				}
+				return redirect()->to(admin_url().'listings');
+			} else {
+				//error
+				$this->session->setFlashData('errors_form', trans("Error while adding listing."));
+				return redirect()->to($this->agent->getReferrer())->withInput();
+			}
+		}else{
+			if (!empty($this->request->getVar('check_bot'))) { 
+			if($this->request->getVar('payment_type') == 'paypal'){
+				$data['sale_detail'] = $userModel->get_paypal_sales_by_id($this->request->getVar('sale_id'));
+			}else{
+				$data['sale_detail'] = $userModel->get_sales_by_id($this->request->getVar('sale_id'));
+			}
+			
+			$this->UsersModel = new UsersModel();
+			$user_id = !empty($_POST['user_id']) ? $_POST['user_id'] : $this->session->get('vr_sess_user_id');
+			$data['user_detail'] = $this->UsersModel->get_user($user_id);
+			
+			if(!empty($this->request->getVar('product_id')) || (!empty($data['sale_detail']) && empty($data['sale_detail']->product_id) && empty($data['is_cancel'])) || $data['user_detail']->user_level == 1){
+				//add product
+				$user = $userModel->add_product();
+			}else{
+				$this->session->setFlashData('errors_form', trans("Listing already added for this Subscription!"));
+				return redirect()->to(base_url('my-listing'));
+			}
+					  
+				if ($user) {
+					if(!empty($this->request->getVar('product_id'))){
+						$this->session->setFlashData('success_form', trans("Listing Updated Successfully!"));
+					}else{
+						$this->session->setFlashData('success_form', trans("Listing Added Successfully!"));
+					}
+					return redirect()->to(base_url('my-listing'));
+				} else {
+					//error
+					$this->session->setFlashData('errors_form', trans("Error while adding listing."));
+					return redirect()->to($this->agent->getReferrer())->withInput();
+				}
+			} else {
+				$this->session->setFlashData('errors_form', 'You are not a human!');
+				return redirect()->to($this->agent->getReferrer())->withInput()->with('error', 'You are not a human!');
+			}
+		}
     }
 	public function check_email(){
 		if(!empty($_POST['email'])){
@@ -217,44 +212,80 @@ class ProviderRegister extends ProviderauthController
 		
 		
 		$data['user_plan_details'] = array();
-		$data['standard_trial'] = array();
-		$data['premium_trial'] = array();
+		$data['user_trial_detail'] = array();
 		$this->UsersModel = new UsersModel();
 		if ($this->session->get('vr_sess_logged_in') == TRUE) {
 			$data['user_plan_details'] = $this->UsersModel->get_user($this->session->get('vr_sess_user_id'));
-			$data['standard_trial'] = $this->UsersModel->get_trial($this->session->get('vr_sess_user_id'),2);
-			$data['premium_trial'] = $this->UsersModel->get_trial($this->session->get('vr_sess_user_id'),3);
+			$data['user_trial_detail'] = $this->UsersModel->get_trials_by_user_id($this->session->get('vr_sess_user_id'));
 		}
 		
+		$data['plans'] = $this->subscriptionModel->get_all_subscription();
+		$data['sale_id'] = !empty($_GET['sale_id']) ? $_GET['sale_id'] : '' ;
+		$data['plan_id'] = !empty($_GET['plan_id']) ? $_GET['plan_id'] : '' ;
+		
+		
+				
 		
         return view('Providerauth/ProviderPlan', $data);
     }	
 	
+	
+	public function add_listing(){
+		
+		$this->UsersModel = new UsersModel();
+		$data['user_detail'] = $this->UsersModel->get_user($this->session->get('vr_sess_user_id'));
+		$this->CategoriesModel = new CategoriesModel();
+		$data['categories'] = $this->CategoriesModel->get_categories();
+		$data['title'] = trans('What do you want to sell?');
+		$data['meta_title'] = 'Sell | Plane Broker';
+		
+		return view('Providerauth/CategoryListALL', $data);	
+		
+	}
+	
 	public function select_plan()
     {  
 		if ($this->session->get('vr_sess_logged_in') != TRUE) {
-			session()->set('selected_plan_id',$this->request->getVar('id'));
-            return redirect()->to(base_url('/user-signup'));
+			// Save intended URL for redirect after login
+			session()->set('redirect_after_login', str_replace('/index.php','',current_url() . '?' . $_SERVER['QUERY_STRING']));
+			// Save plan ID if needed
+			session()->set('selected_plan_id', $this->request->getVar('id'));
+
+            return redirect()->to(base_url('/login'));
         }
 		$this->UsersModel = new UsersModel();
 		$data['user_detail'] = $this->UsersModel->get_user($this->session->get('vr_sess_user_id'));
-		if($data['user_detail']->plan_id == '1' && $this->request->getVar('id') == '1'){
+		/*if($data['user_detail']->plan_id == '1' && $this->request->getVar('id') == '1'){
 			//$this->session->setFlashData('success_form', trans("You are Already in Free Plan!"));
-			return redirect()->to(base_url('/providerauth/dashboard'));
+			return redirect()->to(base_url('/dashboard'));
 		}else{
 			//update plan id
-			if($this->request->getVar('id') >= '2'){
+			if($this->request->getVar('id') >= 1){
 				//$user = $this->UsersModel->update_user_plan($this->session->get('vr_sess_user_id'),$this->request->getVar('id'));
 				//$this->session->setFlashData('success_form', trans("Your plan has been upgraded, unlocking new features and benefits!"));
 				if(!empty($this->request->getVar('type'))){
-					return redirect()->to(base_url('/providerauth/checkout?plan_id='.$this->request->getVar('id').'&type='.$this->request->getVar('type')));
+					return redirect()->to(base_url('/checkout?plan_id='.$this->request->getVar('id').'&type='.$this->request->getVar('type')));
 				}else{
-					return redirect()->to(base_url('/providerauth/checkout?plan_id='.$this->request->getVar('id')));
+					return redirect()->to(base_url('/checkout?plan_id='.$this->request->getVar('id')));
 				}
 				
 			}else{
 				return redirect()->to(base_url('/'));
 			}
+		} */
+		
+		if($this->request->getVar('id') >= 1){
+			$query = !empty($_GET['sale_id']) ? '&sale_id='.$_GET['sale_id'] : '' ;
+			$query .= !empty($_GET['payment_type']) ? '&payment_type='.$_GET['payment_type'] : '' ;
+					
+			if(!empty($this->request->getVar('type'))){
+				return redirect()->to(base_url('/checkout?plan_id='.$this->request->getVar('id').'&type='.$this->request->getVar('type').''.$query));
+			}else{
+				return redirect()->to(base_url('/checkout?plan_id='.$this->request->getVar('id').''.$query));
+			}
+			
+		}else{
+			return redirect()->to(base_url('/'));
 		}
     }
 	
@@ -341,18 +372,22 @@ class ProviderRegister extends ProviderauthController
 		$this->session->set('user_zipcode',$zipcode);
 		$this->CityModel = new CityModel();
 		if(!empty($_POST['latitude']) && !empty($_POST['longitude'])){
-		$featured = $this->CityModel->get_featured_home_ajax(15,$_POST['latitude'],$_POST['longitude']);
+		//$featured = $this->CityModel->get_featured_home_ajax(15,$_POST['latitude'],$_POST['longitude']);
 		//$featured = $this->CityModel->get_featured_home_ajax(15,'36.1716','-115.1391');
 		}
 		if(empty($featured)){
-			$featured = $this->CityModel->get_featured_home(15);
+			//$featured = $this->CityModel->get_featured_home(15);
 		}
+		
+		$this->ProductModel = new ProductModel();
+		$featured = $this->ProductModel->get_products($category_name='all',$where=' AND pl.is_featured_listing = 1','RAND() LIMIT 4');
+		
 		$html = '';
 		if(!empty($featured)){
 		foreach($featured as $p => $provider ){ 
 		$busin_name = !empty($provider['business_name']) ? $provider['clean_url'] : cleanURL($provider['permalink']) ;
 			$html .= '<div class="item">
-				<a href="'.base_url('/provider/'.$busin_name).'">
+				<a href="'.base_url('/listings/'.$provider['permalink'].'/'.$provider['id'].'/'.(!empty($provider['name'])?str_replace(' ','-',strtolower($provider['name'])):'')).'">
 					<div class="provider-Details mb-4">
 						<div class="providerImg mb-3">
 							<img class="d-block w-100" alt="..." src="'.$provider['image'].'" >
@@ -360,12 +395,15 @@ class ProviderRegister extends ProviderauthController
 						<div class="pro-content">
 							<h5 class="fw-medium title-xs">'.$provider['name'].'</h5>
 							<h5 class="fw-medium text-primary title-xs">'.$provider['business_name'].'</h5>
-							<p class="text-grey mb-3">'.$provider['city'].', '.$provider['state_code'].'</p>
-							<h5 class="fw-medium title-xs">USD $7,299,000</h5>
+							<p class="text-grey mb-3">'.$provider['address'].'</p>
+							<h5 class="fw-medium title-xs">'.(($provider['price'] != NULL) ? 'USD $'.number_format($provider['price'], 2, '.', ',') : 'Call for Price').'</h5>
 						</div>
 					</div>
 				</a>
 			</div>';
+			if($p > 2){
+				break;
+			}
 		}		
 		}
 		$html .= '';

@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/admin/css/adminlte.min.css">
     <!-- SweetAlert2 -->
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/admin/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+	<link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/bootstrap.min.css" />
+
     <!-- overlayScrollbars -->
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/admin/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
     <!-- File Manager css -->
@@ -30,6 +32,7 @@
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/admin/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/admin/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">  
+	
     <!-- jQuery -->
     <script src="<?php echo base_url(); ?>/assets/admin/plugins/jquery/jquery.min.js"></script>
 
@@ -38,6 +41,8 @@
     <script src="<?php echo base_url(); ?>/assets/admin/plugins/jquery-ui/jquery-ui.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
     <script src="<?php echo base_url(); ?>/assets/admin/plugins/parsley/parsley.min.js"></script>
+	<link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/croppie.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
     <script>
         csrfName = '<?php echo csrf_token() ?>';
         csrfCookie = '<?php echo config('cookie')->prefix . config('security')->cookieName ?>';
@@ -48,7 +53,7 @@
         sweetalert_cancel = "<?php echo trans("cancel"); ?>";
         var sys_lang_id = "<?php echo get_langguage_id(get_general_settings()->site_lang)->id; ?>";
     </script>    
-    <script src="<?php echo base_url(); ?>/assets/admin/js/custom.js"></script>
+    <script src="<?php echo base_url(); ?>/assets/admin/js/custom.js?v=1"></script>
 </head>
 
 <body class="hold-transition sidebar-mini <?php echo check_dark_mode_enabled() ? 'dark-mode' : '' ?> layout-fixed layout-footer-fixed layout-navbar-fixed">
@@ -108,6 +113,10 @@
     <script src="<?php echo base_url(); ?>/assets/admin/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
     <!-- AdminLTE App -->
     <script src="<?php echo base_url(); ?>/assets/admin/js/adminlte.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
+<script src="<?php echo base_url(); ?>/assets/frontend/js/croppie.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
 
     <script>
         <?php if (check_cron_time_minutes(1)) : ?>
@@ -186,6 +195,7 @@
                 <?php endif; ?>
         <?php endif; ?>
         });
+		
     </script>
 
 

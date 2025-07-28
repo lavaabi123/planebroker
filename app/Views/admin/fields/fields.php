@@ -36,18 +36,18 @@ td:hover {
             <!-- Main row -->
             <div class="row">
                 <div class="col-lg-12 col-xl-12">
-                    <div class="card card-primary card-outline card-outline-tabs">
-                        <div class="card-body">
+                    <div class="card card-primary card-outline card-outline-tabs p-0">
+                        <div class="card-body filter_list">
                             <div class="tab-content" id="custom-tabs-fields">
                                 <div class="tab-pane fade show active" id="custom-tabs-fields" role="tabpanel" aria-labelledby="custom-tabs-fields-tab">
-                                    <div class="table-responsive">
+                                    <div class="table-responsive overflow-hidden">
                                         <table id="fields_table" class="table table-bordered table-striped nowrap w-100 pageResize">
-                                            <div class="row table-filter-container">
-                                                <div class="col-sm-6">
+                                            <div class="row table-filter-container align-items-center">
+                                                <div class="col-sm-12 d-flex">
                                                     <?php $request = \Config\Services::request(); ?>
                                                     <?php echo form_open(admin_url() . "fields", ['method' => 'GET']); ?>
                                                     <input type="hidden" name="page" value="<?php echo (!empty($request->getVar('page'))) ? $request->getVar('page') : '1'; ?>">
-                                                    <div class="item-table-filter" style="width: 80px; min-width: 80px;">
+                                                    <div class="item-table-filter">
                                                         <label><?php echo trans("show"); ?></label>
                                                         <select name="show" class="form-control">
                                                             <option value="15" <?php echo ($request->getVar('show') == '15') ? 'selected' : ''; ?>>15</option>
@@ -57,22 +57,52 @@ td:hover {
                                                         </select>
                                                     </div>
 
+													 <div class="item-table-filter">
+														<label><?php echo trans("Category"); ?></label>
+														<select name="category_id" id="category_id_filter" class="form-control">
+															<option value=""><?php echo trans("all"); ?></option>
+														   <?php
+															if(!empty($categories_list)){
+																foreach($categories_list as $category){ ?>
+																	<option value="<?php echo $category->id; ?>" <?php echo ($request->getVar('category_id') !== null && $request->getVar('category_id') == $category->id) ? 'selected':''; ?>><?php echo $category->name; ?></option>
+															<?php }
+															}
+															?>
+														</select>
+													</div>
+													
+													
+													 <div class="item-table-filter">
+														<label><?php echo trans("Field Group"); ?></label>
+														<select name="field_group" id="field_group_filter" class="form-control">
+															<option value=""><?php echo trans("all"); ?></option>
+														   <?php
+															if(!empty($field_group)){
+																foreach($field_group as $fieldgroup){ ?>
+																	<option value="<?php echo $fieldgroup->id; ?>" <?php echo ($request->getVar('field_group') !== null && $request->getVar('field_group') == $fieldgroup->id) ? 'selected':''; ?>><?php echo $fieldgroup->name; ?></option>
+															<?php }
+															}
+															?>
+														</select>
+													</div>
+													
                                                     <div class="item-table-filter">
                                                         <label><?php echo trans("search"); ?></label>
-                                                        <input name="q" class="form-control" placeholder="<?php echo trans("search"); ?>" type="search" value="<?php echo html_escape($request->getVar('q')); ?>">
+                                                        <input name="q" class="form-control" style="margin-bottom:0 !important;" placeholder="<?php echo trans("search"); ?>" type="search" value="<?php echo html_escape($request->getVar('q')); ?>">
                                                     </div>
 
-                                                    <div class="item-table-filter md-top-10" style="width: 65px; min-width: 65px;">
+                                                    <div class="item-table-filter align-self-end">
                                                         <label style="display: block">&nbsp;</label>
-                                                        <button type="submit" class="btn bg-primary"><?php echo trans("filter"); ?></button>
+                                                        <button type="submit" class="btn small btn-primary"><?php echo trans("filter"); ?></button>
 
                                                     </div>
 
                                                     <?php echo form_close(); ?>
+													<div class="text-right align-self-end" style="margin-bottom:10px;">
+														<a href="javascript:void(0)" class="btn small bg-primary" onclick="manage_fields('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
+													</div>
                                                 </div>
-                                                <div class="col-sm-6 text-right">
-                                                    <a href="javascript:void(0)" class="btn bg-primary" onclick="manage_fields('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
-                                                </div>
+                                                
                                             </div>
                                             <thead>
                                                 <tr class="text-center">
@@ -191,6 +221,8 @@ td:hover {
 							<option value="Checkbox">Checkbox</option>
 							<option value="Radio">Radio</option>
 							<option value="Dropdown">Dropdown</option>
+							<option value="File">File</option>
+							<option value="Number">Number</option>
 						</select>						
                     </div>   
 					
@@ -255,7 +287,7 @@ td:hover {
 							<option value=""><?php echo trans('Select Category') ?></option>							
 						</select>
                     </div> 										
-					
+										
                     <div class="form-group">
                         <div class="row">
                             <div class="col-sm-4 col-xs-12">

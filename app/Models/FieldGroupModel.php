@@ -59,7 +59,7 @@ class FieldGroupModel extends Model
 	public function get_fields_group()
     {
 		
-         return $this->asObject()->where('status',1)->orderby('sort_order','asc')->findAll();
+         return $this->asObject()->orderby('sort_order','asc')->findAll();
 		 //echo $this->db->getLastQuery(); die;
         
     }

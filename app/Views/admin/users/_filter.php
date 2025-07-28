@@ -7,7 +7,7 @@
         <?php echo form_open(admin_url() . $url, ['method' => 'GET','class' => 'provider-form']); ?>
 
 
-        <div class="item-table-filter" style="width: 70px; min-width: 70px;">
+        <div class="item-table-filter">
             <label><?php echo trans("show"); ?></label>
             <select name="show" class="form-control">
                 <option value="15" <?php echo ($request->getVar('show') == '25') ? 'selected' : ''; ?>>25</option>
@@ -78,17 +78,6 @@
                 <option value="0" <?php echo $request->getVar('status') != null && $request->getVar('status') != 1 ? 'selected' : ''; ?>><?php echo trans("banned"); ?></option>
             </select>
         </div>
-         <div class="item-table-filter">
-            <label><?php echo trans("Plans"); ?></label>
-            <select name="plan_id" class="form-control">
-                <option value=""><?php echo trans("all"); ?></option>
-                <option value="11" <?php echo ($request->getVar('plan_id') == 11) ? 'selected' : ''; ?>><?php echo trans("Free Trial"); ?></option>
-                <option value="2" <?php echo ($request->getVar('plan_id') == 2) ? 'selected' : ''; ?>><?php echo trans("Standard"); ?></option>
-                <option value="3" <?php echo ($request->getVar('plan_id')  == 3) ? 'selected' : ''; ?>><?php echo trans("Premium"); ?></option>
-                <option value="44" <?php echo ($request->getVar('plan_id') == 44) ? 'selected' : ''; ?>><?php echo trans("Canceled"); ?></option>
-                <option value="1" <?php echo ($request->getVar('plan_id') == 1) ? 'selected' : ''; ?>><?php echo trans("Without any Plan"); ?></option>
-            </select>
-        </div>
         <div class="item-table-filter">
             <label><?php echo trans("email_status"); ?></label>
             <select name="email_status" class="form-control">
@@ -97,48 +86,15 @@
                 <option value="0" <?php echo $request->getVar('email_status') != null && $request->getVar('email_status') != 1 ? 'selected' : ''; ?>><?php echo trans("unconfirmed"); ?></option>
             </select>
         </div>
-         <div class="item-table-filter">
-            <label><?php echo trans("Types"); ?></label>
-            <select name="category_id" id="category_id" class="form-control">
-                <option value=""><?php echo trans("all"); ?></option>
-               <?php
-                if(!empty($categories)){
-                    foreach($categories as $category){ ?>
-                        <option value="<?php echo $category->id; ?>" <?php echo ($request->getVar('category_id') !== null && $request->getVar('category_id') == $category->id) ? 'selected':''; ?>><?php echo $category->name; ?></option>
-                <?php }
-                }
-                ?>
-            </select>
-        </div>
-        <?php /* <?php if ($uri->getSegment(3) != 'administrators') : ?>
-            <div class="item-table-filter">
-                <label><?php echo trans("role"); ?></label>
-                <select name="role" class="form-control">
-                    <option value=""><?php echo trans("all"); ?></option>
-                    <?php foreach (model('RolesPermissionsModel')->getRoles() as $role) : ?>
-                        <option value="<?php echo $role->id ?>" <?php echo ($request->getVar('role') == $role->id) ? 'selected' : ''; ?>><?php echo $role->role_name; ?></option>
-                    <?php endforeach; ?>
-
-                </select>
-            </div>
-        <?php endif; ?>
-        <?php */ ?>
-
         <div class="item-table-filter">
             <label><?php echo trans("search"); ?></label>
-            <input name="search" class="form-control" placeholder="<?php echo trans("search") ?>" type="search" value="<?php echo $request->getVar('search'); ?>">
-        </div>
-        <div class="form-group item-table-filter location-filter">
-             <label><?php echo trans("Location"); ?></label>
-            <select name='location_id' class='locationhome'>
-                <option value='<?php echo $search_location_id ?>'><?php echo !empty($search_location_name) ? $search_location_name : '' ?></option>
-            </select>
+            <input name="search" class="form-control" style="margin-bottom:0 !important;" placeholder="<?php echo trans("search") ?>" type="search" value="<?php echo $request->getVar('search'); ?>">
         </div>
         <input type="hidden" name="page" value="<?php echo (!empty($request->getVar('page'))) ? $request->getVar('page') : '1'; ?>">
 
-        <div class="item-table-filter">
+        <div class="item-table-filter align-self-end">
             <button type="submit" class="btn small btn-primary"><?php echo trans("filter"); ?></button>
-             <a class="btn small btn-primary" href="<?php echo admin_url() . 'providers/list-providers/'; ?>"><?php echo trans('Reset'); ?></a>
+             <a class="btn small btn-primary" href="<?php echo admin_url() . 'users/'; ?>"><?php echo trans('Reset'); ?></a>
         </div>
         <?php echo form_close(); ?>
     </div>

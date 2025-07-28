@@ -14,6 +14,7 @@ use App\Models\EmailModel;
 use App\Models\FieldsModel;
 use App\Models\FieldGroupModel;
 use App\Models\CategoriesSubModel;
+use App\Models\ProductModel;
 
 class Common extends BaseController
 {
@@ -273,8 +274,7 @@ class Common extends BaseController
 		
 		$query2 =  $this->userModel->builder('users')->select('count(id) as users, plan_id,is_trial,is_cancel')
             ->where('DATE(created_at) <=', $endDate)->where('DATE(created_at) >=', $startDate)
-			->where('plan_id',2)->where('is_trial', 0)->where('is_cancel', 0)
-            ->groupBy('plan_id')->get()->getRow();
+			->where('user_level',0)->get()->getRow();
 		return !empty($query2) ? (int) $query2->users : 0;
 
     }
@@ -283,8 +283,7 @@ class Common extends BaseController
 		
 		$query2 =  $this->userModel->builder('users')->select('count(id) as users, plan_id,is_trial,is_cancel')
             ->where('DATE(created_at) <=', $endDate)->where('DATE(created_at) >=', $startDate)
-			->where('plan_id',3)->where('is_trial', 0)->where('is_cancel', 0)
-            ->groupBy('plan_id')->get()->getRow();
+			->where('user_level',1)->get()->getRow();
 		return !empty($query2) ? (int) $query2->users : 0;
 
     }
@@ -504,16 +503,96 @@ class Common extends BaseController
 				'allGroups' => $allGroups,
 				'selectedCategories' => array_column($selectedCategories, 'category_id'),
 				'selectedSubcategories' => array_column($selectedSubcategories, 'sub_category_id'),	
-				'selectedGroups' => array_column($selectedGroups, 'fields_group_id'),				
+				'selectedGroups' => array_column($selectedGroups, 'fields_group_id'),	
+                'status' => $field->status,
+                'is_filter' => $field->is_filter,			
             );
         }
         echo json_encode($data);
     }
 	
+	public function send_email_to_friend(){
+		
+		if(!empty($this->request->getVar('check_bot'))){
+        $userId         = $this->request->getVar('userId');   
+        $fromuserId     = $this->request->getVar('fromuserId');     
+        $productId      = $this->request->getVar('productId');     
+        $email          = $this->request->getVar('email');
+        $remail         = $this->request->getVar('remail');
+        $link         	= $this->request->getVar('link');
+        $siteName       = get_general_settings()->application_name;
+        $subject        = $siteName.' Sharing Product';
+        $userMessage    = $this->request->getVar('message');
+        $message        = "<b>You received this message from a customer who visited ".$siteName." product and shared with you.</b><br><br>Email: ".$email."<br>Message:<br>".$userMessage."<br>Product Link:<br>".$link;
+		//$message        = "You have received a message from a customer.";
+        $user_detail    = $this->userModel->get_user($userId);
+		
+        
+        $data = array(
+            'subject'           => "You Have A Message",//$subject,
+            'message_text'      => $message,
+            'to'                => $remail,
+            'template_path'     => "email/email_to_provider",
+        );
+		$message_admin        = "<b>".$user_detail->business_name." - ".$user_detail->email." received this message from a customer who visited and shared product link via email to friend.</b><br><br>Email: ".$email."<br>Recipients Email: ".$remail."<br>Message:<br>".$userMessage;
+		$data_admin = array(
+            'subject'           => "Customer Sent Referral Email",//$subject,
+            'message_text'      => $message_admin,
+			'from_email' => get_general_settings()->admin_email,
+			'to' => get_general_settings()->mail_reply_to,
+            'template_path'     => "email/admin/new_user",
+        );
+		
+        $emailModel = new EmailModel();
+        $emailModel->send_email($data); 
+        $emailModel->send_email($data_admin);  
+
+        $insertData     = array();
+        $logged_user_id = 0;
+
+        if (auth_check()) {
+            $logged_user_id = $this->session->get('vr_sess_user_id');
+        }
+
+        $insertData['recipient_email']   = $remail;
+        $insertData['from_email']        = $email;		
+        $insertData['from_message']      = $userMessage;
+        $insertData['logged_user_id']    = $logged_user_id;
+        $insertData['to_user_id']        = $userId;
+        $insertData['from_user_id']      = $fromuserId;
+        $insertData['product_id']        = $productId;
+        $insertData['created_at']        = date('Y-m-d H:i:s');
+
+        $id = $this->db->table('email_referral')->insert($insertData);		
+			
+        if ($id) {
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => trans("msg_email_sent")
+            ]);
+        } else {
+            return $this->response->setJSON([
+                'success' => false,
+                'error' => true,
+                'message' => trans("Something went wrong!. Please try again")
+            ]);
+        } 
+		}else {
+            return $this->response->setJSON([
+                'success' => false,
+                'error' => true,
+                'message' => trans("You are not a human!")
+            ]);
+        }        
+        exit;
+	}
+	
     public function send_message_to_provider()
     {
 		if(!empty($this->request->getVar('check_bot'))){
-        $userId         = $this->request->getVar('userId');        
+        $userId         = $this->request->getVar('userId');   
+        $fromuserId     = $this->request->getVar('fromuserId');     
+        $productId      = $this->request->getVar('productId');     
         $email          = $this->request->getVar('email');
         $phone          = $this->request->getVar('phone');
         $name           = $this->request->getVar('name');
@@ -524,32 +603,88 @@ class Common extends BaseController
         $message        = "<b>You received this message from a customer who visited your ".$siteName." profile.</b><br><br>Name: ".$name."<br>Email: ".$email."<br>Phone: ".$phone."<br>Best way to reach you?:".$best_way."<br>Message:<br>".$userMessage;
 		//$message        = "You have received a message from a customer.";
         $user_detail    = $this->userModel->get_user($userId);
-        
+		
+		$this->ProductModel = new ProductModel();
+		$where = ' AND p.id = '.$this->request->getVar('productId');
+		$product_detail = $this->ProductModel->get_product_detail($where);
+        /*
         $data = array(
             'subject'           => "You Have A Message",//$subject,
             'message_text'      => $message,
-            'to'                => $user_detail->email,
+            'to'                => !empty($product_detail['email']) ? $product_detail['email'] : $user_detail->email,
             'template_path'     => "email/email_to_provider",
-        );
-		$message_admin        = "<b>Broker(".$user_detail->business_name." - ".$user_detail->email.") received this message from a customer who visited their profile.</b><br><br>Name: ".$name."<br>Email: ".$email."<br>Phone: ".$phone."<br>Best way to reach you?:".$best_way."<br>Message:<br>".$userMessage;
+        ); */
+		$message_admin        = "<b>".( !empty($product_detail['business_name']) ? $product_detail['business_name'] : $user_detail->business_name)." - ".( !empty($product_detail['email']) ? $product_detail['email'] :  $user_detail->email)." received this message from a customer who visited their profile.</b><br><br>Name: ".$name."<br>Email: ".$email."<br>Phone: ".$phone."<br>Best way to reach you?:".$best_way."<br>Message:<br>".$userMessage;
 		$data_admin = array(
-            'subject'           => "Customer Contacted Broker",//$subject,
+            'subject'           => "Customer Contacted Seller",//$subject,
             'message_text'      => $message_admin,
 			'from_email' => get_general_settings()->admin_email,
 			'to' => get_general_settings()->mail_reply_to,
             'template_path'     => "email/admin/new_user",
         );
-		$message_cus        = "<p>Dear ".$name.",</p><p>Thank you for choosing <a href='".base_url()."'>planebroker.com!</a> Your message has been received, and we are pleased to confirm that your designated groomer, ".$user_detail->business_name.", will be in touch with you shortly. They will address any questions you may have, discuss your grooming needs, and finalize the details to ensure a seamless grooming experience for your furry friend.</p><p>Thank you!</p>";
+		/*$message_cus        = "<p>Dear ".$name.",</p><p>Thank you for choosing <a href='".base_url()."'>planebroker.com!</a> Your message has been received, and we are pleased to confirm that your designated owner, ".( !empty($product_detail['business_name']) ? $product_detail['business_name'] : $user_detail->business_name).", will be in touch with you shortly. They will address any questions you may have, discuss your needs, and finalize the details to ensure a seamless buying experience.</p><p>Thank you!</p>";
+		
+		$additional = $this->ProductModel->get_products($category_name='all',$where='','RAND() LIMIT 3');
+		
 		$data_customer = array(
             'subject'           => "Message Received - planebroker.com",//$subject,
             'message_text'      => $message_cus,
 			'from_email' => get_general_settings()->mail_reply_to,
 			'to' => $email,
-            'template_path'     => "email/admin/new_user",
-        );
+            'template_path'     => "email/email_send_message",
+			'product_detail'=>$product_detail,
+			'additional'=>$additional
+        );*/
+		
         $emailModel = new EmailModel();
+		
+		
+		$get_email_content = $this->db->table('email_templates')->where('email_title', 'message_seller')->get()->getRowArray();
+		$emailContent = $get_email_content['content'];
+		$placeholders = [
+			'{user_name}' => $product_detail['fullname'],
+			'{listing_name}'    =>$product_detail['display_name'],
+			'{listing_url}'     =>base_url().'/listings/'.$product_detail['permalink'].'/'.$product_detail['id'].'/'.(!empty($product_detail['display_name'])?str_replace(' ','-',strtolower($product_detail['display_name'])):''),
+			'{name}'     => $name,
+			'{email}'     => $email,
+			'{phone}'     => $phone,
+			'{best_way}'     => $best_way,
+			'{user_message}'     => $userMessage,
+		];
+
+		foreach ($placeholders as $key => $value) {
+			$emailContent = str_replace($key, $value, $emailContent);
+		}
+		$emailModel = new EmailModel();
+		$data_email = array(
+			'subject' => $get_email_content['name'],
+			'content' => $emailContent,
+			'to' => !empty($product_detail['email']) ? $product_detail['email'] : $user_detail->email,
+			'template_path' => "email/email_content",
+		);
+        $emailModel->send_email($data_email); 
+		
+		
+		$get_email_content = $this->db->table('email_templates')->where('email_title', 'message_customer')->get()->getRowArray();
+		$emailContent = $get_email_content['content'];
+		$placeholders = [
+			'{user_name}' => $name,
+			'{site_url}'     => base_url(),
+		];
+
+		foreach ($placeholders as $key => $value) {
+			$emailContent = str_replace($key, $value, $emailContent);
+		}
+		$emailModel = new EmailModel();
+		$data_customer = array(
+			'subject' => $get_email_content['name'],
+			'content' => $emailContent,
+			'to' => $email,
+			'template_path' => "email/email_content",
+		);
         $emailModel->send_email($data_customer);
-        $emailModel->send_email($data); 
+		
+		
         $emailModel->send_email($data_admin);  
 
         $insertData     = array();
@@ -566,15 +701,18 @@ class Common extends BaseController
         $insertData['from_message']      = $userMessage;
         $insertData['logged_user_id']    = $logged_user_id;
         $insertData['to_user_id']        = $userId;
+        $insertData['from_user_id']      = $fromuserId;
+        $insertData['product_id']        = $productId;
         $insertData['created_at']        = date('Y-m-d H:i:s');
 
         $id = $this->db->table('provider_messages')->insert($insertData);
 		
+		$query2 =  $this->userModel->db->query("UPDATE products SET form_count = form_count + 1 WHERE id = ".$productId);
 		$query2 =  $this->userModel->db->query("UPDATE users SET form_count = form_count + 1 WHERE id = ".$userId);
 		$user_latitude = !empty($this->session->get('user_latitude')) ? $this->session->get('user_latitude') : '';
 		$user_longitude = !empty($this->session->get('user_longitude')) ? $this->session->get('user_longitude') : '';
 		$user_zipcode = !empty($this->session->get('user_zipcode')) ? $this->session->get('user_zipcode') : '';
-		$query2 =  $this->userModel->db->query("INSERT INTO website_stats (user_id,form_count,customer_lat,customer_long,customer_zipcode) VALUES (".$userId.",1,'".$user_latitude."','".$user_longitude."','".$user_zipcode."')");
+		$query2 =  $this->userModel->db->query("INSERT INTO website_stats (user_id,product_id,form_count,customer_lat,customer_long,customer_zipcode) VALUES (".$userId.",".$productId.",1,'".$user_latitude."','".$user_longitude."','".$user_zipcode."')");
 		
         if ($id) {
             return $this->response->setJSON([
@@ -609,10 +747,11 @@ class Common extends BaseController
             //echo "<tr><td>Provider:</td><td>".$message->to_provider."</td></tr>";
             //echo "<tr><td>Logged User:</td><td>".$message->logged_user."</td></tr>";
             echo "<tr><td>Name:</td><td>".$message->from_name."</td></tr>";
-            echo "<tr><td>Email:</td><td>".$message->from_email."</td></tr>";
-            echo "<tr><td>Phone:</td><td>".$message->from_phone."</td></tr>";
-            echo "<tr><td>Date / Time:</td><td>".formatted_date($message->created_at,'m/d/Y h:i a')."</td></tr>";         
-            echo "<tr><td>Message:</td><td>".$message->from_message."</td></tr>";        
+            echo "<tr><td>Email:</td><td><a href='mailto:".$message->from_email."'>".$message->from_email."</a></td></tr>";
+            echo "<tr><td>Phone:</td><td><a href='tel:+1".$message->from_phone."'>".$message->from_phone."</a></td></tr>";
+            echo "<tr><td>Date / Time:</td><td>".formatted_date($message->created_at,'m/d/Y h:i a')."</td></tr>";          
+            echo "<tr><td>Message:</td><td><div class='listing-msg'>".$message->from_message."</div></td></tr>";           
+            echo '<tr><td>Listing Name:</td><td><a target="_blank" href="'.base_url().'/listings/'.$message->permalink.'/'.$message->product_id.'/'.(!empty($message->display_name)?str_replace(' ','-',strtolower($message->display_name)):'').'" class=" ">'.$message->display_name.'</td></tr>';        
         }else{
              echo "<tr><td colspan='2'>No data</td></tr>";
         }
@@ -640,6 +779,28 @@ class Common extends BaseController
             echo "<tr><td>phone:</td><td>".$message->from_phone."</td></tr>";
             echo "<tr><td>Date:</td><td>".formatted_date($message->created_at)."</td></tr>";         
             echo "<tr><td>Message:</td><td>".$message->from_message."</td></tr>";        
+        }else{
+             echo "<tr><td colspan='2'>No data</td></tr>";
+        }
+        echo "</table>";
+        exit();
+    }
+
+    public function get_captain_messages()
+    {
+        $message_id = $this->request->getVar('message_id');
+        $message = $this->userModel->getCaptainMessages($message_id);
+        $status = 0;
+        $data = array();
+        echo "<table class='table table-striped'>";
+        if (!empty($message)) {            
+            echo "<tr><td>Name:</td><td>".$message->from_name."</td></tr>";
+            echo "<tr><td>Email:</td><td>".$message->from_email."</td></tr>";
+            echo "<tr><td>Dealer / Company Name:</td><td>".$message->company_name."</td></tr>";
+            echo "<tr><td>Dealer / Company Description:</td><td>".$message->company_des."</td></tr>";
+            echo "<tr><td>phone:</td><td>".$message->from_phone."</td></tr>";
+            echo "<tr><td>Date:</td><td>".formatted_date($message->created_at)."</td></tr>";         
+            echo "<tr><td>Additional Information:</td><td>".$message->from_message."</td></tr>";        
         }else{
              echo "<tr><td colspan='2'>No data</td></tr>";
         }
@@ -695,8 +856,11 @@ class Common extends BaseController
             $formatted_endDate = date('m/d/Y', strtotime($_GET['end']));
         }
 		$id = !empty($_GET['id']) ? $_GET['id'] : $this->session->get('vr_sess_user_id');
-        $data['latest'] = $this->getViews($startDate, $endDate,$id);
-        $data['impression'] = $this->getImpression($startDate, $endDate, $id);
+		$product_id = !empty($_GET['product_id']) ? $_GET['product_id'] : '';
+        $data['latest'] = $this->getViews($startDate, $endDate,$product_id);
+        $data['impression'] = $this->getFavorite($startDate, $endDate, $product_id);
+        $data['form_submission'] = $this->getFormSubmission($startDate, $endDate, $product_id);
+        $data['called'] = $this->getPeopleCalled($startDate, $endDate, $product_id);
         $data['user_type'] = $this->getTopZip($startDate, $endDate);
         $data['totalAmountPaid'] = $this->getAmountPaidSum($startDate, $endDate);
         $data['totalStandard'] = $this->getStandard($startDate, $endDate);
@@ -706,23 +870,88 @@ class Common extends BaseController
 
         echo json_encode($data);
     }
-    private function getImpression($startDate='', $endDate='', $id='')
+    private function getFavorite($startDate='', $endDate='', $id='')
     {
 		
 		
 		if(!empty($startDate) && !empty($endDate)){
+        $query =  $this->userModel->builder('user_favorites')
+            ->select('count(product_id) as website_stats, DATE(created_at) as date')
+			->where('product_id',$id)
+            ->where('DATE(created_at) <=', $endDate)
+            ->where('DATE(created_at) >=', $startDate)
+            ->groupBy('date')->get();
+		}else{
+			$query =  $this->userModel->builder('user_favorites')
+            ->select('count(product_id) as website_stats, DATE(created_at) as date')
+			->where('product_id',$id)
+            ->groupBy('date')->get();
+		}
+
+        if (!empty($query->getResult())) {
+            $data = array();
+            foreach ($query->getResult() as $row) {
+
+                $data['day'][] = date("M-d", strtotime($row->date));
+                $data['user'][] = (int) $row->website_stats;
+            }
+        } else {
+            $data['day'][] =  0;
+            $data['user'][] = 0;
+        }
+
+
+        return $data;
+    }
+    private function getPeopleCalled($startDate='', $endDate='', $id='')
+    {	
+		if(!empty($startDate) && !empty($endDate)){
         $query =  $this->userModel->builder('website_stats')
             ->select('count(id) as website_stats, DATE(created_at) as date')
-			->where('user_id',$id)
-			->where('impression_count',1)
+			->where('product_id',$id)
+			->where('call_count',1)
             ->where('DATE(created_at) <=', $endDate)
             ->where('DATE(created_at) >=', $startDate)
             ->groupBy('date')->get();
 		}else{
 			$query =  $this->userModel->builder('website_stats')
             ->select('count(id) as website_stats, DATE(created_at) as date')
-			->where('user_id',$id)
-			->where('impression_count',1)
+			->where('product_id',$id)
+			->where('call_count',1)
+            ->groupBy('date')->get();
+		}
+
+        if (!empty($query->getResult())) {
+            $data = array();
+            foreach ($query->getResult() as $row) {
+
+                $data['day'][] = date("M-d", strtotime($row->date));
+                $data['user'][] = (int) $row->website_stats;
+            }
+        } else {
+            $data['day'][] =  0;
+            $data['user'][] = 0;
+        }
+
+
+        return $data;
+    }
+	
+    private function getFormSubmission($startDate='', $endDate='', $id='')
+    {	
+		if(!empty($startDate) && !empty($endDate)){
+        $query =  $this->userModel->builder('website_stats')
+            ->select('count(id) as website_stats, DATE(created_at) as date')
+			->where('product_id',$id)
+			->where('form_count',1)
+            ->where('DATE(created_at) <=', $endDate)
+            ->where('DATE(created_at) >=', $startDate)
+            ->groupBy('date')->get();
+		}else{
+			$query =  $this->userModel->builder('website_stats')
+            ->select('count(id) as website_stats, DATE(created_at) as date')
+			->where('product_id',$id)
+			->where('form_count',1)
             ->groupBy('date')->get();
 		}
 
@@ -747,7 +976,7 @@ class Common extends BaseController
 		if(!empty($startDate) && !empty($endDate)){
         $query =  $this->userModel->builder('website_stats')
             ->select('count(id) as website_stats, DATE(created_at) as date')
-			->where('user_id',$id)
+			->where('product_id',$id)
 			->where('view_count',1)
             ->where('DATE(created_at) <=', $endDate)
             ->where('DATE(created_at) >=', $startDate)
@@ -755,7 +984,7 @@ class Common extends BaseController
 		}else{
 			$query =  $this->userModel->builder('website_stats')
             ->select('count(id) as website_stats, DATE(created_at) as date')
-			->where('user_id',$id)
+			->where('product_id',$id)
 			->where('view_count',1)
             ->groupBy('date')->get();
 		}

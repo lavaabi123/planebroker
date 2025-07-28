@@ -16,7 +16,7 @@
                 <?php endif; ?>
                 <?php if (!empty($success)) : ?>
                     <div class="form-group m-t-30 text-center">
-                        <a href="<?php echo base_url('providerauth/login'); ?>" class="btn btn-primary ">Go To Login</a>
+                        <a href="<?php echo base_url('login'); ?>" class="btn btn-primary ">Go To Login</a>
                     </div>
                 <?php else : ?>
 				<div class="form-section">
@@ -34,9 +34,6 @@
                 <?php endif; ?>
                 <?php echo form_close(); ?>
 				</div>
-                <p class="mt-3 mb-1 text-center">
-                    <a class="dblue" href="<?php echo base_url('providerauth/login'); ?>"><?php echo trans('login') ?></a>
-                </p>
             </div>
             <!-- /.card-body -->
         </div>

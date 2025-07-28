@@ -33,11 +33,11 @@
             <div class="row">
                 <?php echo $this->include('admin/includes/_messages') ?>
                 <div class="col-lg-12 col-xl-12">
-                    <div class="card">
-                        <div class="card-header">
+                    <div class="card p-0">
+                        <div class="card-header border-0 px-4 pt-4 pb-0 filter_Sec">
                             <?php echo $this->include('admin/seo/_filter') ?>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body filter_list pt-0">
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="table-responsive">

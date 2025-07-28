@@ -22,6 +22,14 @@
             <input name="search" class="form-control" placeholder="<?php echo trans("search") ?>" type="search" value="<?php echo $request->getVar('search'); ?>">
         </div>
         <div class="item-table-filter">
+            <label><?php echo trans("Type"); ?></label>
+            <select name="status" class="form-control">
+                <option value="" <?php echo ($request->getVar('status') == '') ? 'selected' : ''; ?>>All</option>
+                <option value="0" <?php echo ($request->getVar('status') == '0') ? 'selected' : ''; ?>>Articles</option>
+                <option value="1" <?php echo ($request->getVar('status') == '1') ? 'selected' : ''; ?>>News</option>
+            </select>
+        </div>
+        <div class="item-table-filter">
             <label><?php echo trans("Status"); ?></label>
             <select name="status" class="form-control">
                 <option value="" <?php echo ($request->getVar('status') == '') ? 'selected' : ''; ?>>All</option>

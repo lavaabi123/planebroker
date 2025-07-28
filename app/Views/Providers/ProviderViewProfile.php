@@ -9,7 +9,7 @@
 		 grecaptcha.execute("<?= getenv('GOOGLE_RECAPTCHAV3_SITEKEY') ?>", {action: 'validate'}).then(function(token) {
 			  // Store recaptcha response
 			  $("#g-recaptcha-response").val(token);
-
+$("#g-recaptcha-response1").val(token);
 		 });
 	});
 </script>
@@ -22,152 +22,274 @@
  
 <?php
 $img = '';
-if(!empty($user_detail->avatar)){
-	$img = base_url()."/uploads/userimages/".$userId."/".$user_detail->avatar;
-	$user_photos = array_merge(array(array('file_name'=>$user_detail->avatar,'image_tag'=>'')),$user_photos);
-}else if(!empty($user_photos)){
-	$img = base_url()."/uploads/userimages/".$userId."/".$user_photos[0]['file_name'];
+if(!empty($product_detail['image'])){
+	$img = $product_detail['image'];
 }else{ 
 	$img =  base_url()."/assets/img/user.png";				
 }
-
 ?>
+
+<div class="profileGallery text-center bg-blue py-5">
+	<h4 class="mb-0 text-white"><?php echo !empty($product_detail['name']) ? $product_detail['name'] : ''; ?></h4>
+	<p class="mb-3 text-primary fw-bold title-sm"><?php echo $product_detail['sub_cat_name']; ?></p>
+	<h4 class="mb-4 text-white"><?php echo ($product_detail['price'] != NULL) ? 'USD $'.number_format($product_detail['price'], 2, '.', ',') : 'Call for Price'; ?></h4>
+	<div class="container pt-2">
+<?php 
+$file_overall = array();
+$images = array();
+$videos = array();
+if(!empty($user_photos)){
+	foreach($user_photos as $p => $photo){ 
+		if($photo['file_type'] == 'image'){
+			$images[] = array('image',base_url()."/uploads/userimages/".$userId."/".$photo['file_name'],$photo['image_tag']);
+		}else{
+			$images[] = array('video',base_url()."/uploads/userimages/".$userId."/".$photo['file_name'],$photo['image_tag']);
+		}
+	}
+}
+$count = !empty($images) ? count($images) : 0;
+?>
+
+<div class="row mb-5">
+    <?php if ($count === 0): ?>
+        <div class="col-12 col-md-6 mx-auto">
+		<a href="javascript:void(0);" class="text-white" onclick="openGlightboxAt(0)">
+		<img class="d-block w-100 br-full" alt="..." src="<?php echo !empty($cat['image']) ? $cat['image'] : base_url()."/assets/frontend/images/user.png"; ?>">
+		</a>
+        </div>
+		
+	<?php elseif ($count === 1): ?>
+        <div class="col-12 col-md-6 mx-auto">
+		<a href="javascript:void(0);" class="text-white" onclick="openGlightboxAt(0)">
+		<?php if($images[0][0] == 'image'){ ?>
+            <img class="img-fluid w-100 br-full" src="<?= $images[0][1] ?>">
+		<?php }else{ ?>
+			<div class="video-wrapper">
+				<video  muted playsinline preload="metadata" style="cursor: pointer;">
+					<source src="<?= $images[0][1] ?>" type="video/mp4">
+					Your browser does not support the video tag.
+				</video>
+			</div>
+		<?php } ?>
+		</a>
+        </div>
+
+    <?php elseif ($count === 2): ?>
+        <?php foreach ($images as $kl => $imgv): ?>
+            <div class="col-6 two">
+			<a href="javascript:void(0);" class="text-white" onclick="openGlightboxAt('<?= $kl ?>')">
+			<?php if($imgv[0] == 'image'){ ?>
+                <img class="img-fluid w-100" src="<?= $imgv[1] ?>">
+			<?php }else{ ?>			
+				<div class="video-wrapper">
+					<video  muted playsinline preload="metadata" class="w-100" style="cursor: pointer;">
+						<source src="<?= $imgv[1] ?>" type="video/mp4">
+						Your browser does not support the video tag.
+					</video>
+				</div>
+			<?php } ?>
+			</a>
+            </div>
+        <?php endforeach; ?>
+
+    <?php elseif ($count === 3): ?>
+        <div class="col-6 two">
+		<a href="javascript:void(0);" class="text-white" onclick="openGlightboxAt(0)">
+		<?php if($images[0][0] == 'image'){ ?>
+            <img class="img-fluid w-100 h-100 br-left" src="<?= $images[0][1] ?>">
+		<?php }else{ ?>
+			<div class="video-wrapper">
+			<video  muted playsinline preload="metadata" style="cursor: pointer;">
+				<source src="<?= $images[0][1] ?>" type="video/mp4">
+				Your browser does not support the video tag.
+			</video>
+			</div>
+		<?php } ?>
+		</a>
+        </div>
+        <div class="col-6 two">
+		<a href="javascript:void(0);" class="text-white" onclick="openGlightboxAt(1)">
+		<?php if($images[1][0] == 'image'){ ?>
+            <img class="img-fluid w-100" src="<?= $images[1][1] ?>">
+		<?php }else{ ?>
+			<div class="video-wrapper">
+			<video  muted playsinline preload="metadata" style="cursor: pointer;">
+				<source src="<?= $images[1][1] ?>" type="video/mp4">
+				Your browser does not support the video tag.
+			</video>
+			</div>
+		<?php } ?>
+		</a>
+        </div>
+
+    <?php elseif ($count === 4): ?>
+       <div class="col-6 two">
+		<a href="javascript:void(0);" class="text-white" onclick="openGlightboxAt(0)">
+	    <?php if($images[0][0] == 'image'){ ?>
+            <img class="img-fluid w-100 h-100 br-left" src="<?= $images[0][1] ?>">
+		<?php }else{ ?>
+			<div class="video-wrapper">
+			<video  muted playsinline preload="metadata" style="cursor: pointer;">
+				<source src="<?= $images[0][1] ?>" type="video/mp4">
+				Your browser does not support the video tag.
+			</video>
+			</div>
+		<?php } ?>
+		</a>
+        </div>
+        <div class="col-6 two">
+		<a href="javascript:void(0);" class="text-white" onclick="openGlightboxAt(1)">
+		<?php if($images[1][0] == 'image'){ ?>
+            <img class="img-fluid w-100" src="<?= $images[1][1] ?>">
+		<?php }else{ ?>
+			<div class="video-wrapper">
+			<video  muted playsinline preload="metadata" style="cursor: pointer;">
+				<source src="<?= $images[1][1] ?>" type="video/mp4">
+				Your browser does not support the video tag.
+			</video>
+			</div>
+		<?php } ?>
+		</a>
+        </div>
+
+    <?php elseif ($count >= 5): ?>
+        <div class="col-sm-6 five">
+		<a href="javascript:void(0);" class="text-white" onclick="openGlightboxAt(0)">
+			<?php if($images[0][0] == 'image'){ ?>
+            <img class="img-fluid w-100 h-100 br-left" src="<?= $images[0][1] ?>">
+			<?php }else{ ?>
+				<div class="video-wrapper">
+				<video  muted playsinline preload="metadata" style="cursor: pointer;">
+					<source src="<?= $images[0][1] ?>" type="video/mp4">
+					Your browser does not support the video tag.
+				</video>
+				</div>
+			<?php } ?>
+		</a>
+        </div>
+        <div class="col-sm-6 five">
+            <div class="row last">
+                <?php for ($i = 1; $i < 5; $i++): ?>
+                    <div class="col-6">
+					<a href="javascript:void(0);" class="text-white" onclick="openGlightboxAt('<?= $i ?>')">
+					<?php if($images[$i][0] == 'image'){ ?>
+                        <img class="img-fluid w-100" src="<?= $images[$i][1] ?>">
+						<?php }else{ ?>
+							<div class="video-wrapper">
+							<video  muted playsinline preload="metadata" style="cursor: pointer;">
+								<source src="<?= $images[$i][1] ?>" type="video/mp4">
+								Your browser does not support the video tag.
+							</video>
+							</div>
+						<?php } ?>
+						</a>
+                    </div>
+                <?php endfor; ?>
+            </div>
+        </div>
+    <?php endif; ?>
+</div>
+<?php if ($count >= 1){ ?>
+		<a href="javascript:void(0);" class="btn col-lg-3" id="viewAllPhotosBtn">View All Photos</a>
+<?php } ?>
+	</div>
+</div>
+
+<!-- Hidden Lightbox Anchors for Remaining Images -->
+<!--<div id="lightbox-hidden-links" style="display: none;">
+    <?php for ($i = 0; $i < count($images); $i++): ?>
+        <a href="<?= $images[$i][1] ?>"
+           class="lightbox-hidden"
+           data-lightbox="jet-gallery"
+           data-title="Jet Photo <?= $i+1 ?>">
+           Jet Photo <?= $i+1 ?>
+        </a>
+    <?php endfor; ?>
+</div>
+-->
+<div id="lightbox-hidden-links" style="display: none;">
+    <?php foreach ($images as $i => $imgc): ?>
+        <?php if ($imgc[0] == 'video'): ?>
+            <a href="<?= $imgc[1] ?>"
+               class="glightbox"
+               data-type="video"
+               data-source="local"
+               data-title="<?= $imgc[2] ?>">
+               <?= $imgc[2] ?>
+            </a>
+        <?php else: ?>
+            <a href="<?= $imgc[1] ?>"
+               class="glightbox"
+               data-title="<?= $imgc[2] ?>">
+               <?= $imgc[2] ?>
+            </a>
+        <?php endif; ?>
+    <?php endforeach; ?>
+</div>
+
     <div class="viewProfile pt-4 pt-sm-5">
         <?php echo $this->include('Common/_messages') ?>
 		<div class="container pb-5">
 			<div class="row text-black">
 				<div class="col-sm-6">
-					<?php //if($user_detail->plan_id >0 ){ 
-					if(!empty($user_photos)){ ?>
-					<div class="product-slider">
-						<div id="sync1" class="owl-carousel owl-theme">
-						<?php if(!empty($user_photos)){
-								foreach($user_photos as $p => $photo){ ?>
-						  <div class="item">
-							<a class="proPic example-image-link" href="<?php echo base_url()."/uploads/userimages/".$userId."/".$photo['file_name']; ?>" data-lightbox="example-1">
-							  <img
-								src="<?php echo base_url()."/uploads/userimages/".$userId."/".$photo['file_name']; ?>"
-								alt="image-1" class="example-image"
-							  /></a>
-						  </div>
-						  <?php } } ?>
-						</div>
-
-						<div id="sync2" class="owl-carousel owl-theme">
-						<?php if(!empty($user_photos)){
-								foreach($user_photos as $p => $photo){ ?>
-						  <div class="item">
-							<img
-							  src="<?php echo base_url()."/uploads/userimages/".$userId."/".$photo['file_name']; ?>"
-							  alt="landscape"
-							/>
-						  </div>
-						  <?php } } ?>
-						</div>
-						
-					 </div>
-					<?php } else{
-					 ?>
-					<div class="proPic gender d-none">
-					<img class="img-fluid" src="<?php echo base_url()."/assets/img/user.png"; ?>">
-					</div>
-					<?php  } ?>
-					<div class="d-none mt-3 mt-lg-5">
-						<h3 class="title-sm dblue mb-0"><?php echo 'x by'; ?> <?php echo 'jjj'; ?></h3>
-						<p class="dblue mb-4"><?php echo 'Aircraft';//$user_detail->category_name; ?> in <?php //echo $user_detail->city.', '.$user_detail->state_code.' '.$user_detail->zipcode; ?></h3>
-						
-						<div class="my-4 my-sm-5">
-						<?php if(!empty($user_detail->mobile_no)){ ?>
-							<a href="javascript:void(0)" data-phone="<?php echo phoneFormat($user_detail->mobile_no); ?>" data-label="<?php if(!empty($user_detail->business_name)){ echo "Us"; }else{ echo "Me"; } ?>" class="showPhone button btn yellowbtn minbtn" onclick="showPhone(this)"><i class="fas fa-phone"></i> CALL ME</a>
-						<?php } ?>	
-						</div>
-				    </div>
 					<?php 
-					if(!empty($user_photos)){ ?>					
-					<a href="<?php echo base_url('provider_gallery/'.$userId); ?>" class="button btn mt-3 mt-lg-5">View Photo Gallery</a>
-					<?php }
-					if(!empty($user_detail->about_me)){
+					if(!empty($product_description)){
 					?>
 					
 					<div class="abtAircraft bg-gray rounded-5 px-4 py-5">
-						<h4><?php echo trans('About this Aircraft'); ?></h4>
-						<p>Aerista is proud to present this exceptional 1979 Beechc raft Baron 58—an outstanding twin-engine aircraft that combines performance, reliability, and versatility.</p>
-						<p>This Baron has been meticulously maintained, featuring low total time, a strong engine setup, and a well-equipped avionics suite, including Dual Garmin 430W WAAS. This aircraft is turnkey and ready for its next owner. Whether for personal or business use, this aircraft delivers speed, comfort, and proven Beechcraft craftsmanship.</p>
-						<p>Don't miss out—this Baron is priced to sell!</p>
-					</div>
+						<h4 class="mb-2"><?php echo trans('About this Aircraft'); ?></h4>
+						<p><?php echo $product_description->field_value; ?></p>
+					</div>			
+					<hr class="my-4">	
 					<?php }  ?>					
-						
-					<?php /*} else{ if(!empty($user_photos)){ ?>
-					<div class="proPic">
-					<img class="img-fluid" src="<?php echo base_url()."/uploads/userimages/".$userId."/".$user_photos[0]['file_name']; ?>">
-					</div>
-					<?php } else{ if($user_detail->gender == 'Female'){ ?>
-						<div class="proPic gender">
-						<img class="img-fluid" src="<?php echo base_url()."/assets/img/female_user.png"; ?>">
-						</div>
-					<?php }else{ ?>
-					<div class="proPic gender">
-					<img class="img-fluid" src="<?php echo base_url()."/assets/img/user.png"; ?>">
-					</div>
-					<?php } } } */ ?>						
-					<hr class="my-4">		
-					<div class="bg-gray rounded-5 px-4 py-5">
+									
+					<div class="bg-gray rounded-5 px-4 py-5 mb-4">
 						<h4 class="border-bottom mb-0 pb-3"><?php echo trans('General Information'); ?></h4>
-						<div class="d-flex justify-content-between border-bottom py-3">
-							<span class="left fw-medium">Year</span>
-							<span class="right">1979</span>
-						</div>
-						<div class="d-flex justify-content-between border-bottom py-3">
-							<span class="left fw-medium">Manufacturer</span>
-							<span class="right">Beechcraft</span>
-						</div>
-						<div class="d-flex justify-content-between border-bottom py-3">
-							<span class="left fw-medium">Model</span>
-							<span class="right">58 Baron</span>
-						</div>
-						<div class="d-flex justify-content-between border-bottom py-3">
-							<span class="left fw-medium">Serial Number</span>
-							<span class="right">TH-1012</span>
-						</div>
-						<div class="d-flex justify-content-between border-bottom py-3">
-							<span class="left fw-medium">Registration #</span>
-							<span class="right">N2023C</span>
-						</div>
-						<div class="d-flex justify-content-between border-bottom py-3">
-							<span class="left fw-medium">Condition</span>
-							<span class="right">Used</span>
-						</div>
-						<div class="d-flex justify-content-between border-bottom py-3">
-							<span class="left fw-medium">Flight Rules</span>
-							<span class="right">IFR</span>
-						</div>
-						<div class="d-flex justify-content-between border-bottom py-3">
-							<span class="left fw-medium">Based at</span>
-							<span class="right">GPT</span>
-						</div>
+						
+						<?php
+						if(!empty($product_dynamic_fields)){
+							foreach($product_dynamic_fields as $pd){
+								if(!empty($pd)){
+									foreach($pd as $pds){ if(!empty($pds['frontend_show']) && $pds['group_name'] == 'General Information'){ ?>
+									<div class="d-flex justify-content-between border-bottom py-3">
+										<span class="left fw-medium"><?php echo str_replace(' ex. OBO, FIRM, MAKE AN OFFER, etc.','',$pds['field_name']); ?></span>
+										<span class="right"><?php echo $pds['name']; ?></span>
+									</div>	
+									<?php } }									
+								}
+								//break;
+							}
+						}
+						/*
+						if(!empty($product_dynamic_fields['Log Book']) && !empty($product_dynamic_fields['Log Book'][0]['name'])){
+							foreach($product_dynamic_fields['Log Book'] as $logbook){
+						?>
 						<div class="text-center mt-4">
-							<a href="#" class="btn blue-btn fw-bold py-4 btn-lg">Download Spec Sheet</a>
+						<?php echo '
+						<a class="btn blue-btn fw-bold py-4 btn-lg" download href="'.base_url().'/uploads/userimages/'.$userId.'/'.$logbook['name'].'" >Download '.(!empty($logbook['file_field_title']) ? $logbook['file_field_title'] : 'Log Book').'</a>'; ?>
 						</div>
+							<?php } } */ ?>
 					</div>
 					
 				</div>
 				<div class="col-sm-6 proDetails ps-sm-5">
-					<h4 class="mb-0">1979 Beechcraft 58 Baron</h4>
-					<p class="mb-3">Piston Twin Aircraft</p>
-					<h4 class="mb-3">USD $299,000</h4>
-					
-					<div class="d-flex align-items-center fw-medium mb-0">
+					<h4 class="mb-0"><?php echo $product_detail['name']; ?></h4>
+					<p class="mb-3"><?php echo $product_detail['sub_cat_name']; ?></p>
+					<h4 class="mb-2"><?php echo ($product_detail['price'] != NULL) ? 'USD $'.number_format($product_detail['price'], 2, '.', ',') : 'Call for Price'; ?></h4>
+					<p class="text-primary mb-2 fw-bold"><?php echo !empty($product_detail['price_notes']) ? $product_detail['price_notes'] : ''; ?></p>
+					<!--<div class="d-flex align-items-center fw-medium mb-0 open-finance-modal" role="button">
 						<img class="icons" src="<?php echo base_url('assets/frontend/images/calculator.png'); ?>" />
 						<p class="text-primary">Financial Calculator</p>
-					</div>					
+					</div>	-->				
 					
 					<hr>
 					
 					<?php if(!empty($user_detail->mobile_no)){ ?>
 					<div class="d-flex align-items-center fw-medium mb-0">
 						<img class="icons" src="<?php echo base_url('assets/frontend/images/phone.png'); ?>" />
-						<p class="mb-0"><?php echo phoneFormat($user_detail->mobile_no); ?></p>
-						<a href="javascript:void(0)" data-phone="<?php echo phoneFormat($user_detail->mobile_no); ?>" data-label="<?php if(!empty($user_detail->business_name)){ echo "Us"; }else{ echo "Me"; } ?>" class="showPhone button btn yellowbtn mx-3" data-id="<?php echo $userId; ?>" onclick="showPhone(this)"> CALL </a>	
+						<p class="mb-0"><?php echo !empty($product_detail['phone']) ? $product_detail['phone'] : $user_detail->mobile_no; ?></p>
+						<a class="showPhone btn btn-sm mx-3" href="tel:+1<?php echo !empty($product_detail['phone']) ? preg_replace('/\D+/', '', $product_detail['phone']) : preg_replace('/\D+/', '', $user_detail->mobile_no); ?>"> CALL </a>		
+						<!--<a href="javascript:void(0)" data-phone="<?php echo phoneFormat($user_detail->mobile_no); ?>" data-label="<?php if(!empty($user_detail->business_name)){ echo "Us"; }else{ echo "Me"; } ?>" class="showPhone button btn yellowbtn mx-3" data-id="<?php echo $userId; ?>" data-pid="<?php echo $product_detail['id']; ?>" onclick="showPhone(this)"> CALL </a>	-->
 					
 					</div>
 					<hr>
@@ -175,20 +297,22 @@ if(!empty($user_detail->avatar)){
 					
 					<div class="d-flex align-items-center fw-medium mb-0">
 						<img class="icons" src="<?php echo base_url('assets/frontend/images/usericon.png'); ?>" />
-						<p class="">Rafael Rivas</p>
+						<p class=""><?php echo !empty($product_detail['business_name']) ? $product_detail['business_name'] : $product_detail['user_name']; ?></p>
 					</div>
 					<hr>
 					<div class="d-flex align-items-center fw-medium mb-0">
 						<img class="icons" src="<?php echo base_url('assets/frontend/images/pin.png'); ?>" />
-						<p class="">Las Vegas, NV</p>
+						<p class=""><?php echo $product_detail['address']; ?></p>
 					</div>
 					<hr>
 					
 					<!-- MESSAGE ME - START -->
 					<div id="contact-provider" class="providerMsg rounded-5 p-4 my-5 bg-grey">
-					<h6 class="text-dark text-center">Message Seller Directly</h6>
+					<h5 class="fw-bolder text-center">Message Seller Directly</5>
 						<form action="" method="post" id="messageProviderForm" class="form-input mt-4">
+							<input type="hidden" id="fromuserId" name="fromuserId" value="<?php echo $fromuserId;?>">
 							<input type="hidden" id="userId" name="userId" value="<?php echo $userId;?>">
+							<input type="hidden" id="productId" name="productId" value="<?php echo $productId;?>">
 							<div class="form-section">
 								<div class="form-group"><input type="text" name="name" id="name" class="ucwords form-control" placeholder="Your Name"></div>
 								<div class="form-group"><input type="text" name="email" id="email"placeholder="Your Email" class="form-control"></div>
@@ -208,13 +332,13 @@ if(!empty($user_detail->avatar)){
 						</form>	
 					</div><!-- MESSAGE ME - END -->
 					<hr>
-					<div class="d-flex align-items-center fw-medium mb-0">
-						<img class="icons" src="<?php echo base_url('assets/frontend/images/msg.png'); ?>" />
-						<p class="text-primary">Email a friend</p>
-					</div>					
+					<div class="d-flex align-items-center fw-medium mb-0 favorite-btn <?php echo !empty($wishlist_added) ? 'wishlist-added' : ''; ?>" role="button" data-product-id="<?= $product_detail['id']; ?>" data-wish="<?php echo !empty($wishlist_added) ? 1 : 0; ?>">
+						<img class="icons" src="<?php echo base_url('assets/frontend/images/wishlist.png'); ?>" />
+						<p class="text-primary wishtext"><?php echo !empty($wishlist_added) ? 'Remove from Wishlist' : 'Wishlist';?></p>
+					</div>				
 					
 					<hr>
-					<div class="d-flex align-items-center fw-medium mb-0">
+					<div class="d-flex align-items-center fw-medium mb-0" role="button" data-id="<?php echo $userId; ?>" data-pid="<?php echo $product_detail['id']; ?>" onclick="open_social_share(this)">
 						<img class="icons" src="<?php echo base_url('assets/frontend/images/upload.png'); ?>" />
 						<p class="text-primary">Share Profile</p>
 					</div>					
@@ -231,56 +355,106 @@ if(!empty($user_detail->avatar)){
 				</div>
 			</div>
 			<div class="accordion" id="productDes">
-			  <div class="accordion-item">
-				<h2 class="accordion-header">
-				  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#pd-One" aria-expanded="true" aria-controls="pd-One">
-					Airframe
-				  </button>
-				</h2>
-				<div id="pd-One" class="accordion-collapse collapse show" data-bs-parent="#productDes">
-				  <div class="accordion-body">
-				  <hr>
-					<h6>Total Time</h6>
-					3,695
-				  <hr>
-					<h6>Airframe Notes</h6>
-					1979 Beechcraft Baron 58<br>
-					SN: TH-1012<br>
-					3,695 hours TTSN (Hobbs)<br>
-					Basic Empty Weight = 3729.6 lbs<br>
-					Maximum Gross Weight = 5400 lbs<br>
-					Useful Load = 1670.4 lbs
-				  </div>
-				</div>
-			  </div>
-			  <div class="accordion-item">
-				<h2 class="accordion-header">
-				  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pd-Two" aria-expanded="false" aria-controls="pd-Two">
-					Engine 1
-				  </button>
-				</h2>
-				<div id="pd-Two" class="accordion-collapse collapse" data-bs-parent="#productDes">
-				  <div class="accordion-body">
-					<strong>This is the second item’s accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It’s also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-				  </div>
-				</div>
-			  </div>
-			  <div class="accordion-item">
-				<h2 class="accordion-header">
-				  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pd-Three" aria-expanded="false" aria-controls="pd-Three">
-					Engine 2
-				  </button>
-				</h2>
-				<div id="pd-Three" class="accordion-collapse collapse" data-bs-parent="#productDes">
-				  <div class="accordion-body">
-					<strong>This is the third item’s accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It’s also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-				  </div>
-				</div>
-			  </div>
+			
+			<?php
+			if(!empty($product_dynamic_fields)){
+				foreach($product_dynamic_fields as $p => $pdv){
+					$filecount = 0;
+					$newarray = [];
+					if(!empty($pdv) && !empty($pdv[0])){
+						foreach($pdv as $rg){
+							if($rg['field_type'] == 'File'){
+								$filecount++;
+								$newarray[$rg['field_name']][] = $rg;
+							}
+						}
+						if(count($pdv) == $filecount){
+							//all files
+							$product_dynamic_fields[$p][0]['items'] = $newarray;
+							$product_dynamic_fields[$p] = [ $product_dynamic_fields[$p][0] ];
+						}
+					}
+					 
+				}
+			}
+			//echo '<pre>';
+			//print_r($product_dynamic_fields);exit; 
+			$pg = 0;
+			if(!empty($product_dynamic_fields)){
+				foreach($product_dynamic_fields as $p => $pd){
+					$pg++;
+					if(!empty($pd) && $p != 'General Information'){ ?>					
+						<div class="accordion-item">
+							<h2 class="accordion-header">
+							  <button class="accordion-button <?php //echo ($pg == 2) ? '' : 'collapsed'; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#pd-<?php echo $pg; ?>" aria-expanded="<?php echo ($pg == 2) ? 'true' : 'false'; ?>" aria-controls="pd-<?php echo $pg; ?>">
+								<?php echo $p; ?>
+							  </button>
+							</h2>
+							<div id="pd-<?php echo $pg; ?>" class="accordion-collapse collapse show<?php //echo ($pg == 2) ? 'show' : ''; ?>" data-bs-parent="#productDes">
+							  <div class="accordion-body">
+						<?php foreach($pd as $pds){ ?>
+								<div class="item-list logBook">
+								<?php 
+								if($pds['field_type'] == 'File'){
+									if(!empty($pds['items'])){ ?>
+										<div class="row align-items-center">
+										 <div class="col-md-6">
+										 <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+										<?php 
+										$gty = 0;
+										foreach($pds['items'] as $rgi => $pdssv){
+											if(!empty($pdssv)){	 ?>	
+												<button class="nav-link <?= ($gty == 0) ? 'active' : '' ; ?>" id="gtab<?= $gty; ?>-tab" data-bs-toggle="pill" data-bs-target="#gtab<?= $gty; ?>" type="button" role="tab"><?= '<h6>'.$rgi.'</h6>'; ?></button>											
+											<?php
+											}
+											$gty++;
+										} ?>
+										</div>
+										</div>
+										<div class="col-md-6 bg-blue px-5 py-4">
+										<div class="tab-content" id="v-pills-tabContent">
+										<?php 
+										$gty = 0;
+										foreach($pds['items'] as $rgi => $pdssv){
+											if(!empty($pdssv)){	 ?>		
+											<div class="tab-pane fade <?= ($gty == 0) ? 'show active' : '' ; ?>" id="gtab<?= $gty; ?>" role="tabpanel">
+												<div class="bookContent d-flex flex-column gap-3">
+											<?php	
+												foreach($pdssv as $pdss){
+													echo '<a class="" download href="'.base_url().'/uploads/userimages/'.$userId.'/'.$pdss['name'].'" ><i class="fa '.getFileIconClass($pdss['name']).'"></i> '.(!empty($pdss['file_field_title']) ? $pdss['file_field_title'] : $pdss['field_name']).'</a>';
+												} ?>
+												</div>
+											</div>
+											<?php }
+											$gty++;
+										} ?>
+										</div>
+										</div>
+										</div>
+									<?php }else{
+										echo '<h6>'.$pds['field_name'].'</h6>';
+										echo '<a class="card p-3 text-center" download href="'.base_url().'/uploads/userimages/'.$userId.'/'.$pds['name'].'" ><i class="fa '.getFileIconClass($pds['name']).'"></i> '.(!empty($pds['file_field_title']) ? $pds['file_field_title'] : $pds['field_name']).'</a>';
+									}
+								}else{ if($pds['field_type'] != 'Checkbox'){ ?>
+									<h6><?php echo $pds['field_name']; ?></h6>
+								<?php } ?>
+									<?php echo $pds['name'];
+								}
+								?>
+								</div>								
+					<?php }	?>										
+							  </div>
+							</div>
+						  </div>					
+					<?php }
+				}
+			}
+			?>	
+			
 			</div>
 			
 		</div>
-		<div class="bg-gray py-5">
+		<!--<div class="bg-gray py-5">
 			<div class="container">
 				<?php if(!empty($featured[0]['total_users'])){ ?>
 				<div class="wrapper">
@@ -300,7 +474,7 @@ if(!empty($user_detail->avatar)){
 
 							<p class="text-orange mb-0 fw-bold"><?php echo $provider['business_name']; ?></p>
 
-							<h6 class="text-grey"><?php echo $provider['city'].', '.$provider['state_code'].' '.$provider['zipcode']; ?></h6>
+							<h6 class="text-grey"><?php echo $provider['address']; ?></h6>
 									</div>
 								</div>
 							</a>
@@ -310,7 +484,7 @@ if(!empty($user_detail->avatar)){
 				</div>
 				<?php } ?>
 			</div>
-		</div>
+		</div>-->
 	</div>
 <!-- Modal -->
 <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModal-modalLabel" aria-hidden="true">
@@ -328,6 +502,70 @@ if(!empty($user_detail->avatar)){
             </div>
             <div class="modal-footer">
                 <button type="button" onclick="save_report()" class="btn yellowbtn m-auto">Submit</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div id="myModalFinance" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModal-modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-5 p-3 px-md-5 py-md-5 position-relative align-items-center">
+            <div class="modal-header border-0">
+                <h4 class="modal-title fw-bolder text-dark mb-3"><?php echo trans('Financial Calculator'); ?></h4>
+				<a role="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"><img src="<?php echo base_url('assets/frontend/images/close.png'); ?>" /></a>
+            </div>
+            <div class="modal-body form-section w-100">
+				<div class="row">
+					<div class="col-md-6 mb-3">
+						<div class="form-group">
+							<label for="paymentFrequency" class="bold"> Payment Frequency </label>
+							<select class="form-control" id="paymentFrequency" name="paymentFrequency">
+								<option value="12">Monthly</option>
+								<option value="4">Quarterly</option>
+								<option value="2">Bi-Annually</option>
+								<option value="1">Annually</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label class="bold" for="termID"> Term  </label>
+							<input type="number" class="form-control" name="term" id="termID" min="0" value="">
+						</div>
+						<div class="form-group">
+							<label class="bold" for="interestID"> Interest %  </label>
+							<input type="number" class="form-control" name="interest" id="interestID" min="0" value="7.5">
+						</div>
+						<div class="form-group">
+							<label class="bold" for="loanAmountID"> Loan Amount (USD)  </label>
+							<input type="text" class="form-control" name="loanAmount" id="loanAmountID" min="0" value="<?php echo ($product_detail['price'] != NULL) ? $product_detail['price'] : ''; ?>">
+						</div>
+						
+					</div>
+					<div class="col-md-6">				
+						<div class="bg-gray rounded-5 px-4 py-5 mb-3">
+							<div class="d-flex justify-content-between border-bottom py-3">
+								<span class="left fw-medium">Payments</span>
+								<span class="right"></span>
+							</div>
+							<div class="d-flex justify-content-between border-bottom py-3">
+								<span class="left fw-medium">Amount Financed</span>
+								<span class="right"></span>
+							</div>
+							<div class="d-flex justify-content-between border-bottom py-3">
+								<span class="left fw-medium">Total Amount</span>
+								<span class="right"></span>
+							</div>
+							<div class="d-flex justify-content-between border-bottom py-3">
+								<span class="left fw-medium">Finance Charge</span>
+								<span class="right"></span>
+							</div>
+						</div>					
+						
+					</div>
+				</div>
+            </div>
+			
+            <div class="modal-footer border-0 gap-3 justify-content-center w-100">
+                <button type="button" onclick="" class="btn blue-btn min-w-auto col-lg-4">Calculate</button>
+                <button type="button" onclick="" class="btn btn min-w-auto col-lg-4">Reset</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -424,16 +662,18 @@ font-size: 15px;
   color: #999999;
 }
 .empty { color: #999 !important; }
-
+.lb-nav a.lb-prev, .lb-nav a.lb-next{
+	opacity:1;
+}
 </style>
 
-		
+			
 <div id="social-share" class="modal fade">
 	<div class="modal-dialog modal-dialog-centered modal-md">
-		<div class="modal-content">
-			<div class="modal-header bg-solid-warning justify-content-start p-4">
-			<a href="javascript:void(0);" data-bs-dismiss="modal" class="fs-5"><i class="fa-solid fa-xmark"></i></a>
-			<h6 class="ms-2 mb-0">Share Business</h6>
+		<div class="modal-content rounded-5 p-3 px-md-2 position-relative">
+			<div class="modal-header bg-solid-warning justify-content-center p-4 pb-0 border-0">
+			<a href="javascript:void(0);" data-bs-dismiss="modal" class="fs-5 position-absolute top-0 end-0 m-3"><i class="fa-solid fa-xmark"></i></a>
+			<h5 class="fw-bolder mb-0">Share Listing</h5>
 			</div>
 			<div class="modal-body p-4">
 			<img src="<?php echo $img; ?>" width="100%" class="rounded-4" />
@@ -444,6 +684,10 @@ font-size: 15px;
 			<a class="a2a_button_facebook w-100">Facebook</a>
 			<a class="a2a_button_x w-100">Twitter</a>
 			<a onclick="copyURI(event)" data-link="<?php echo $share_url; ?>" class="w-100" target="_top" rel="nofollow noopener" ><span class="a2a_svg a2a_s__default a2a_s_link a2a_img_text" style="background-color: rgb(136, 137, 144);"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="#fff" d="M7.591 21.177c0-.36.126-.665.377-.917l2.804-2.804a1.235 1.235 0 0 1 .913-.378c.377 0 .7.144.97.43-.026.028-.11.11-.255.25-.144.14-.24.236-.29.29a2.82 2.82 0 0 0-.2.256 1.056 1.056 0 0 0-.177.344 1.43 1.43 0 0 0-.046.37c0 .36.126.666.377.918a1.25 1.25 0 0 0 .918.377c.126.001.251-.015.373-.047.125-.037.242-.096.345-.175.09-.06.176-.127.256-.2.1-.094.196-.19.29-.29.14-.142.223-.23.25-.254.297.28.445.607.445.984 0 .36-.126.664-.377.916l-2.778 2.79a1.242 1.242 0 0 1-.917.364c-.36 0-.665-.118-.917-.35l-1.982-1.97a1.223 1.223 0 0 1-.378-.9l-.001-.004Zm9.477-9.504c0-.36.126-.665.377-.917l2.777-2.79a1.235 1.235 0 0 1 .913-.378c.35 0 .656.12.917.364l1.984 1.968c.254.252.38.553.38.903 0 .36-.126.665-.38.917l-2.802 2.804a1.238 1.238 0 0 1-.916.364c-.377 0-.7-.14-.97-.418.026-.027.11-.11.255-.25a7.5 7.5 0 0 0 .29-.29c.072-.08.139-.166.2-.255.08-.103.14-.22.176-.344.032-.12.048-.245.047-.37 0-.36-.126-.662-.377-.914a1.247 1.247 0 0 0-.917-.377c-.136 0-.26.015-.37.046-.114.03-.23.09-.346.175a3.868 3.868 0 0 0-.256.2c-.054.05-.15.148-.29.29-.14.146-.222.23-.25.258-.294-.278-.442-.606-.442-.983v-.003ZM5.003 21.177c0 1.078.382 1.99 1.146 2.736l1.982 1.968c.745.75 1.658 1.12 2.736 1.12 1.087 0 2.004-.38 2.75-1.143l2.777-2.79c.75-.747 1.12-1.66 1.12-2.737 0-1.106-.392-2.046-1.183-2.818l1.186-1.185c.774.79 1.708 1.186 2.805 1.186 1.078 0 1.995-.376 2.75-1.13l2.803-2.81c.751-.754 1.128-1.671 1.128-2.748 0-1.08-.382-1.993-1.146-2.738L23.875 6.12C23.13 5.372 22.218 5 21.139 5c-1.087 0-2.004.382-2.75 1.146l-2.777 2.79c-.75.747-1.12 1.66-1.12 2.737 0 1.105.392 2.045 1.183 2.817l-1.186 1.186c-.774-.79-1.708-1.186-2.805-1.186-1.078 0-1.995.377-2.75 1.132L6.13 18.426c-.754.755-1.13 1.672-1.13 2.75l.003.001Z"></path></svg></span>Copy Link</a>
+			<div class="d-flex align-items-center fw-medium mb-0" role="button" onclick="open_email_share()">
+				<img class="icons" src="<?php echo base_url('assets/frontend/images/msg.png'); ?>" />
+				<p class="text-primary">Email a friend</p>
+			</div>	
 			</div>
 			<!-- AddToAny END -->
 			</div>
@@ -454,6 +698,39 @@ font-size: 15px;
 		</div>
 	</div>
 </div>	
+
+	
+<div id="email-share" class="modal fade">
+	<div class="modal-dialog modal-dialog-centered modal-md">
+		<div class="modal-content rounded-5 p-3 px-md-5 position-relative">
+			<div class="modal-header bg-solid-warning justify-content-center p-4 pb-0 border-0">
+			<a href="javascript:void(0);" data-bs-dismiss="modal" class="fs-5 position-absolute top-0 end-0 m-3"><i class="fa-solid fa-xmark"></i></a>
+			<h5 class="mb-0 fw-bolder">Email A Friend</h5>
+			</div>
+			<div class="modal-body">
+				<form action="" method="post" id="shareEmail" class="form-input mt-4">
+					<input type="hidden" id="fromuserId" name="fromuserId" value="<?php echo $fromuserId;?>">
+					<input type="hidden" id="userId" name="userId" value="<?php echo $userId;?>">
+					<input type="hidden" id="productId" name="productId" value="<?php echo $productId;?>">
+					<input type="hidden" name="link" value="<?php echo $share_url; ?>">
+					<div class="form-section">
+						<div class="form-group"><input type="email" name="email" id="email" class="ucwords form-control" placeholder="Your Email"></div>
+						<div class="form-group"><input type="email" name="remail" id="remail"placeholder="Recipient's  Email" class="form-control"></div>
+						<div class="form-group"><textarea name="message" id="message" class="form-control" placeholder="Message"></textarea></div>
+						<input type="hidden" id="g-recaptcha-response1"  class="form-control" name="check_bot" value="" >
+						<input type="submit" value="Submit" class="btn w-100 mb-4">
+					</div>
+				</form>	
+			</div>
+			<!--<div class="modal-footer p-4">
+				<button type="button" data-bs-dismiss="modal" class="btn btn-secondary m-0">Close</button>				
+			</div>-->
+		</div>
+	</div>
+</div>	
+
+
+
 <div class="alert text-white bg-success sticky-top alert alert-dismissible alert-dismissible" id="suc-alert" style="top: 10px;
     position: fixed;
     right: 20px;
@@ -470,8 +747,36 @@ font-size: 15px;
 			</script>
 			<script async src="https://static.addtoany.com/menu/page.js"></script>
 <script>
-function open_social_share(){
+function open_social_share(ths){
 	$("#social-share").modal('show');
+    let uid = $(ths).data('id');
+    let pid = $(ths).data('pid');
+	$.ajax({
+		type: "GET",
+		url: '<?php echo base_url(); ?>' + "/update_share_count/"+uid+"/"+pid,
+		success: function (data) {
+		}
+	});
+}
+function open_email_share(){
+	$("#email-share").modal('show');
+	$("#shareEmail").validate({
+        rules: {
+			check_bot:{required: true},
+            remail: { required: true, maxlength:255},
+            email: { required: true, email: true, maxlength:255}, 
+            message: { required: true},           
+        },
+        messages: {
+			check_bot:{
+				required: "You are not a human!"
+			}
+        },
+        submitHandler: function (form) {
+            send_email_to_friend(form);
+            return false; // Prevent form submission
+        }
+    });
 }
 function save_report(){
 	var report_type = $('input[name="report"]:checked').val();
@@ -503,6 +808,10 @@ $(document).ready(function(){
 			e.preventDefault();
 			$('#myModal').modal('show');
 		});
+	$('.open-finance-modal').on('click', function(e){
+			e.preventDefault();
+			$('#myModalFinance').modal('show');
+		});
 	var simg = '<?php echo base_url().'/assets/img/favicon.png'; ?>';
     $('[data-toggle="popover"]').popover({
         placement : 'right',
@@ -522,6 +831,8 @@ $(document).ready(function(){
 	.a2a_full_footer{
 		display:none;
 	}
+	
+.grecaptcha-badge{visibility:hidden !important;}
 </style>
 
 
@@ -673,9 +984,10 @@ function showPhone(ths){
     let phone = $(ths).data('phone');
     let label = $(ths).data('label');
     let uid = $(ths).data('id');
+    let pid = $(ths).data('pid');
 	$.ajax({
 		type: "GET",
-		url: '<?php echo base_url(); ?>' + "/update_call_count/"+uid,
+		url: '<?php echo base_url(); ?>' + "/update_call_count/"+uid+"/"+pid,
 		success: function (data) {
 		}
 	});
@@ -712,5 +1024,62 @@ function copyURI(evt) {
 }
 
 
+</script><script>
+$(document).ready(function() {
+	let lightbox = GLightbox({
+		selector: '.glightbox',
+		autoplayVideos: true,
+	});
+
+    $('#viewAllPhotosBtn').on('click', function(e) {
+        e.preventDefault();
+        // Dynamically trigger click on the 6th image (first hidden)
+        lightbox.openAt(0);
+    });
+});
+	function openGlightboxAt(index) {
+	let lightbox = GLightbox({
+		selector: '.glightbox',
+		autoplayVideos: true,
+	});
+		console.log('clicked');
+        lightbox.openAt(index);
+    }
+	
+</script><script>
+/*lightbox.option({
+  fadeDuration: 300,
+  resizeDuration: 300,
+  wrapAround: true, // Allows circular browsing
+  alwaysShowNavOnTouchDevices: true
+});
+*/
+
+
+function send_email_to_friend(val) {        
+     var formData = $('#shareEmail').serialize();        
+    //var csrfName = $.cookie(csrfCookie);
+    $('.loader').show();
+    $.ajax({
+        type: "POST",
+        url: baseUrl + "/common/send_email_to_friend",
+        data: formData,
+        success: function (response) {
+            $('.loader').hide();
+            if (!response.success) {
+                console.log(response.error);
+                Swal.fire(response.message, '', 'error');
+            }else if(response.success){ 
+                Swal.fire('Successfully sent email. Thank you!', '', 'success');
+				$('#shareEmail')[0].reset();
+				$("#email-share").modal('hide');
+            }
+            return false;
+        }
+    });
+    return false;
+}
 </script>
+
+
 <?= $this->endSection() ?>

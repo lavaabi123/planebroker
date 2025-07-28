@@ -22,164 +22,173 @@
 	});
 	
 	
-	 var form1 = $("#aircraft-add-form").show();
+	/* --------------------------------------------------------------
+   1.  Grab the form and start jQuery‑Validate
+-------------------------------------------------------------- */
+const $form = $('#aircraft-add-form-1');
 
-    form1.steps({
-        headerTag: "h3",
-        bodyTag: "fieldset",
-        transitionEffect: "slideLeft",
-        onStepChanging: function (event, currentIndex, newIndex)
-        {
-			// Allways allow previous action even if the current form is not valid!
-            if (currentIndex > newIndex)
-            {
-                return true;
-            }
-            // Forbid next action on "Warning" step if the user is to young
-            if (newIndex === 3 && Number($("#age").val()) < 18)
-            {
-                return false;
-            }
-            // Needed in some cases if the user went back (clean up)
-            if (currentIndex < newIndex)
-            {
-                // To remove error styles
-                form1.find(".body:eq(" + newIndex + ") label.error").remove();
-                form1.find(".body:eq(" + newIndex + ") .error").removeClass("error");
-            }
-            form1.validate().settings.ignore = ":disabled,:hidden";
-            return form1.valid();
-        },
-        onStepChanged: function (event, currentIndex, priorIndex)
-        {
-			console.log(currentIndex);console.log(priorIndex);
-            // Used to skip the "Warning" step if the user is old enough.
-            if (currentIndex === 2 && Number($("#age").val()) >= 18)
-            {
-                form1.steps("next");
-            }
-            // Used to skip the "Warning" step if the user is old enough and wants to the previous step.
-            if (currentIndex === 2 && priorIndex === 3)
-            {
-                form1.steps("previous");
-            }
-			if(currentIndex === 1){
-				$("#slide1").fadeOut();
-				$("#slide2").fadeIn("slow");
-				$("#slide3").fadeOut();
-				$(".stepnumber").text('2');
-			}else if(currentIndex === 2){
-				$("#slide1").fadeOut("slow");
-				$("#slide2").fadeOut("slow");
-				$("#slide3").fadeIn("slow");
-				$(".stepnumber").text('3');
-			}else{
-				$("#slide1").fadeIn("slow");
-				$("#slide2").fadeOut("slow");
-				$("#slide3").fadeOut("slow");
-				$(".stepnumber").text('1');
-			}
-        },
-        onFinishing: function (event, currentIndex)
-        {
-            form1.validate().settings.ignore = ":disabled";
-            return form1.valid();
-        },
-        onFinished: function (event, currentIndex)
-        {
-            $("#aircraft-add-form").submit();
+$form.validate({
+    /* keep your existing options ---------------------------- */
+    ignore         : ':hidden:not([class~=selectized]),:hidden > .selectized, .selectize-control .selectize-input input',
+    errorElement   : 'label',
+    errorClass     : 'error text-danger',
+    errorPlacement : placeDynamicError,
+    highlight      : highlightDynamicGroup,
+    unhighlight    : unhighlightDynamicGroup,
+
+    rules:  {
+        /* keep your old rules */
+        password : { minlength: 4 },
+        mobile_no: { phoneUS:true, minlength:10, maxlength:10 }
+        /* we will inject the dynamic “checkbox‑group” rules below */
+    },
+    messages: {}
+});
+
+/* --------------------------------------------------------------
+   2.  Loop over every checkbox array called dynamic_fields[ID][]
+       ‑ If any one of the checkboxes in that array has the
+         HTML5  required  attribute, we treat the whole array
+         as “at least one required”.
+-------------------------------------------------------------- */
+const added = new Set();                     // avoid duplicates
+
+$('input[type="checkbox"][name^="dynamic_fields["]').each(function () {
+
+    const name = this.name;                  //  e.g.  dynamic_fields[61][]
+    if (added.has(name)) return;             // already processed
+
+    if ($(this).prop('required')) {          // server decided it's required
+        /* 2a) Tell jQuery‑Validate this *group* is required */
+        $form.validate().settings.rules[name] = { required: true };
+
+        /* 2b) Provide a message */
+        $form.validate().settings.messages[name] = {
+            required: 'Please choose at least one option.'
+        };
+    }
+
+    added.add(name);
+});
+
+/* --------------------------------------------------------------
+   3.  Helper functions
+-------------------------------------------------------------- */
+
+/* Put the error under the legend that sits in the same .services-group
+   (works for every dynamic group, so long as you follow the markup below)
+-----------------------------------------------------------------*/
+function placeDynamicError(error, element) {
+    if (element.attr('name').startsWith('dynamic_fields[')) {
+        const $group = element.closest('.services-group');
+        $group.find('.dyn-error-holder').first()
+              .html(error)                   // replace old error if any
+              .removeClass('d-none');
+    } else {
+        element.before(error);               // your original behaviour
+    }
+}
+
+/* Add red border to the whole group */
+function highlightDynamicGroup(element) {
+    if (element.name.startsWith('dynamic_fields[')) {
+        $(element).closest('.services-group').addClass('error-border');
+    } else {
+        $(element).addClass('error');
+    }
+}
+
+/* Remove border/message once *any* box is checked */
+function unhighlightDynamicGroup(element) {
+    if (element.name.startsWith('dynamic_fields[')) {
+        const $group   = $(element).closest('.services-group');
+        const groupName = element.name;
+        if ($group.find('input[name="'+groupName+'"]:checked').length) {
+            $group.removeClass('error-border')
+                  .find('.dyn-error-holder').addClass('d-none');
         }
-    }).validate({
-        errorPlacement: function errorPlacement(error, element) { element.before(error); },
-		ignore: ':hidden:not([class~=selectized]),:hidden > .selectized, .selectize-control .selectize-input input',
-        rules: {
-			check_bot:{required: true},
-			email: {
-				required: true,
-				email: true,
-					remote: {
-						url: "check-email",
-						type: "post"
-					 }
-			},
-            confirm_password: {
-                equalTo: "#password"
-            },
-            accounttype:{
-                required: true
-            },
-            "offering[]": { 
-                    required: true, 
-                    minlength: 1 
-            },
-            "clientele[]": { 
-                    required: true, 
-                    minlength: 1 
-            },
-			password: { required: true, minlength: 4 },
-			mobile_no: { 
-				required: true, 
-				phoneUS: true,
-				minlength:10,
-				maxlength:10
-			},
-			first_name: { required: true, lettersonly: true},
-			last_name: { required: true, lettersonly: true},
-			referredby: { lettersonly: true},
-			location_id: {required: true}
-        },
-        messages: {
-            email: {
-                remote: "Email already in use!"
-            },
-			check_bot:{
-				required: "You are not a human!"
-			},
-			confirm_password:{
-				equalTo: "Password does not match."
-			}
-        },
-    });
-    var form = $("#example-advanced-form").show();
+    } else {
+        $(element).removeClass('error');
+    }
+}
 
-    form.validate({
-        errorPlacement: function errorPlacement(error, element) { element.before(error); },
-		ignore: ':hidden:not([class~=selectized]),:hidden > .selectized, .selectize-control .selectize-input input',
-        rules: {
-			check_bot:{required: true},
-			email: {
-				required: true,
-				email: true,
-					remote: {
-						url: "check-email",
-						type: "post"
-					 }
-			},
-            confirm_password: {
-                equalTo: "#password"
-            },
-			password: { required: true, minlength: 4 },
-			mobile_no: { 
-				required: true, 
-				phoneUS: true,
-				minlength:10,
-				maxlength:10
-			},
-			first_name: { required: true, lettersonly: true},
-			last_name: { required: true, lettersonly: true}
+	var form = $("#example-advanced-form").show();
+
+form.validate({
+    errorPlacement: function (error, element) {
+    const name = element.attr("name");
+    const msg = error.text();
+
+    // Only place error if there is an actual message
+    if (msg && (
+        (name === "email" && msg === "Email already in use!") ||
+		(name === "mobile_no" && msg !== "") ||
+		(name === "first_name" && msg !== "") ||
+		(name === "last_name" && msg !== "") ||
+        (name === "confirm_password" && msg !== "") ||
+        (name === "check_bot")
+    )) {
+        element.before(error);
+    }
+},
+    highlight: function (element) {
+        $(element).addClass("is-invalid");
+    },
+    unhighlight: function (element) {
+        $(element).removeClass("is-invalid");
+    },
+    ignore: ':hidden:not([class~=selectized]),:hidden > .selectized, .selectize-control .selectize-input input',
+    rules: {
+        check_bot: { required: true },
+        email: {
+            required: true,
+            email: true,
+            remote: {
+                url: "check-email",
+                type: "post"
+            }
         },
-        messages: {
-            email: {
-                remote: "Email already in use!"
-            },
-			check_bot:{
-				required: "You are not a human!"
-			},
-			confirm_password:{
-				equalTo: "Password does not match."
-			}
+        confirm_password: {
+            equalTo: "#password"
         },
-    });
+        password: { required: true, minlength: 4 },
+        mobile_no: {
+            required: true,
+            phoneUS: true,
+            minlength: 10,
+            maxlength: 10
+        },
+        first_name: { required: true, lettersonly: true },
+        last_name: { required: true, lettersonly: true }
+    },
+    messages: {
+        email: {
+            required: "",         // suppress required message
+            email: "Please enter a valid email",            // suppress invalid email message
+            remote: "Email already in use!"
+        },
+        password: {
+            required: "",         // suppress required message
+            minlength: ""         // suppress minlength message
+        },
+        mobile_no: {
+            required: "",
+            phoneUS: "Please enter a valid 10 digit phone number",
+            minlength: "Please enter a valid 10 digit phone number",
+            maxlength: "Please enter a valid 10 digit phone number"
+        },
+        first_name: { required: "", lettersonly: "Only alphabetical characters" },
+        last_name: { required: "", lettersonly: "Only alphabetical characters" },
+        check_bot: {
+            required: "You are not a human!"
+        },
+        confirm_password: {
+			required: "",
+            equalTo: "Password does not match."
+        }
+    }
+});
+
 	jQuery.validator.addMethod("lettersonly", function(value, element) {
 		return this.optional(element) || /^[a-z\s]+$/i.test(value);
 	}, "Only alphabetical characters");
@@ -248,7 +257,7 @@
 			cc_number: { required: true},
         }
     });
-	/*
+	
 	$("#search-form").validate({
 		ignore: ':hidden:not([class~=selectized]),:hidden > .selectized, .selectize-control .selectize-input input',            
         rules: {
@@ -274,4 +283,4 @@
 			}
 			window.location = baseUrl+'/providers/'+city_state1+cat;		
 	   }
-    });	*/
+    });	

@@ -46,6 +46,7 @@
                                             <thead>
                                                 <tr role="row">
                                                     <th width="20"><?php echo trans('id'); ?></th>
+                                                    <th><?php echo trans('Title'); ?></th>
                                                     <th><?php echo trans('subject'); ?></th>
                                                     <?php /*<th><?php echo trans('date'); ?></th> */?>
                                                     <th class="max-width-120"><?php echo trans('options'); ?></th>
@@ -55,6 +56,7 @@
                                                 <?php foreach ($paginate['emailtemplates'] as $emailtemplate) : ?>
                                                     <tr>
                                                         <td><?php echo clean_number($emailtemplate['id']); ?></td>
+                                                        <td><?php echo $emailtemplate['email_title']; ?> </td>
                                                         <td><?php echo $emailtemplate['name']; ?> </td>
                                                         <?php /*<td><?php echo formatted_dateonly($emailtemplate['created_at']); ?></td> */?>
                                                         <td>

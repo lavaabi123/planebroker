@@ -49,11 +49,11 @@ class EmailModel extends Model
                 $data = array(
                     'token' => $token
                 );
-                $userModel->builder()->where('id', $user->id)->update($data);
+                //$userModel->builder()->where('id', $user->id)->update($data);
             }
 
             $data = array(
-                'subject' => trans("confirm_your_email"),
+                'subject' => trans("Welcome to Plane Broker"),
                 'to' => $user->email,
                 'template_path' => "email/email_activation",
                 'token' => $token
@@ -63,21 +63,12 @@ class EmailModel extends Model
                 $data['template_path'] = 'email/email_activation';
             }
             $this->send_email($data);
-			$plan_id = ($this->session->get('selected_plan_id')) ? $this->session->get('selected_plan_id') : 1;
-			session()->set('selected_plan_id','');
-			if($plan_id == 2){
-				$plan_text = 'Standard';
-			}else if($plan_id == 3){
-				$plan_text = 'Premium';
-			}else{
-				$plan_text = 'Free';
-			}
 			//To Admin
 			$data_admin = array(
-                'subject' => "New Plane Broker Registered",
+                'subject' => "New Plane Broker User Registered",
                 'from_email' => get_general_settings()->admin_email,
                 'to' => get_general_settings()->mail_reply_to,
-				'message_text' => '<p style="color: #000000; font-size:11px; margin-bottom: 5px;">New Plane Broker Registered. Waiting for email verification.<br><br>Name: '.$user->fullname.'<br>Business Name: '.$user->business_name.'<br>Email: '.$user->email.'<br>Plan Selected: '.$plan_text.'</p>',
+				'message_text' => '<p style="color: #000000; font-size:11px; margin-bottom: 5px;">New Plane Broker Registered. Waiting for email verification.<br><br>Name: '.$user->fullname.'<br>Email: '.$user->email.'</p>',
                 'template_path' => "email/admin/new_user",
                 'token' => $token
             );
@@ -110,10 +101,10 @@ class EmailModel extends Model
 			
 			//To Admin
 			$data_admin = array(
-                'subject' => "New Plane Broker Email Verified",
+                'subject' => "New Plane Broker User Registered",
                 'from_email' => get_general_settings()->admin_email,
                 'to' => get_general_settings()->mail_reply_to,
-				'message_text' => '<p style="color: #000000; font-size:11px; margin-bottom: 5px;">Below Plane Broker Verified their email successfully.<br><br>Business Name: '.$user->business_name.'<br>Email: '.$user->email.'</p>',
+				'message_text' => '<p style="color: #000000; font-size:11px; margin-bottom: 5px;">Below user registered successfully.<br><br>Name: '.$user->fullname.'<br>Email: '.$user->email.'</p>',
                 'template_path' => "email/admin/new_user"
             );
 			$this->send_email($data_admin);
@@ -176,7 +167,7 @@ class EmailModel extends Model
                 $data = array(
                     'token' => $token
                 );
-                $userModel->builder()->where('id', $user->id)->update($data);
+                //$userModel->builder()->where('id', $user->id)->update($data);
             }
 
             $data = array(
@@ -205,7 +196,7 @@ class EmailModel extends Model
                 $data = array(
                     'token' => $token
                 );
-                $userModel->builder()->where('id', $user->id)->update($data);
+               //$userModel->builder()->where('id', $user->id)->update($data);
             }
 
             $data = array(

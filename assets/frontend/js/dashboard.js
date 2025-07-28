@@ -262,7 +262,7 @@ $(function () {
 	var sdate = $('#created_at_start').val();
 	var edate = $('#created_at_end').val();
 	var id = $('#user_id_admin').val();
-	console.log(id);
+	console.log('dfdfdf');
     $.get(baseUrl + "/common/getProfileViews?"+id+"start="+sdate+"&end="+edate+"", function (data, status) {
         makeDrawChart(data)
 		makeBarChart(data)

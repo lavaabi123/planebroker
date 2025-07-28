@@ -4,14 +4,17 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\Admin\AdminController;
 use App\Models\ContactsModel;
+use App\Models\CaptainsModel;
 
 class Contacts extends AdminController
 {
     protected $ContactsModel;
+    protected $CaptainsModel;
 
     public function __construct()
     {
         $this->ContactsModel = new ContactsModel();
+        $this->CaptainsModel = new CaptainsModel();
     }
 
     public function index()
@@ -31,6 +34,25 @@ class Contacts extends AdminController
 
         return view('admin/contacts/contacts', $data);
     }
+    
+    public function captains()
+    {
+        $data = array_merge($this->data, [
+            'title'     => trans('Captains'),
+            'active_tab'     => 'Captains',
+        ]);
+
+        // Paginations
+        $paginate = $this->CaptainsModel->DataPaginations();
+        $data['contacts'] =   $paginate['contacts'];
+		$data['paginate'] =   $paginate;
+
+        $data['paginations'] =  $paginate['pager']->Links('default', 'custom_pager');
+
+
+        return view('admin/contacts/captains', $data);
+    }
+
 
     public function saved_contacts_post()
     {

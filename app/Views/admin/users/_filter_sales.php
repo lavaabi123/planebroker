@@ -84,13 +84,13 @@
             });
             </script>
         </div>
-        <div class="item-table-filter item-table-filter-long">
+        <div class="item-table-filter item-table-filter">
             <label><?php echo trans("search"); ?></label>
             <input name="search" class="form-control" placeholder="<?php echo trans("search") ?>" type="search" value="<?php echo $request->getVar('search'); ?>">
         </div>
         <input type="hidden" name="page" value="<?php echo (!empty($request->getVar('page'))) ? $request->getVar('page') : '1'; ?>">
 
-        <div class="item-table-filter md-top-10">
+        <div class="item-table-filter md-top-10 align-self-end">
             <label style="display: block">&nbsp;</label>
             <button type="submit" class="btn small btn-primary"><?php echo trans("filter"); ?></button>
              <a class="btn small btn-primary" href="<?php echo admin_url() . 'providers/sales/'; ?>"><?php echo trans('Reset'); ?></a>

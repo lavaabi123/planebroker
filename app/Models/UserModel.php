@@ -272,7 +272,7 @@ class UserModel extends Model
 
             $data = array(
                 'email_status' => 1,
-                'token' => generate_unique_id()
+                //'token' => generate_unique_id()
             );
 
             return $this->protect(false)->update($user->id, $data);
@@ -636,7 +636,7 @@ class UserModel extends Model
             $new_password = $this->request->getVar('password');
             $data = array(
                 'password' => $this->bcrypt->hash_password($new_password),
-                'token' => generate_unique_id()
+                //'token' => generate_unique_id()
             );
             //change password
             $this->builder()->where('id', $user->id);

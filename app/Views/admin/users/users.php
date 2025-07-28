@@ -20,7 +20,7 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                   <h1 class="m-0"><?php echo $title ?> 
-                    <a class="btn btn-primary" href="<?php echo admin_url() . 'providers/add-provider/'; ?>"><?php echo trans('Add Product'); ?></a>
+                    <a class="btn btn-primary" href="<?php echo admin_url() . 'add-user/'; ?>"><?php echo trans('Add User'); ?></a>
                   </h1>                     
                 </div><!-- /.col -->
                 <div class="col-sm-6">
@@ -59,19 +59,13 @@
                                             <thead>
                                                 <tr role="row">
                                                     <th width="20"><?php echo trans('id'); ?></th>
-                                                    <th><?php echo trans('Photo'); ?></th>
-                                                    <th><?php echo trans('Business Name'); ?></th>
                                                     <th><?php echo trans('fullname'); ?></th>
-                                                    <th><?php echo trans('Type'); ?></th>
-                                                    <?php /*<th><?php echo trans('username'); ?></th>*/ ?>
                                                     <th><?php echo trans('email'); ?></th>
-                                                    <th><?php echo trans('Location'); ?></th>
-                                                    <?php /* <th><?php echo trans('role'); ?></th> */ ?>
                                                     <th><?php echo trans('status'); ?></th>
-                                                    <th><?php echo trans('Plan'); ?></th>
                                                     <th><?php echo trans('Email Verified'); ?></th>
                                                     <th><?php echo trans('Phone'); ?></th>
-                                                    <th><?php echo trans('Added'); ?></th>
+                                                    <th><?php echo trans('User Level'); ?></th>
+                                                    <th><?php echo trans('Registered at'); ?></th>
                                                     <th class="max-width-120"><?php echo trans('options'); ?></th>
                                                 </tr>
                                             </thead>
@@ -82,32 +76,11 @@
 												foreach ($paginate['users'] as $u => $user) :
 												?>
                                                     <tr>
-                                                        <td><?php echo clean_number($slno_start); $slno_start--; ?></td>
-                                                        <td style="width: 75px;">
-                                                            <?php /*<a href="javascript:void(0)" target="_blank">
-                                                                <img src="<?php echo get_user_avatar($user['avatar']); ?>" alt="user" class="img-responsive" style="height: 50px;"> */?>
-                                                                <?php
-                                                                $userImage = '';
-                                                                if($user['file_name'] !=''){
-                                                                    $userImage = base_url()."/uploads/userimages/".$user['id']."/".$user['file_name'];
-                                                                }else{
-                                                                    //$userImage = base_url()."/assets/img/dummy.png";
-                                                                }
-                                                                if(!empty($userImage)){
-                                                                ?>
-                                                                    <img class="enlargePic" src="<?php echo $userImage; ?>" alt="user" style="height: 50px;">
-                                                            <?php } ?>
-                                                            <?php /*</a> */?>
-                                                        </td>
-														<td><?php echo $user['business_name']; ?></td>  
+                                                        <td><?php echo $u+1; ?></td>
                                                         <td>
-                                                            <a href="<?php echo base_url('provider/'.$user['permalink'].'/'.base64_encode($user['id'])); ?>" target="_blank"><?php echo $user['fullname']; ?></a>
-                                                        </td>
-                                                        <?php /*<td><?php echo $user['username']; ?></td>*/ ?>
-                                                        <td><?php echo $user['category_name']; ?></td>          
+                                                            <?php echo $user['fullname']; ?>
+                                                        </td>         
                                                         <td><?php echo $user['email']; ?></td>
-                                                        <td><?php echo $user['city'].', '.$user['state_code']; ?></td>
-                                                        <?php /*<td><?php echo $user['role']; ?></td> */?>
                                                         <td style="text-align: center;">                                                            
                                                             <?php if ($user['status'] == 1) : ?>
                                                                 <span class="text-success" title="<?php echo trans('active'); ?>"><i class="fa fa-check" aria-hidden="true" style="color: green; font-size: 18px"></i></span>
@@ -115,24 +88,6 @@
                                                                 <span class="text-danger" title="<?php echo trans('banned'); ?>"><i class="fa fa-times" aria-hidden="true" style="color: red; font-size: 18px"></i></span>
                                                             <?php endif; ?>
                                                         </td>
-                                                        <td>
-														<?php 
-														if($user['plan_id'] == '1'){
-															echo '-';
-														}else if($user['plan_id'] == '2'){
-															echo 'Standard';
-														}else{
-															echo 'Premium';
-														} 
-														if($user['is_trial'] == '1'){
-															echo ' - Free Trial';
-														}
-														if($user['is_cancel'] == '1'){
-															echo ' - Canceled';
-														}
-														
-														?>
-														</td>
                                                         <td style="text-align: center;">
                                                             <?php
                                                             if ($user['email_status'] == 1) : ?>
@@ -142,20 +97,15 @@
                                                             <?php endif; ?>
                                                         </td>
                                                         <td><?php echo $user['mobile_no']; ?></td>
+                                                        <td><?php echo !empty($user['user_level']) ? 'Captain User' : 'Standard User'; ?></td>
                                                         <td><?php echo formatted_date($user['created_at'],'m/d/Y h:i a'); ?></td>
                                                         <td>
-
-<?php if($user['id'] != '79'){ ?>
                                                             <div class="dropdown btn-group">
                                                                 <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                     <i class="mdi mdi-circle-edit-outline mr-2"></i><?php echo trans('select_an_option'); ?>
                                                                 </button>
 
                                                                 <div class="dropdown-menu dropdown-menu-animated">
-                                                                    <?php /*if (is_admin()) : ?>
-                                                                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#change-role" onclick="$('#modal_user_id').val('<?php echo html_escape($user['id']); ?>');"><?php echo trans('change_user_role'); ?></a>
-
-                                                                    <?php endif;*/ ?>
                                                                     <?php if ($user['email_status'] != 1) : ?>
                                                                         <a class="dropdown-item" href="javascript:void(0)" onclick="confirm_user_email(<?php echo $user['id']; ?>);"><?php echo trans('confirm_user_email'); ?></a>
                                                                     <?php endif; ?>
@@ -168,21 +118,16 @@
                                                                     <?php endif; ?>
 
                                                                     <?php 
-													 if (is_admin()) : ?>
-                                                                        <a class="dropdown-item" href="<?php echo admin_url() . 'providers/edit-provider/'; ?><?php echo html_escape($user['id']); ?>/<?php echo (!empty($_GET) && !empty($_GET['page'])) ? $_GET['page'] : '1' ?>"><?php echo trans('edit'); ?></a>
+																		if (is_admin()) : ?>
+                                                                        <a class="dropdown-item" href="<?php echo admin_url() . 'edit-user/'; ?><?php echo html_escape($user['id']); ?>/<?php echo (!empty($_GET) && !empty($_GET['page'])) ? $_GET['page'] : '1' ?>"><?php echo trans('edit'); ?></a>
                                                                         <div class="dropdown-divider"></div>
-                                                                        <a class="dropdown-item" href="javascript:void(0)" onclick="delete_item('/admin/providers/delete_user_post','<?php echo $user['id']; ?>','<?php echo trans('confirm_user'); ?>')"><?php echo trans('delete'); ?></a>
-																		<?php if(!empty($user['stripe_subscription_customer_id'])){ ?>
+                                                                        <a class="dropdown-item" href="javascript:void(0)" onclick="delete_item('/admin/delete_user_post','<?php echo $user['id']; ?>','<?php echo trans('confirm_user'); ?>')"><?php echo trans('delete'); ?></a>
                                                                         <div class="dropdown-divider"></div>
-                                                                        <a class="dropdown-item" href="javascript:void(0)" onclick="payment_history_get('<?php echo $user['id']; ?>','<?php echo $user['stripe_subscription_customer_id']; ?>')"><?php echo trans('Payment History'); ?></a>
-																		<?php } ?>
-                                                                        <div class="dropdown-divider"></div>
-                                                                        <a class="dropdown-item" target="_blank" href="<?php echo base_url('/providerauth/groomer_dashboard?name='.$user['clean_url']); ?>"><?php echo trans('View Dashboard'); ?></a>
+                                                                        <a class="dropdown-item" target="_blank" href="<?php echo admin_url().'listings?user_id='.$user['id']; ?>"><?php echo trans('View Listings'); ?></a>
                                                                     <?php endif;  ?>
 																	
                                                                 </div>
                                                             </div>
-<?php }  ?>
                                                         </td>
                                                     </tr>
                                                 <?php endforeach; ?>

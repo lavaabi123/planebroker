@@ -75,7 +75,11 @@ function send_message_to_provider(val) {
                 console.log(response.error);
                 Swal.fire(response.message, '', 'error');
             }else if(response.success){ 
-                Swal.fire('Successfully delivered your message. Thank you!', '', 'success')
+				Swal.fire({
+					text: 'Successfully delivered your message. Thank you!',
+					icon: "success",
+				});
+                //Swal.fire('Successfully delivered your message. Thank you!', '', 'success')
                 //$('#contact-provider').html('<div class="success-msg">Thank you for your message!</div>');
 				$('#messageProviderForm')[0].reset();
             }

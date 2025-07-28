@@ -14,9 +14,9 @@ class ProviderLogin extends ProviderauthController
     public function index()
     {
         if ($this->session->get('vr_sess_logged_in') == TRUE) {
-            return redirect()->to(base_url('/providerauth/dashboard'));
+            return redirect()->to(base_url('/dashboard'));
         }
-
+		
         $data['title'] = trans('login');
 		$data['meta_title'] = !empty(get_seo('Login')) ? get_seo('Login')->meta_title : 'Login | Plane Broker';
 		$data['meta_desc'] = !empty(get_seo('Login')) ? get_seo('Login')->meta_description : '';
@@ -59,7 +59,7 @@ class ProviderLogin extends ProviderauthController
             }else if (!empty($user) && $user->role != 1 && $user->email_status == 0) {
                 $this->session->setFlashData('errors_form', "Error, before you can log in, please validate your account by clicking the verification link we sent to your email address.");
                 // return redirect()->back();
-                return redirect()->to(base_url('/providerauth/login'));
+                return redirect()->to(base_url('/login'));
             }
 
             if ($userModel->login()) {
@@ -68,13 +68,23 @@ class ProviderLogin extends ProviderauthController
                 if ($remember_me == 1) {
                     $this->response->setCookie('_remember_user_id', user()->id, time() + 86400);
                 }
-                if($this->session->get('vr_sess_user_role') > 1){
-                    return redirect()->to(base_url('/providerauth/dashboard'))->withCookies();
-                }else{
-                    return redirect()->to(base_url('/providerauth/dashboard'))->withCookies();
-                }                
+				
+				// Redirect to intended page after login
+				$redirect = session()->get('redirect_after_login');
+				if ($redirect) {
+					session()->remove('redirect_after_login');
+					return redirect()->to($redirect);
+				} else {
+					if($this->session->get('vr_sess_user_role') > 1){
+						return redirect()->to(base_url('/dashboard'))->withCookies();
+					}else{
+						return redirect()->to(base_url('/dashboard'))->withCookies();
+					}  
+				}
+				
+				              
             } else {
-                 return redirect()->to(base_url('/providerauth/login'));
+                 return redirect()->to(base_url('/login'));
                // return redirect()->back()->withInput();
             }
         } else {
@@ -97,6 +107,7 @@ class ProviderLogin extends ProviderauthController
         $this->session->remove('vr_sess_app_key');
         $this->session->remove('vr_sess_user_ps');
         helper_deletecookie("remember_user_id");
+        helper_deletecookie("_remember_user_id");
         return redirect()->to('/');
     }
 }

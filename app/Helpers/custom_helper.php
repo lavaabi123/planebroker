@@ -350,14 +350,14 @@ if (!function_exists('helper_deletecookie')) {
     function helper_deletecookie($name)
     {
         if (!empty(helper_getcookie($name))) {
-            set_cookie([
+            /*set_cookie([
                 'name' => config('cookie')->prefix . '_' . $name,
                 'value' => "",
                 'expire' => time() - 3600,
                 'domain' => base_url(),
                 'path' => '/'
 
-            ]);
+            ]);*/
         }
     }
 }
@@ -905,6 +905,15 @@ function getFirstName($user_id)
     return $user_detail->first_name;
 }
 
+function getUserLevel($user_id)
+{
+    $db       = \Config\Database::connect();
+    $user_detail  = $db->table('users')->select('user_level')
+        ->where(['users.id' => $user_id])
+        ->get()->getRow();
+    return $user_detail->user_level;
+}
+
 function cleanURL($textURL) {
 	$URL = strtolower(preg_replace( array('/[^a-z0-9\- ]/i', '/[ \-]+/'), array('', '-'), $textURL));
 		return $URL;
@@ -927,3 +936,200 @@ function getSubcategoryName($id)
         ->get()->getRow();
     return $user_detail->category_names;
 }
+
+function getCategoryName($id)
+{
+    $db       = \Config\Database::connect();
+    $user_detail = $db->table('categories')->select("in_house")
+        ->where('id', $id)
+        ->get()->getRow();
+    return str_replace('Listings','Listing',$user_detail->in_house);
+}
+
+function getAllCategories()
+{
+    $db       = \Config\Database::connect();
+    $categories = $db->table('categories')->select("name,permalink")
+        ->where('status', 1)->orderBy('id','ASC')
+        ->get()->getResult();
+    return $categories;
+}
+
+function get_all_blog($cat='')
+{
+	$db       = \Config\Database::connect();
+	if($cat==''){
+		$sql = "SELECT * FROM blogs WHERE status = 1 AND deleted_at IS NULL";
+	}else{
+		$sql = "SELECT * FROM blogs WHERE category=".$cat." AND status = 1 AND deleted_at IS NULL";
+	}
+	
+	$query = $db->query($sql);
+	return $query->getResultArray();
+}
+
+function check_listing($user_id)
+{
+    $db       = \Config\Database::connect();
+    $products  = $db->table('products')->select('id')
+        ->where(['user_id' => $user_id,'draft_status' => 0])
+        ->get()->getResult();
+    return count($products);
+}
+
+function check_aircraft_status($product_id)
+{
+    $db       = \Config\Database::connect();
+    $products  = $db->query('select * from products_dynamic_fields where product_id = '.$product_id.' and field_id = (SELECT id FROM `fields` where name = "Aircraft Status")')->getRow();
+    return !empty($products->field_value) ? $products->field_value : 'Available';
+}
+
+if (!function_exists('addWatermarkFromUrls')) {
+    function addWatermarkFromUrls(string $mainImageUrl, string $watermarkUrl, string $savePath, int $padding = 10, float $opacity = 0.5) {
+         // Load main image from URL
+		$mainImageData = file_get_contents($mainImageUrl);
+		if ($mainImageData === false) {
+			throw new Exception("Failed to download main image");
+		}
+
+		// Create image resource from main image data (detect mime)
+		$mainImg = imagecreatefromstring($mainImageData);
+		if (!$mainImg) {
+			throw new Exception("Failed to create image from main image data");
+		}
+
+		// Load watermark image from URL
+		$watermarkData = file_get_contents($watermarkUrl);
+		if ($watermarkData === false) {
+			imagedestroy($mainImg);
+			throw new Exception("Failed to download watermark image");
+		}
+
+		$watermarkImg = imagecreatefromstring($watermarkData);
+imagealphablending($watermarkImg, false);
+imagesavealpha($watermarkImg, true);
+		if (!$watermarkImg) {
+			imagedestroy($mainImg);
+			throw new Exception("Failed to create image from watermark data");
+		}
+
+		// Get dimensions
+		$mainWidth = imagesx($mainImg);
+		$mainHeight = imagesy($mainImg);
+		$wmWidth = imagesx($watermarkImg);
+		$wmHeight = imagesy($watermarkImg);
+
+		// Resize watermark if bigger than 30% of main image width or height
+		$maxWmWidth = $mainWidth * 0.15;
+		$maxWmHeight = $mainHeight * 0.15;
+		$scale = min($maxWmWidth / $wmWidth, $maxWmHeight / $wmHeight, 1);
+
+		if ($scale < 1) {
+			$newWmWidth = (int)($wmWidth * $scale);
+			$newWmHeight = (int)($wmHeight * $scale);
+
+			$resizedWm = imagecreatetruecolor($newWmWidth, $newWmHeight);
+			imagesavealpha($resizedWm, true);
+			$trans_colour = imagecolorallocatealpha($resizedWm, 0, 0, 0, 127);
+			imagefill($resizedWm, 0, 0, $trans_colour);
+			imagecopyresampled($resizedWm, $watermarkImg, 0, 0, 0, 0, $newWmWidth, $newWmHeight, $wmWidth, $wmHeight);
+
+			imagedestroy($watermarkImg);
+			$watermarkImg = $resizedWm;
+			$wmWidth = $newWmWidth;
+			$wmHeight = $newWmHeight;
+		}
+
+		// Calculate position for bottom-right with padding
+		$dstX = $mainWidth - $wmWidth - $padding;
+		$dstY = $mainHeight - $wmHeight - $padding;
+
+		// Merge watermark onto main image with opacity
+		imagealphablending($mainImg, true);
+
+		// Apply watermark with opacity
+		imagecopymerge_alpha($mainImg, $watermarkImg, $dstX, $dstY, 0, 0, $wmWidth, $wmHeight, $opacity);
+
+		// Save result to $savePath (determine output format from extension)
+		$ext = strtolower(pathinfo($savePath, PATHINFO_EXTENSION));
+		switch ($ext) {
+			case 'jpg':
+			case 'jpeg':
+				imagejpeg($mainImg, $savePath, 90);
+				break;
+			case 'png':
+				imagepng($mainImg, $savePath);
+				break;
+			default:
+				imagedestroy($mainImg);
+				imagedestroy($watermarkImg);
+				throw new Exception("Unsupported output image format: $ext");
+		}
+
+		// Cleanup
+		imagedestroy($mainImg);
+		imagedestroy($watermarkImg);
+
+		return true;
+	}
+
+
+
+}
+
+function imagecopymerge_alpha($dstImg, $srcImg, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $opacity)
+{
+    // Loop through pixels and blend manually
+    for ($x = 0; $x < $src_w; $x++) {
+        for ($y = 0; $y < $src_h; $y++) {
+            $rgba = imagecolorat($srcImg, $x + $src_x, $y + $src_y);
+            $colors = imagecolorsforindex($srcImg, $rgba);
+
+            $srcAlpha = $colors['alpha']; // 0 = opaque, 127 = transparent
+
+            // Skip fully transparent pixels
+            if ($srcAlpha == 127) continue;
+
+            // Adjust alpha using desired opacity (0.0 to 1.0)
+            $finalAlpha = $srcAlpha + (127 - $srcAlpha) * (1 - $opacity);
+            $finalAlpha = max(0, min(127, (int)$finalAlpha));
+
+            $color = imagecolorallocatealpha(
+                $dstImg,
+                $colors['red'],
+                $colors['green'],
+                $colors['blue'],
+                $finalAlpha
+            );
+
+            imagesetpixel($dstImg, $x + $dst_x, $y + $dst_y, $color);
+        }
+    }
+}
+
+function getFileIconClass($filename) {
+    $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+    switch ($ext) {
+        case 'pdf':
+            return 'fa-file-pdf text-danger';
+        case 'doc':
+        case 'docx':
+            return 'fa-file-word text-primary';
+        case 'xls':
+        case 'xlsx':
+            return 'fa-file-excel text-success';
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+        case 'gif':
+            return 'fa-file-image text-info';
+        case 'zip':
+        case 'rar':
+            return 'fa-file-archive text-secondary';
+        case 'txt':
+            return 'fa-file-alt text-muted';
+        default:
+            return 'fa-file text-dark';
+    }
+}
+

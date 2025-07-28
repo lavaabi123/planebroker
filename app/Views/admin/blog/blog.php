@@ -47,7 +47,7 @@
                                                 <tr role="row">
                                                     <th width="20"><?php echo trans('id'); ?></th>
                                                     <th><?php echo trans('Image'); ?></th>
-                                                    <th><?php echo trans('Title'); ?></th>
+                                                    <th><?php echo trans('Title'); ?></th><th><?php echo trans('Type'); ?></th>
                                                     <th><?php echo trans('Created at'); ?></th>
                                                     <th><?php echo trans('Status'); ?></th>
                                                     <th class="max-width-120"><?php echo trans('options'); ?></th>
@@ -59,6 +59,7 @@
                                                         <td><?php echo clean_number($blog['id']); ?></td>
                                                         <td><?php echo !empty($blog['image']) ? '<img width="50px" height="50px" src="'.base_url().'/uploads/blog/'.$blog['image'].'" />' : ''; ?> </td>
                                                         <td><?php echo $blog['name']; ?> </td>
+                                                        <td><?php echo !empty($blog['category']) ? 'News':'Articles'; ?> </td>
                                                         <td><?php echo date("m-d-Y", strtotime($blog['created_at'])); ?>
                                                         <td><?php echo ($blog['status'] == 1) ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>'; ?> </td></td>
                                                         <td>

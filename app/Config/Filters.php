@@ -28,6 +28,7 @@ class Filters extends BaseConfig
         'check-admin' => \App\Filters\CheckAdmin::class,
         'isMaintenance' => \App\Filters\Maintenance::class,
         'secure-api'     => \App\Filters\SecureAPI::class,
+		'passwordprotect' => \App\Filters\PasswordProtect::class,
     ];
 
     /**
@@ -37,13 +38,13 @@ class Filters extends BaseConfig
      * @var array
      */
     public $globals = [
-        'before' => [
+        'before' => [ //'passwordprotect',
             // 'honeypot',
-            'csrf' => ['except' => ['vr-run-internal-cron','Providerauth/*','Providersearch/*','submit-contact','contact/*', 'api/*', 'emails/*','common/*','cron/*','check-email']],
+            'csrf' => ['except' => ['vr-run-internal-cron','Providerauth/*','Providersearch/*','submit-contact','submit-captain','contact/*', 'api/*', 'emails/*','common/*','cron/*','check-email','product_delete','change_plan_status','product_status_change','checkout-post','favorites_add','remove_favorite','admin/listings/change_plan_post']],
             // 'invalidchars',
-            'isLoggedIn'    => ['except' => ['/', 'Auth/*','Providerauth/*','Providersearch/*','provider/*','provider_gallery/*','providers','providers/*','listings/*', 'api/*', 'blocked', 'maintenance','about-us','faq','update_call_count/*','update_direction_count/*','pricing','blog','blog_detail/*','testimonials','contact','submit-contact','terms','privacy','how-it-works','find-a-provider','common/send_message_to_provider','cron/*','welcome_mail','confirm_mail','reminder_mail','common/getProfileViews','user-signup','user-signup-post','check-email']],
-            'isGranted'     => ['except' => ['/', 'Auth/*', 'Providerauth/*','Providersearch/*','provider/*','provider_gallery/*','providers','providers/*','listings/*','api/*', 'blocked', 'maintenance','about-us','faq','update_call_count/*','update_direction_count/*','pricing','blog','blog_detail/*','testimonials','contact','submit-contact','terms','privacy','how-it-works','find-a-provider','common/send_message_to_provider','cron/*','welcome_mail','confirm_mail','reminder_mail','common/getProfileViews']],
-            'isMaintenance' => ['except' => ['Auth/*', 'api/*','Providerauth/*','Providersearch/*','provider/*','provider_gallery/*','providers','providers/*','listings/*', 'blocked', 'admin/*', 'maintenance','about-us','faq','update_call_count/*','update_direction_count/*','pricing','blog','blog_detail/*','testimonials','contact','submit-contact','terms','privacy','how-it-works','find-a-provider','common/send_message_to_provider','cron/*','welcome_mail','confirm_mail','reminder_mail','common/getProfileViews']],
+            'isLoggedIn'    => ['except' => ['/', 'Auth/*','Providerauth/*','Providersearch/*','provider/*','provider_gallery/*','providers','providers/*','listings/*', 'api/*', 'blocked', 'maintenance','about-us','faq','update_call_count/*','update_direction_count/*','pricing','blog','news','videos','blog_detail/*','testimonials','captains-club-request','contact','submit-contact','submit-captain','terms','privacy','how-it-works','find-a-provider','common/send_message_to_provider','common/send_email_to_friend','cron/*','welcome_mail','confirm_mail','reminder_mail','common/getProfileViews','user-signup','user-signup-post','check-email','login','listing-type','select-plan','favorites_add']],
+            'isGranted'     => ['except' => ['/', 'Auth/*', 'Providerauth/*','Providersearch/*','provider/*','provider_gallery/*','providers','providers/*','listings/*','api/*', 'blocked', 'maintenance','about-us','faq','update_call_count/*','update_direction_count/*','pricing','blog','news','videos','blog_detail/*','testimonials','captains-club-request','contact','submit-contact','submit-captain','terms','privacy','how-it-works','find-a-provider','common/send_message_to_provider','common/send_email_to_friend','cron/*','welcome_mail','confirm_mail','reminder_mail','common/getProfileViews']],
+            'isMaintenance' => ['except' => ['Auth/*', 'api/*','Providerauth/*','Providersearch/*','provider/*','provider_gallery/*','providers','providers/*','listings/*', 'blocked', 'admin/*', 'maintenance','about-us','faq','update_call_count/*','update_direction_count/*','pricing','blog','news','videos','blog_detail/*','testimonials','captains-club-request','contact','submit-contact','submit-captain','terms','privacy','how-it-works','find-a-provider','common/send_message_to_provider','common/send_email_to_friend','cron/*','welcome_mail','confirm_mail','reminder_mail','common/getProfileViews']],
         ],
         'after' => [
             'toolbar',

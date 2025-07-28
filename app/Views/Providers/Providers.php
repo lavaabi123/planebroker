@@ -30,25 +30,90 @@ function radio($name, $val){
 	return $return;
 }
 ?>
-
+<style>
+#filterSidebar{
+    max-height:100vh;
+    overflow-y:auto;
+}
+.z-999{
+	z-index:999 !important;
+}
+</style>
 <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/owlcarousel/assets/owl.carousel.min.css">
 <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/owlcarousel/assets/owl.theme.default.min.css">
 <script src="<?php echo base_url(); ?>/assets/owlcarousel/owl.carousel.js"></script>   
-<div class="d-flex flex-column flex-sm-row">
-	<div class="filter left-section">	
-		<?php if(!empty($filter_texts['category_id'])){ ?>
-		<h5 class="text-center">Applied Filters</h5>
-		<div class="selected-filter text-center">
-		<?php foreach($filter_texts as $f => $filter_text){ foreach($filter_text as $ft => $filtert){ ?>		
-			<div class="selected"><?php echo explode('-',$filtert)[1]; ?> <i class="fa-solid fa-xmark" data-name="<?php echo $f; ?>" data-value="<?php echo explode('-',$filtert)[0]; ?>" role="button"></i></div>
-		<?php 
-		if($ft > 3){ ?>
-			<button class="viewSelected">View All Selected Filters</button>
-		<?php } } } ?>
+<div class="d-flex flex-column flex-sm-row justify-content-end">
+	<div class="filter left-section offcanvas-body" id="filterSidebar">	
+		<div class="d-flex align-items-center justify-content-between py-3 px-4 bg-grey z-2 border-bottom position-sticky top-0">
+			<h6 class="text-start">Filter & Sort</h6>
+			<a class="clearSelected" role="button" style="display:<?= !empty($is_get) ? '' : 'none' ; ?>;">Clear All</a>
+			<button class="btn-close w-auto h-auto p-0 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#filterSidebar" aria-controls="filterSidebar" aria-expanded="false" aria-label="Close">
+				<i class="fa-solid fa-xmark fs-3"></i>
+			 </button>
 		</div>
-		<?php } ?>
-		<h5 class="text-center mt-3">Search Filter</h5>
+		<div class="pb-3 bg-grey w-100 h-100 m-auto">
+		<div id="appliedFilters">
+			<?= view('Providers/applied_filters', [
+            'is_get'       => $is_get,        // 👈 first variable
+            'filter_texts' => $filter_texts,  // 👈 second variable
+            'category'     => $category       // used for “Clear All” link
+        ]) ?>
+		</div>
+		<div class="">
+		<!--h6 class="mt-2 px-4">Search Filter</h6-->
+		<form class="form-input pb-3 search-form needs-ajax" method='get' id="searchFilter" action='<?php echo base_url(); ?>/listings/<?php echo $category; ?>'>
 		<div class="accordion accordion-flush" id="searchFilter">
+	<div class="accordion-item">
+  <h2 class="accordion-header" id="flush-heading-sort">
+    <button class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#flush-collapse-sort"
+            aria-expanded="false"
+            aria-controls="flush-collapse-sort">
+      Sort By
+    </button>
+  </h2>
+
+  <div id="flush-collapse-sort"
+       class="accordion-collapse collapse"
+       aria-labelledby="flush-heading-sort"
+       data-bs-parent="#searchFilter">
+
+    <div class="accordion-body">
+
+      <div class="sFields">
+        <label for="sort_price_asc">
+          <input type="radio" name="sort_by" id="sort_price_asc"  value="price_asc">
+          <span>Price (Low – High)</span>
+        </label>
+      </div>
+
+      <div class="sFields">
+        <label for="sort_price_desc">
+          <input type="radio" name="sort_by" id="sort_price_desc" value="price_desc">
+          <span>Price (High – Low)</span>
+        </label>
+      </div>
+
+      <div class="sFields">
+        <label for="sort_newest">
+          <input type="radio" name="sort_by" id="sort_newest"     value="newest">
+          <span>Newest</span>
+        </label>
+      </div>
+
+      <div class="sFields">
+        <label for="sort_oldest">
+          <input type="radio" name="sort_by" id="sort_oldest"     value="oldest">
+          <span>Oldest</span>
+        </label>
+      </div>
+
+    </div>
+  </div>
+</div>
+	
   <div class="accordion-item">
     <h2 class="accordion-header" id="flush-headingOne">
       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
@@ -57,87 +122,172 @@ function radio($name, $val){
     </h2>
     <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#searchFilter">
       <div class="accordion-body">
-		<div class="sFields"><label for="category_1"><input type="checkbox" <?php echo in_array(1,$filter_ids['category_ids']) ? 'checked' : ''; ?> name="category[]" value="1" id="category_1"> <span>Jet Aircraft</span></label></div>
-		<div class="sFields"><label for="category_2"><input type="checkbox" <?php echo in_array(2,$filter_ids['category_ids']) ? 'checked' : ''; ?> name="category[]" value="2" id="category_2"> <span>Piston Helicopters</span></label></div>
-		<div class="sFields"><label for="category_3"><input type="checkbox" name="category[]" id="category_3"> <span>Turbine Helicopters</span></label></div>
+	  <?php if(!empty($categories_list)){
+		foreach($categories_list as $row){ ?>
+		<div class="sFields"><label for="category_<?php echo $row->id; ?>"><input type="checkbox" <?php echo in_array($row->id,$filter_ids['category_ids']) ? 'checked' : ''; ?> name="category[]" value="<?php echo $row->id; ?>" id="category_<?php echo $row->id; ?>"> <span><?php echo $row->name; ?></span></label></div>
+	  <?php } } ?>
 	  </div>
     </div>
   </div>
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="flush-headingTwo">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
-        Manufacturer
-      </button>
-    </h2>
-    <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#searchFilter">
-      <div class="accordion-body">
-		<div class="sFields"><label for="category_1"><input type="checkbox" id="category_1"> <span>Jet Aircraft</span></label></div>
-		<div class="sFields"><label for="category_2"><input type="checkbox" id="category_2"> <span>Piston Helicopters</span></label></div>
-		<div class="sFields"><label for="category_3"><input type="checkbox" id="category_3"> <span>Turbine Helicopters</span></label></div>
-	  </div>
-    </div>
-  </div>
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="flush-headingThree">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
-        Model
-      </button>
-    </h2>
-    <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#searchFilter">
-      <div class="accordion-body">
-		<div class="sFields">
-			<input id="range-input-min-Year" type="number" step="1" placeholder="Min" class="range-input" value="">
-			<input id="range-input-max-Year" type="number" step="1" placeholder="Max" class="range-input" value="">
-			<button class="btn">Search</button>
+		<?php if(!empty($filters)){ 
+			foreach($filters as $f => $filter){ 			
+			//$usename = strtolower(preg_replace('/[^A-Za-z0-9]+/', '_', $filter['name']));
+			$usename = $filter['slug'];
+			?>			
+			  <div class="accordion-item">
+				<h2 class="accordion-header" id="flush-heading<?php echo $f; ?>">
+				  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse<?php echo $f; ?>" aria-expanded="false" aria-controls="flush-collapse<?php echo $f; ?>">
+					<?php echo $filter['name']; ?>
+				  </button>
+				</h2>
+				<div id="flush-collapse<?php echo $f; ?>" class="accordion-collapse collapse" aria-labelledby="flush-heading<?php echo $f; ?>" data-bs-parent="#searchFilter">
+				  <div class="accordion-body">
+				  <?php if($filter['filter_type'] == 'checkbox'){ 
+				  if(!empty($filter['values'])){
+					foreach($filter['values'] as $r => $row){ if(!empty($row['name'])){ ?>
+					<div class="sFields"><label for="<?php echo $usename; ?>_<?php echo $r; ?>"><input type="checkbox" <?php echo (!empty($filter_ids[$usename]) && in_array($row['name'],$filter_ids[$usename])) ? 'checked' : ''; ?> name="<?php echo $usename; ?>[]" value="<?php echo $row['name']; ?>" id="<?php echo $usename; ?>_<?php echo $r; ?>"> <span><?php echo $row['name']; ?></span></label></div>
+					<?php } } }
+					}
+					if($filter['filter_type'] == 'number'){ ?>
+						<div class="sFields">
+						<?php if(!empty($price_range_array) && $usename=='price' && count($price_range_array) > 1){ 
+						foreach($price_range_array as $ta => $ra){ 
+						if($ra[2] > 0){
+						?>
+						<label for="<?php echo $ta; ?>"><input type="radio" name="price_static[]" data-p-min="<?php echo $ra[0]; ?>" data-p-max="<?php echo $ra[1]; ?>" value="" id="<?php echo $ta; ?>"> <span><?php echo $ta.' ('.$ra[2].')'; ?></span></label>						
+						<?php }}} ?>
+							<input id="range-input-min-<?php echo $usename; ?>" name="<?php echo $usename; ?>[]" type="number" step="1" placeholder="Min" class="range-input" value="<?php echo (!empty($filter_ids[$usename]) && !empty($filter_ids[$usename][0])) ? $filter_ids[$usename][0] : ''; ?>">
+							<input id="range-input-max-<?php echo $usename; ?>" name="<?php echo $usename; ?>[]" type="number" step="1" placeholder="Max" class="range-input" value="<?php echo (!empty($filter_ids[$usename]) && !empty($filter_ids[$usename][1])) ? $filter_ids[$usename][1] : ''; ?>">
+						</div>						
+					<?php }if($filter['filter_type'] == 'text'){ ?>
+						<div class="sFields">
+							<input class="text-input" type="text" name="<?php echo $usename; ?>" id="<?php echo $usename; ?>" placeholder="Enter <?php echo $filter['name']; ?>" min="0" value="<?php echo (!empty($filter_ids[$usename])) ? $filter_ids[$usename] : ''; ?>">
+						</div>						
+					<?php } ?>
+				  </div>
+				</div>
+			  </div>
+			<?php }  ?><?php } ?>
+			<div class="accordion-item">
+				<h2 class="accordion-header" id="flush-headingFive">
+				  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFive" aria-expanded="false" aria-controls="flush-collapseFive">
+					Search Results by Date
+				  </button>
+				</h2>
+				<div id="flush-collapseFive" class="accordion-collapse collapse" aria-labelledby="flush-headingFive" data-bs-parent="#searchFilter">
+				  <div class="accordion-body">
+					<div class="sFields">
+						<input class="range-input" type="date" name="created_at[]" class="range-input" value="<?php echo (!empty($filter_ids['created_at']) && !empty($filter_ids['created_at'][0])) ? $filter_ids['created_at'][0] : ''; ?>">
+						<input class="range-input" type="date" name="created_at[]" class="range-input" value="<?php echo (!empty($filter_ids['created_at']) && !empty($filter_ids['created_at'][1])) ? $filter_ids['created_at'][1] : ''; ?>">
+					</div>
+				  </div>
+				</div>
+			</div>
+			<div class="accordion-item">
+				<h2 class="accordion-header" id="flush-headingSix">
+				  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseSix" aria-expanded="false" aria-controls="flush-collapseSix">
+					Show Featured
+				  </button>
+				</h2>
+				<div id="flush-collapseSix" class="accordion-collapse collapse" aria-labelledby="flush-headingSix" data-bs-parent="#searchFilter">
+				  <div class="accordion-body">
+					<div class="sFields"><label for="featured_0"><input type="checkbox" <?php echo (!empty($filter_ids['featured']) && ('yes'==$filter_ids['featured'])) ? 'checked' : ''; ?> name="featured" value="yes" id="featured_0"> <span>Yes</span></label></div>
+				  </div>
+				</div>
+			</div>
+			
+					
 		</div>
-	  </div>
-    </div>
-  </div>
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="flush-headingFour">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
-        Serial/Series #
-      </button>
-    </h2>
-    <div id="flush-collapseFour" class="accordion-collapse collapse" aria-labelledby="flush-headingFour" data-bs-parent="#searchFilter">
-      <div class="accordion-body">
-		<div class="sFields">
-			<input class="text-input" type="text" placeholder="Enter Registration #" name="RegNumber" id="RegNumber" min="0" value="">
-			<button class="btn">Search</button>
+	</form>
+	</div>
+		
 		</div>
-	  </div>
-    </div>
-  </div>
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="flush-headingFive">
-      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFive" aria-expanded="false" aria-controls="flush-collapseFive">
-        Search Results by Date
-      </button>
-    </h2>
-    <div id="flush-collapseFive" class="accordion-collapse collapse" aria-labelledby="flush-headingFive" data-bs-parent="#searchFilter">
-      <div class="accordion-body">
-		<div class="sFields">
-			<input class="range-input" type="date" class="range-input" value="">
-			<input class="range-input" type="date" class="range-input" value="">
-			<button class="btn">Search</button>
+		<div class="d-flex align-items-center justify-content-between py-3 px-4 bg-grey z-999 border-top position-sticky bottom-0">
+			<button class="btn w-100" data-bs-toggle="collapse" data-bs-target="#filterSidebar" aria-controls="filterSidebar" aria-expanded="false" aria-label="Close">Apply (<span id="applyCount" class="badge p-1"><?= $result_count ?></span>)</button> 
 		</div>
-	  </div>
-    </div>
-  </div>
-</div>
 	</div>
 	
 	<div class="carftList right-section">
-		<h3 class="text-center d-blue fw-bolder my-5">Aircraft for Sale</h3>
+		<div class="container-xl">
+		<h3 class="text-center d-blue fw-bolder mt-5 mb-3 my-md-5"><?php echo !empty($category_detail->skill_name) ? $category_detail->skill_name : 'Aircraft for Sale'; ?></h3>
+		
+		<div class="row mb-5">
+			<div class="col-sm-3 align-self-end">
+			<div class="filterSort p-3">
+				<button class="btn filterBtn min-w-auto" type="button" data-bs-toggle="collapse" data-bs-target="#filterSidebar" aria-controls="filterSidebar" aria-expanded="false" aria-label="Toggle navigation">
+					Filter & Sort <img src="<?php echo base_url('assets/frontend/images/edit.png'); ?>" />				
+				</button>
+			</div>
+			</div>
+			<div class="col-sm-9">
+				<div class="advSearch">
+					<h5 class="mb-1">Quick Search</h5>
+					<form class="form-input p-3 search-form" method='get' id="mySearchForm" action='<?php echo base_url(); ?>/listings/<?php echo $category; ?>'>
+						<div class="form-section align-items-center d-flex flex-column flex-sm-row gap-2 gap-sm-3">
+
+							<div class="form-group w-100">
+								<select name='category[]' type="select" class='form-control mb-0'>
+
+									<option value=''>All Categories</option>
+
+									<?php if(!empty($categories_list)){
+
+										foreach($categories_list as $row){ ?>
+
+										<option value="<?php echo $row->id; ?>" <?php echo in_array($row->id,$filter_ids['category_ids']) ? 'selected' : ''; ?>><?php echo $row->name; ?></option>
+
+									<?php } } ?>
+
+								</select>	
+
+							</div>
+							
+							<div class="form-group w-100">
+								<select name='manufacturer[]' type="select" class='form-control mb-0'>
+
+									<option value=''>All Manufacturers</option>
+
+									<?php if(!empty($manufacturers)){
+										foreach($manufacturers as $i => $row){ ?>
+										<option value="<?php echo $row->name; ?>" <?php echo in_array($row->name,$filter_ids['manufacturer']) ? 'selected' : ''; ?>><?php echo $row->name; ?></option>
+
+									<?php } } ?>
+
+								</select>	
+
+							</div>
+							<div class="form-group w-100">
+
+								<input type="text" class="mb-0" id="keyword" name="keywords" placeholder="Search by Keyword" value="<?php echo !empty($_GET['keywords']) ? $_GET['keywords'] :''; ?>"	/>
+
+							</div>
+
+							
+
+							<input type='submit' value='Search' class='btn mb-0'>
+							
+							
+
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div id="productGrid">
+			<?= view('Providers/product_cards', ['categories' => $categories]) ?>
+		</div>
+		
+		<div class="container py-5 text-center">
+			<img src="<?= base_url('assets/frontend/images/ads-hoz.jpg') ?>">
+		</div>
 		<div class="advSearch mb-5">
-			<h5 class="mb-0">Quick Search</h5>
-			<form class="form-input p-3 search-form" method='get' id="searchForm1" action='<?php echo base_url(); ?>/listings/<?php echo $category; ?>'>
-					<?= csrf_field() ?>
+			<h5 class="mb-1">Quick Search</h5>
+			<form class="form-input p-3 search-form" method='get' id="mySearchForm2" action='<?php echo base_url(); ?>/listings/<?php echo $category; ?>'>
+
 					<div class="form-section align-items-center d-flex flex-column flex-sm-row gap-2 gap-sm-3">
 
 						<div class="form-group w-100">
-
-							<select name='category' multiple class='form-control mb-0'>
+							<select name='category[]' type="select" class='form-control mb-0'>
 
 								<option value=''>All Categories</option>
 
@@ -155,16 +305,14 @@ function radio($name, $val){
 						
 						<div class="form-group w-100">
 
-							<select name='man_id' class='form-control mb-0'>
+							<select name='manufacturer[]' type="select" class='form-control mb-0'>
 
 								<option value=''>All Manufacturers</option>
 
-								<?php if(!empty($categories_list)){
+								<?php if(!empty($manufacturers)){
 
-									foreach($categories_list as $row){ ?>
-
-									<option value=<?php echo $row->id; ?>><?php echo $row->name; ?></option>
-
+									foreach($manufacturers as $row){ ?>
+									<option value="<?php echo $row->name; ?>"  <?php echo in_array($row->name,$filter_ids['manufacturer']) ? 'selected' : ''; ?>><?php echo $row->name; ?></option>
 								<?php } } ?>
 
 							</select>	
@@ -172,7 +320,7 @@ function radio($name, $val){
 						</div>
 						<div class="form-group w-100">
 
-							<input type="text" class="mb-0" id="keyword" placeholder="Search by Keyword"	/>
+							<input type="text" class="mb-0" id="keyword" name="keywords" placeholder="Search by Keyword"  value="<?php echo !empty($_GET['keywords']) ? $_GET['keywords'] :''; ?>" />
 
 						</div>
 
@@ -184,84 +332,6 @@ function radio($name, $val){
 
 				</form>
 		</div>
-		<?php if(!empty($categories)){ ?>
-		<div class="d-grid grid-col-4">
-		<?php foreach($categories as $cat){ ?>
-			<div class="item">
-				<a href="<?php echo base_url('/listings/'.$cat['permalink'].'/'.$cat['id'].'/'.str_replace(' ','-',strtolower($cat['name']))); ?>">
-					<div class="provider-Details mb-4">
-						<div class="providerImg mb-3">
-							<img class="d-block w-100" alt="..." src="<?php echo $cat['image']; ?>">
-						</div>
-						<div class="pro-content">
-							<h5 class="fw-medium title-xs"><?php echo !empty($cat['name']) ? $cat['name'] : '-'; ?></h5>
-							<h5 class="fw-medium text-primary title-xs"><?php echo $cat['sub_cat_name']; ?></h5>
-							<p class="text-grey mb-3"><?php echo $cat['city'].', '.$cat['state_code'].' '.$cat['zipcode']; ?></p>
-							<h5 class="fw-medium title-xs"><?php echo ($cat['price'] != NULL) ? 'USD $'.$cat['price'] : 'Call for Price'; ?></h5>
-						</div>
-					</div>
-				</a>
-			</div>
-		<?php } ?>
-		</div>
-		<?php } ?>
-		<div class="container py-5 text-center">
-			<img src="<?= base_url('assets/frontend/images/ads-hoz.jpg') ?>">
-		</div>
-		<div class="advSearch mb-5">
-			<h5 class="mb-0">Quick Search</h5>
-			<form class="form-input p-3 search-form" method='post' id="searchForm2" action='<?php echo base_url(); ?>/providers'>
-
-					<div class="form-section align-items-center d-flex flex-column flex-sm-row gap-2 gap-sm-3">
-
-						<div class="form-group w-100">
-
-							<select name='category' multiple class='form-control mb-0'>
-
-								<option value=''>All Categories</option>
-
-								<?php if(!empty($categories_list)){
-
-									foreach($categories_list as $row){ ?>
-
-									<option value=<?php echo $row->id; ?>><?php echo $row->name; ?></option>
-
-								<?php } } ?>
-
-							</select>	
-
-						</div>
-						
-						<div class="form-group w-100">
-
-							<select name='category_id' class='form-control mb-0'>
-
-								<option value=''>All Manufacturers</option>
-
-								<?php if(!empty($categories_list)){
-
-									foreach($categories_list as $row){ ?>
-
-									<option value=<?php echo $row->id; ?>><?php echo $row->name; ?></option>
-
-								<?php } } ?>
-
-							</select>	
-
-						</div>
-						<div class="form-group w-100">
-
-							<input type="text" class="mb-0" id="keyword" placeholder="Search by Keyword"	/>
-
-						</div>
-
-						
-
-						<input type='submit' value='Search' class='btn mb-0'>
-
-					</div>
-
-				</form>
 		</div>
 	</div>
 </div>
@@ -281,35 +351,422 @@ if(!empty($query1)){
 <input name="urlload" type="hidden" id="urlload" value="<?php echo substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], "?")); ?>" />	
 <input name="urlfinal" type="hidden" id="urlfinal" value="<?php echo substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], "?")).''.$query; ?>" />	
 <script>
-document.querySelectorAll('.search-form').forEach(form => {
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
+    function fetchProducts() {
+		const query = buildQuery($('#searchFilter'));
+		const url   = '<?php echo base_url(); ?>/listings/<?php echo $category; ?>' + (query ? '?' + query : '');
+		
+		let hasRealFilters = false;
+		if (query) {
+			const p = new URLSearchParams(query);
+			p.delete('sort_by');                 // throw away the sort param
+			hasRealFilters = [...p.keys()].length > 0;
+		}
+		$('.clearSelected').toggle(hasRealFilters);
 
-        const url = new URL(form.action, window.location.origin);
+		
+		$.getJSON(url, function (payload) {
+			$('#productGrid').html(payload.grid);
+			$('#appliedFilters').html(payload.filters);
+			$('#applyCount').text(payload.count);
+
+			/* recompute after DOM update (for safety) */
+			const pills = $('#appliedFilters .applied-filter')
+							.not('[data-name="sort_by"]')
+							.length > 0;
+			$('.clearSelected').toggle(pills);
+
+			history.replaceState(null, '', url);
+		});
+	}
+    function buildQuery($form) {
         const params = new URLSearchParams();
 
-        ['category[]'].forEach(name => {
-            const selected = [...form.querySelectorAll('[name="${name}"] option:checked')]
-                .map(opt => opt.value)
-                .filter(val => val);
+        /* 📦 1) check‑boxes & radios (may be array‑style names) */
+        $form.find('input[type="checkbox"],input[type="radio"]').each(function () {
+            if (!this.checked) return;
 
-            if (selected.length > 0) {
-                const newName = name.replace('[]', '');
-                params.set(newName, selected.join('|'));
+            const key   = this.name.replace(/\[\]$/, '');
+            const value = this.value;
+            const prev  = params.get(key);
+
+            params.set(key, prev ? `${prev}|${value}` : value);
+        });
+
+        /* 📋 2) <select multiple> and single selects              */
+        $form.find('select').each(function () {
+            const name = this.name;
+            if (!name) return;
+
+            const key    = name.replace(/\[\]$/, '');
+            const values = $(this).val();                // array or string
+
+            if (values && values.length) {
+                params.set(key, Array.isArray(values) ? values.join('|') : values);
             }
         });
 
-        const manufacturer = form.querySelector('[name="manufacturer"]');
-        if (manufacturer && manufacturer.value) {
-            params.set('manufacturer', manufacturer.value);
+        const groupedValues = {};
+
+		$form.find('input[type="number"],input[type="date"],input[type="text"]').each(function () {
+			const name = this.name.replace(/\[\]$/, '');      // remove []
+			const val  = this.value.trim();
+			if (val === '') return;
+
+			if (!groupedValues[name]) groupedValues[name] = [];
+			groupedValues[name].push(val);
+		});
+
+		// Join all grouped values using pipe (`|`)
+		for (const [key, values] of Object.entries(groupedValues)) {
+			params.set(key, values.join('|'));
+		}
+
+        return params.toString();                        // "cat=A|B&price=..."
+    }
+$(function () {
+
+    fetchProducts();                                     // first load
+
+    // run on *any* change inside the filter panel
+    $('#searchFilter').on('input change', 'input,select', debounce(fetchProducts, 350));
+	$('#searchFilter').on('change', 'input[type="radio"][name="sort_by"]', function () {
+		fetchProducts();                      // run immediately on click
+	});
+
+
+    // keep any “Search” buttons from doing a full‑page submit
+    $('#searchFilter').on('click', '.btn', function (e) {
+        e.preventDefault();
+        fetchProducts();
+    });
+
+    /* -------------------------------------------------- */
+
+    /* -------------------------------------------------- */
+    /* Turn the form into a ?foo=bar|baz&min=10&max=99…   */
+
+    /* 🔹 simple debounce helper so we don’t flood requests */
+    function debounce(fn, delay) {
+        let id;
+        return function () {
+            clearTimeout(id);
+            id = setTimeout(fn, delay);
+        };
+    }
+});
+
+
+$('#appliedFilters').on('click', '.remove-filter', function () {
+	const $tag   = $(this).closest('.applied-filter');
+	const name   = $tag.data('name');            // e.g. "total_time"
+	const value  = $tag.data('value');           // e.g. "23"
+
+	/* Un‑check / clear the corresponding input(s) */
+	// 1) checkboxes / radios
+	$(`#searchFilter input[name="${name}[]"][value="${value}"]`).prop('checked', false);
+	$(`#searchFilter input[name="${name}"][value="${value}"]`).prop('checked', false);
+
+	// 2) range boxes
+	if (name === 'total_time' || name === 'price') {
+		$(`#searchFilter input[name="${name}[]"]`).each(function () {
+			if ($(this).val() === String(value)) $(this).val('');
+		});
+	}
+
+	// 3) single text field
+	$(`#searchFilter input[name="${name}"]`).filter(function () {
+		return $(this).val() === String(value);
+	}).val('');
+
+	fetchProducts();                             // run the filter again
+});
+$('.clearSelected').on('click', function (e) {
+	e.preventDefault();
+
+    const $form = $('#searchFilter');         // or $('#mySearchForm1')
+    if ($form.length && $form[0].reset) {
+        $form[0].reset();                     // native HTML reset
+    }
+	$form.find(':input').each(function () {
+		const $el = $(this);
+
+		if ($el.is(':checkbox,:radio')) {
+			$el.prop('checked', false);
+		} else {
+			$el.val('');
+		}
+	});
+	fetchProducts();
+});
+
+$(document).ready(function () {
+	$('body').addClass('listing-page');
+	
+	$('input[name="price_static[]"]').on('change', function (e) {
+        e.preventDefault(); // Prevent normal form submission
+		$('#range-input-min-price').val($(this).attr('data-p-min'));
+		$('#range-input-max-price').val($(this).attr('data-p-max'));
+    });
+	
+	
+    $('#mySearchForm').on('submit', function (e) {
+        e.preventDefault(); // Prevent normal form submission
+		console.log('1');
+		urlchange1($(this));
+    });
+    $('#mySearchForm1').on('submit', function (e) {
+        e.preventDefault(); // Prevent normal form submission
+		console.log('2');
+		urlchange($(this));
+    });
+    $('#mySearchForm2').on('submit', function (e) {
+        e.preventDefault(); // Prevent normal form submission
+		console.log('3');
+		urlchange1($(this));
+    });
+	
+	function urlchange1(form1){
+		
+        const form = form1;
+        const action = form.attr('action');
+console.log(action);
+        const url = new URL(action, window.location.origin);
+        const params = new URLSearchParams();
+
+        // Handle category[] and model[]
+        form.find('[name="category[]"], [name="manufacturer[]"]').each(function () {
+            const selectedValues = [];
+			var name = $(this).attr('name');
+            // Checkboxes
+console.log(name);
+            form.find(`input[name="${name}"]:checked`).each(function () {
+                selectedValues.push($(this).val());
+            });
+
+            // <select multiple>
+            form.find(`select[name="${name}"]`).each(function () {
+				console.log($(this).find('option:selected'));
+                $(this).find('option:selected').each(function () {
+					if($(this).val() != ''){
+						selectedValues.push($(this).val());
+					}
+                });
+            });
+
+console.log(selectedValues);
+            if (selectedValues.length > 0) {
+                const paramName = name.replace('[]', '');
+                params.set(paramName, selectedValues.join('|'));
+            }
+        });
+
+		// Handle single-select: manufacturer
+        const keywords = form.find('[name="keywords"]').val();
+        if (keywords) {
+            params.set('keywords', keywords);
+        }
+		
+				console.log(params.toString());
+        // Redirect to constructed URL
+		if(params.toString() == ''){
+			window.location.href = url.pathname;
+		}else{
+			window.location.href = url.pathname + '?' + params.toString();
+		}
+	}
+	
+	function urlchange(form1){
+		
+        const form = form1;
+        const action = form.attr('action');
+console.log(action);
+        const url = new URL(action, window.location.origin);
+        const params = new URLSearchParams();
+
+        // Handle category[] and model[]
+        form.find('input').each(function () {
+            const selectedValues = [];
+			var name = $(this).attr('name');
+			var f_type = $(this).attr('type');
+            // Checkboxes
+console.log(f_type);
+if(f_type == 'checkbox'){
+            form.find(`input[name="${name}"]:checked`).each(function () {
+                selectedValues.push($(this).val());
+            });
+}
+
+            // <select multiple>
+if(f_type == 'select'){
+            form.find(`select[name="${name}"]`).each(function () {
+				console.log($(this).find('option:selected'));
+                $(this).find('option:selected').each(function () {
+					if($(this).val() != ''){
+						selectedValues.push($(this).val());
+					}
+                });
+            });
+}
+			//input
+if(f_type == 'number' || f_type == 'date'){
+            form.find(`input[name="${name}"]`).each(function () {
+				console.log('hjk');
+	console.log($(this).val());
+				if($(this).val() != ''){
+					selectedValues.push($(this).val());
+				}
+            });
+}
+
+if(f_type == 'text'){
+            form.find(`input[name="${name}"]`).each(function () {
+				if($(this).val() != ''){
+					selectedValues.push($(this).val());
+				}
+            });
+}
+/*if(f_type == 'radio'){
+            form.find(`input[name="${name}"]:checked`).each(function () {
+                selectedValues.push($(this).val());
+            });
+}*/
+console.log(selectedValues);
+            if (selectedValues.length > 0) {
+                const paramName = name.replace('[]', '');
+                params.set(paramName, selectedValues.join('|'));
+            }
+        });
+
+		// Handle single-select
+        const keywords = form.find('[name="keywords"]').val();
+        if (keywords) {
+            params.set('keywords', keywords);
+        }
+		
+				console.log(params.toString());
+        // Redirect to constructed URL
+		if(params.toString() == ''){
+			//window.location.href = url.pathname;
+		}else{
+			//window.location.href = url.pathname + '?' + params.toString();
+		}
+	}
+});
+$('#mySearchForm1').on('input change', ':input', function () {
+    console.log('input change');
+});
+$('.accordion-collapse').on('shown.bs.collapse', function () {
+    this.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end'
+    });
+});
+$(document).on('click', '.remove-filter', function () {
+    const filterValue = $(this).closest('.applied-filter').data('value');
+    const filterName = $(this).closest('.applied-filter').data('name');
+	const fType = $(`#mySearchForm1 input[name="${filterName}[]"]`).attr('type');
+	const fType1 = $(`#mySearchForm1 input[name="${filterName}"]`).attr('type');
+	if(fType == 'checkbox'){
+		// Uncheck the checkbox with the matching name and value
+		$(`#mySearchForm1 input[name="${filterName}[]"][value="${filterValue}"]`).prop('checked', false);
+	}
+	/*if(fType == 'radio'){
+		// Uncheck the checkbox with the matching name and value
+		$(`#mySearchForm1 input[name="${filterName}[]"][value="${filterValue}"]`).prop('selected', false);
+	}*/
+	if(fType == 'select'){
+		// Uncheck the checkbox with the matching name and value
+		$(`#mySearchForm1 input[name="${filterName}[]"][value="${filterValue}"]`).prop('selected', false);
+	}
+	if(fType == 'number' || fType == 'date' || fType == 'created_at'){    
+		$(`#mySearchForm1 input[name="${filterName}[]"]`).val('');
+	}
+	if(filterName == 'featured'){    
+		$(`#mySearchForm1 input[name="${filterName}"]`).prop('checked', false);
+	}
+	if(fType1 == 'text'){    
+		$(`#mySearchForm1 input[name="${filterName}"]`).val('');
+	}
+
+    // Submit the form
+    $('#mySearchForm1').submit();
+});
+$(document).ready(function(){
+    $('.viewSelected').on('click', function(){
+        $('.hidden-filter').slideToggle();  // toggle hidden filters with animation
+        // Change button text on toggle
+        if($(this).text() === 'View All Selected Filters'){
+            $(this).text('Hide Selected Filters');
+        } else {
+            $(this).text('View All Selected Filters');
+            // Optional: scroll back to top of filters when hiding
+            // $('html, body').animate({ scrollTop: $('.selected-filter').offset().top }, 300);
+        }
+    });
+});
+$(document).ready(function () {
+  $('#filterSidebar').on('shown.bs.collapse hidden.bs.collapse', function (e) {
+    if (e.target.id === 'filterSidebar') {
+      $('.filter').toggleClass('search-opened');
+    }
+  });
+});
+
+	$(function () {
+
+    const $box          = $('#filterSidebar');   // scroll container
+    const APPLY_HEIGHT  = 72;                    // <-- adjust to your footer
+
+    $('#searchFilter').on('shown.bs.collapse', '.accordion-collapse', function () {
+
+        const $panel      = $(this);                     // opened item
+        const boxHeight   = $box.innerHeight() - APPLY_HEIGHT;
+        const scrollTop   = $box.scrollTop();
+
+        /* coords **inside** the scroll box (not the whole page) */
+        const panelTop    = $panel.position().top;                 // px from top of box
+        const panelBottom = panelTop + $panel.outerHeight();        // bottom edge
+
+        /* ------------------------------------------------------ */
+        /* 1 · Panel bottom hidden under footer   → scroll down    */
+        /*    Amount = the hidden part plus a 12 px cushion       */
+        /* ------------------------------------------------------ */
+        if (panelBottom > boxHeight) {
+
+            let delta = panelBottom - boxHeight + 12;
+
+            /* If panel itself is taller than visible area,       */
+            /* scroll so its TOP is flush with the top of view    */
+            if ($panel.outerHeight() > boxHeight) {
+                delta = panelTop - 12;        // bring top into view
+            }
+
+            $box.stop().animate({ scrollTop: scrollTop + delta }, 300);
         }
 
-        window.location.href = url.pathname + '?' + params.toString();
+        /* ------------------------------------------------------ */
+        /* 2 · Panel top hidden above view   → scroll up           */
+        /* ------------------------------------------------------ */
+        else if (panelTop < 0) {
+            $box.stop().animate({ scrollTop: scrollTop + panelTop - 12 }, 300);
+        }
     });
 });
 </script>
-
-</script>
-
+<style>
+.hidden-filter {
+    display: none;
+}
+.selected-filter button.clearSelected {
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    text-decoration: underline;
+	line-height: normal;
+	font-family: 'TwCenMT';
+	text-underline-offset: 2px;
+	margin-top: 10px;
+}
+</style>
 
 <?= $this->endSection() ?>

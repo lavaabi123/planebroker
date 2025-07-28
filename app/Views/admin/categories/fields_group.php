@@ -37,18 +37,18 @@ td:hover {
             <!-- Main row -->
             <div class="row">
                 <div class="col-lg-12 col-xl-12">
-                    <div class="card card-primary card-outline card-outline-tabs">
-                        <div class="card-body">
+                    <div class="card card-primary card-outline card-outline-tabs p-0">
+                        <div class="card-body filter_list">
                             <div class="tab-content" id="custom-tabs-fields_group">
                                 <div class="tab-pane fade show active" id="custom-tabs-fields_group" role="tabpanel" aria-labelledby="custom-tabs-fields_group-tab">
                                     <div class="table-responsive">
                                         <table id="fields_group_table" class="table table-bordered table-striped nowrap w-100 pageResize">
-                                            <div class="row table-filter-container">
+                                            <div class="row table-filter-container m-0">
                                                 <div class="col-sm-6">
                                                     <?php $request = \Config\Services::request(); ?>
                                                     <?php echo form_open(admin_url() . "groups/index/".$categoryId, ['method' => 'GET']); ?>
                                                     <input type="hidden" name="page" value="<?php echo (!empty($request->getVar('page'))) ? $request->getVar('page') : '1'; ?>">
-                                                    <div class="item-table-filter" style="width: 80px; min-width: 80px;">
+                                                    <div class="item-table-filter">
                                                         <label><?php echo trans("show"); ?></label>
                                                         <select name="show" class="form-control">
                                                             <option value="15" <?php echo ($request->getVar('show') == '15') ? 'selected' : ''; ?>>15</option>
@@ -60,19 +60,19 @@ td:hover {
 
                                                     <div class="item-table-filter">
                                                         <label><?php echo trans("search"); ?></label>
-                                                        <input name="q" class="form-control" placeholder="<?php echo trans("search"); ?>" type="search" value="<?php echo html_escape($request->getVar('q')); ?>">
+                                                        <input name="q" class="form-control" style="margin-bottom:0 !important;"  placeholder="<?php echo trans("search"); ?>" type="search" value="<?php echo html_escape($request->getVar('q')); ?>">
                                                     </div>
 
-                                                    <div class="item-table-filter md-top-10" style="width: 65px; min-width: 65px;">
+                                                    <div class="item-table-filter md-top-10 align-self-end">
                                                         <label style="display: block">&nbsp;</label>
-                                                        <button type="submit" class="btn bg-primary"><?php echo trans("filter"); ?></button>
+                                                        <button type="submit" class="btn small bg-primary"><?php echo trans("filter"); ?></button>
 
                                                     </div>
 
                                                     <?php echo form_close(); ?>
                                                 </div>
                                                 <div class="col-sm-6 text-right">
-                                                    <a href="javascript:void(0)" class="btn bg-primary" onclick="manage_fields_group('<?php echo html_escape($categoryId); ?>','','');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
+                                                    <a href="javascript:void(0)" class="btn small bg-primary" onclick="manage_fields_group('<?php echo html_escape($categoryId); ?>','','');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
                                                 </div>
                                             </div>
                                             <thead>

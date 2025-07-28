@@ -31,18 +31,18 @@
             <!-- Main row -->
             <div class="row">
                 <div class="col-lg-12 col-xl-12">
-                    <div class="card card-primary card-outline card-outline-tabs">
-                        <div class="card-body">
+                    <div class="card card-primary card-outline card-outline-tabs p-0">
+                        <div class="card-body filter_list">
                             <div class="tab-content" id="custom-tabs-categories">
                                 <div class="tab-pane fade show active" id="custom-tabs-categories" role="tabpanel" aria-labelledby="custom-tabs-categories-tab">
                                     <div class="table-responsive">
                                         <table id="categories_table" class="table table-bordered table-striped nowrap w-100 pageResize">
-                                            <div class="row table-filter-container">
+                                            <div class="row table-filter-container m-0">
                                                 <div class="col-sm-6">
                                                     <?php $request = \Config\Services::request(); ?>
                                                     <?php echo form_open(admin_url() . "categories", ['method' => 'GET']); ?>
                                                     <input type="hidden" name="page" value="<?php echo (!empty($request->getVar('page'))) ? $request->getVar('page') : '1'; ?>">
-                                                    <div class="item-table-filter" style="width: 80px; min-width: 80px;">
+                                                    <div class="item-table-filter">
                                                         <label><?php echo trans("show"); ?></label>
                                                         <select name="show" class="form-control">
                                                             <option value="15" <?php echo ($request->getVar('show') == '15') ? 'selected' : ''; ?>>15</option>
@@ -54,34 +54,34 @@
 
                                                     <div class="item-table-filter">
                                                         <label><?php echo trans("search"); ?></label>
-                                                        <input name="q" class="form-control" placeholder="<?php echo trans("search"); ?>" type="search" value="<?php echo html_escape($request->getVar('q')); ?>">
+                                                        <input name="q" class="form-control" style="margin-bottom:0 !important;"  placeholder="<?php echo trans("search"); ?>" type="search" value="<?php echo html_escape($request->getVar('q')); ?>">
                                                     </div>
 
-                                                    <div class="item-table-filter md-top-10" style="width: 65px; min-width: 65px;">
+                                                    <div class="item-table-filter md-top-10 align-self-end">
                                                         <label style="display: block">&nbsp;</label>
-                                                        <button type="submit" class="btn bg-primary"><?php echo trans("filter"); ?></button>
+                                                        <button type="submit" class="btn small bg-primary"><?php echo trans("filter"); ?></button>
 
                                                     </div>
 
                                                     <?php echo form_close(); ?>
                                                 </div>
                                                 <div class="col-sm-6 text-right">
-                                                    <a href="javascript:void(0)" class="btn bg-primary" onclick="manage_categories('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
+                                                    <a href="javascript:void(0)" class="btn small bg-primary" onclick="manage_categories('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
                                                 </div>
                                             </div>
                                             <thead>
-                                                <tr class="text-center">
-                                                    <th width="20"><?php echo trans('id'); ?></th>
+                                                <tr>
+                                                    <th class="text-center" width="60"><?php echo trans('id'); ?></th>
                                                     <th><?php echo trans('name'); ?></th>													
                                                     <th><?php echo trans('Image'); ?></th>
-                                                    <th><?php echo trans('status'); ?></th>
+                                                    <th class="text-center"><?php echo trans('status'); ?></th>
                                                     <th class="text-center"><?php echo trans('options'); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php foreach ($categories as $item) : ?>
                                                     <tr>
-                                                        <td><?php echo html_escape($item->id); ?></td>
+                                                        <td class="text-center" width="60"><?php echo html_escape($item->id); ?></td>
                                                         <td><?php echo html_escape($item->name); ?></td>
 														
                                                         <td><?php echo !empty($item->category_icon) ? '<img width="50px" height="50px" src="'.base_url().'/uploads/category/'.$item->category_icon.'" />' : ''; ?> </td>
@@ -171,8 +171,8 @@
                     </div>                                
 
                     <div class="form-group">
-                        <label><?php echo trans("Category Icon(.svg only)"); ?></label>
-                        <input type="file" id="svgFile" class="form-control auth-form-input" name="category_icon" accept=".svg,image/svg+xml" required>
+                        <label><?php echo trans("Category Icon"); ?></label>
+                        <input type="file" id="svgFile" class="form-control auth-form-input" name="category_icon" required>
 						<input type="hidden" id="modal_cat_icon" name="category_icon_name" value="" />
 						<div class="modal_cat_icon" style="display:none;">
 							<img width="100px" height="100px" src="" />

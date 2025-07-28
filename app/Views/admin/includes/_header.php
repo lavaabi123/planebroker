@@ -107,7 +107,7 @@
         <li class="nav-item dropdown">
 
             <a data-toggle="dropdown" href="#">
-                <img src="<?php echo get_user_avatar(user()->avatar); ?>" class="img-circle elevation-1 user-image" width="40px" height="40px" alt="User Image">
+                <img src="<?php echo base_url().'/uploads/userimages/'.user()->id.'/'.user()->avatar; ?>" class="img-circle elevation-1 user-image" width="40px" height="40px" alt="User Image">
             </a>
 
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">

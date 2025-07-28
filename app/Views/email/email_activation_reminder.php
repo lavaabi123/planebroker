@@ -5,9 +5,6 @@
 	<tr>
 		<td class="wrapper">
 			<table role="presentation" border="0" cellpadding="0" cellspacing="0">
-				<tr>					
-					<td><img src="<?php echo base_url()."/assets/img/welcome.jpg"; ?>" alt="" width="100%" style="display: block;" /></td>
-				</tr>
 				<tr>
 					<td>
 						<h6 style="font-size: 16px;line-height: 36px;font-weight: bold;margin-top:25px;text-align:center;margin-bottom: 20px ">Email Address Validation Reminder</h6>

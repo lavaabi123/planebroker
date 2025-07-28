@@ -110,7 +110,8 @@
                                 <div class="col-6">
                                     <div class="form-group mb-3">
                                         <label><?php echo trans("from_name"); ?><span class="required"> *</span></label>
-                                        <input type="text" name="from_name" id="from_name" class="form-control auth-form-input" placeholder="<?php echo trans("from_name"); ?>" value="<?php echo $loggeduser->fullname.' | Plane Broker'; ?>" required>
+                                        <!--<input type="text" name="from_name" id="from_name" class="form-control auth-form-input" placeholder="<?php //echo trans("from_name"); ?>" value="<?php //echo $loggeduser->fullname.' | Plane Broker'; ?>" required>-->
+                                        <input type="text" name="from_name" id="from_name" class="form-control auth-form-input" placeholder="<?php echo trans("from_name"); ?>" value="Plane Broker" required>
                                     </div>
                                 </div>
                             </div>
@@ -118,7 +119,7 @@
                                 <div class="col-6">
                                     <div class="form-group mb-3">
                                         <label><?php echo trans("from_email"); ?><span class="required"> *</span></label>
-                                        <input type="text" name="from_email" id="from_email" class="form-control auth-form-input" placeholder="<?php echo trans("from_email"); ?>" value="no-reply@bodycarepros.com" required>
+                                        <input type="text" name="from_email" id="from_email" class="form-control auth-form-input" placeholder="<?php echo trans("from_email"); ?>" value="no-reply@planebroker.com" required>
                                     </div>
                                 </div>
                             </div>

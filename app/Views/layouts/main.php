@@ -242,10 +242,10 @@ $currentsegment = ($uri->getTotalSegments() >= (env('urlsegment')-1) && !empty($
 			  </li>
 			  <li class="nav-item">
 				<a class="nav-link <?php echo ($uri->getTotalSegments() >= env('urlsegment')-1 && $uri->getSegment(env('urlsegment')) == 'real-estate') ? 'active' :''; ?>" href="<?= base_url('/listings/real-estate') ?>">Real Estate</a>
-			  </li>-->
+			  </li>
 			  <li class="nav-item">
 				<a class="nav-link <?php echo ($uri->getTotalSegments() >= env('urlsegment')-1 && $uri->getSegment(env('urlsegment')-1) == 'wanted') ? 'active' :''; ?>" href="<?= base_url('/about-us') ?>">Wanted</a>
-			  </li>
+			  </li>-->
 			  <li class="nav-item dropdown">
 				  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 					Education

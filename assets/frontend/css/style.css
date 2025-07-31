@@ -579,8 +579,8 @@ a.btn.bg-gray:hover {
 	padding: 20vh 0;
 }
 .stestimonial {
-    max-width: 480px;
-	font-size: 15px;
+    /*max-width: 480px;*/
+	font-size: 14px;
 }
 .abt-testimonial .bluebg {
 	display: flex;
@@ -1387,6 +1387,8 @@ p.date_time {
 }
 .dbContent .form-switch label {
     display: inline;
+	font-size: 10px;
+    margin-left: 0;
 }
 
 .dbContent .bootstrap-tagsinput {
@@ -1925,10 +1927,29 @@ label#email-error {
     margin-right: 15px;
     color: var(--grey);
 }
+#upload-file-modal .load-images-final {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+#upload-file-modal textarea {
+	width: 100%;
+}
 #upload-file-modal .modal-body {
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
+}
+.load-images-final > div {
+    width: calc(25% - (5px * 3));
+    flex: 0 0 calc(25% - (5px * 3));
+}
+#titlesModal #modalBody {
+    margin-right: -15px;
+    padding-right: 15px !important;
+}
+#modalBody::-webkit-scrollbar-track {
+    margin-bottom: 70px;
 }
 /** Faqs **/
 .faqs h6 {
@@ -2154,6 +2175,10 @@ img.ads-verticals {
 }
 .btn {
     min-width: 200px;
+}
+.load-images-final > div {
+    width: calc(33.3% - (5px * 3));
+    flex: 0 0 calc(33.3% - (5px * 3));
 }
 }
 @media (max-width:991px) {
@@ -2411,6 +2436,20 @@ padding-bottom: 0;
 .front-login-box.login-sec {
     padding-right: 0px;
     padding-left: 0px;
+}
+.load-images-final > div {
+    width: calc(50% - (5px * 3));
+    flex: 0 0 calc(50% - (5px * 3));
+}
+.load-images-final > div img {
+	height: 140px !important;
+}
+#upload-file-modal textarea {
+    border-radius: 10px !important;
+	    padding: 10px !important;
+}
+.stestimonial img {
+    max-width: 140px;
 }
 }
 @media (max-width:767px) {

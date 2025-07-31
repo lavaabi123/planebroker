@@ -307,3 +307,11 @@
 .ss-main .ss-single-selected .ss-arrow {
 	display: none;
 }	
+.ss-main .ss-open-above + .ss-content {
+    border-radius: 25px 25px 0 0;
+    overflow: hidden;
+}
+.ss-main .ss-open-below + .ss-content {
+    border-radius: 0 0 25px 25px;
+    overflow: hidden;
+}

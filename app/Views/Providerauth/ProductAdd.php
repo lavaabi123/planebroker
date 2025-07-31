@@ -489,7 +489,7 @@ video{
 			</div>
 			<div class="modal-body px-0">				
 				<div class="final-result-container">
-					<div class="load-images-final" style="display: grid;grid-template-columns: repeat(4, 1fr);gap: 20px;"></div>
+					<div class="load-images-final"></div>
 					<div class="csimage cropped_image_save" data-id=""></div>					
 				</div>
 				
@@ -550,24 +550,28 @@ video{
 </div>
 
 <div class="modal fade" id="titlesModal" tabindex="-1" aria-labelledby="titlesModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-md">
-    <form id="titlesForm" class="w-100">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+    
       <div class="modal-content rounded-5 p-3 px-md-5 position-relative">
-        <div class="modal-header px-0">
-          <h5 class="modal-title">Edit File Details</h5>
+        <div class="modal-header bg-solid-warning justify-content-center p-4 pb-0 border-0 flex-column">
+          <h5 class="modal-title mb-0 fw-bolder">Edit File Details</h5>
           <button type="button" class="btn-close fs-5 position-absolute top-0 end-0 m-0" data-bs-dismiss="modal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div class="modal-body px-0" id="modalBody">
+        <div class="modal-body px-0 pb-0" id="modalBody">
+			<form id="titlesForm" class="w-100">
           <!-- JS-generated file list will appear here -->
+		  <div id="logBook-edit" class="pb-3"></div>
+			<div class="modal-footer bg-white px-0 justify-content-between position-sticky bottom-0 rounded-0 z-3">
+				<div class="m-0">
+				  <a href="javascript:void(0);" class="m-0" data-field-id="" id="triggerModalFileInput"><i class="fa fa-plus-circle me-2"></i>Add File</a>
+				</div>
+				  <button type="submit" class="btn min-w-auto m-0 btn-success px-5">Save</button>
+			</div>
+		  </form>
         </div>
-        <div class="modal-footer px-0 justify-content-between">
-		<div class="m-0">
-		  <a href="javascript:void(0);" class="m-0" data-field-id="" id="triggerModalFileInput"><i class="fa fa-plus-circle me-2"></i>Add File</a>
-		</div>
-          <button type="submit" class="btn min-w-auto m-0 btn-success px-5">Save</button>
-        </div>
+        
       </div>
-    </form>
+    
   </div>
 </div><style>
   .dz-wrap {
@@ -658,7 +662,7 @@ $(document).on('click', '.edit-titles-btn', function () {
 });
 
 function showTitlesModal(fieldId) {
-  const modalBody = $('#modalBody').empty();
+  const modalBody = $('#logBook-edit').empty();
   const fileList = filesStore[fieldId] || [];
 
   fileList.forEach((fileObj, i) => {

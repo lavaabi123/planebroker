@@ -380,7 +380,7 @@ class ProviderRegister extends ProviderauthController
 		}
 		
 		$this->ProductModel = new ProductModel();
-		$featured = $this->ProductModel->get_products($category_name='all',$where=' AND pl.is_featured_listing = 1','RAND() LIMIT 4');
+		$featured = $this->ProductModel->get_products($category_name='aircraft-for-sale',$where=' AND pl.is_featured_listing = 1','RAND() LIMIT 4');
 		
 		$html = '';
 		if(!empty($featured)){

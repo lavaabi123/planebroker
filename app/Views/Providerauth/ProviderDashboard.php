@@ -10,7 +10,7 @@
 		<?php echo $this->include('Common/_sidemenu') ?>
 		</div>
 		<div class="rightsidecontent w-100 px-3">
-			<div class="container-fluid">
+			<div class="container-fluid pb-5">
 			<div class="d-flex align-items-center justify-content-between my-4">
 				<div class="titleSec">
 					<h3 class="title-lg fw-bolder">Dashboard</h3>

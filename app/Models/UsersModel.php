@@ -1430,7 +1430,8 @@ class UsersModel extends Model
 		if($id != ''){
 			$query = $this->db->table('provider_messages AS pm')
             ->select('pm.*, u.fullname AS to_provider')
-            ->join('users AS u', 'u.id = pm.to_user_id', 'left')
+            ->join('users AS u', 'u.id = pm.to_user_id', 'left')			
+            ->join('products AS p', 'p.id = pm.product_id', 'right')
             ->where('u.deleted_at', null)
             ->where('pm.deleted_at', NULL)
 			->where('pm.to_user_id', $id)
@@ -1438,7 +1439,8 @@ class UsersModel extends Model
 		}else{
 			$query = $this->db->table('provider_messages AS pm')
             ->select('pm.*, u.fullname AS to_provider')
-            ->join('users AS u', 'u.id = pm.to_user_id', 'left')
+            ->join('users AS u', 'u.id = pm.to_user_id', 'left')			
+            ->join('products AS p', 'p.id = pm.product_id', 'right')
             ->where('u.deleted_at', null)
             ->where('pm.deleted_at', NULL)
             ->orderBy('pm.id', 'DESC');
@@ -1455,9 +1457,11 @@ class UsersModel extends Model
     {        
         
 		if($id != ''){
-			$query = $this->db->table('provider_messages AS pm')->select('pm.id')->where('pm.deleted_at', null)->where('pm.to_user_id', $id);
+			$query = $this->db->table('provider_messages AS pm')->select('pm.id')			
+            ->join('products AS p', 'p.id = pm.product_id', 'right')->where('pm.deleted_at', null)->where('pm.to_user_id', $id);
 		}else{
-			$query = $this->db->table('provider_messages AS pm')->select('pm.id')->where('pm.deleted_at', null);
+			$query = $this->db->table('provider_messages AS pm')->select('pm.id')			
+            ->join('products AS p', 'p.id = pm.product_id', 'right')->where('pm.deleted_at', null);
 		}
         $query = $this->filter_provider_messages($query);
         $count = $query->countAllResults();
@@ -1495,18 +1499,22 @@ class UsersModel extends Model
     {        
         
 		if($id != ''){
-			$query = $this->db->table('provider_messages AS pm')->select('pm.id')->where('pm.deleted_at', null)->where('pm.to_user_id', $id);
+			$query = $this->db->table('provider_messages AS pm')->select('pm.id')	
+			->where('pm.deleted_at', null)->where('pm.to_user_id', $id);
 		}else{
-			$query = $this->db->table('provider_messages AS pm')->select('pm.id')->where('pm.deleted_at', null);
+			$query = $this->db->table('provider_messages AS pm')->select('pm.id')
+			->where('pm.deleted_at', null);
 		}
         $query = $this->filter_provider_messages($query);
         $count = $query->countAllResults();
         return $count;
     }
 	
+	
 	public function get_recent_provider_messages($id='')
     {
-		return $this->db->table('provider_messages AS pm')->select('pm.*')->where('pm.deleted_at', null)->where('pm.to_user_id', $id)->orderBy('pm.id','desc')->get()->getRowArray();		
+		return $this->db->table('provider_messages AS pm')->select('pm.*')		
+            ->join('products AS p', 'p.id = pm.product_id', 'right')->where('pm.deleted_at', null)->where('pm.to_user_id', $id)->orderBy('pm.id','desc')->get()->getRowArray();		
     }
 	
     public function filter_provider_messages($query)

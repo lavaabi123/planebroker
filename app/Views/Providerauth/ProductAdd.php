@@ -301,7 +301,7 @@ video{
 															$decoded_option = !empty($field->field_options) ? json_decode($field->field_options) : array();
 															$option_html = '';
 															if (!empty($decoded_option) && count($decoded_option) > 0) {
-																echo '<select class="form-control" name="dynamic_fields['.$field->id.']"  '.$req_op_text.'><option value="">--'.$field->name.' '.$req_op.'--</option>';
+																echo '<select class="form-control" name="dynamic_fields['.$field->id.']"  '.$req_op_text.'><option value="">'.$field->name.' '.$req_op.'</option>';
 																foreach($decoded_option as $oi => $option){
 																	echo '<option value="'.$option.'" '. ((!empty($dynamic_fields_values[$field->id]) && ($option == $dynamic_fields_values[$field->id]) ) ? 'selected' : '').'>'.$option.'</option>';
 																}

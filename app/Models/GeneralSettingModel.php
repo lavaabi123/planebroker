@@ -17,6 +17,8 @@ class GeneralSettingModel extends Model
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $updatedField  = 'updated_at';
+    public $session;
+    public $request;
 
     public function __construct()
     {

@@ -306,7 +306,7 @@ $currentsegment = ($uri->getTotalSegments() >= (env('urlsegment')-1) && !empty($
     <?= $this->renderSection('content') ?>
     <footer style="display: <?php echo (!empty($from_cron)|| ($currentsegment == 'login')|| $currentsegment == 'user-signup') ? 'none' : ''; ?>">
 <?php
-if( base_url() == str_replace('/index.php/','',$uri) || ($currentsegment == 'listings' && empty($uri->getSegment(env('urlsegment')+1)) ) || ($currentsegment == 'videos') || ($currentsegment == 'faq') || ($currentsegment == 'news')){ 
+if( base_url() == str_replace('/index.php/','',$uri) || ($currentsegment == 'listings' && empty($uri->getSegment(env('urlsegment')+1))) || ($currentsegment == 'videos') || ($currentsegment == 'faq') || ($currentsegment == 'news')){ 
 $blogs = get_all_blog(0); ?>		
 <div class="blog text-center py-5 px-3 px-xl-5 bg-gray">
 

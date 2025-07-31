@@ -17,11 +17,12 @@ class SubscriptionModel extends Model
     protected $dateFormat = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
+    public $session; 
+    public $request;
 
     public function __construct()
     {
         parent::__construct();
-
         $this->session = session();
         $this->db = db_connect();
         $this->request = \Config\Services::request();

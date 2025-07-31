@@ -15,6 +15,25 @@ use App\Models\CategoriesSubModel;
 
 class Providers extends BaseController
 {
+    protected $userModel;
+    protected $ProductModel;
+    protected $categoriessubModel;
+    protected $CategoriesModel;
+    protected $UsersModel;
+    protected $CityModel;
+    protected $CategoriesSkillsModel;
+    protected $ClientTypesModel;
+    protected $EmailModel;
+    protected $FieldsModel;
+    public $session; 
+    public $segment; 
+    public $db; 
+    public $validation; 
+    public $encrypter; 
+    public $lang_base_url;
+    public $selected_lang;
+    public $general_settings;
+    public $agent;
     public function index()
     {
 		$data = array();

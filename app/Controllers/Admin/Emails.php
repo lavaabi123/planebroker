@@ -9,7 +9,26 @@ use App\Models\EmailTemplatesModel;
 use App\Models\CategoriesModel;
 
 class Emails extends AdminController
-{
+{   
+    public $session; 
+    public $segment; 
+    public $db; 
+    public $validation; 
+    public $encrypter; 
+    public $lang_base_url;
+    public $selected_lang;
+    public $general_settings;
+    public $agent;
+    public $analytics;
+    public $file_count;
+    public $file_per_page;
+    protected $RolesPermissionsModel;
+    public $data;
+    
+    protected $mailsModel;
+    protected $emailTemplatesModel;
+    protected $emailModel;
+    protected $CategoriesModel;
 
     public function __construct()
     {

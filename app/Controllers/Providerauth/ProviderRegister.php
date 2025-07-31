@@ -16,6 +16,26 @@ use App\Models\PlansModel;
 
 class ProviderRegister extends ProviderauthController
 {
+    protected $subscriptionModel;
+    protected $userModel;
+    protected $UsersModel;
+    protected $CityModel;
+    protected $ProductModel;
+    protected $CategoriesModel;
+    protected $CountriesModel;
+    protected $ClientTypesModel;
+    protected $CategoriesSkillsModel;
+    protected $EmailModel;
+    protected $PlansModel;
+    public $session; 
+    public $segment; 
+    public $db; 
+    public $validation; 
+    public $encrypter; 
+    public $lang_base_url;
+    public $selected_lang;
+    public $general_settings;
+    public $agent;
     public function __construct()
     {
         $this->subscriptionModel = new SubscriptionModel();

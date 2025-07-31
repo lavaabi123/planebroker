@@ -13,6 +13,25 @@ use App\Models\SubscriptionModel;
 
 class Home extends BaseController
 {
+    protected $subscriptionModel;
+    protected $userModel;
+    protected $CityModel;
+    protected $ProductModel;
+    protected $CategoriesModel;
+    protected $BlogModel;
+    protected $categoriessubModel;
+    protected $VideoModel;
+    protected $EmailModel;
+    public $session; 
+    public $segment; 
+    public $db; 
+    public $validation; 
+    public $encrypter; 
+    public $lang_base_url;
+    public $selected_lang;
+    public $general_settings;
+    public $agent;
+    
 
     public function __construct()
     {

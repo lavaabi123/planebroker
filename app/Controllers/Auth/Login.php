@@ -11,6 +11,17 @@ use stdClass;
 
 class Login extends AuthController
 {
+    protected $userModel;
+    public $session; 
+    public $segment; 
+    public $db; 
+    public $validation; 
+    public $encrypter; 
+    public $lang_base_url;
+    public $selected_lang;
+    public $general_settings;
+    public $agent;
+    public $analytics;
     public function index()
     {
         if ($this->session->get('vr_sess_logged_in') == TRUE) {

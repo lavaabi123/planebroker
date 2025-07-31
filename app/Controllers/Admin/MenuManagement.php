@@ -7,6 +7,22 @@ use App\Models\RolesPermissionsModel;
 
 class MenuManagement extends AdminController
 {
+    public $session; 
+    public $segment; 
+    public $db; 
+    public $validation; 
+    public $encrypter; 
+    public $lang_base_url;
+    public $selected_lang;
+    public $general_settings;
+    public $agent;
+    public $analytics;
+    public $file_count;
+    public $file_per_page;
+    protected $RolesPermissionsModel;
+    public $data;
+    
+    protected $MenuManagementModel;
 
     public function __construct()
     {

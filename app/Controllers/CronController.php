@@ -15,6 +15,7 @@ use Symfony\Component\Process\Process;
 class CronController extends BaseController
 {
     protected $usersModel;
+    protected $EmailModel;
 
     public function __construct()
     {

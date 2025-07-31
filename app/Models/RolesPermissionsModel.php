@@ -10,7 +10,7 @@ class RolesPermissionsModel extends Model
     protected $primaryKey       = 'id';
 
     protected $session;
-
+    public $request;
     public function __construct()
     {
         parent::__construct();

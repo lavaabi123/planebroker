@@ -18,6 +18,8 @@ class SupportModel extends Model
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
 
+    public $session; 
+    public $request;
     public function __construct()
     {
         parent::__construct();

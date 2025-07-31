@@ -10,6 +10,8 @@ class UploadModel extends Model
 {
     protected $DBGroup          = 'default';
     protected $table            = 'general_settings';
+    protected $session;
+    protected $request;
 
     public function __construct()
     {

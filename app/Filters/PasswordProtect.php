@@ -13,7 +13,7 @@ class PasswordProtect implements FilterInterface
         $session = session();
 
         // Set your password
-        $correctPassword = 'iamroyalinkuser';
+        $correctPassword = 'planebroker';
 
         // Check if password is already entered
         if (!$session->get('site_unlocked')) {

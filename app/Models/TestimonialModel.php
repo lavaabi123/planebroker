@@ -17,6 +17,8 @@ class TestimonialModel extends Model
     protected $dateFormat = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
+    protected $session;
+    protected $request;
 
     public function __construct()
     {

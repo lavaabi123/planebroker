@@ -6,17 +6,18 @@ use App\Models\Locations\CityModel;
 use App\Models\Locations\CountyModel;
 use App\Models\Locations\StateModel;
 use App\Models\RolesPermissionsModel;
+use App\Models\ReportModel;
+use App\Models\FieldsModel;
+use App\Models\SubscriptionModel;
 use App\Models\UsersModel;
 use App\Models\CategoriesModel;
 use App\Models\CategoriesSubModel;
+
 use App\Models\CategoriesSkillsModel;
 use App\Models\OfferingModel;
 use App\Models\ClientTypesModel;
 use App\Models\PlansModel;
-use App\Models\ReportModel;
-use App\Models\FieldsModel;
 use App\Models\ProductModel;
-use App\Models\SubscriptionModel;
 use Stripe;
 use Stripe\Customer;
 use Stripe\PaymentMethod;
@@ -28,12 +29,37 @@ use App\Models\EmailModel;
 
 class UserManagement extends AdminController
 {
+    
+    public $session; 
+    public $segment; 
+    public $db; 
+    public $validation; 
+    public $encrypter; 
+    public $lang_base_url;
+    public $selected_lang;
+    public $general_settings;
+    public $agent;
+    public $analytics;
+    public $file_count;
+    public $file_per_page;
+    protected $RolesPermissionsModel;
+    public $data;
 
     protected $cityModel;
     protected $stateModel;
     protected $countyModel;
     protected $ReportModel;
     protected $FieldsModel;
+    protected $userModel;
+    protected $SubscriptionModel;
+    protected $CategoriesModel;
+    protected $CategoriesSubModel;
+    protected $CategoriesSkillsModel;
+    protected $OfferingModel;
+    protected $ClientTypesModel;
+    protected $PlansModel;
+    protected $ProductModel;
+    protected $UsersModel;
 
     public function __construct()
     {

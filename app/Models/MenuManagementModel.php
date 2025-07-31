@@ -11,6 +11,7 @@ class MenuManagementModel extends Model
     protected $table_submenu        = 'user_submenu';
 
     protected $session;
+    public $request;
 
     public function __construct()
     {

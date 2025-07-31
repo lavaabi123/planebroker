@@ -25,6 +25,21 @@ class Common extends BaseController
     protected $emailTemplatesModel;
     protected $fieldsModel;
     protected $FieldGroupModel;
+    protected $GeneralSettingModel;
+    protected $categoriesModel;
+    protected $categoriessubModel;
+    protected $EmailModel;
+    protected $ProductModel;
+    public $session; 
+    public $segment; 
+    public $db; 
+    public $validation; 
+    public $encrypter; 
+    public $lang_base_url;
+    public $selected_lang;
+    public $general_settings;
+    public $agent;
+    public $analytics;
 
     public function __construct()
     {

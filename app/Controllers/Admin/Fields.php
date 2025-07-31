@@ -10,7 +10,26 @@ use App\Models\FieldGroupModel;
 
 class Fields extends AdminController
 {
+    
+    public $session; 
+    public $segment; 
+    public $db; 
+    public $validation; 
+    public $encrypter; 
+    public $lang_base_url;
+    public $selected_lang;
+    public $general_settings;
+    public $agent;
+    public $analytics;
+    public $file_count;
+    public $file_per_page;
+    protected $RolesPermissionsModel;
+    public $data;
+    
     protected $fieldsModel;
+    protected $CategoriesModel;
+    protected $categoriessubModel;
+    protected $FieldGroupModel;
 
     public function __construct()
     {

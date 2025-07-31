@@ -9,6 +9,8 @@ class Roles_permissionsModel extends Model
     protected $table            = 'roles_permissions';
     protected $primaryKey       = 'id';
 
+    protected $session;
+    protected $request;
     public function __construct()
     {
         parent::__construct();

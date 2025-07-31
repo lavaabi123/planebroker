@@ -11,6 +11,8 @@ use App\Models\Users;
 
 class Authorization implements FilterInterface
 {
+    protected $menuModel;
+    protected $permissionModel;
 
 	public function before(RequestInterface $request, $arguments = null)
 	{

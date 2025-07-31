@@ -4,7 +4,10 @@ namespace App\Controllers;
 use App\Models\Auth;
 class Main extends BaseController
 {   
+    protected $session;
     protected $request;
+    protected $auth_model;
+    protected $data;
 
     public function __construct()
     {

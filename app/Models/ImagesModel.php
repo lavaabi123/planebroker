@@ -9,6 +9,8 @@ class ImagesModel extends Model
     protected $DBGroup          = 'default';
     protected $table            = 'images';
     protected $primaryKey       = 'id';
+    public $session;
+    public $request;
 
     public function __construct()
     {

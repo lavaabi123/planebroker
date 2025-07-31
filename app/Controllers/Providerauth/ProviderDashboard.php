@@ -24,7 +24,26 @@ use App\Models\SupportModel;
 
 class ProviderDashboard extends ProviderauthController
 {
-	
+	protected $UsersModel;
+    protected $userModel;
+    protected $CategoriesModel;
+    protected $CategoriesSubModel;
+    protected $ProductModel;
+    protected $FieldsModel;
+    protected $PlansModel;
+    protected $SupportModel;
+    protected $EmailModel;
+    protected $CategoriesSkillsModel;
+    protected $ClientTypesModel;
+    public $session; 
+    public $segment; 
+    public $db; 
+    public $validation; 
+    public $encrypter; 
+    public $lang_base_url;
+    public $selected_lang;
+    public $general_settings;
+    public $agent;
     public function index()
     {
 		$data = array();

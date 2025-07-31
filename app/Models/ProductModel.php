@@ -195,8 +195,16 @@ class ProductModel extends Model
 	}
 	
 	public function get_manufacturers($category){
-		$manufacturers = $this->db->query("SELECT field_value as name, field_id as id, product_id FROM `products_dynamic_fields` where field_id in (SELECT id FROM `fields` where name='manufacturer') and product_id in (SELECT id FROM `products` where category_id = (select id from categories where permalink='".$category."')) group by field_value")->getResult();
-		return $manufacturers;
+		//$manufacturers = $this->db->query("SELECT field_value as name, field_id as id, product_id FROM `products_dynamic_fields` where field_id in (SELECT id FROM `fields` where name='manufacturer') and product_id in (SELECT id FROM `products` where category_id = (select id from categories where permalink='".$category."')) group by field_value")->getResult();
+		$manufacturers = $this->db->query("select field_options from fields where id in (SELECT f.id FROM `fields` f join field_categories c on f.id=c.field_id where f.name='manufacturer' and c.category_id IN (select id from categories where permalink='".$category."'))")->getResult();
+		$man = [];
+		if(!empty($manufacturers->field_options)){
+			$mm = json_decode($manufacturers->field_options,true);
+			foreach($mm as $op){
+				$man[] = array('name' => $op);
+			}
+		}
+		return $man;
 		
 	}
 	

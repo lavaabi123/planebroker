@@ -159,39 +159,39 @@
 		<div class="d-grid">
 		<div class="swiper logoSwiper">
 			<div class="swiper-wrapper">
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/beechcraft.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/bombardier.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/cessna.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/cirrus.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/dassault.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/diamond.png') ?>"></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Beechcraft') ?>"><img src="<?= base_url('assets/frontend/images/logos/beechcraft.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Bombardier') ?>"><img src="<?= base_url('assets/frontend/images/logos/bombardier.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Cessna') ?>"><img src="<?= base_url('assets/frontend/images/logos/cessna.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Cirrus') ?>"><img src="<?= base_url('assets/frontend/images/logos/cirrus.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Dassault+Aviation') ?>"><img src="<?= base_url('assets/frontend/images/logos/dassault.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Diamond+Aircraft') ?>"><img src="<?= base_url('assets/frontend/images/logos/diamond.png') ?>"></a></div>
 				<!-- Add more logos as needed -->
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/beechcraft.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/bombardier.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/cessna.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/cirrus.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/dassault.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/diamond.png') ?>"></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Beechcraft') ?>"><img src="<?= base_url('assets/frontend/images/logos/beechcraft.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Bombardier') ?>"><img src="<?= base_url('assets/frontend/images/logos/bombardier.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Cessna') ?>"><img src="<?= base_url('assets/frontend/images/logos/cessna.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Cirrus') ?>"><img src="<?= base_url('assets/frontend/images/logos/cirrus.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Dassault+Aviation') ?>"><img src="<?= base_url('assets/frontend/images/logos/dassault.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Diamond+Aircraft') ?>"><img src="<?= base_url('assets/frontend/images/logos/diamond.png') ?>"></a></div>
 			</div>
 		</div>
 		<div class="swiper logoSwiper reverse" dir="rtl">
 		    
 			<div class="swiper-wrapper">
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/embraer.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/gulfstream.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/jancair.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/mooney.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/pilatus.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/piper.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/robinson.png') ?>"></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Embraer') ?>"><img src="<?= base_url('assets/frontend/images/logos/embraer.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Gulfstream') ?>"><img src="<?= base_url('assets/frontend/images/logos/gulfstream.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Lancair') ?>"><img src="<?= base_url('assets/frontend/images/logos/jancair.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Mooney') ?>"><img src="<?= base_url('assets/frontend/images/logos/mooney.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Pilatus') ?>"><img src="<?= base_url('assets/frontend/images/logos/pilatus.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Piper') ?>"><img src="<?= base_url('assets/frontend/images/logos/piper.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Robinson+Helicopter+Company') ?>"><img src="<?= base_url('assets/frontend/images/logos/robinson.png') ?>"></a></div>
 				<!-- Add more logos as needed -->
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/embraer.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/gulfstream.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/jancair.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/mooney.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/pilatus.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/piper.png') ?>"></div>
-				<div class="swiper-slide"><img src="<?= base_url('assets/frontend/images/logos/robinson.png') ?>"></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Embraer') ?>"><img src="<?= base_url('assets/frontend/images/logos/embraer.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Gulfstream') ?>"><img src="<?= base_url('assets/frontend/images/logos/gulfstream.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Lancair') ?>"><img src="<?= base_url('assets/frontend/images/logos/jancair.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Mooney') ?>"><img src="<?= base_url('assets/frontend/images/logos/mooney.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Pilatus') ?>"><img src="<?= base_url('assets/frontend/images/logos/pilatus.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Piper') ?>"><img src="<?= base_url('assets/frontend/images/logos/piper.png') ?>"></a></div>
+				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Robinson+Helicopter+Company') ?>"><img src="<?= base_url('assets/frontend/images/logos/robinson.png') ?>"></a></div>
 			</div>
 		</div>		
 		</div>

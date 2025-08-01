@@ -33,6 +33,8 @@ if(!empty($product_detail['image'])){
 	<h4 class="mb-0 text-white"><?php echo !empty($product_detail['name']) ? $product_detail['name'] : ''; ?></h4>
 	<p class="mb-3 text-primary fw-bold title-sm"><?php echo $product_detail['sub_cat_name']; ?></p>
 	<h4 class="mb-4 text-white"><?php echo ($product_detail['price'] != NULL) ? 'USD $'.number_format($product_detail['price'], 2, '.', ',') : 'Call for Price'; ?></h4>
+	<p class="mb-3 text-primary fw-bold title-sm"><?php echo $product_detail['aircraft_status']; ?></p>
+	
 	<div class="container pt-2">
 <?php 
 $file_overall = array();
@@ -383,7 +385,7 @@ $count = !empty($images) ? count($images) : 0;
 			if(!empty($product_dynamic_fields)){
 				foreach($product_dynamic_fields as $p => $pd){
 					$pg++;
-					if(!empty($pd) && $p != 'General Information'){ ?>					
+					if(!empty($pd) && $p != 'General Information' && $p != 'Aircraft Status'){ ?>					
 						<div class="accordion-item">
 							<h2 class="accordion-header">
 							  <button class="accordion-button <?php //echo ($pg == 2) ? '' : 'collapsed'; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#pd-<?php echo $pg; ?>" aria-expanded="<?php echo ($pg == 2) ? 'true' : 'false'; ?>" aria-controls="pd-<?php echo $pg; ?>">

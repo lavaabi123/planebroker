@@ -142,11 +142,16 @@ function radio($name, $val){
 				</h2>
 				<div id="flush-collapse<?php echo $f; ?>" class="accordion-collapse collapse" aria-labelledby="flush-heading<?php echo $f; ?>" data-bs-parent="#searchFilter">
 				  <div class="accordion-body">
-				  <?php if($filter['filter_type'] == 'checkbox'){ 
+				  <?php if($filter['filter_type'] == 'checkbox' && $filter['name']=='Manufacturer' && $category != 'aircraft-for-sale'){ 
 				  if(!empty($filter['values'])){
 					foreach($filter['values'] as $r => $row){ if(!empty($row['name'])){ ?>
 					<div class="sFields"><label for="<?php echo $usename; ?>_<?php echo $r; ?>"><input type="checkbox" <?php echo (!empty($filter_ids[$usename]) && in_array($row['name'],$filter_ids[$usename])) ? 'checked' : ''; ?> name="<?php echo $usename; ?>[]" value="<?php echo $row['name']; ?>" id="<?php echo $usename; ?>_<?php echo $r; ?>"> <span><?php echo $row['name']; ?></span></label></div>
 					<?php } } }
+					}else{
+						if(!empty($manufacturers)){
+							foreach($manufacturers as $r => $row){ if(!empty($row->name)){ ?>
+							<div class="sFields"><label for="<?php echo $usename; ?>_<?php echo $r; ?>"><input type="checkbox" <?php echo (!empty($filter_ids[$usename]) && in_array($row->name,$filter_ids[$usename])) ? 'checked' : ''; ?> name="<?php echo $usename; ?>[]" value="<?php echo $row->name; ?>" id="<?php echo $usename; ?>_<?php echo $r; ?>"> <span><?php echo $row->name; ?></span></label></div>
+							<?php } } }
 					}
 					if($filter['filter_type'] == 'number'){ ?>
 						<div class="sFields">
@@ -568,11 +573,7 @@ console.log(selectedValues);
 		
 				console.log(params.toString());
         // Redirect to constructed URL
-		if(params.toString() == ''){
-			window.location.href = url.pathname;
-		}else{
-			window.location.href = url.pathname + '?' + params.toString();
-		}
+		window.location.href = url.pathname + (params.toString() ? '?' + params.toString() : '');
 	}
 	
 	function urlchange(form1){

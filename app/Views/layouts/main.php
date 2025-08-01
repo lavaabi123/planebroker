@@ -764,7 +764,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 	
 	
-	$('.favorite-btn').on('click', function () {
+	$(document).on('click', '.favorite-btn', function () {
+		console.log('test');
 		const productId = $(this).data('product-id');
 		const wish = $(this).data('wish');
 		var _this = $(this);

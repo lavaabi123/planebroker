@@ -5,9 +5,10 @@
 }
 </style>
 				
-						
+				
+					<h6>PAYMENT METHOD</h6>		
 			<div class='row'>		<?php if(!empty($cards)){ ?>
-				<div class="col-sm-6">
+				<div class="col-sm-12">
 					<div class="carddetail">
 						<?php 
 						if($cards->data){
@@ -30,7 +31,7 @@
 								<img height="32" width="32" src="<?php echo base_url('assets/img/dummy.png'); ?>" />
 								<?php } ?>
 								</div>
-								<div class="">
+								<div class="d-flex">
 								<p class="mb-0 fs-6 fw-medium"><strong><?php echo $source->brand;?> •••• <?php echo $source->last4;?></strong>
 
 								<?php if($customer->default_source == $source->id){ ?>
@@ -42,9 +43,6 @@
 								</p>
 
 								<p class="mb-0 fs-6 fw-medium">Expires <?php echo date('M',strtotime($source->exp_month)).' '.$source->exp_year; ?></p>
-								</div>
-								</div>
-								<div class="">
                                 <div class="dropdown">
 								  <span class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
 									•••
@@ -64,6 +62,7 @@
 									<li><a class="dropdown-item" onclick="delete_card('<?php echo $source->id; ?>','<?php echo $source->customer; ?>')" href="javascript:void(0);">Delete</a></li>
 									<?php } ?>
 								  </ul>
+								</div>
 								</div>
 								</div>
 								</div>
@@ -93,20 +92,22 @@
 				<?php }else{
 					echo '<p class="text-center py-4">No Added Cards Found.</p>';
 				} if(!empty($customerId)){ ?>
-				<div class='col-sm-6 '>
+				<div class='col-sm-12 '>
 					<form id="payment-form" action='<?php echo base_url(); ?>/providerauth/update-card-post' method='post'>	
 						  <div class="form-row">
-							<h6 class="card-element mb-3">Add card</h6>
+							<h6 class="card-element mb-3 open-card-form" role="button"><i class="fa fa-plus"></i>Add payment method</h6>
+							<div class="open-add-card-form" style="display:none;">
 							<div id="card-element" class="card mb-2 rounded-5 p-3">
 							  <!-- a Stripe Element will be inserted here. -->
 							</div>
 							<!-- Used to display form errors -->
 							<div id="card-errors" class="fs-6 fw-medium"></div>
+							<br>						  
+							<input type="hidden" name="customerId" value="<?php echo $customerId; ?>" />
+							<input type='submit' value='Save' class='btn min-w-auto px-5'>
+							  <!--<a href="<?php echo base_url().'/providerauth/update-card/';?>" class="cancel btn">Cancel</a>-->
+							</div>
 						  </div>
-						  <br>						  
-						  <input type="hidden" name="customerId" value="<?php echo $customerId; ?>" />
-						  <input type='submit' value='Save' class='btn min-w-auto px-5'>
-						  <!--<a href="<?php echo base_url().'/providerauth/update-card/';?>" class="cancel btn">Cancel</a>-->
 					</form>
 				</div>
 				<?php } ?>
@@ -118,6 +119,21 @@ $(function(){
     $('.loader').show(); 
     return true;
   });
+});
+
+$(document).on('click', '.open-card-form', function(){
+    $('.open-add-card-form').show('slow'); 
+	$('.open-card-form').addClass('close-card-form');
+	$('.open-card-form i').removeClass('fa-plus');
+	$('.open-card-form i').addClass('fa-minus');
+	$('.open-card-form').removeClass('open-card-form');
+});
+$(document).on('click', '.close-card-form', function(){
+    $('.open-add-card-form').hide('slow'); 
+	$('.close-card-form').addClass('open-card-form');
+	$('.close-card-form i').removeClass('fa-plus');
+	$('.close-card-form i').addClass('fa-minus');
+	$('.close-card-form').removeClass('close-card-form');
 });
 function set_default(source_id,customer_id){
     $('.loader').show(); 

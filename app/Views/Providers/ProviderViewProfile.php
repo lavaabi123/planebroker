@@ -334,7 +334,7 @@ $count = !empty($images) ? count($images) : 0;
 						</form>	
 					</div><!-- MESSAGE ME - END -->
 					<hr>
-					<div class="d-flex align-items-center fw-medium mb-0 favorite-btn <?php echo !empty($wishlist_added) ? 'wishlist-added' : ''; ?>" role="button" data-product-id="<?= $product_detail['id']; ?>" data-wish="<?php echo !empty($wishlist_added) ? 1 : 0; ?>">
+					<div class="d-flex align-items-center fw-medium mb-0 favorite-btn <?php echo !empty($wishlist_added) ? 'wishlist-added' : ''; ?>" data-page-type="detail" role="button" data-product-id="<?= $product_detail['id']; ?>" data-wish="<?php echo !empty($wishlist_added) ? 1 : 0; ?>">
 						<img class="icons" src="<?php echo base_url('assets/frontend/images/wishlist.png'); ?>" />
 						<p class="text-primary wishtext"><?php echo !empty($wishlist_added) ? 'Remove from Wishlist' : 'Wishlist';?></p>
 					</div>				

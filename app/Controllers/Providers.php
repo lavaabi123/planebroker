@@ -394,7 +394,7 @@ class Providers extends BaseController
 		
 		$data['category'] = $category;
 		$data['filter_texts'] = $filter_texts;
-		//print_r($data['filter_texts']);exit;
+		//print_r($data['categories_list']);exit;
 		$data['filter_ids'] = $filter_ids;
 		
 		$price_range_array = array('Under $20,000'=>array('','20000',0),'$20,000 to $49,999'=>array('20000','49999',0),'$50,000 to $99,999'=>array('50000','99999',0),'$100,000 to $249,999'=>array('100000','249999',0),'$250,000 to $499,999'=>array('250000','499999',0),'$500,000 and Over'=>array('500000','',0));
@@ -418,12 +418,12 @@ class Providers extends BaseController
 		}
 		$new_pr_arr = [];
 		foreach($price_range_array as $th => $pr){
-			if($pr[2] > 0){
+			//if($pr[2] > 0){
 				$new_pr_arr[$th] = $pr;
-			}
+			//}
 		}
 		$data['price_range_array'] = $new_pr_arr;
-		//echo "<pre>";print_r($price_range_array);exit;
+		//echo "<pre>";print_r($data);exit;
 		$data['result_count'] = count($data['categories']);
         $this->CategoriesModel = new CategoriesModel();
 		$data['category_detail'] = $this->CategoriesModel->get_categories_link($category);

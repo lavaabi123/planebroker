@@ -84,9 +84,27 @@ class CategoriesSubModel extends Model
     }
 	
 	public function get_categories_by_link($link,$where=''){
-		$sql = "SELECT categories_sub.*,categories.name as category_name,categories.permalink FROM categories_sub LEFT JOIN categories ON categories.id = categories_sub.category_id WHERE categories_sub.category_id IN (select id from categories where permalink=?) ".$where;
-        $query = $this->db->query($sql, array($link));
-        return $query->getResult();
+		$sql = "
+			SELECT 
+				categories_sub.*, 
+				categories.name AS category_name,
+				categories.permalink,
+				(
+					SELECT COUNT(*) 
+					FROM products p 
+					WHERE p.sub_category_id = categories_sub.id 
+					  AND p.status = 1
+				) AS product_count
+			FROM categories_sub
+			LEFT JOIN categories ON categories.id = categories_sub.category_id
+			WHERE categories_sub.category_id IN (
+				SELECT id FROM categories WHERE permalink = ?
+			) {$where}
+		";
+
+		$query = $this->db->query($sql, array($link));
+		return $query->getResult();
+
 	}
     //add county
     public function add_categories()

@@ -44,14 +44,14 @@ function radio($name, $val){
 <script src="<?php echo base_url(); ?>/assets/owlcarousel/owl.carousel.js"></script>   
 <div class="d-flex flex-column flex-sm-row justify-content-end">
 	<div class="filter left-section offcanvas-body" id="filterSidebar">	
-		<div class="d-flex align-items-center justify-content-between py-3 px-4 bg-grey z-2 border-bottom position-sticky top-0">
-			<h6 class="text-start">Filter & Sort</h6>
+		<div class="d-flex align-items-center justify-content-between py-3 px-4 bg-white z-2 border-bottom position-sticky top-0">
+			<h6 class="text-start TwCenMT fw-normal">Filter & Sort</h6>
 			<a class="clearSelected" role="button" style="display:<?= !empty($is_get) ? '' : 'none' ; ?>;">Clear All</a>
 			<button class="btn-close w-auto h-auto p-0 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#filterSidebar" aria-controls="filterSidebar" aria-expanded="false" aria-label="Close">
 				<i class="fa-solid fa-xmark fs-3"></i>
 			 </button>
 		</div>
-		<div class="pb-3 bg-grey w-100 h-100 m-auto">
+		<div class="pb-3 bg-white w-100 h-100 m-auto overflow-auto">
 		<div id="appliedFilters">
 			<?= view('Providers/applied_filters', [
             'is_get'       => $is_get,        // 👈 first variable
@@ -124,7 +124,7 @@ function radio($name, $val){
       <div class="accordion-body">
 	  <?php if(!empty($categories_list)){
 		foreach($categories_list as $row){ ?>
-		<div class="sFields"><label for="category_<?php echo $row->id; ?>"><input type="checkbox" <?php echo in_array($row->id,$filter_ids['category_ids']) ? 'checked' : ''; ?> name="category[]" value="<?php echo $row->id; ?>" id="category_<?php echo $row->id; ?>"> <span><?php echo $row->name; ?></span></label></div>
+		<div class="sFields"><label for="category_<?php echo $row->id; ?>"><input type="checkbox" <?php echo in_array($row->id,$filter_ids['category_ids']) ? 'checked' : ''; ?> name="category[]" value="<?php echo $row->id; ?>" id="category_<?php echo $row->id; ?>"> <span><?php echo $row->name; ?></span><span class="text-muted">(<?php echo $row->product_count ?? 0; ?>)</span></label></div>
 	  <?php } } ?>
 	  </div>
     </div>
@@ -142,24 +142,27 @@ function radio($name, $val){
 				</h2>
 				<div id="flush-collapse<?php echo $f; ?>" class="accordion-collapse collapse" aria-labelledby="flush-heading<?php echo $f; ?>" data-bs-parent="#searchFilter">
 				  <div class="accordion-body">
-				  <?php if($filter['filter_type'] == 'checkbox' && $filter['name']=='Manufacturer' && $category != 'aircraft-for-sale'){ 
+				  <?php 
+				  if($filter['filter_type'] == 'checkbox'){ 
+				  if($filter['name']=='Manufacturer' && $category == 'aircraft-for-sale'){
+					  if(!empty($manufacturers)){
+							foreach($manufacturers as $r => $row){ if(!empty($row->name)){ ?>
+							<div class="sFields"><label for="<?php echo $usename; ?>_<?php echo $r; ?>"><input type="checkbox" <?php echo (!empty($filter_ids[$usename]) && in_array($row->name,$filter_ids[$usename])) ? 'checked' : ''; ?> name="<?php echo $usename; ?>[]" value="<?php echo $row->name; ?>" id="<?php echo $usename; ?>_<?php echo $r; ?>"> <span><?php echo $row->name; ?></span><span class="text-muted">(<?= $row->count ?? 0 ?>)</span></label></div>
+							<?php } } }
+				  }else{
 				  if(!empty($filter['values'])){
 					foreach($filter['values'] as $r => $row){ if(!empty($row['name'])){ ?>
-					<div class="sFields"><label for="<?php echo $usename; ?>_<?php echo $r; ?>"><input type="checkbox" <?php echo (!empty($filter_ids[$usename]) && in_array($row['name'],$filter_ids[$usename])) ? 'checked' : ''; ?> name="<?php echo $usename; ?>[]" value="<?php echo $row['name']; ?>" id="<?php echo $usename; ?>_<?php echo $r; ?>"> <span><?php echo $row['name']; ?></span></label></div>
+					<div class="sFields"><label for="<?php echo $usename; ?>_<?php echo $r; ?>"><input type="checkbox" <?php echo (!empty($filter_ids[$usename]) && in_array($row['name'],$filter_ids[$usename])) ? 'checked' : ''; ?> name="<?php echo $usename; ?>[]" value="<?php echo $row['name']; ?>" id="<?php echo $usename; ?>_<?php echo $r; ?>"> <span><?php echo $row['name']; ?></span><span class="text-muted">(<?= $row['count'] ?? 0 ?>)</span></label></div>
 					<?php } } }
-					}else{
-						if(!empty($manufacturers)){
-							foreach($manufacturers as $r => $row){ if(!empty($row->name)){ ?>
-							<div class="sFields"><label for="<?php echo $usename; ?>_<?php echo $r; ?>"><input type="checkbox" <?php echo (!empty($filter_ids[$usename]) && in_array($row->name,$filter_ids[$usename])) ? 'checked' : ''; ?> name="<?php echo $usename; ?>[]" value="<?php echo $row->name; ?>" id="<?php echo $usename; ?>_<?php echo $r; ?>"> <span><?php echo $row->name; ?></span></label></div>
-							<?php } } }
 					}
+				  }
 					if($filter['filter_type'] == 'number'){ ?>
 						<div class="sFields">
 						<?php if(!empty($price_range_array) && $usename=='price' && count($price_range_array) > 1){ 
 						foreach($price_range_array as $ta => $ra){ 
 						if($ra[2] > 0){
 						?>
-						<label for="<?php echo $ta; ?>"><input type="radio" name="price_static[]" data-p-min="<?php echo $ra[0]; ?>" data-p-max="<?php echo $ra[1]; ?>" value="" id="<?php echo $ta; ?>"> <span><?php echo $ta.' ('.$ra[2].')'; ?></span></label>						
+						<label for="<?php echo $ta; ?>"><input type="radio" name="price_static[]" data-p-min="<?php echo ($ra[0] > 0) ? $ra[0] : 0; ?>" data-p-max="<?php echo $ra[1]; ?>" value="" id="<?php echo $ta; ?>"> <span><?php echo $ta.' ('.$ra[2].')'; ?></span></label>						
 						<?php }}} ?>
 							<input id="range-input-min-<?php echo $usename; ?>" name="<?php echo $usename; ?>[]" type="number" step="1" placeholder="Min" class="range-input" value="<?php echo (!empty($filter_ids[$usename]) && !empty($filter_ids[$usename][0])) ? $filter_ids[$usename][0] : ''; ?>">
 							<input id="range-input-max-<?php echo $usename; ?>" name="<?php echo $usename; ?>[]" type="number" step="1" placeholder="Max" class="range-input" value="<?php echo (!empty($filter_ids[$usename]) && !empty($filter_ids[$usename][1])) ? $filter_ids[$usename][1] : ''; ?>">
@@ -207,7 +210,7 @@ function radio($name, $val){
 	</div>
 		
 		</div>
-		<div class="d-flex align-items-center justify-content-between py-3 px-4 bg-grey z-999 border-top position-sticky bottom-0">
+		<div class="d-flex align-items-center justify-content-between py-3 px-4 bg-white z-999 border-top position-sticky bottom-0">
 			<button class="btn w-100" data-bs-toggle="collapse" data-bs-target="#filterSidebar" aria-controls="filterSidebar" aria-expanded="false" aria-label="Close">Apply (<span id="applyCount" class="badge p-1"><?= $result_count ?></span>)</button> 
 		</div>
 	</div>
@@ -388,6 +391,7 @@ if(!empty($query1)){
 
         /* 📦 1) check‑boxes & radios (may be array‑style names) */
         $form.find('input[type="checkbox"],input[type="radio"]').each(function () {
+            if(this.name == 'price_static[]') return;
             if (!this.checked) return;
 
             const key   = this.name.replace(/\[\]$/, '');
@@ -461,18 +465,25 @@ $(function () {
 });
 
 
+
 $('#appliedFilters').on('click', '.remove-filter', function () {
 	const $tag   = $(this).closest('.applied-filter');
 	const name   = $tag.data('name');            // e.g. "total_time"
 	const value  = $tag.data('value');           // e.g. "23"
-
+console.log(name);
 	/* Un‑check / clear the corresponding input(s) */
 	// 1) checkboxes / radios
-	$(`#searchFilter input[name="${name}[]"][value="${value}"]`).prop('checked', false);
-	$(`#searchFilter input[name="${name}"][value="${value}"]`).prop('checked', false);
+	if(name === 'price'){
+	    $(`#searchFilter input[name="price_static[]"]`).prop('checked', false);
+        $(`#searchFilter input[name="price_static"]`).prop('checked', false);
+    }else{
+        $(`#searchFilter input[name="${name}[]"][value="${value}"]`).prop('checked', false);
+        $(`#searchFilter input[name="${name}"][value="${value}"]`).prop('checked', false);
+    }
 
 	// 2) range boxes
 	if (name === 'total_time' || name === 'price') {
+	    $(`#searchFilter input[name="${name}[]"]`).val('');
 		$(`#searchFilter input[name="${name}[]"]`).each(function () {
 			if ($(this).val() === String(value)) $(this).val('');
 		});
@@ -667,14 +678,15 @@ $(document).on('click', '.remove-filter', function () {
     const filterName = $(this).closest('.applied-filter').data('name');
 	const fType = $(`#mySearchForm1 input[name="${filterName}[]"]`).attr('type');
 	const fType1 = $(`#mySearchForm1 input[name="${filterName}"]`).attr('type');
+console.log(filterName);
 	if(fType == 'checkbox'){
 		// Uncheck the checkbox with the matching name and value
 		$(`#mySearchForm1 input[name="${filterName}[]"][value="${filterValue}"]`).prop('checked', false);
 	}
-	/*if(fType == 'radio'){
+	if(fType == 'radio'){
 		// Uncheck the checkbox with the matching name and value
 		$(`#mySearchForm1 input[name="${filterName}[]"][value="${filterValue}"]`).prop('selected', false);
-	}*/
+	}
 	if(fType == 'select'){
 		// Uncheck the checkbox with the matching name and value
 		$(`#mySearchForm1 input[name="${filterName}[]"][value="${filterValue}"]`).prop('selected', false);

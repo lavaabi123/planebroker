@@ -423,8 +423,17 @@ a.btn.bg-gray:hover {
 .clearSelected {
 	    margin-left: auto;
     margin-right: 10px;
-    font-size: 15px;
-    text-decoration: underline !important;
+    background: var(--bs-gray-400);
+    color: var(--d-blue);
+    font-size: 12px;
+    border-radius: 30px;
+    padding: 2px 12px 2px 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+.clearSelected:hover {
+	background: var(--d-blue);
+    color: var(--bs-gray-400);
 }
 .filter_Sec .btn {
 	min-width: auto;
@@ -856,6 +865,11 @@ small, .icheck-primary {
     height: 100%;
     z-index: -1;
 }
+.filter button.btn-close i {
+    font-size: 20px !important;
+    -webkit-text-stroke-width: medium;
+    margin-left: 10px;
+}
 .filterSort {
 	background: var(--light-grey);
     border-radius: 1.5rem;
@@ -895,12 +909,12 @@ small, .icheck-primary {
     padding: 15px;*/
 }
 .selected-filter .selected {
-    background: var(--primary);
-    color: var(--white);
+    background: var(--bs-gray-400);
+    color: var(--d-blue);
     font-size: 12px;
     border-radius: 30px;
     margin-bottom: 5px;
-    padding: 2px 32px 3px 12px;
+    padding: 2px 32px 2px 12px;
     font-weight: 500;
     letter-spacing: 0.5px;
     position: relative;
@@ -914,7 +928,7 @@ small, .icheck-primary {
     color: var(--b-blue);
     position: absolute;
     right: 10px;
-    -webkit-text-stroke-width: medium;
+    -webkit-text-stroke-width: thin;
     top: 0px;
     bottom: 0;
     display: flex;
@@ -947,8 +961,15 @@ small, .icheck-primary {
     font-size: 16px;
 }
 #searchFilter .accordion-item .accordion-button::after {
-    background-image: url(../images/triangle.png);
-	background-position: center;
+    /*background-image: url(../images/triangle.png);*/
+	background-image: none;
+    background-position: center;
+    content: "\f107";
+    font-family: 'FontAwesome';
+    text-align: center;
+    font-weight: 700;
+    font-size: x-large;
+    line-height: 20px;
 }
 #searchFilter .accordion-item .accordion-button:not(.collapsed) {
     box-shadow: none;
@@ -1163,6 +1184,7 @@ img.icons {
 }
 .profileGallery a[onclick] {
     position: relative;
+	display: block;
 }
 .profileGallery .container > .row > div:first-child a[onclick]::before {
     content: "\f424";
@@ -1371,11 +1393,11 @@ p.date_time {
 }
 .d-flex.new_list img {
 	height: clamp(35px, 2.5vw, 60px);
-    margin-top: clamp(0.5rem, 12%, 30px);
+    /*margin-top: clamp(0.5rem, 12%, 30px);*/
 }
 .d-flex.new_list .list-item {
 	padding: 10px;
-	justify-content: flex-start;
+	justify-content: center;
 	border-radius: 25%;
 }
 

@@ -780,6 +780,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					_this.addClass('wishlist-added');
 					_this.find('.wishtext').text('Remove from Wishlist');
 					_this.data('wish',1);
+					if(_this.data('page-type') != 'listing'){
 					Swal.fire({
 						icon: 'success',
 						text: 'Added to favorites!',
@@ -789,10 +790,12 @@ document.addEventListener("DOMContentLoaded", function () {
 						timer: 2000,
 						timerProgressBar: true
 					});
+					}
 				} else if (response.status === 'removed') {
 					_this.removeClass('wishlist-added');
 					_this.data('wish',0);
 					_this.find('.wishtext').text('Wishlist');
+					if(_this.data('page-type') != 'listing'){
 					Swal.fire({
 						icon: 'success',
 						text: 'Removed from favorites!',
@@ -802,6 +805,7 @@ document.addEventListener("DOMContentLoaded", function () {
 						timer: 2000,
 						timerProgressBar: true
 					});
+					}
 				}
 			},
 			error: function () {

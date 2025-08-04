@@ -1,6 +1,6 @@
 
 		<?php if(!empty($is_get)){ ?>
-		<h6 class="mb-2 px-4 pt-3">Applied Filters</h6>
+		<h6 class="mb-2 px-4 pt-3 TwCenMT fw-normal">Applied Filters</h6>
 		<div class="selected-filter pb-3 px-4">
 		<?php 
 		$f_count = 0;

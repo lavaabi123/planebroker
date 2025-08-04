@@ -10,7 +10,7 @@
 						<?php if(!empty($cat['is_premium_listing'])){ ?><span class="pl-tag">Premium Listing</span><?php } ?>
 						<?php if(!empty($cat['aircraft_status']) && $cat['aircraft_status'] != 'Available'){ ?><span class="pl-tag" style="   bottom: 10px;top: auto;"><?php echo $cat['aircraft_status']; ?></span><?php } ?>
 						</a>
-						<span class="wishlist favorite-btn <?php echo !empty($cat['wishlist_added']) ? 'wishlist-added' : ''; ?>" role="button" data-wish="<?php echo !empty($wishlist_added) ? 1 : 0; ?>" data-product-id="<?= $cat['id']; ?>"><img class="icons" src="<?php echo base_url('assets/frontend/images/wishlist.png'); ?>" /></span>
+						<span class="wishlist favorite-btn <?php echo !empty($cat['wishlist_added']) ? 'wishlist-added' : ''; ?>" role="button" data-wish="<?php echo !empty($wishlist_added) ? 1 : 0; ?>" data-page-type="listing" data-product-id="<?= $cat['id']; ?>"><img class="icons" src="<?php echo base_url('assets/frontend/images/wishlist.png'); ?>" /></span>
 					</div>
 					<a href="<?php echo base_url('/listings/'.$cat['permalink'].'/'.$cat['id'].'/'.(!empty($cat['name'])?str_replace(' ','-',strtolower($cat['name'])):'')); ?>">
 						<div class="pro-content">

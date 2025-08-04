@@ -22,23 +22,62 @@ class ProductModel extends Model
         $this->request = \Config\Services::request();
     }
 	
-	public function get_filters($category='all',$where=''){
-		$category_detail = $this->db->query("SELECT id, name,skill_name,permalink FROM categories WHERE permalink LIKE '".$category."' ORDER BY name ASC", 'r')->getRowArray();
-		$result = $this->db->query("SELECT id,name,filter_type,LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name, '/', '_'), ' ', '_'), '-', '_'), '(', '_'), ')', '_'), '&', '_')) as slug FROM `fields` f LEFT JOIN field_categories c ON c.field_id=f.id WHERE c.category_id = ".$category_detail['id']." and f.is_filter = 1 group by name order by f.filter_order asc")->getResultArray();
+	public function get_filters($category = 'all', $where = '')
+	{
+		$category_detail = $this->db->query("
+			SELECT id, name, skill_name, permalink 
+			FROM categories 
+			WHERE permalink LIKE '".$category."' 
+			ORDER BY name ASC
+		", 'r')->getRowArray();
+
+		$result = $this->db->query("
+			SELECT 
+				id, name, filter_type, 
+				LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name, '/', '_'), ' ', '_'), '-', '_'), '(', '_'), ')', '_'), '&', '_')) as slug 
+			FROM `fields` f 
+			LEFT JOIN field_categories c ON c.field_id=f.id 
+			WHERE c.category_id = ".$category_detail['id']." AND f.is_filter = 1 
+			GROUP BY name 
+			ORDER BY f.filter_order ASC
+		")->getResultArray();
+
 		$filters = array();
-		if(!empty($result)){
-			foreach($result as $filter){
+
+		if (!empty($result)) {
+			foreach ($result as $filter) {
 				$values = array();
-				if($filter['filter_type'] == 'checkbox'){
-					$values = $this->db->query("SELECT field_value as name, field_id as id, product_id FROM `products_dynamic_fields` where field_id in (SELECT id FROM `fields` where name='".$filter['name']."') and product_id in (SELECT id FROM `products` where category_id = (select id from categories where permalink='".$category."')) group by field_value")->getResultArray();
+
+				if ($filter['filter_type'] == 'checkbox') {
+					$values = $this->db->query("
+						SELECT 
+							field_value AS name, 
+							field_id AS id, 
+							COUNT(DISTINCT product_id) AS count 
+						FROM `products_dynamic_fields` 
+						WHERE field_id IN (
+							SELECT id 
+							FROM `fields` 
+							WHERE name = '".$filter['name']."'
+						) 
+						AND product_id IN (
+							SELECT id 
+							FROM `products` 
+							WHERE category_id = ".$category_detail['id']."
+							".($where ? "AND ".$where : "")."
+						) 
+						GROUP BY field_value
+					")->getResultArray();
 				}
+
 				$filter['values'] = $values;
-				$filters[] = $filter;				
+				$filters[] = $filter;
 			}
 		}
-		
-		return $filters;	
+
+		return $filters;
 	}
+
 	
     public function productPaginate()
 {
@@ -194,19 +233,53 @@ class ProductModel extends Model
 		
 	}
 	
-	public function get_manufacturers($category){
-		//$manufacturers = $this->db->query("SELECT field_value as name, field_id as id, product_id FROM `products_dynamic_fields` where field_id in (SELECT id FROM `fields` where name='manufacturer') and product_id in (SELECT id FROM `products` where category_id = (select id from categories where permalink='".$category."')) group by field_value")->getResult();
-		$manufacturers = $this->db->query("select field_options from fields where id in (SELECT f.id FROM `fields` f join field_categories c on f.id=c.field_id where f.name='manufacturer' and c.category_id IN (select id from categories where permalink='".$category."'))")->getResult();
-		$man = [];
-		if(!empty($manufacturers[0]->field_options)){
-			$mm = json_decode($manufacturers[0]->field_options,true);
-			foreach($mm as $op){
-				$man[] = array('name' => $op);
-			}
-		}
-		return json_decode(json_encode($man));
-		
-	}
+	public function get_manufacturers($category)
+{
+    $manufacturers = $this->db->query("
+        SELECT field_options 
+        FROM fields 
+        WHERE id IN (
+            SELECT f.id 
+            FROM fields f 
+            JOIN field_categories c ON f.id = c.field_id 
+            WHERE f.name = 'manufacturer' 
+              AND c.category_id IN (
+                SELECT id FROM categories WHERE permalink = '".$category."'
+              )
+        )
+    ")->getResult();
+
+    $man = [];
+
+    if (!empty($manufacturers[0]->field_options)) {
+        $mm = json_decode($manufacturers[0]->field_options, true);
+
+        foreach ($mm as $op) {
+            // Count how many products have this manufacturer
+            $countResult = $this->db->query("
+                SELECT COUNT(DISTINCT p.id) AS count 
+                FROM products p
+                JOIN products_dynamic_fields pdf ON pdf.product_id = p.id
+                JOIN fields f ON f.id = pdf.field_id
+                JOIN field_categories fc ON fc.field_id = f.id
+                WHERE f.name = 'manufacturer'
+                  AND pdf.field_value = ?
+                  AND fc.category_id IN (
+                      SELECT id FROM categories WHERE permalink = ?
+                  )
+                  AND p.status = 1
+            ", [$op, $category])->getRow();
+
+            $man[] = [
+                'name'  => $op,
+                'count' => $countResult->count ?? 0
+            ];
+        }
+    }
+
+    return json_decode(json_encode($man)); // Convert array to object
+}
+
 	
 	public function get_models($category){
 		$manufacturers = $this->db->query("SELECT field_value as name, field_id as id, product_id FROM `products_dynamic_fields` where field_id in (SELECT id FROM `fields` where name like '%model%') and product_id in (SELECT id FROM `products` where category_id = (select id from categories where permalink='".$category."')) group by field_value")->getResult();

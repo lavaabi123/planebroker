@@ -1706,6 +1706,36 @@ class UsersModel extends Model
 		$query = $this->filter_provider_subs($query);
         return $query->get()->getResult();
     }
+	public function get_paginated_sales_user($id,$per_page='', $offset='')
+    {
+        $query = $this->db->table('sales AS s')
+            ->select('s.*, u.fullname AS provider,p.name as plan_name,p.price as plan_price,pr.id as product_id,c.permalink,pr.category_id,(SELECT GROUP_CONCAT(pd.field_value ORDER BY t.sort_order SEPARATOR " ") AS field_values FROM products_dynamic_fields pd JOIN ( SELECT t.field_id, t.sort_order FROM title_fields t LEFT JOIN fields f ON f.id = t.field_id WHERE t.title_type = "title") t ON t.field_id = pd.field_id WHERE pd.product_id = pr.id) as display_name')
+            ->join('users AS u', 'u.id = s.user_id', 'left')
+            ->join('plans AS p', 'p.id = s.plan_id', 'left')
+            ->join('products AS pr', 'pr.id = s.product_id', 'left')
+            ->join('categories AS c', 'c.id = pr.category_id', 'left')
+            ->where('u.deleted_at', null)
+            ->where('s.user_id', $id)
+            ->orderBy('s.id', 'DESC');
+		$query = $this->filter_provider_subs($query);
+		//echo $this->db->getLastQuery();exit;
+        return $query->get($per_page, $offset)->getResult();
+    }
+	public function get_paginated_sales_user_count($id){
+		$query = $this->db->table('sales AS s')
+            ->select('s.*, u.fullname AS provider,p.name as plan_name,p.price as plan_price,pr.id as product_id,c.permalink,pr.category_id,(SELECT GROUP_CONCAT(pd.field_value ORDER BY t.sort_order SEPARATOR " ") AS field_values FROM products_dynamic_fields pd JOIN ( SELECT t.field_id, t.sort_order FROM title_fields t LEFT JOIN fields f ON f.id = t.field_id WHERE t.title_type = "title") t ON t.field_id = pd.field_id WHERE pd.product_id = pr.id) as display_name')
+            ->join('users AS u', 'u.id = s.user_id', 'left')
+            ->join('plans AS p', 'p.id = s.plan_id', 'left')
+            ->join('products AS pr', 'pr.id = s.product_id', 'left')
+            ->join('categories AS c', 'c.id = pr.category_id', 'left')
+            ->where('u.deleted_at', null)
+            ->where('s.user_id', $id)
+            ->orderBy('s.id', 'DESC');
+
+        $query = $this->filter_provider_subs($query);
+        $count = $query->countAllResults();
+        return $count;
+	}
 	public function get_sales_user_with_cus_id($id)
     {
         $query = $this->db->table('sales AS s')
@@ -1736,7 +1766,7 @@ class UsersModel extends Model
         $created_at_end = trim($request->getGet('created_at_end') ?? '');
         if ($created_at_start != null && $created_at_end != null && ($created_at_start != '' && $created_at_end != '')) {
             $query->where("DATE(s.stripe_subscription_start_date) >=", $created_at_start)
-                    ->where("DATE(s.stripe_subscription_end_date) <=", $created_at_end);
+                    ->where("DATE(s.stripe_subscription_start_date) <=", $created_at_end);
         }
 		
         return $query;

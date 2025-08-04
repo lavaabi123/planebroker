@@ -2015,9 +2015,15 @@ class ProviderDashboard extends ProviderauthController
 			$data['paypal_payments'] = $this->UsersModel->get_paypal_sales_user(session()->get('vr_sess_user_id'));
 		} */
 		$data['paypal_payments'] = $this->UsersModel->get_paypal_sales_user(session()->get('vr_sess_user_id'));
-		$payments = $this->UsersModel->get_sales_user(session()->get('vr_sess_user_id'));
+		
+		
+		$pagination = $this->paginate($this->UsersModel->get_paginated_sales_user_count($this->session->get('vr_sess_user_id')));
+		$payments = $this->UsersModel->get_paginated_sales_user(session()->get('vr_sess_user_id'),$pagination['per_page'], $pagination['offset']);
 		//echo '<pre>';print_r($payments);exit;
 		$data['payments'] = $payments;
+        $data['paginations'] = $pagination['pagination'];
+        $data['total_count'] = $pagination['total'];
+		
 		$data['title'] = trans('Payment History');
 		$data['meta_title'] = 'Payment History | Plane Broker';
         return $var = view('Providerauth/ProviderBillingPayments', $data);
@@ -2057,7 +2063,6 @@ class ProviderDashboard extends ProviderauthController
         $data['provider_messages'] =   $this->UsersModel->get_paginated_provider_messages($pagination['per_page'], $pagination['offset'],$this->session->get('vr_sess_user_id'));
 
         $data['paginations'] = $pagination['pagination'];
-
 		$data['meta_title'] = 'Messages | Plane Broker';
         $data['providers'] = $this->UsersModel->get_users();
 		
@@ -2066,7 +2071,7 @@ class ProviderDashboard extends ProviderauthController
 	
     public function paginate($total_rows)
     {
-        $per_page = 10;
+        $per_page = 5;
         $pager = service('pager');
         //initialize pagination
         $page = $this->request->getGet('page');

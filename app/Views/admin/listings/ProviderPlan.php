@@ -116,6 +116,10 @@ function select_plan(plan_id,user_id,ptype){
 				text: 'Proceed to Add Listing',
 				btnClass: 'btn-green',
 				action: function () {
+					query += '&proceed=listing';
+					window.location.href = '<?php echo admin_url().'listings/add'; ?>'+query;
+				}
+				/*action: function () {
 					$.confirm({
 						title: 'Proceeding will move all existing listings under this Captain\'s Club',
 						content: 'Do you want to proceed?',
@@ -137,12 +141,16 @@ function select_plan(plan_id,user_id,ptype){
 							}
 						}
 					});
-				}
+				}*/
 			},
 			exit: {
 				text: 'Select only Plan and Exit',
 				btnClass: 'btn-red',
 				action: function () {
+					query += '&proceed=plan';
+					window.location.href = '<?php echo admin_url().'listings/add'; ?>'+query;
+				}
+				/*action: function () {
 					$.confirm({
 						title: 'Proceeding will move all existing listings under this Captain\'s Club',
 						content: 'Do you want to proceed?',
@@ -164,7 +172,7 @@ function select_plan(plan_id,user_id,ptype){
 							}
 						}
 					});
-				}
+				}*/
 			},
 			cancel: {
 				text: 'Cancel',

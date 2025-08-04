@@ -1,4 +1,4 @@
-<h6>INVOICE HISTORY</h6>
+<h6 class="border-bottom pb-2 mb-3">INVOICE HISTORY</h6>
 <div class="row table-filter-container fb-filter">
     <div class="col-sm-12 form-input">
         <?php $uri = service('uri'); ?>
@@ -18,7 +18,7 @@
             <input type="hidden" name="created_at_start" id="created_at_start" value="<?php echo $request->getVar('created_at_start'); ?>">
             <input type="hidden" name="created_at_end" id="created_at_end" value="<?php echo $request->getVar('created_at_end'); ?>">
             <div id="reportrange" class="form-control mb-0">
-                <i class="fa fa-calendar fs-5"></i>&nbsp;
+                <i class="fa fa-calendar fs-6 me-1"></i>
                 <span class="fs-6 TwCenMT">Start Date - End Date</span> <i class="fa fa-caret-down fs-4 pull-right"></i>
             </div>
 
@@ -125,7 +125,7 @@
 					<p class="text-center text-muted"><?= trans("no_records_found"); ?></p>
 				<?php endif; ?>
 			</div>
-			<div class="col-sm-12 float-right">
+			<div class="col-sm-12 mt-4">
                                     <?php echo ($total_count > 5 || (!empty($_GET['page']) && $_GET['page'] > 1)) ? $paginations : ''; ?>
                                 </div>
             

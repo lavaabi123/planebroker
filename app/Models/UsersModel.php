@@ -530,7 +530,7 @@ class UsersModel extends Model
 		$data['zipcode'] = !empty($this->request->getVar('postcode')) ? $this->request->getVar('postcode') : '';
 		$data['phone'] = !empty($this->request->getVar('phone')) ? $this->request->getVar('phone') : '';
 		$data['plan_id'] = !empty($this->request->getVar('plan_id')) ? $this->request->getVar('plan_id') : '';
-        $data['status'] = !empty($this->request->getVar('status')) ? $this->request->getVar('status') : 1;
+        $data['status'] = !empty($this->request->getVar('status')) ? $this->request->getVar('status') : 0;
         $data['token'] = generate_unique_id();
 		
 		$uploadedFiles = array();

@@ -635,7 +635,15 @@ class ProviderDashboard extends ProviderauthController
 		$id = $_POST['listing_id'];
 		$status = $_POST['status'];
 		$this->ProductModel = new ProductModel();
-		$this->ProductModel->update($id, ['status' => $status]);		
+		if($status == 1){			
+		//check if all required fields are filled
+		$fields_req = $this->ProductModel->check_fields($id);
+			if($fields_req == 0){
+				echo 'error';exit;
+			}
+		}
+		$this->ProductModel->update($id, ['status' => $status]);
+		echo 'success';exit;		
 	}
 	
 	public function favorites(){

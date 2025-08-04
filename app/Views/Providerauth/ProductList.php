@@ -31,9 +31,9 @@
 						<img class="d-block w-100" alt="..." src="<?php echo $row['image']; ?>">
 					</div>
 					<div class="pro-content mb-3">
-						<h5 class="fw-medium title-xs"><?php echo !empty($row['name']) ? $row['name'] : '-'; ?></h5>
-						<h5 class="fw-medium text-primary fs-6"><?php echo $row['sub_cat_name']; ?></h5>
-						<p class="fw-medium text-grey mb-3"><?php echo $row['address']; ?></p>
+						<h5 class="fw-medium title-xs"><?php echo !empty(trim($row['name'])) ? $row['name'] : '-'; ?></h5>
+						<h5 class="fw-medium text-primary fs-6"><?php echo !empty($row['sub_cat_name']) ? $row['sub_cat_name'] : '-'; ?></h5>
+						<p class="fw-medium text-grey mb-3"><?php echo !empty($row['address']) ? $row['address'] : '-'; ?></p>
 						<h5 class="fw-medium title-xs"><?php echo ($row['price'] != NULL && !empty($row['price'])) ? 'USD $'.number_format((float)str_replace(',', '', $row['price']), 2, '.', ',') : 'Call for Price'; ?></h5>
 					</div>
 					<a class="btn yellowbtn mb-2 min-w-auto py-3" href="<?php echo base_url().'/add-listing?category='.$row['cat_id'].'&id='.$row['id'];?>">EDIT MY LISTING</a>
@@ -162,17 +162,28 @@ $(document).ready(function() {
 					csrf_token:'1e78598ff0fc7c5d22b2b579edcdc3db'
 				  },
 				  success: function(response) {
-					var status_text = (status == 1) ? '<span class="text-success" title="active">ACTIVE</span>' : '<span class="text-danger" title="banned">INACTIVE</span>';
-					$('#p_id_'+listingId+' span').replaceWith(status_text);
-					Swal.fire({
-						icon: 'success',
-						text: 'Status updated successfully',
-						toast: true,
-						position: 'top-end',
-						showConfirmButton: false,
-						timer: 2000,
-						timerProgressBar: true
-					});
+					  if(response == 'success'){
+						var status_text = (status == 1) ? '<span class="text-success" title="active">ACTIVE</span>' : '<span class="text-danger" title="banned">INACTIVE</span>';
+						$('#p_id_'+listingId+' span').replaceWith(status_text);
+						Swal.fire({
+							icon: 'success',
+							text: 'Status updated successfully',
+							toast: true,
+							position: 'top-end',
+							showConfirmButton: false,
+							timer: 2000,
+							timerProgressBar: true
+						});
+					  }else{
+						  $('.toggle-status').prop('checked', false);
+							Swal.fire({
+								icon: 'warning',
+								text: 'Oops! It looks like some required fields are missing. Please complete all fields before publishing your listing.',
+							  showConfirmButton: true,
+							  allowOutsideClick: true,
+							  allowEscapeKey: true
+							});
+					  }
 				  },
 				  error: function(xhr) {
 					alert('Error: ' + xhr.responseText);

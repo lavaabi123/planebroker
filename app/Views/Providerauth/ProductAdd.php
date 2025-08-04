@@ -215,14 +215,18 @@ video{
 				<div class="dbContent">
 				<div class="container">
 					<div class="titleSec text-center">
-						<h3 class="title-lg fw-bolder my-4">Create your <?php echo !empty(getCategoryName($_GET['category'])) ? getCategoryName($_GET['category']) : 'Aircraft Listing'; ?></h3>
+						<h3 class="title-lg fw-bolder my-4">Create your <?php echo !empty(getCategoryName($_GET['category'])) ? getCategoryName($_GET['category']) : 'Aircraft Listing'; ?>
+						<?php if(empty($product_detail['status'])){ ?>
+						<span class="btn text-right save-listing">Save</span>
+						<?php } ?>
+						</h3>
 					</div>
 					
 					<form id="aircraft-add-form-1" method="post" action="<?php echo base_url(); ?>/add-listing-post" enctype="multipart/form-data">
 						<?php echo csrf_field() ?>
 						<input type="hidden" name="category_id" value="<?php echo $_GET['category']; ?>">
 						<input type="hidden" name="product_id" value="<?php echo !empty($_GET['id']) ? $_GET['id'] : ''; ?>">
-						<input type="hidden" name="status" value="<?php echo !empty($product_detail['status']) ? $product_detail['status'] : 1; ?>">
+						<input type="hidden" name="status" value="<?php echo !empty($product_detail['status']) ? $product_detail['status'] : 0; ?>">
 						
 						<input type="hidden" name="sale_id" value="<?php echo !empty($selected_sale_id) ? $selected_sale_id : (!empty($product_detail['sale_id']) ? $product_detail['sale_id'] : '') ; ?>">
 						<input type="hidden" name="payment_type" value="<?php echo !empty($selected_payment) ? $selected_payment : (!empty($product_detail['payment_type']) ? $product_detail['payment_type'] : ''); ?>">
@@ -461,9 +465,12 @@ video{
 								<input type="hidden" name="register_plan" value="<?php echo !empty(session()->get('selected_plan_id')) ? session()->get('selected_plan_id') : 1; ?>" >
 							
 							<?php if(!empty($_GET['id'])){ ?>
-							<input type="submit" value="UPDATE LISTING" class="btn py-3 blue-btn fw-medium mx-auto d-block mt-4" />
-							<?php }else{ ?>
-							<input type="submit" value="Submit" class="btn py-3 blue-btn fw-medium mx-auto d-block mt-4" />
+							<input type="submit" value="PUBLISH" class="btn py-3 blue-btn fw-medium mx-auto d-block mt-4" />
+							<?php if(empty($product_detail['status'])){ ?>
+							<span class="btn text-right save-listing">SAVE LISTING</span>
+							<?php }}else{ ?>
+							<input type="submit" value="PUBLISH" class="btn py-3 blue-btn fw-medium mx-auto d-block mt-4" />
+							<span class="btn text-right save-listing">SAVE LISTING</span>
 							<?php } ?>
 						</form> 
 					</div>

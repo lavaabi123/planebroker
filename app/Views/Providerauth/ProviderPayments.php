@@ -95,7 +95,7 @@ if(empty($payment->is_cancel)){							?>
 									<a target="_blank" href="<?php echo base_url().'/listings/'.$payment->permalink.'/'.$payment->product_id.'/'.(!empty($payment->display_name)?str_replace(' ','-',strtolower($payment->display_name)):''); ?>" class="btn py-3">VIEW LISTING</a>
 									<?php 
 									}else{ ?>
-										<a href="<?php echo base_url('/add-listing'); ?>" class="btn py-3 blue-btn">ADD LISTING</a> 
+										<a href="<?php echo base_url('/add-listing?sale_id='.$payment->id.'&payment_type='.$payment->payment_type); ?>" class="btn py-3 blue-btn">ADD LISTING</a> 
 									<?php }
 									if(empty($payment->is_cancel)){ ?>
 									<a href="javascript:void(0);" onclick="confirm_cancel('<?php echo $payment->id;?>','<?php echo $payment->payment_type;?>')" class="text-primary mt-3 d-inline-block">Cancel Subscription</a>

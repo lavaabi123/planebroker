@@ -6,17 +6,17 @@
 </style>
 				
 				
-					<h6>PAYMENT METHOD</h6>		
-			<div class='row'>		<?php if(!empty($cards)){ ?>
-				<div class="col-sm-12">
+			<h6 class="border-bottom pb-2 mb-2">PAYMENT METHOD</h6>		
+					<?php if(!empty($cards)){ ?>
+				<div class='row'>
+				<div class="col-sm-8 col-lg-5">
 					<div class="carddetail">
 						<?php 
 						if($cards->data){
 							foreach ( $cards->data as $s => $source ) { ?>
-								<div class="card mb-2 rounded-5">
-								<div class="d-flex justify-content-between align-items-center p-3">
-								<div class="d-flex justify-content-between align-items-center">
-								<div class="me-3">
+								
+								<div class="d-flex align-items-center mb-2">
+								<div class="me-2">
 								<?php if( $source->brand=='Visa'){ ?>
 								<svg class="SVGInline-svg SVGInline--cleaned-svg SVG-svg BrandIcon-svg BrandIcon--size--32-svg" height="32" width="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><path d="M0 0h32v32H0z" fill="#00579f"></path><g fill="#fff" fill-rule="nonzero"><path d="M13.823 19.876H11.8l1.265-7.736h2.023zm7.334-7.546a5.036 5.036 0 0 0-1.814-.33c-1.998 0-3.405 1.053-3.414 2.56-.016 1.11 1.007 1.728 1.773 2.098.783.379 1.05.626 1.05.963-.009.518-.633.757-1.216.757-.808 0-1.24-.123-1.898-.411l-.267-.124-.283 1.737c.475.213 1.349.403 2.257.411 2.123 0 3.505-1.037 3.521-2.641.008-.881-.532-1.556-1.698-2.107-.708-.354-1.141-.593-1.141-.955.008-.33.366-.667 1.165-.667a3.471 3.471 0 0 1 1.507.297l.183.082zm2.69 4.806.807-2.165c-.008.017.167-.452.266-.74l.142.666s.383 1.852.466 2.239h-1.682zm2.497-4.996h-1.565c-.483 0-.85.14-1.058.642l-3.005 7.094h2.123l.425-1.16h2.597c.059.271.242 1.16.242 1.16h1.873zm-16.234 0-1.982 5.275-.216-1.07c-.366-1.234-1.515-2.575-2.797-3.242l1.815 6.765h2.14l3.18-7.728z"></path><path d="M6.289 12.14H3.033L3 12.297c2.54.641 4.221 2.189 4.912 4.049l-.708-3.556c-.116-.494-.474-.633-.915-.65z"></path></g></g></svg>
 								<?php }else if( $source->brand=='American Express'){ ?>
@@ -31,18 +31,18 @@
 								<img height="32" width="32" src="<?php echo base_url('assets/img/dummy.png'); ?>" />
 								<?php } ?>
 								</div>
-								<div class="d-flex">
-								<p class="mb-0 fs-6 fw-medium"><strong><?php echo $source->brand;?> •••• <?php echo $source->last4;?></strong>
+								<div class="d-flex align-items-center justify-content-between w-100 gap-3">
+								<small class=""><strong><?php echo $source->brand;?> •••• <?php echo $source->last4;?></strong>
 
 								<?php if($customer->default_source == $source->id){ ?>
 
-								<span class="badge bg-primary rounded-5 px-4">Default</span>
+								<span class="badge bg-primary rounded-2 px-2">Default</span>
 
 								<?php } ?>
 
-								</p>
+								</small>
 
-								<p class="mb-0 fs-6 fw-medium">Expires <?php echo date('M',strtotime($source->exp_month)).' '.$source->exp_year; ?></p>
+								<small class="d-flex align-items-center gap-3">Expires <?php echo date('M',strtotime($source->exp_month)).' '.$source->exp_year; ?>
                                 <div class="dropdown">
 								  <span class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
 									•••
@@ -63,15 +63,13 @@
 									<?php } ?>
 								  </ul>
 								</div>
-								</div>
-								</div>
+								</small>
 								</div>
 								</div>
 							<?php }
 						}
 						?>	
 					</div>
-					<hr>
 					<!--<div class="carddetail">
 						<h3 class="title-sm dblue mb-0">Subscription:</h3>
 						<?php
@@ -89,15 +87,17 @@
 
 					</div>-->
 				</div>
+				</div>
 				<?php }else{
 					echo '<p class="text-center py-4">No Added Cards Found.</p>';
 				} if(!empty($customerId)){ ?>
-				<div class='col-sm-12 '>
+				<div class='row'>
+				<div class='col-sm-8 col-lg-5'>
 					<form id="payment-form" action='<?php echo base_url(); ?>/providerauth/update-card-post' method='post'>	
-						  <div class="form-row">
-							<h6 class="card-element mb-3 open-card-form" role="button"><i class="fa fa-plus"></i>Add payment method</h6>
-							<div class="open-add-card-form" style="display:none;">
-							<div id="card-element" class="card mb-2 rounded-5 p-3">
+						  <div class="form-row my-3">
+							<h6 class="card-element mb-3 fs-6 open-card-form" role="button"><i class="fa fa-plus me-2"></i>Add payment method</h6>
+							<div class="open-add-card-form border-top pt-3" style="display:none;">
+							<div id="card-element" class="">
 							  <!-- a Stripe Element will be inserted here. -->
 							</div>
 							<!-- Used to display form errors -->
@@ -110,8 +110,8 @@
 						  </div>
 					</form>
 				</div>
-				<?php } ?>
 				</div>
+				<?php } ?>
 <div class="loader"></div>
 <script>
 $(function(){

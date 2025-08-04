@@ -1759,6 +1759,7 @@ class UsersModel extends Model
         if (!empty($search)) {
             $query->groupStart()
              ->orLike('p.name', $search)
+			 ->orLike('(SELECT GROUP_CONCAT(pd.field_value ORDER BY t.sort_order SEPARATOR " ") AS field_values FROM products_dynamic_fields pd JOIN ( SELECT t.field_id, t.sort_order FROM title_fields t LEFT JOIN fields f ON f.id = t.field_id WHERE t.title_type = "title") t ON t.field_id = pd.field_id WHERE pd.product_id = pr.id)', $search)
              ->groupEnd();
         }
 

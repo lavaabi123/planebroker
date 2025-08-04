@@ -17,7 +17,8 @@
 						<?php 
 						$pp = 0;
 						if(!empty($payments)){
-							foreach ($payments as $p => $payment) : ?>
+							foreach ($payments as $p => $payment) :
+if(empty($payment->is_cancel)){							?>
 							<tr>
 								<td><?php echo $payment->plan_name; ?></td>
 								<td><?php echo !empty($payment->display_name) ? $payment->display_name : '<a href="'.base_url('/add-listing?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type).'').'" class="btn btn-sm">Add Listing</a>'; ?></td>
@@ -39,7 +40,7 @@
 								?>
 								</td>
 							</tr>
-						<?php endforeach;
+						<?php } endforeach;
 						}?>
 					</tbody>
 				</table>
@@ -64,14 +65,17 @@
 				
 				<div class="row mt-3 mt-3 row-gap-3 row-gap-sm-4">
 				<?php if(!empty($payments)){ ?>
-				<?php foreach($payments as $payment){ if($payment->product_id > 0){
+				<?php foreach($payments as $payment){ 
 					$db = \Config\Database::connect();
+					$pic = base_url().'/assets/frontend/images/user.png';
+					if($payment->product_id > 0){
 					$pics = $db->query("SELECT file_name FROM user_images WHERE product_id='".$payment->product_id."' ORDER BY `order` ASC LIMIT 1", 'a')->getRowArray();
 				 
 					if(empty($pics)){ 
 						$pic = base_url().'/assets/frontend/images/user.png';
 					}else{
 						$pic = base_url().'/uploads/userimages/'.$payment->user_id.'/'.$pics['file_name'];
+					}
 					}
 					
 					?>
@@ -84,10 +88,16 @@
 									<h5 class="">$<?= $payment->plan_price; ?></h5>
 								</div>
 								<div class="col-6 text-end">
-									<?php echo !empty($payment->is_cancel) ? '<span class="text-danger d-inline-block mb-0" title="Active">Expired</span>' : '<span class="text-success d-inline-block mb-0" title="Active">Active</span>'; ?>
+									<?php 
+									echo !empty($payment->is_cancel) ? '<span class="text-danger d-inline-block mb-0" title="Active">Expired</span>' : '<span class="text-success d-inline-block mb-0" title="Active">Active</span>'; 
+									if($payment->product_id > 0){ ?>
 									<a href="<?php echo base_url('/add-listing?category='.$payment->category_id.'&id='.$payment->product_id); ?>" class="btn py-3 blue-btn">EDIT MY LISTING</a> 
 									<a target="_blank" href="<?php echo base_url().'/listings/'.$payment->permalink.'/'.$payment->product_id.'/'.(!empty($payment->display_name)?str_replace(' ','-',strtolower($payment->display_name)):''); ?>" class="btn py-3">VIEW LISTING</a>
-									<?php if(empty($payment->is_cancel)){ ?>
+									<?php 
+									}else{ ?>
+										<a href="<?php echo base_url('/add-listing'); ?>" class="btn py-3 blue-btn">ADD LISTING</a> 
+									<?php }
+									if(empty($payment->is_cancel)){ ?>
 									<a href="javascript:void(0);" onclick="confirm_cancel('<?php echo $payment->id;?>','<?php echo $payment->payment_type;?>')" class="text-primary mt-3 d-inline-block">Cancel Subscription</a>
 									<?php } ?>
 								</div>
@@ -97,8 +107,9 @@
 									Start Date: <?php echo ($payment->stripe_subscription_start_date != NULL) ? date("m/d/Y",strtotime($payment->stripe_subscription_start_date)) : '-'; ?>  
 								</div>
 								<div class="col-6 text-end">									
-									<?php if(empty($payment->is_cancel)){ ?><a href="<?php echo base_url('/plan?sale_id='.$payment->id.'&payment_type='.$payment->payment_type.'&plan_id='.$payment->plan_id); ?>" class="btn min-w-auto">UPGRADE SUBSCRIPTION</a> 
-									<?php } ?>
+									<?php //if(empty($payment->is_cancel)){ ?>
+									<a href="<?php echo base_url('/plan?sale_id='.$payment->id.'&payment_type='.$payment->payment_type.'&plan_id='.$payment->plan_id); ?>" class="btn min-w-auto">UPGRADE SUBSCRIPTION</a> 
+									<?php //} ?>
 								</div>
 							</div>
 							<div class="row p-4">
@@ -111,5 +122,5 @@
 							</div>
 						</div>
 					</div>
-				<?php } } }else{ echo '<p class="text-center py-4">No Records Found.</p>'; } ?>
+				<?php  } }else{ echo '<p class="text-center py-4">No Records Found.</p>'; } ?>
 				</div>

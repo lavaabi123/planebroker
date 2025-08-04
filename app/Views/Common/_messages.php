@@ -22,6 +22,17 @@ Swal.fire({
 </script>
 <?php endif; ?>
 
+<?php if (session()->getFlashdata('success_form2')) : ?>
+<script>
+Swal.fire({
+  html: '<?php echo session()->getFlashdata('success_form2'); ?>',
+  icon: 'success',
+  showConfirmButton: true,
+  allowOutsideClick: true,
+  allowEscapeKey: true
+})
+</script>
+<?php endif; ?>
 <?php if (session()->get('vr_sess_logged_in') == TRUE && session()->get('vr_sess_email_status') == 0) : ?>
 <script>
 Swal.fire({

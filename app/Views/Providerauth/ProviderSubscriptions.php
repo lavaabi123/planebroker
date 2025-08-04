@@ -173,7 +173,11 @@ $(document).ready(function () {
         $('.subscription-card.inactive').show();
         $('#filter-expired').addClass('active-tab');
         $('#filter-active').removeClass('active-tab');
-    });
+    });$('.applyBtn').on('click', function () {
+    setTimeout(function () {
+        $('.fb-filter form').submit();
+    }, 50); // 50ms delay ensures date value is written first
+});
 });
 </script>		
 <?= $this->endSection() ?>

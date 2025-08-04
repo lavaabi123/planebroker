@@ -1406,14 +1406,18 @@ class ProviderDashboard extends ProviderauthController
 					'to_name' => !empty($data['user_detail']->fullname) ? $data['user_detail']->fullname : 'User',
 					'template_path' => "email/email_subs_cancellation"
 				);
-				$emailModel->send_email($data);
+				//$emailModel->send_email($data);
 				
 				// Handle the cancellation success
 				if($request_from == 'admin'){
 					$this->session->setFlashData('success', trans("Subscription canceled successfully!"));
 					return redirect()->to(admin_url().'listings/sales');
 				}else{
-					$this->session->setFlashData('success_form', trans("Subscription canceled successfully!"));
+					if(strtotime($s_detail->stripe_subscription_end_date) > time()){
+						$this->session->setFlashData('success_form2', "Your subscription has been successfully canceled. You will continue to have access to your account and all subscription features until ". date("m/d/Y", strtotime($s_detail->stripe_subscription_end_date)));
+					}else{
+						$this->session->setFlashData('success_form', trans("Subscription canceled successfully!"));
+					}					
 					return redirect()->to(base_url('subscriptions'));
 				}
 			} catch (\Stripe\Exception\ApiErrorException $e) {
@@ -1436,14 +1440,18 @@ class ProviderDashboard extends ProviderauthController
 					'to_name' => !empty($data['user_detail']->fullname) ? $data['user_detail']->fullname : 'User',
 					'template_path' => "email/email_subs_cancellation"
 				);
-				$emailModel->send_email($data);
+				//$emailModel->send_email($data);
 				
 				// Handle the cancellation success
 				if($request_from == 'admin'){
 					$this->session->setFlashData('success', trans("Subscription canceled successfully!"));
 					return redirect()->to(admin_url().'listings/sales');
 				}else{
-					$this->session->setFlashData('success_form', trans("Subscription canceled successfully!"));
+					if(strtotime($s_detail->stripe_subscription_end_date) > time()){
+						$this->session->setFlashData('success_form2', "Your subscription has been successfully canceled. You will continue to have access to your account and all subscription features until ". date("m/d/Y", strtotime($s_detail->stripe_subscription_end_date)));
+					}else{
+						$this->session->setFlashData('success_form', trans("Subscription canceled successfully!"));
+					}
 					return redirect()->to(base_url('subscriptions'));
 				}
 			}

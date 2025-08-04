@@ -443,7 +443,7 @@ a.btn.bg-gray:hover {
 }
 #reportrange {
     border: 2px solid #b3b3b3;
-    padding: 12px 20px;
+    padding: 10px 15px;
     border-radius: 25px;
 }
 #navbarCollapse .btn {
@@ -1943,6 +1943,12 @@ label#email-error {
     padding-top: 8px !important;
     box-shadow: 3px 3px 5px #00000022;
 }
+.carddetail small {
+	font-size: 12px;
+}
+.carddetail .SVG-svg.BrandIcon-svg {
+    width: 20px;
+}
 .modal-body label {
     font-size: 14px;
     margin-left: 15px;
@@ -2006,6 +2012,16 @@ label#email-error {
     font-size: 14px;
     margin-left: 15px;
 }
+.titleSec .save-listing {
+	position: absolute;
+    right: 0;
+    top: -7px;
+	min-width: auto;
+}
+span.save-listing
+ {
+    font-size: 16px !important;
+}
 @media(min-width:768px) {
 .left-section {
     width: 30%;
@@ -2014,33 +2030,14 @@ label#email-error {
     font-size: calc(var(--title-xs) - 5px);
     margin-top: 1rem;
 }
-.leftsidecontent {
-    position: fixed;
-    left: 0;
-}
-.leftsidecontent {
-	top: calc(var(--sticky-top) - 60px);
-	height: calc(100% - calc(var(--sticky-top) - 60px));
-	overflow: auto;
-}
+
 .carftList.right-section, .listing-page footer, .listing-page .footer2 {
     /*width: 83%;
     max-width: calc(100% - 30%);
 	float: right;
 	margin-left: auto;*/
 }
-.rightsidecontent, .left-menu-added footer, .left-menu-added .footer2 {
-	max-width: calc(100% - 280px);
-	/*float: right;*/
-    width: 100%;
-	margin-left: auto;
-}
-.left-menu-added footer .blog {
-	background: var(--light-grey);
-}
-.left-menu-added #header + div.d-flex {
-    justify-content: end;
-}
+
 .advSearch form, .filterSort {
     border-radius: 3rem;
 }
@@ -2060,6 +2057,27 @@ label#email-error {
 }
 }
 @media(min-width:992px) {
+.leftsidecontent {
+    position: fixed;
+    left: 0;
+}
+.leftsidecontent {
+	top: calc(var(--sticky-top) - 60px);
+	height: calc(100% - calc(var(--sticky-top) - 60px));
+	overflow: auto;
+}
+.rightsidecontent, .left-menu-added footer, .left-menu-added .footer2 {
+	max-width: calc(100% - 280px);
+	/*float: right;*/
+    width: 100%;
+	margin-left: auto;
+}
+.left-menu-added footer .blog {
+	background: var(--light-grey);
+}
+.left-menu-added #header + div.d-flex {
+    justify-content: end;
+}
 .grid-col-4 {
     grid-template-columns: repeat(4, 1fr);
     /*padding: 0 2.5rem;*/
@@ -2639,6 +2657,8 @@ footer li {
 }
 .dbContent .btn {
     min-width: 100%;
+	font-size: 12px !important;
+    padding: 12px !important;
 }
 .filter_Sec .form-section {
     flex-direction: column;
@@ -2859,4 +2879,12 @@ footer li {
     width: 100%;
     justify-content: center;
 }
+.titleSec .save-listing {
+    right: -28px;
+    top: -95px;
+    min-width: auto !important;
+    padding: 7px 20px !important;
+    font-size: 13px !important;
+}
+
 }

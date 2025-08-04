@@ -214,10 +214,10 @@ video{
 				</div>
 				<div class="dbContent">
 				<div class="container">
-					<div class="titleSec text-center">
-						<h3 class="title-lg fw-bolder my-4">Create your <?php echo !empty(getCategoryName($_GET['category'])) ? getCategoryName($_GET['category']) : 'Aircraft Listing'; ?>
+					<div class="titleSec text-center ps-0">
+						<h3 class="title-lg fw-bolder my-4 position-relative">Create your <?php echo !empty(getCategoryName($_GET['category'])) ? getCategoryName($_GET['category']) : 'Aircraft Listing'; ?>
 						<?php if(empty($product_detail['status'])){ ?>
-						<span class="btn text-right save-listing">Save</span>
+						<span class="btn save-listing px-5">Save</span>
 						<?php } ?>
 						</h3>
 					</div>
@@ -274,7 +274,7 @@ video{
 														}else if($field->field_type == 'Number'){
 															echo '<input type="number" name="dynamic_fields['.$field->id.']" class="form-control" placeholder="'.$field->name.' '.$req_op.'" value="'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '').'" '.$req_op_text.'>';
 														}else if($field->field_type == 'Textarea'){
-															$rowsnumber = ($field->name == 'About this Aircraft' || $field->id == 14) ? 'rows="10"' :'';
+															$rowsnumber = ($field->name == 'About this Aircraft' || $field->id == 14) ? 'rows="5"' :'';
 															echo '<textarea name="dynamic_fields['.$field->id.']" class="form-control" placeholder="'.$field->name.' '.$req_op.'" '.$req_op_text.' '.$rowsnumber.'>'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '').'</textarea>';
 														}else if($field->field_type == 'Checkbox'){
 															echo '<label class="mb-0 d-block mx-0">'.$field->name.' '.$req_op.'</label>';
@@ -463,15 +463,16 @@ video{
 								<input type="hidden" id="g-recaptcha-response"  class="form-control required" name="check_bot" value="" >
 								
 								<input type="hidden" name="register_plan" value="<?php echo !empty(session()->get('selected_plan_id')) ? session()->get('selected_plan_id') : 1; ?>" >
-							
+							<div class="d-flex align-items-center flex-column flex-md-row justify-content-center gap-2 mt-2 mb-4 mt-md-4">
 							<?php if(!empty($_GET['id'])){ ?>
-							<input type="submit" value="PUBLISH" class="btn py-3 blue-btn fw-medium mx-auto d-block mt-4" />
+							<input type="submit" value="PUBLISH" class="btn py-3 blue-btn fw-medium mb-0" />
 							<?php if(empty($product_detail['status'])){ ?>
-							<span class="btn text-right save-listing">SAVE LISTING</span>
+							<span class="btn text-right save-listing py-3">SAVE LISTING</span>
 							<?php }}else{ ?>
-							<input type="submit" value="PUBLISH" class="btn py-3 blue-btn fw-medium mx-auto d-block mt-4" />
-							<span class="btn text-right save-listing">SAVE LISTING</span>
+							<input type="submit" value="PUBLISH" class="btn py-3 blue-btn fw-medium mb-0" />
+							<span class="btn text-right save-listing py-3">SAVE LISTING</span>
 							<?php } ?>
+							</div>
 						</form> 
 					</div>
 				</div>

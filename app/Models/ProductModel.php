@@ -23,60 +23,71 @@ class ProductModel extends Model
     }
 	
 	public function get_filters($category = 'all', $where = '')
-	{
-		$category_detail = $this->db->query("
-			SELECT id, name, skill_name, permalink 
-			FROM categories 
-			WHERE permalink LIKE '".$category."' 
-			ORDER BY name ASC
-		", 'r')->getRowArray();
+{
+    // Get category details
+    $category_detail = $this->db->query("
+        SELECT id, name, skill_name, permalink 
+        FROM categories 
+        WHERE permalink LIKE '".$category."' 
+        ORDER BY name ASC
+    ", 'r')->getRowArray();
 
-		$result = $this->db->query("
-			SELECT 
-				id, name, filter_type, 
-				LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name, '/', '_'), ' ', '_'), '-', '_'), '(', '_'), ')', '_'), '&', '_')) as slug 
-			FROM `fields` f 
-			LEFT JOIN field_categories c ON c.field_id=f.id 
-			WHERE c.category_id = ".$category_detail['id']." AND f.is_filter = 1 
-			GROUP BY name 
-			ORDER BY f.filter_order ASC
-		")->getResultArray();
+    // Get field filters for that category
+    $result = $this->db->query("
+        SELECT 
+            id, 
+            name, 
+            filter_type, 
+            LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name, '/', '_'), ' ', '_'), '-', '_'), '(', '_'), ')', '_'), '&', '_')) as slug 
+        FROM fields f
+        LEFT JOIN field_categories c ON c.field_id = f.id 
+        WHERE c.category_id = ".$category_detail['id']." AND f.is_filter = 1 
+        GROUP BY name 
+        ORDER BY f.filter_order ASC
+    ")->getResultArray();
 
-		$filters = array();
+    $filters = [];
 
-		if (!empty($result)) {
-			foreach ($result as $filter) {
-				$values = array();
+    // Clean the WHERE clause for subquery use (remove table aliases)
+    $cleanWhere = trim($where);
+    $cleanWhere = ltrim($cleanWhere, 'AND ');
+    $cleanWhere = str_replace(['p.', 's.'], '', $cleanWhere);
 
-				if ($filter['filter_type'] == 'checkbox') {
-					$values = $this->db->query("
-						SELECT 
-							field_value AS name, 
-							field_id AS id, 
-							COUNT(DISTINCT product_id) AS count 
-						FROM `products_dynamic_fields` 
-						WHERE field_id IN (
-							SELECT id 
-							FROM `fields` 
-							WHERE name = '".$filter['name']."'
-						) 
-						AND product_id IN (
-							SELECT id 
-							FROM `products` 
-							WHERE category_id = ".$category_detail['id']."
-							".($where ? "AND ".$where : "")."
-						) 
-						GROUP BY field_value
-					")->getResultArray();
-				}
+    if (!empty($result)) {
+        foreach ($result as $filter) {
+            $values = [];
 
-				$filter['values'] = $values;
-				$filters[] = $filter;
-			}
-		}
+            if ($filter['filter_type'] == 'checkbox') {
+                // Fetch value + count for each checkbox filter
+                $values = $this->db->query("
+                    SELECT 
+                        field_value AS name, 
+                        field_id AS id, 
+                        COUNT(DISTINCT product_id) AS count 
+                    FROM products_dynamic_fields 
+                    WHERE field_id IN (
+                        SELECT id 
+                        FROM fields 
+                        WHERE name = '".$filter['name']."'
+                    ) 
+                    AND product_id IN (
+                        SELECT id 
+                        FROM products 
+                        WHERE category_id = ".$category_detail['id'].($cleanWhere ? " AND ".$cleanWhere : "")."
+                    ) 
+                    GROUP BY field_value
+                ")->getResultArray();
+            }
 
-		return $filters;
-	}
+            // Add filter values to the response
+            $filter['values'] = $values;
+            $filters[] = $filter;
+        }
+    }
+
+    return $filters;
+}
+
 
 	
     public function productPaginate()
@@ -233,8 +244,9 @@ class ProductModel extends Model
 		
 	}
 	
-	public function get_manufacturers($category)
+	public function get_manufacturers($category, $where = '')
 {
+    // Step 1: Fetch the JSON-encoded field_options for "manufacturer"
     $manufacturers = $this->db->query("
         SELECT field_options 
         FROM fields 
@@ -244,48 +256,130 @@ class ProductModel extends Model
             JOIN field_categories c ON f.id = c.field_id 
             WHERE f.name = 'manufacturer' 
               AND c.category_id IN (
-                SELECT id FROM categories WHERE permalink = '".$category."'
+                  SELECT id FROM categories WHERE permalink = ?
               )
         )
-    ")->getResult();
+    ", [$category])->getResult();
 
     $man = [];
 
     if (!empty($manufacturers[0]->field_options)) {
-        $mm = json_decode($manufacturers[0]->field_options, true);
+        $options = json_decode($manufacturers[0]->field_options, true);
 
-        foreach ($mm as $op) {
-            // Count how many products have this manufacturer
-            $countResult = $this->db->query("
-                SELECT COUNT(DISTINCT p.id) AS count 
-                FROM products p
-                JOIN products_dynamic_fields pdf ON pdf.product_id = p.id
-                JOIN fields f ON f.id = pdf.field_id
-                JOIN field_categories fc ON fc.field_id = f.id
-                WHERE f.name = 'manufacturer'
-                  AND pdf.field_value = ?
-                  AND fc.category_id IN (
+        // Clean WHERE clause for subquery use
+        $cleanWhere = trim($where);
+        $cleanWhere = ltrim($cleanWhere, 'AND ');
+        $cleanWhere = str_replace(['p.', 's.'], '', $cleanWhere);
+
+        // Step 2: Get counts per manufacturer using one query
+        $countResults = $this->db->query("
+            SELECT 
+                pdf.field_value, 
+                COUNT(DISTINCT pdf.product_id) AS count
+            FROM products_dynamic_fields pdf
+            JOIN fields f ON f.id = pdf.field_id
+            JOIN field_categories fc ON fc.field_id = f.id
+            WHERE f.name = 'manufacturer'
+              AND fc.category_id IN (
+                  SELECT id FROM categories WHERE permalink = ?
+              )
+              AND pdf.product_id IN (
+                  SELECT id FROM products 
+                  WHERE category_id IN (
                       SELECT id FROM categories WHERE permalink = ?
                   )
-                  AND p.status = 1
-            ", [$op, $category])->getRow();
+                  ".($cleanWhere ? " AND $cleanWhere" : "")."
+              )
+            GROUP BY pdf.field_value
+        ", [$category, $category])->getResult();
 
+        // Map counts to manufacturer names
+        $count_map = [];
+        foreach ($countResults as $row) {
+            $count_map[$row->field_value] = $row->count;
+        }
+
+        // Step 3: Return all options with their corresponding counts
+        foreach ($options as $name) {
             $man[] = [
-                'name'  => $op,
-                'count' => $countResult->count ?? 0
+                'name'  => $name,
+                'count' => $count_map[$name] ?? 0
             ];
         }
     }
 
-    return json_decode(json_encode($man)); // Convert array to object
+    return json_decode(json_encode($man)); // optional: return as object
 }
 
+
 	
-	public function get_models($category){
-		$manufacturers = $this->db->query("SELECT field_value as name, field_id as id, product_id FROM `products_dynamic_fields` where field_id in (SELECT id FROM `fields` where name like '%model%') and product_id in (SELECT id FROM `products` where category_id = (select id from categories where permalink='".$category."')) group by field_value")->getResult();
-		return $manufacturers;
-		
-	}
+	public function get_models($category, $where = '')
+{
+    // Step 1: Get the field_options for "Make/Model"
+    $models = $this->db->query("
+        SELECT field_options 
+        FROM fields 
+        WHERE id IN (
+            SELECT f.id 
+            FROM fields f 
+            JOIN field_categories c ON f.id = c.field_id 
+            WHERE f.name = 'Make/Model' 
+              AND c.category_id IN (
+                  SELECT id FROM categories WHERE permalink = ?
+              )
+        )
+    ", [$category])->getResult();
+
+    $model_list = [];
+
+    if (!empty($models[0]->field_options)) {
+        $options = json_decode($models[0]->field_options, true);
+
+        // Step 2: Clean the WHERE clause for subquery use
+        $cleanWhere = trim($where);
+        $cleanWhere = ltrim($cleanWhere, 'AND ');
+        $cleanWhere = str_replace(['p.', 's.'], '', $cleanWhere);
+
+        // Step 3: Count product occurrences for each model
+        $countResults = $this->db->query("
+            SELECT 
+                pdf.field_value, 
+                COUNT(DISTINCT pdf.product_id) AS count
+            FROM products_dynamic_fields pdf
+            JOIN fields f ON f.id = pdf.field_id
+            JOIN field_categories fc ON fc.field_id = f.id
+            WHERE f.name = 'Make/Model'
+              AND fc.category_id IN (
+                  SELECT id FROM categories WHERE permalink = ?
+              )
+              AND pdf.product_id IN (
+                  SELECT id FROM products 
+                  WHERE category_id IN (
+                      SELECT id FROM categories WHERE permalink = ?
+                  )
+                  ".($cleanWhere ? " AND $cleanWhere" : "")."
+              )
+            GROUP BY pdf.field_value
+        ", [$category, $category])->getResult();
+
+        // Step 4: Map counts to each model name
+        $count_map = [];
+        foreach ($countResults as $row) {
+            $count_map[$row->field_value] = $row->count;
+        }
+
+        // Step 5: Build final list with counts
+        foreach ($options as $name) {
+            $model_list[] = [
+                'name'  => $name,
+                'count' => $count_map[$name] ?? 0
+            ];
+        }
+    }
+
+    return json_decode(json_encode($model_list)); // optional: convert to object
+}
+
 		
 	public function title_fields($category,$title_type = 'title',$productId=''){
 		$category_detail = $this->db->query("SELECT id, name,skill_name,permalink FROM categories WHERE permalink LIKE '".$category."' ORDER BY name ASC", 'r')->getRowArray();

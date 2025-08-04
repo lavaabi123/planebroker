@@ -217,7 +217,7 @@ class Providers extends BaseController
 		
 		//get products list
 		$this->ProductModel = new ProductModel();
-		$data['filters'] = $this->ProductModel->get_filters($category,$where);
+		$raw_filters = $this->ProductModel->get_filters($category,$where);
 		//echo "<pre>";print_r($data['filters']);exit;
 		
 		if(!empty($_GET)){
@@ -272,7 +272,7 @@ class Providers extends BaseController
 					$slugToFind = $g;
 					$slugText = $g;
 					$check_filter_type = null;
-					foreach ($data['filters'] as $item) {
+					foreach ($raw_filters as $item) {
 						if ($item['slug'] === $slugToFind) {
 							$check_filter_type = $item['filter_type'];
 							$slugText = $item['name'];
@@ -374,6 +374,7 @@ class Providers extends BaseController
 				break;
 		}
 		
+		$data['filters'] = $this->ProductModel->get_filters($category,$where);
 		//get products list
 		$this->ProductModel = new ProductModel();
 		if(!empty($orderBy)){
@@ -387,10 +388,10 @@ class Providers extends BaseController
         $data['categories_list'] = $this->categoriessubModel->get_categories_by_link($category,' AND categories_sub.id IN (SELECT DISTINCT sub_category_id FROM products)');
 		//get manufacturers List
 		$this->ProductModel = new ProductModel();
-		$data['manufacturers'] = $this->ProductModel->get_manufacturers($category);
+		$data['manufacturers'] = $this->ProductModel->get_manufacturers($category, $where);
 		//get models List
 		$this->ProductModel = new ProductModel();
-		$data['models'] = $this->ProductModel->get_models($category);
+		$data['models'] = $this->ProductModel->get_models($category, $where);
 		
 		$data['category'] = $category;
 		$data['filter_texts'] = $filter_texts;
@@ -431,6 +432,7 @@ class Providers extends BaseController
 			return $this->response->setJSON([
 				'grid'    => view('Providers/product_cards',   $data, ['saveData' => false]),
 				'filters' => view('Providers/applied_filters', $data, ['saveData' => false]),
+				'sidebar'  => view('Providers/filter_sidebar', $data, ['saveData' => false]),
 				'count'   => $data['result_count'],
 			]);
 		}

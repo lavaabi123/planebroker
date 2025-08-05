@@ -2050,7 +2050,15 @@ class ProviderDashboard extends ProviderauthController
 		$data['paypal_payments'] = $this->UsersModel->get_paypal_sales_user($this->session->get('vr_sess_user_id'));
 		$payments = $this->UsersModel->get_sales_user($this->session->get('vr_sess_user_id'));
 		//echo '<pre>';print_r($payments);exit;
+		$data['payments_all'] = $payments;
+		
+		$pagination = $this->paginate($this->UsersModel->get_paginated_sales_user_count($this->session->get('vr_sess_user_id')));
+		$payments = $this->UsersModel->get_paginated_sales_user(session()->get('vr_sess_user_id'),$pagination['per_page'], $pagination['offset']);
+		//echo '<pre>';print_r($payments);exit;
 		$data['payments'] = $payments;
+        $data['paginations'] = $pagination['pagination'];
+        $data['total_count'] = $pagination['total'];
+		
 		$data['title'] = trans('Payment History');
 		$data['meta_title'] = 'Payment History | Plane Broker';
 		

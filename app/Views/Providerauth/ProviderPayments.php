@@ -49,8 +49,8 @@
 					<p class="text-center text-muted"><?= trans("no_records_found"); ?></p>
 				<?php endif; ?>
 			</div>
-			<div class="col-sm-12 float-right">
-                                    <?php //echo $paginations ?>
+			<div class="col-sm-12 float-right mb-5">
+                                    <?php echo $paginations; ?>
                                 </div>
             
 					<?php echo $this->include('Providerauth/_modal_provider_messages') ?>
@@ -68,8 +68,8 @@
 				</ul>
 				
 				<div class="row mt-3 mt-3 row-gap-3 row-gap-sm-4">
-				<?php if(!empty($payments)){ ?>
-				<?php foreach($payments as $payment){ 
+				<?php if(!empty($payments_all)){ ?>
+				<?php foreach($payments_all as $payment){ 
 					$db = \Config\Database::connect();
 					$pic = base_url().'/assets/frontend/images/user.png';
 					if($payment->product_id > 0){
@@ -159,5 +159,8 @@ span.text-warning {
     border-radius: 20px;
     padding: 1px 20px;
 	text-transform: uppercase;
+}
+.page-link:hover,.page-link:focus{
+	color:#fff !important;
 }
 </style>

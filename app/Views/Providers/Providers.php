@@ -156,7 +156,7 @@ function radio($name, $val){
 		</div>
 		
 		<div class="container py-5 text-center">
-			<img src="<?= base_url('assets/frontend/images/ads-hoz.jpg') ?>">
+			<a href="https://parkrapidsavionics.com/" target="_blank"><img src="<?= base_url('assets/frontend/images/ad/Park-Rapids-Web-Banner.jpg') ?>"></a>
 		</div>
 		<div class="advSearch mb-5">
 			<h5 class="mb-1">Quick Search</h5>

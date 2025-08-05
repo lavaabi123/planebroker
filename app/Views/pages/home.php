@@ -129,7 +129,7 @@
 	</div>		
 	<?php } ?>
 	<div class="container pb-5 text-center">
-		<img src="<?= base_url('assets/frontend/images/ads-hoz.jpg') ?>">
+		<a href="https://cessna.txtav.com" target="_blank"><img src="<?= base_url('assets/frontend/images/ad/Cessna-Web-Banner.jpg') ?>"></a>
 	</div>
 
 <div class="bg-gray text-center">

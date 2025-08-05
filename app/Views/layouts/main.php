@@ -309,9 +309,11 @@ $currentsegment = ($uri->getTotalSegments() >= (env('urlsegment')-1) && !empty($
 if( base_url() == str_replace('/index.php/','',$uri) || ($currentsegment == 'listings' && empty($uri->getSegment(env('urlsegment')+1))) || ($currentsegment == 'videos') || ($currentsegment == 'faq') || ($currentsegment == 'news')){ 
 $blogs = get_all_blog(0); ?>		
 <div class="blog text-center py-5 px-3 px-xl-5 bg-gray">
-
-<img class="d-none d-md-block" src="<?= base_url('assets/frontend/images/ads-vertical.jpg') ?>">
-
+<?php if($currentsegment == 'listings'){ ?>
+	<a href="https://approachfaststack.com/" target="_blank"><img class="d-none d-md-block" src="<?= base_url('assets/frontend/images/ad/Approach-Web-Banner.jpg') ?>"></a>
+<?php }else{ ?>
+	<a href="https://barefootaviation.com/" target="_blank"><img class="d-none d-md-block" src="<?= base_url('assets/frontend/images/ad/Barefoot-Aviation-Web-Banner.jpg') ?>"></a>
+<?php } ?>
 	<div class="container blogs px-3 px-xl-5">
 
 		<h3 class="d-blue fw-bold mb-3">Resource Articles</h3>
@@ -332,9 +334,12 @@ $blogs = get_all_blog(0); ?>
 		</div>
 		<a href="<?php echo base_url('/blog'); ?>" class="btn py-xl-3 px-xxl-5">View All Articles</a>
 	</div>
-<img class="d-none d-md-block" src="<?= base_url('assets/frontend/images/ads-vertical.jpg') ?>">
+<a href="https://hilleraviation.com/" target="_blank"><img class="d-none d-md-block" src="<?= base_url('assets/frontend/images/ad/Hiller-Aviation-Web-Banner.jpg') ?>"></a>
 </div>
 <?php } ?>
+<div class="bg-gray pb-5 text-center">
+		<a href="https://bwifly.com/" target="_blank"><img src="<?= base_url('assets/frontend/images/ad/BWI-Fly-Web-Banners.jpg') ?>"></a>
+	</div>
 		<div class="container py-5 py-sm-5 text-center">
 			<img width="400" title="CodeIgniter Logo" alt="Visit CodeIgniter.com official website!" src="<?= base_url('assets/img/flogo.png') ?>">
 			<ul class="unstyled-list d-flex align-items-center justify-content-center gap-3 my-4 my-md-5">

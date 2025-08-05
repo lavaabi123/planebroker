@@ -3,6 +3,20 @@
 .dropdown-toggle::after{
 	display:none;
 }
+.open-add-card-form {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.4s ease;
+}
+
+.open-add-card-form.active {
+  max-height: 500px; /* Adjust to content height */
+  opacity: 1;
+}
+.page-link:hover,.page-link:focus{
+	color:#fff !important;
+}
 </style>
 				
 				
@@ -96,7 +110,7 @@
 					<form id="payment-form" action='<?php echo base_url(); ?>/providerauth/update-card-post' method='post'>	
 						  <div class="form-row my-3">
 							<h6 class="card-element mb-3 fs-6 open-card-form" role="button"><i class="fa fa-plus me-2"></i>Add payment method</h6>
-							<div class="open-add-card-form border-top pt-3" style="display:none;">
+							<div class="open-add-card-form border-top pt-3">
 							<div id="card-element" class="">
 							  <!-- a Stripe Element will be inserted here. -->
 							</div>
@@ -121,20 +135,18 @@ $(function(){
   });
 });
 
-$(document).on('click', '.open-card-form', function(){
-    $('.open-add-card-form').show('slow'); 
-	$('.open-card-form').addClass('close-card-form');
-	$('.open-card-form i').removeClass('fa-plus');
-	$('.open-card-form i').addClass('fa-minus');
-	$('.open-card-form').removeClass('open-card-form');
+$(document).on('click', '.open-card-form', function () {
+    $('.open-add-card-form').addClass('active'); // use transition class
+    $(this).addClass('close-card-form').removeClass('open-card-form');
+    $(this).find('i').removeClass('fa-plus').addClass('fa-minus');
 });
-$(document).on('click', '.close-card-form', function(){
-    $('.open-add-card-form').hide('slow'); 
-	$('.close-card-form').addClass('open-card-form');
-	$('.close-card-form i').removeClass('fa-plus');
-	$('.close-card-form i').addClass('fa-minus');
-	$('.close-card-form').removeClass('close-card-form');
+
+$(document).on('click', '.close-card-form', function () {
+    $('.open-add-card-form').removeClass('active'); // hide via CSS transition
+    $(this).addClass('open-card-form').removeClass('close-card-form');
+    $(this).find('i').removeClass('fa-minus').addClass('fa-plus');
 });
+
 function set_default(source_id,customer_id){
     $('.loader').show(); 
 	$.ajax({

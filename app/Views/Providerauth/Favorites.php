@@ -33,7 +33,6 @@
 						<div class="d-grid gap-2 proList grid-col-4 px-0">
 						<?php foreach($results as $row){ ?>
 						<div class="card rounded-5 p-3" id="p_id_<?php echo $row['id']; ?>">
-						<span class="text-success" title="Active">ACTIVE</span>
 							<div class="providerImg mb-2">
 								<img class="d-block w-100" alt="..." src="<?php echo $row['image']; ?>">
 							</div>

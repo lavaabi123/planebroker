@@ -2087,7 +2087,7 @@ class ProviderDashboard extends ProviderauthController
 	
     public function paginate($total_rows)
     {
-        $per_page = 5;
+        $per_page = 6;
         $pager = service('pager');
         //initialize pagination
         $page = $this->request->getGet('page');

@@ -66,8 +66,8 @@
             </script>
         </div>
         <div class="col form-group d-flex flex-column flex-sm-row gap-2">
-            <button type="submit" class="btn w-100 btn-primary"><?php echo trans("filter"); ?></button>
-             <a class="btn w-100 btn-primary" href="<?php echo base_url() . '/subscriptions/'; ?>"><?php echo trans('Reset'); ?></a>
+            <button type="submit" class="btn w-100 btn-primary" style="min-width: auto;"><?php echo trans("filter"); ?></button>
+             <a class="btn w-100 btn-primary" style="min-width: auto;" href="<?php echo base_url() . '/subscriptions/'; ?>"><?php echo trans('Reset'); ?></a>
         </div>
 		</div>
         <?php echo form_close(); ?>
@@ -126,7 +126,17 @@
 				<?php endif; ?>
 			</div>
 			<div class="col-sm-12 mt-4">
-                                    <?php echo ($total_count > 5 || (!empty($_GET['page']) && $_GET['page'] > 1)) ? $paginations : ''; ?>
+                                    <?php echo ($total_count > 6 || (!empty($_GET['page']) && $_GET['page'] > 1)) ? $paginations : ''; ?>
                                 </div>
             
 <?php echo $this->include('Providerauth/_modal_provider_messages') ?>
+
+<script>	
+$(document).ready(function () {
+$('.applyBtn').on('click', function () {
+    setTimeout(function () {
+        $('.fb-filter form').submit();
+    }, 50); // 50ms delay ensures date value is written first
+});
+})
+</script>	

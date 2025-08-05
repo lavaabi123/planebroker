@@ -36,7 +36,7 @@
 								
 								<?php
 								}
-								 echo '<td style="padding-left: 0;">'.(($user_detail->user_level == 0) ? ((!empty($payment->is_cancel))?'<a href="'.base_url('/renew_plan?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type)).'" class="btn btn-sm">RENEW</a>' : '<a href="'.base_url('/plan?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type).'&plan_id='.$payment->plan_id).'" class="btn btn-sm">UPGRADE</a>') : ((!empty($payment->is_cancel))?'<a href="javascript:void(0);" onclick="change_subs_status('.$payment->id.','.$payment->product_id.')" class="btn btn-sm">Activate</a>':'')); 
+								 echo '<td style="padding-left: 0;">'.(($user_detail->user_level == 0) ? ((!empty($payment->is_cancel))?'<a href="'.base_url('/renew_plan?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type)).'" class="btn btn-sm">RENEW</a>' : ((!empty($highest_plan) && $highest_plan[0]->id == $payment->plan_id)?'':'<a href="'.base_url('/plan?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type).'&plan_id='.$payment->plan_id).'" class="btn btn-sm">UPGRADE</a>')) : ((!empty($payment->is_cancel))?'<a href="javascript:void(0);" onclick="change_subs_status('.$payment->id.','.$payment->product_id.')" class="btn btn-sm">Activate</a>':'')); 
 								?>
 								</td>
 							</tr>
@@ -113,9 +113,13 @@
 									Start Date: <?php echo ($payment->stripe_subscription_start_date != NULL) ? date("m/d/Y",strtotime($payment->stripe_subscription_start_date)) : '-'; ?>  
 								</div>
 								<div class="col-6 text-end">									
-									<?php if(empty($payment->is_cancel)){ ?>
+									<?php if(empty($payment->is_cancel)){ 
+									if(!empty($highest_plan) && $highest_plan[0]->id == $payment->plan_id){
+										echo ''; 
+									}else{ ?>
 									<a href="<?php echo base_url('/plan?sale_id='.$payment->id.'&payment_type='.$payment->payment_type.'&plan_id='.$payment->plan_id); ?>" class="btn min-w-auto">UPGRADE SUBSCRIPTION</a> 
-									<?php }else{
+									<?php }
+									}else{
 										 ?>
 									<a href="<?php echo base_url('/plan?sale_id='.$payment->id.'&payment_type='.$payment->payment_type.'&plan_id='.$payment->plan_id); ?>" class="btn min-w-auto">RENEW SUBSCRIPTION</a> 
 									<?php

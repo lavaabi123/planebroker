@@ -62,6 +62,14 @@ class PlansModel extends Model
          return $this->asObject()->where('status',1)->findAll();
 		 //echo $this->db->getLastQuery(); die;
         
+    }	
+	
+	public function get_highest_plan()
+    {
+		
+         return $this->asObject()->where('status',1)->orderBy('id','desc')->limit(1)->find();
+		 //echo $this->db->getLastQuery(); die;
+        
     }
 	
 	public function get_plans_by_id($id)

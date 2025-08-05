@@ -2053,6 +2053,10 @@ class ProviderDashboard extends ProviderauthController
 		$data['payments'] = $payments;
 		$data['title'] = trans('Payment History');
 		$data['meta_title'] = 'Payment History | Plane Broker';
+		
+		$this->PlansModel = new PlansModel();
+		$data['highest_plan'] = $this->PlansModel->get_highest_plan();
+		//echo '<pre>';print_r($data['highest_plan']);exit;
         return $var = view('Providerauth/ProviderPayments', $data);
 	}
 	

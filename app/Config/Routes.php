@@ -64,7 +64,7 @@ $routes->get('/reminder_mail', 'Providers::reminder_mail');
 $routes->get('user-signup', 'Providerauth\ProviderRegister::index');
 $routes->post('user-signup-post', 'Providerauth\ProviderRegister::provider_register_post');
 $routes->post('check-email', 'Providerauth\ProviderRegister::check_email');	
-$routes->get('plan', 'Providerauth\ProviderRegister::plan');	
+$routes->get('plan', 'Providerauth\ProviderRegister::plan');
 $routes->get('add-listing', 'Providerauth\ProviderDashboard::add_listing');	
 $routes->get('my-listing', 'Providerauth\ProviderDashboard::my_listing');	
 $routes->get('favorites', 'Providerauth\ProviderDashboard::favorites');	
@@ -87,7 +87,8 @@ $routes->get('checkout', 'Providerauth\ProviderDashboard::checkout');
 $routes->post('checkout-post', 'Providerauth\ProviderDashboard::checkout_post');
 $routes->get('thankyou', 'Providerauth\ProviderDashboard::thankyou'); 
 $routes->post('favorites_add', 'Providerauth\ProviderDashboard::favorites_add'); 
-$routes->post('remove_favorite', 'Providerauth\ProviderDashboard::remove_favorite'); 
+$routes->post('remove_favorite', 'Providerauth\ProviderDashboard::remove_favorite');
+$routes->get('renew_plan', 'Providerauth\ProviderDashboard::renew_plan');	 
 
 
 $routes->group("api", ["namespace" => "App\Controllers\Api"], function ($routes) {

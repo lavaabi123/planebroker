@@ -120,13 +120,13 @@
 <script>
 function confirm_cancel(subscription_id,payment_type) {
     Swal.fire({
-        text: "Are you sure to cancel the subscription?",
+        text: "ARE YOU SURE YOU WANT TO CANCEL?",
         icon: "warning",
         showCancelButton: 1,
         confirmButtonColor: "#34c38f",
         cancelButtonColor: "#f46a6a",
-        confirmButtonText: "<?php echo trans("ok"); ?>",
-        cancelButtonText: "<?php echo trans("cancel"); ?>",
+        confirmButtonText: "<?php echo trans("YES, CANCEL MY SUBSCRIPTION"); ?>",
+        cancelButtonText: "<?php echo trans("NO, KEEP MY SUBSCRIPTION"); ?>",
 
     }).then(function (response) {
         if (response.value) {
@@ -165,19 +165,40 @@ $(document).ready(function () {
         $('.subscription-card').hide();
         $('.subscription-card.active').show();
         $('#filter-active').addClass('active-tab');
+        $('#filter-inactive').removeClass('active-tab');
         $('#filter-expired').removeClass('active-tab');
     });
 
-    $('#filter-expired').on('click', function () {
+    $('#filter-inactive').on('click', function () {
         $('.subscription-card').hide();
         $('.subscription-card.inactive').show();
+        $('#filter-inactive').addClass('active-tab');
+        $('#filter-active').removeClass('active-tab');
+        $('#filter-expired').removeClass('active-tab');
+    });
+	
+    $('#filter-expired').on('click', function () {
+        $('.subscription-card').hide();
+        $('.subscription-card.expired').show();
         $('#filter-expired').addClass('active-tab');
         $('#filter-active').removeClass('active-tab');
-    });$('.applyBtn').on('click', function () {
-    setTimeout(function () {
-        $('.fb-filter form').submit();
-    }, 50); // 50ms delay ensures date value is written first
+        $('#filter-inactive').removeClass('active-tab');
+    });
+	
+	$('.applyBtn').on('click', function () {
+		setTimeout(function () {
+			$('.fb-filter form').submit();
+		}, 50); // 50ms delay ensures date value is written first
+	});
 });
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
 });
-</script>		
+</script>
+
 <?= $this->endSection() ?>

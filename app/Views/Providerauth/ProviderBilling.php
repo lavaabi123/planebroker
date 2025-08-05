@@ -26,13 +26,13 @@
 <script>
 function confirm_cancel(subscription_id) {
     Swal.fire({
-        text: "Are you sure to cancel the subscription?",
+        text: "ARE YOU SURE YOU WANT TO CANCEL?",
         icon: "warning",
         showCancelButton: 1,
         confirmButtonColor: "#34c38f",
         cancelButtonColor: "#f46a6a",
-        confirmButtonText: "<?php echo trans("ok"); ?>",
-        cancelButtonText: "<?php echo trans("cancel"); ?>",
+        confirmButtonText: "<?php echo trans("YES, CANCEL MY SUBSCRIPTION"); ?>",
+        cancelButtonText: "<?php echo trans("NO, KEEP MY SUBSCRIPTION"); ?>",
 
     }).then(function (response) {
         if (response.value) {

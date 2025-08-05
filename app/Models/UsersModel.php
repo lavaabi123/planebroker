@@ -1695,7 +1695,7 @@ class UsersModel extends Model
 	public function get_sales_user($id)
     {
         $query = $this->db->table('sales AS s')
-            ->select('s.*, u.fullname AS provider,p.name as plan_name,p.price as plan_price,pr.id as product_id,c.permalink,pr.category_id,(SELECT GROUP_CONCAT(pd.field_value ORDER BY t.sort_order SEPARATOR " ") AS field_values FROM products_dynamic_fields pd JOIN ( SELECT t.field_id, t.sort_order FROM title_fields t LEFT JOIN fields f ON f.id = t.field_id WHERE t.title_type = "title") t ON t.field_id = pd.field_id WHERE pd.product_id = pr.id) as display_name')
+            ->select('s.*, u.fullname AS provider,p.name as plan_name,p.price as plan_price,pr.id as product_id,pr.status as product_status,c.permalink,pr.category_id,(SELECT GROUP_CONCAT(pd.field_value ORDER BY t.sort_order SEPARATOR " ") AS field_values FROM products_dynamic_fields pd JOIN ( SELECT t.field_id, t.sort_order FROM title_fields t LEFT JOIN fields f ON f.id = t.field_id WHERE t.title_type = "title") t ON t.field_id = pd.field_id WHERE pd.product_id = pr.id) as display_name')
             ->join('users AS u', 'u.id = s.user_id', 'left')
             ->join('plans AS p', 'p.id = s.plan_id', 'left')
             ->join('products AS pr', 'pr.id = s.product_id', 'left')

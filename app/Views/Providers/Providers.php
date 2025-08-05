@@ -127,7 +127,7 @@ function radio($name, $val){
 
 									<?php if(!empty($manufacturers)){
 										foreach($manufacturers as $i => $row){ ?>
-										<option value="<?php echo $row->name; ?>" <?php echo in_array($row->name,$filter_ids['manufacturer']) ? 'selected' : ''; ?>><?php echo $row->name; ?></option>
+										<option value="<?php echo $row->name; ?>" <?php echo in_array($row->name,$filter_ids['manufacturer']) ? 'selected' : ''; ?>><?php echo $row->name.' ('.$row->count.')'; ?></option>
 
 									<?php } } ?>
 
@@ -190,7 +190,7 @@ function radio($name, $val){
 								<?php if(!empty($manufacturers)){
 
 									foreach($manufacturers as $row){ ?>
-									<option value="<?php echo $row->name; ?>"  <?php echo in_array($row->name,$filter_ids['manufacturer']) ? 'selected' : ''; ?>><?php echo $row->name; ?></option>
+									<option value="<?php echo $row->name; ?>"  <?php echo in_array($row->name,$filter_ids['manufacturer']) ? 'selected' : ''; ?>><?php echo $row->name.' ('.$row->count.')'; ?></option>
 								<?php } } ?>
 
 							</select>	

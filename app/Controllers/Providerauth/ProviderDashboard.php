@@ -1365,6 +1365,52 @@ class ProviderDashboard extends ProviderauthController
 		$data['meta_title'] = 'Billing | Plane Broker';
         return view('Providerauth/ProviderBilling', $data);
 	}
+	
+	public function renew_plan(){
+		$this->UsersModel = new UsersModel();
+		$sale_detail = $this->UsersModel->get_sales_by_id($_GET['sale_id']);
+		$request_from = '';
+		if(!empty($sale_detail) && $sale_detail->stripe_subscription_id != NULL){
+			
+			\Stripe\Stripe::setApiKey(env('stripe.secret'));
+
+			try {
+				$subscriptionId = $sale_detail->stripe_subscription_id;
+				// Retrieve the subscription from Stripe
+				$subscription = \Stripe\Subscription::retrieve($subscriptionId);
+
+				// Reactivate by removing cancel_at_period_end
+				$updatedSubscription = \Stripe\Subscription::update(
+					$subscriptionId,
+					['cancel_at_period_end' => false]
+				);				
+				
+				$this->db->table('sales')->where('stripe_subscription_id',$subscriptionId)->update(['is_cancel' => 0]);
+				if(!empty($sale_detail->product_id)){
+					$this->db->table('products')->where('id', $sale_detail->product_id)->update(['is_cancel' => 0]);
+				}
+
+				$this->session->setFlashData('success_form2', trans("Subscription renewed successfully!"));
+				if ($request_from == 'admin') {
+					return redirect()->to(admin_url().'listings/sales');
+				} else {
+					return redirect()->to(base_url('subscriptions'));
+				}
+			} catch (\Stripe\Exception\ApiErrorException $e) {
+				// Handle the reactivation error
+				$error_message = 'Failed to renew the subscription: ' . $e->getMessage();
+				$this->session->setFlashData('errors_form', $error_message);
+
+				if ($request_from == 'admin') {
+					return redirect()->to(admin_url().'listings/sales');
+				} else {
+					return redirect()->to(base_url('subscriptions'));
+				}
+			}
+
+			
+		}
+	}
 
 	public function billing_cancel(){
 		// Set your Stripe secret key
@@ -1387,8 +1433,10 @@ class ProviderDashboard extends ProviderauthController
 				// Retrieve the subscription from Stripe
 				$subscription = Subscription::retrieve($subscriptionId);
 
-				// Cancel the subscription at the end of the billing period
-				$subscription->cancel();
+				    $subscriptionss = Subscription::update($subscriptionId, [
+						'cancel_at_period_end' => true
+					]);
+
 
 				$updateUser = [
 								'stripe_subscription_customer_id' => NULL,
@@ -2184,7 +2232,10 @@ class ProviderDashboard extends ProviderauthController
 					$customerId = $data['sale_detail']->stripe_subscription_customer_id;
 					$subscriptionId = $data['sale_detail']->stripe_subscription_id;
 					$subscription_cancel = Subscription::retrieve($subscriptionId,[]);
-					$subscription_cancel->cancel();	
+					//$subscription_cancel->cancel();	
+					$subscriptionss = Subscription::update($subscriptionId, [
+						'cancel_at_period_end' => true
+					]);
 				}	
 			}else{
 				

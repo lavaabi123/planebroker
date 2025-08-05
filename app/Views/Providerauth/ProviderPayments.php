@@ -18,13 +18,13 @@
 						$pp = 0;
 						if(!empty($payments)){
 							foreach ($payments as $p => $payment) :
-if(empty($payment->is_cancel)){							?>
+							//if(empty($payment->is_cancel)){							?>
 							<tr>
 								<td><?php echo $payment->plan_name; ?></td>
-								<td><?php echo !empty($payment->display_name) ? $payment->display_name : '<a href="'.base_url('/add-listing?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type).'').'" class="btn btn-sm">Add Listing</a>'; ?></td>
+								<td><?php echo !empty($payment->display_name) ? (!empty(trim($payment->display_name)) ? $payment->display_name : '-') : (($payment->stripe_subscription_end_date != NULL && strtotime($payment->stripe_subscription_end_date) < time()) ? '':'<a href="'.base_url('/add-listing?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type).'').'" class="btn btn-sm">Add Listing</a>'); ?></td>
 								<td><?php echo ($payment->stripe_subscription_start_date != NULL) ? date("m/d/Y",strtotime($payment->stripe_subscription_start_date)):'-'; ?></td>
 								<td><?php echo ($payment->stripe_subscription_end_date != NULL) ? date("m/d/Y",strtotime($payment->stripe_subscription_end_date)) : '-'; ?></td>
-								<td><?php echo !empty($payment->is_cancel) ? '<div class="text-danger">Canceled</div>' : 'Active'; ?></td>     
+								<td><?php echo !empty($payment->is_cancel) ? '<span class="text-danger d-inline-block mb-0" title="Canceled">Canceled</span>' :(($payment->stripe_subscription_end_date != NULL && strtotime($payment->stripe_subscription_end_date) < time()) ? '<span class="text-danger d-inline-block mb-0" title="Expired">Expired</span>' : (!empty($payment->product_status) ? '<span class="text-success d-inline-block mb-0" title="Active">Active</span>' :'<span class="text-warning d-inline-block mb-0" title="Inactive">Inactive</span>')); ?></td>     
 								<td>
 								<?php echo !empty($payment->display_name) ? '
 								<a target="_blank" href="'.base_url().'/listings/'.$payment->permalink.'/'.$payment->product_id.'/'.(!empty($payment->display_name)?str_replace(' ','-',strtolower($payment->display_name)):'').'" class="me-2"><i class="far fa-eye me-1"></i>View</a>' : ''; ?>
@@ -36,11 +36,12 @@ if(empty($payment->is_cancel)){							?>
 								
 								<?php
 								}
-								 echo '<td style="padding-left: 0;">'.(($user_detail->user_level == 0) ? '<a href="'.base_url('/plan?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type).'&plan_id='.$payment->plan_id).'" class="btn btn-sm">UPGRADE</a>' : ((!empty($payment->is_cancel))?'<a href="javascript:void(0);" onclick="change_subs_status('.$payment->id.','.$payment->product_id.')" class="btn btn-sm">Activate</a>':'')); 
+								 echo '<td style="padding-left: 0;">'.(($user_detail->user_level == 0) ? ((!empty($payment->is_cancel))?'<a href="'.base_url('/renew_plan?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type)).'" class="btn btn-sm">RENEW</a>' : '<a href="'.base_url('/plan?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type).'&plan_id='.$payment->plan_id).'" class="btn btn-sm">UPGRADE</a>') : ((!empty($payment->is_cancel))?'<a href="javascript:void(0);" onclick="change_subs_status('.$payment->id.','.$payment->product_id.')" class="btn btn-sm">Activate</a>':'')); 
 								?>
 								</td>
 							</tr>
-						<?php } endforeach;
+						<?php //} 
+						endforeach;
 						}?>
 					</tbody>
 				</table>
@@ -54,12 +55,15 @@ if(empty($payment->is_cancel)){							?>
             
 					<?php echo $this->include('Providerauth/_modal_provider_messages') ?>
 
-				<ul class="nav nav-tabs gap-0 col-sm-6 col-lg-5 row row-cols-2" id="myTab1" role="tablist">
+				<ul class="nav nav-tabs gap-0 col-sm-9 col-lg-6 row row-cols-3" id="myTab1" role="tablist">
 					<li class="nav-item" role="presentation">
-					  <button class="nav-link active btn w-100 min-w-auto" id="filter-active" data-bs-toggle="tab" data-bs-target="#catactive" type="button" role="tab">ACTIVE</button>
+					  <button class="nav-link active btn w-100 min-w-auto activelist" id="filter-active" data-bs-toggle="tab" data-bs-target="#catactive" type="button" role="tab">ACTIVE<i class="fa fa-info-circle px-2" data-bs-toggle="tooltip" data-bs-placement="top" title="This subscription is currently active. Your listing is live and visible to buyers."></i></button>
 					</li>
 					<li class="nav-item" role="presentation">
-					  <button class="nav-link btn w-100 min-w-auto" id="filter-expired" data-bs-toggle="tab" data-bs-target="#catexpired" type="button" role="tab">EXPIRED</button>
+					  <button class="nav-link btn w-100 min-w-auto inactivelist" id="filter-inactive" data-bs-toggle="tab" data-bs-target="#catinactive" type="button" role="tab">INACTIVE<i class="fa fa-info-circle px-2"  data-bs-toggle="tooltip" data-bs-placement="top" title="This subscription is paid but not yet active. Publish your listing to activate it."></i></button>
+					</li>
+					<li class="nav-item" role="presentation">
+					  <button class="nav-link btn w-100 min-w-auto expiredlist" id="filter-expired" data-bs-toggle="tab" data-bs-target="#catexpired" type="button" role="tab">EXPIRED<i class="fa fa-info-circle px-2"  data-bs-toggle="tooltip" data-bs-placement="top" title="This subscription has expired. Your listing is no longer visible to buyers."></i></button>
 					</li>
 				</ul>
 				
@@ -79,7 +83,7 @@ if(empty($payment->is_cancel)){							?>
 					}
 					
 					?>
-					<div class="col-md-6 subscription-card <?php echo !empty($payment->is_cancel) ? 'inactive' : 'active'; ?>">
+					<div class="col-md-6 subscription-card <?php echo !empty($payment->is_cancel) ? 'expired':(($payment->stripe_subscription_end_date != NULL && strtotime($payment->stripe_subscription_end_date) < time()) ? 'expired' : (!empty($payment->product_status) ? 'active' : 'inactive')); ?>">
 						<div class="sb-details bg-grey rounded-5">
 							<div class="row p-4">
 								<div class="col-6">
@@ -89,14 +93,16 @@ if(empty($payment->is_cancel)){							?>
 								</div>
 								<div class="col-6 text-end">
 									<?php 
-									echo !empty($payment->is_cancel) ? '<span class="text-danger d-inline-block mb-0" title="Active">Expired</span>' : '<span class="text-success d-inline-block mb-0" title="Active">Active</span>'; 
+									echo !empty($payment->is_cancel) ? '<span class="text-danger d-inline-block mb-0" title="Canceled">Canceled</span>' :(($payment->stripe_subscription_end_date != NULL && strtotime($payment->stripe_subscription_end_date) < time()) ? '<span class="text-danger d-inline-block mb-0" title="Expired">Expired</span>' : (!empty($payment->product_status) ? '<span class="text-success d-inline-block mb-0" title="Active">Active</span>' :'<span class="text-warning d-inline-block mb-0" title="Inactive">Inactive</span>')); 
 									if($payment->product_id > 0){ ?>
 									<a href="<?php echo base_url('/add-listing?category='.$payment->category_id.'&id='.$payment->product_id); ?>" class="btn py-3 blue-btn">EDIT MY LISTING</a> 
 									<a target="_blank" href="<?php echo base_url().'/listings/'.$payment->permalink.'/'.$payment->product_id.'/'.(!empty($payment->display_name)?str_replace(' ','-',strtolower($payment->display_name)):''); ?>" class="btn py-3">VIEW LISTING</a>
 									<?php 
-									}else{ ?>
+									}else{ if($payment->stripe_subscription_end_date != NULL && strtotime($payment->stripe_subscription_end_date) > time()){ ?>
 										<a href="<?php echo base_url('/add-listing?sale_id='.$payment->id.'&payment_type='.$payment->payment_type); ?>" class="btn py-3 blue-btn">ADD LISTING</a> 
-									<?php }
+									<?php }else{
+										echo '<br/>';
+									}}
 									if(empty($payment->is_cancel)){ ?>
 									<a href="javascript:void(0);" onclick="confirm_cancel('<?php echo $payment->id;?>','<?php echo $payment->payment_type;?>')" class="text-primary mt-3 d-inline-block">Cancel Subscription</a>
 									<?php } ?>
@@ -107,13 +113,17 @@ if(empty($payment->is_cancel)){							?>
 									Start Date: <?php echo ($payment->stripe_subscription_start_date != NULL) ? date("m/d/Y",strtotime($payment->stripe_subscription_start_date)) : '-'; ?>  
 								</div>
 								<div class="col-6 text-end">									
-									<?php //if(empty($payment->is_cancel)){ ?>
+									<?php if(empty($payment->is_cancel)){ ?>
 									<a href="<?php echo base_url('/plan?sale_id='.$payment->id.'&payment_type='.$payment->payment_type.'&plan_id='.$payment->plan_id); ?>" class="btn min-w-auto">UPGRADE SUBSCRIPTION</a> 
-									<?php //} ?>
+									<?php }else{
+										 ?>
+									<a href="<?php echo base_url('/plan?sale_id='.$payment->id.'&payment_type='.$payment->payment_type.'&plan_id='.$payment->plan_id); ?>" class="btn min-w-auto">RENEW SUBSCRIPTION</a> 
+									<?php
+									} ?>
 								</div>
 							</div>
 							<div class="row p-4">
-							<?php if(empty($payment->is_cancel)){ ?>
+							<?php if(empty($payment->is_cancel) && ($payment->stripe_subscription_end_date != NULL && strtotime($payment->stripe_subscription_end_date) > time())){ ?>
 								<div class="col-12 d-flex align-items-center">
 								 <img class="icons" src="<?= base_url('assets/frontend/images/calender.png') ?>">	
 									<p>Next Payment on <?php echo ($payment->stripe_subscription_end_date != NULL) ? date("F d, Y",strtotime($payment->stripe_subscription_end_date)):'-'; ?></p>
@@ -124,3 +134,26 @@ if(empty($payment->is_cancel)){							?>
 					</div>
 				<?php  } }else{ echo '<p class="text-center py-4">No Records Found.</p>'; } ?>
 				</div>
+<style>
+.dbContent ul.nav-tabs .nav-link.active.activelist, .dbContent ul.nav-tabs .nav-link.activelist:hover{
+	background: rgb(var(--bs-success-rgb)) !important;
+}
+.dbContent ul.nav-tabs .nav-link.active.inactivelist, .dbContent ul.nav-tabs .nav-link.inactivelist:hover{
+	background:rgb(var(--bs-warning-rgb)) !important;
+}
+.dbContent ul.nav-tabs .nav-link.active.expiredlist, .dbContent ul.nav-tabs .nav-link.expiredlist:hover{
+	background:var(--red) !important;
+}
+span.text-warning {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 500;
+    background: rgb(var(--bs-warning-rgb));
+    color: var(--white) !important;
+    width: initial;
+    margin: 0 auto 10px;
+    border-radius: 20px;
+    padding: 1px 20px;
+	text-transform: uppercase;
+}
+</style>

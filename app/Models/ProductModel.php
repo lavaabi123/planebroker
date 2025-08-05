@@ -45,13 +45,12 @@ class ProductModel extends Model
         GROUP BY name 
         ORDER BY f.filter_order ASC
     ")->getResultArray();
-
     $filters = [];
 
     // Clean the WHERE clause for subquery use (remove table aliases)
     $cleanWhere = trim($where);
     $cleanWhere = ltrim($cleanWhere, 'AND ');
-    $cleanWhere = str_replace(['p.', 's.'], '', $cleanWhere);
+    //$cleanWhere = str_replace(['p.', 's.'], '', $cleanWhere);
 
     if (!empty($result)) {
         foreach ($result as $filter) {
@@ -61,27 +60,31 @@ class ProductModel extends Model
                 // Fetch value + count for each checkbox filter
                 $values = $this->db->query("
                     SELECT 
-                        field_value AS name, 
-                        field_id AS id, 
-                        COUNT(DISTINCT product_id) AS count 
-                    FROM products_dynamic_fields 
-                    WHERE field_id IN (
+                        pd.field_value AS name, 
+                        pd.field_id AS id, 
+                        COUNT(DISTINCT pd.product_id) AS count 
+                    FROM products_dynamic_fields pd
+					LEFT JOIN products p on p.id=pd.product_id
+					LEFT JOIN sales s on s.id=p.sale_id
+                    WHERE pd.field_id IN (
                         SELECT id 
                         FROM fields 
                         WHERE name = '".$filter['name']."'
                     ) 
-                    AND product_id IN (
+                    AND pd.product_id IN (
                         SELECT id 
                         FROM products 
                         WHERE category_id = ".$category_detail['id'].($cleanWhere ? " AND ".$cleanWhere : "")."
-                    ) 
+                    ) AND pd.field_value != ''
                     GROUP BY field_value
                 ")->getResultArray();
             }
 
             // Add filter values to the response
+			if(!empty($values)){
             $filter['values'] = $values;
             $filters[] = $filter;
+			}
         }
     }
 
@@ -244,7 +247,7 @@ class ProductModel extends Model
 		
 	}
 	
-	public function get_manufacturers($category, $where = '')
+	public function get_manufacturers($category, $where = '', $all = 1)
 {
     // Step 1: Fetch the JSON-encoded field_options for "manufacturer"
     $manufacturers = $this->db->query("
@@ -269,7 +272,7 @@ class ProductModel extends Model
         // Clean WHERE clause for subquery use
         $cleanWhere = trim($where);
         $cleanWhere = ltrim($cleanWhere, 'AND ');
-        $cleanWhere = str_replace(['p.', 's.'], '', $cleanWhere);
+        //$cleanWhere = str_replace(['p.', 's.'], '', $cleanWhere);
 
         // Step 2: Get counts per manufacturer using one query
         $countResults = $this->db->query("
@@ -279,6 +282,10 @@ class ProductModel extends Model
             FROM products_dynamic_fields pdf
             JOIN fields f ON f.id = pdf.field_id
             JOIN field_categories fc ON fc.field_id = f.id
+			
+			LEFT JOIN products p on p.id=pdf.product_id
+			LEFT JOIN sales s on s.id=p.sale_id
+					
             WHERE f.name = 'manufacturer'
               AND fc.category_id IN (
                   SELECT id FROM categories WHERE permalink = ?
@@ -289,7 +296,7 @@ class ProductModel extends Model
                       SELECT id FROM categories WHERE permalink = ?
                   )
                   ".($cleanWhere ? " AND $cleanWhere" : "")."
-              )
+              ) AND pdf.field_value != ''
             GROUP BY pdf.field_value
         ", [$category, $category])->getResult();
 
@@ -301,13 +308,15 @@ class ProductModel extends Model
 
         // Step 3: Return all options with their corresponding counts
         foreach ($options as $name) {
-            $man[] = [
-                'name'  => $name,
-                'count' => $count_map[$name] ?? 0
-            ];
+			if($all == 1 || ($all == 0 && !empty($count_map[$name])) ){
+				$man[] = [
+					'name'  => $name,
+					'count' => $count_map[$name] ?? 0
+				];
+			}
         }
     }
-
+	
     return json_decode(json_encode($man)); // optional: return as object
 }
 
@@ -338,7 +347,7 @@ class ProductModel extends Model
         // Step 2: Clean the WHERE clause for subquery use
         $cleanWhere = trim($where);
         $cleanWhere = ltrim($cleanWhere, 'AND ');
-        $cleanWhere = str_replace(['p.', 's.'], '', $cleanWhere);
+        //$cleanWhere = str_replace(['p.', 's.'], '', $cleanWhere);
 
         // Step 3: Count product occurrences for each model
         $countResults = $this->db->query("
@@ -348,6 +357,10 @@ class ProductModel extends Model
             FROM products_dynamic_fields pdf
             JOIN fields f ON f.id = pdf.field_id
             JOIN field_categories fc ON fc.field_id = f.id
+			
+			LEFT JOIN products p on p.id=pdf.product_id
+			LEFT JOIN sales s on s.id=p.sale_id
+			
             WHERE f.name = 'Make/Model'
               AND fc.category_id IN (
                   SELECT id FROM categories WHERE permalink = ?
@@ -358,7 +371,7 @@ class ProductModel extends Model
                       SELECT id FROM categories WHERE permalink = ?
                   )
                   ".($cleanWhere ? " AND $cleanWhere" : "")."
-              )
+              ) AND pdf.field_value != ''
             GROUP BY pdf.field_value
         ", [$category, $category])->getResult();
 

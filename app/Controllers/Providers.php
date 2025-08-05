@@ -375,6 +375,7 @@ class Providers extends BaseController
 		}
 		
 		$data['filters'] = $this->ProductModel->get_filters($category,$where);
+		//echo "<pre>";print_r($data['filters']);exit;
 		//get products list
 		$this->ProductModel = new ProductModel();
 		if(!empty($orderBy)){
@@ -388,7 +389,7 @@ class Providers extends BaseController
         $data['categories_list'] = $this->categoriessubModel->get_categories_by_link($category,' AND categories_sub.id IN (SELECT DISTINCT sub_category_id FROM products)');
 		//get manufacturers List
 		$this->ProductModel = new ProductModel();
-		$data['manufacturers'] = $this->ProductModel->get_manufacturers($category, $where);
+		$data['manufacturers'] = $this->ProductModel->get_manufacturers($category, $where, $all=0);
 		//get models List
 		$this->ProductModel = new ProductModel();
 		$data['models'] = $this->ProductModel->get_models($category, $where);

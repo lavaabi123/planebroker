@@ -496,6 +496,9 @@ button#gdpr-cookie-advanced {
 .swiper-slide * {
   pointer-events: auto;
 }
+.dbContent.subspage label,.dbContent.billingpage label{
+	display:block;
+}
 </style>
 	<!-- jquery latest version -->
 	<script src="<?php echo base_url(); ?>/assets/frontend/js/jquery.min.js"></script>
@@ -847,4 +850,176 @@ document.addEventListener("DOMContentLoaded", function () {
 				
 	});
 </script>
+<!-- Add CSS & JS -->
+<!-- Include DataTables + Bootstrap 5 CSS & JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+$(document).ready(function () {
+	
+    var table = $('.substable, .billingtable').DataTable({
+        "order": [],
+        "pageLength": 5,
+        "lengthChange": true,
+        "lengthMenu": [5, 10, 25, 50, 100],
+        "dom":
+        '<"d-flex justify-content-between align-items-center mb-3"l<"date-filter mx-auto">f<"reset-filter ms-2">>t<"d-flex justify-content-between align-items-center mt-3"ip>',
+        "language": {
+            "paginate": {
+                "previous": "<i class='fas fa-caret-left'></i>",
+                "next": "<i class='fas fa-caret-right'></i>"
+            }
+        },
+        "columnDefs": ($(this).find('thead th').length > 5) ? [{ "orderable": false, "targets": [5, 6] }] : [],
+        "drawCallback": function () {
+            var info = this.api().page.info();
+            var wrapper = $(this).closest('.dataTables_wrapper');
+            // Hide pagination, length selector, info & search when only 1 page
+            wrapper.find('.dataTables_paginate')
+                   .toggle(info.pages > 1);
+        }
+    });
+
+// Inject date input and reset button
+$('.date-filter').html(`
+    <div class="daterange-container">
+        <input type="text" id="dateRange" class="form-control" placeholder="Start Date - End Date">
+    </div>
+`);
+
+$('.reset-filter').html(`
+    <button type="button" id="resetFilters" class="btn btn-outline-secondary btn-sm">Reset</button>
+`);
+
+let startDate = null;
+let endDate = null;
+
+$('#dateRange').daterangepicker({
+    autoUpdateInput: false,
+    locale: { cancelLabel: 'Clear' }
+});
+
+$('#dateRange').on('apply.daterangepicker', function (ev, picker) {
+    startDate = picker.startDate;
+    endDate = picker.endDate;
+    $(this).val(startDate.format('MM/DD/YYYY') + ' - ' + endDate.format('MM/DD/YYYY'));
+    table.draw();
+});
+
+$('#dateRange').on('cancel.daterangepicker', function (ev, picker) {
+    $(this).val('');
+    startDate = null;
+    endDate = null;
+    table.draw();
+});
+
+// Date range filter
+$.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+    if (!startDate || !endDate) return true;
+
+    // Detect correct column index for date based on table class
+    var tableClass = settings.nTable.className;
+    var dateIndex = (tableClass.includes('substable')) ? 2 : 0;
+
+    var date = moment(data[dateIndex], 'MM/DD/YYYY');
+    if (!date.isValid()) return true;
+
+    return date.isSameOrAfter(startDate, 'day') && date.isSameOrBefore(endDate, 'day');
+});
+
+
+// Reset button handler
+$(document).on('click', '#resetFilters', function () {
+    // Clear global vars
+    startDate = null;
+    endDate = null;
+
+    // Clear date input and reset DateRangePicker
+    $('#dateRange').val('');
+    $('#dateRange').data('daterangepicker').setStartDate(moment().startOf('day'));
+    $('#dateRange').data('daterangepicker').setEndDate(moment().endOf('day'));
+
+    // Clear search input
+    $('.dataTables_filter input').val('');
+    table.search('');
+
+    // Redraw table
+    table.draw();
+});
+
+	
+	new SlimSelect({
+        select: '.dataTables_length select'
+    });
+});
+</script>
+<style>
+/* Container styling */
+.dataTables_wrapper {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 1rem;
+}
+
+/* Top controls (Show entries + Search) */
+.dataTables_length select {
+    border-radius: 0.5rem;
+    padding: 0.3rem;
+}
+
+/* Search box */
+.dataTables_filter input {
+    border-radius: 0.5rem;
+    padding: 0.3rem 0.6rem;
+}
+
+/* Table styling */
+.table {
+    border-radius: 1rem;
+    overflow: hidden;
+}
+.table thead th {
+    background: #001f4d;
+    color: #fff;
+    font-weight: 600;
+}
+.table tbody tr:hover {
+    background: #f1f5ff;
+}
+.table td {
+    vertical-align: middle;
+}
+
+/* Pagination */
+.dataTables_paginate {
+    margin-top: 1rem;
+    text-align: center;
+}
+.dataTables_paginate .pagination {
+    justify-content: center;
+    gap: 0.5rem;
+}
+.dataTables_paginate .paginate_button.current {
+    background: #ff9900 !important;
+    color: #fff !important;
+    border: none;
+}
+/* Hide default sort icons */
+table.dataTable thead .sorting:before,
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_desc:before {
+    opacity: 0.5 !important;	
+    font-size: 10px !important;
+}
+table.dataTable thead>tr>th.sorting_asc:before, table.dataTable thead>tr>th.sorting_desc:after, table.dataTable thead>tr>td.sorting_asc:before, table.dataTable thead>tr>td.sorting_desc:after{
+	opacity: 1 !important;
+}
+
+
+</style>
+
+
 </html>

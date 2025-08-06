@@ -13,10 +13,10 @@
 				<div class="titleSec">
 					<h3 class="title-lg fw-bolder my-4">Subscriptions<?php //echo $title; ?></h3>
 				</div>
-				<div class="dbContent">
+				<div class="dbContent subspage">
 					<div class="container px-0">
 					<div class="filter_Sec">
-						<?php echo $this->include('Providerauth/_filter_provider_subs') ?>
+						<?php //echo $this->include('Providerauth/_filter_provider_subs') ?>
 					</div>
 				<div class='d-none' style="margin: 0 auto;">
 					<?php 

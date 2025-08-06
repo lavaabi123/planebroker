@@ -1,7 +1,7 @@
 
 <?php echo !empty($user_detail->user_level) ? '<a href="'.base_url('/add-listing').'" class="btn my-2">Add Listing</a>' : '' ; ?>
 			<div class="table-responsive proMsg sPayments mb-5">
-				<table class="table table-bordered table-striped">
+				<table class="table datatable substable table-bordered table-striped">
 					<thead>
 						<tr role="row">
 							<th><?php echo trans('Subscription'); ?></th>
@@ -16,8 +16,8 @@
 					<tbody>
 						<?php 
 						$pp = 0;
-						if(!empty($payments)){
-							foreach ($payments as $p => $payment) :
+						if(!empty($payments_all)){
+							foreach ($payments_all as $p => $payment) :
 							//if(empty($payment->is_cancel)){							?>
 							<tr>
 								<td><?php echo $payment->plan_name; ?></td>
@@ -50,7 +50,7 @@
 				<?php endif; ?>
 			</div>
 			<div class="col-sm-12 float-right mb-5">
-                                    <?php echo $paginations; ?>
+                                    <?php //echo $paginations; ?>
                                 </div>
             
 					<?php echo $this->include('Providerauth/_modal_provider_messages') ?>

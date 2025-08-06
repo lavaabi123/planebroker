@@ -1,5 +1,5 @@
 <h6 class="border-bottom pb-2 mb-3">INVOICE HISTORY</h6>
-<div class="row table-filter-container fb-filter">
+<!--<div class="row table-filter-container fb-filter">
     <div class="col-sm-12 form-input">
         <?php $uri = service('uri'); ?>
         <?php $RolesPermissionsModel = model('RolesPermissionsModel'); ?>
@@ -9,12 +9,12 @@
         <input type="hidden" name="page" value="<?php echo (!empty($request->getVar('page'))) ? $request->getVar('page') : '1'; ?>">    
 		<div class="bg-grey form-section d-flex align-items-center justify-content-between gap-2 rounded-pill p-3 mb-4">
         <div class="col form-group">
-            <!--<span><?php echo trans("search"); ?></span>-->
+            
             <input name="search" class="form-control mb-0" placeholder="<?php echo trans("search") ?>" type="search" value="<?php echo $request->getVar('search'); ?>">
         </div>
 
         <div class="col form-group">
-             <!--<span><?php echo trans("Date Created"); ?></span>-->
+             
             <input type="hidden" name="created_at_start" id="created_at_start" value="<?php echo $request->getVar('created_at_start'); ?>">
             <input type="hidden" name="created_at_end" id="created_at_end" value="<?php echo $request->getVar('created_at_end'); ?>">
             <div id="reportrange" class="form-control mb-0">
@@ -72,10 +72,10 @@
 		</div>
         <?php echo form_close(); ?>
     </div>
-</div>
+</div>-->
 			<div class="table-responsive proMsg pb-pay">
 
-				<table class="table table-bordered table-striped">
+				<table class="table billingtable dataTable table-bordered table-striped">
 					<thead>
 						<tr role="row">
 							<th><?php echo trans('Date / Time'); ?></th>
@@ -126,7 +126,7 @@
 				<?php endif; ?>
 			</div>
 			<div class="col-sm-12 mt-4">
-                                    <?php echo ($total_count > 6 || (!empty($_GET['page']) && $_GET['page'] > 1)) ? $paginations : ''; ?>
+                                    <?php //echo ($total_count > 6 || (!empty($_GET['page']) && $_GET['page'] > 1)) ? $paginations : ''; ?>
                                 </div>
             
 <?php echo $this->include('Providerauth/_modal_provider_messages') ?>

@@ -13,7 +13,7 @@
 				<div class="titleSec">
 					<h3 class="title-lg fw-bolder my-4">Billing<?php //echo $title; ?></h3>
 				</div>
-				<div class="dbContent">
+				<div class="dbContent billingpage">
 					<div class="container px-0">
 				<?php echo $payment_methods; ?>
 				<?php echo $payment_history; ?>

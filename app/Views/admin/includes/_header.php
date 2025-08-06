@@ -1,10 +1,16 @@
 <!-- Navbar -->
-<nav class="main-header navbar navbar-expand <?php echo check_dark_mode_enabled() ? 'navbar-dark' : 'navbar-white' ?> navbar-light">
+<nav class="main-header navbar navbar-expand <?php echo check_dark_mode_enabled() ? 'navbar-dark' : 'navbar-white' ?> px-2 navbar-light">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
         <li class="nav-item">
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
+		<li>
+		<a href="<?php echo admin_url(); ?>" class="brand-link">
+          <img src="<?php echo base_url(); ?>/assets/img/ylogo.png" alt="Plane Broker Logo" class="brand-image img-circle elevation-3">
+          <span class="brand-text font-weight-light"><?php echo get_general_settings()->application_name ?></span>
+		</a>
+		</li>
         <li class="nav-item d-sm-inline-block" style="display: none !important">
             <span id="ct7" class="nav-link"></span>
         </li>

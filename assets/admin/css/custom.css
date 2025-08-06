@@ -848,6 +848,16 @@ label:not(.form-check-label):not(.custom-file-label) {
     margin: 0 5px;
     color: #000000;
 }
+.pagination .page-link {
+	border-radius: 100% !important;
+    width: 45px;
+    line-height: 44px;
+    padding: 0;
+    text-align: center;
+    height: 45px;
+    font-size: 24px;
+    font-weight: 900;
+}
 .pagination .page-item.active .page-link {
     background-color: var(--primary);
     border-color: var(--primary);
@@ -1308,4 +1318,29 @@ label {
 }
 .modal-dialog.modal-dialog-centered {
     max-height: 80vh;
+}
+
+/** New Updates **/
+.navbar-white {
+    background-color: var(--b-blue);
+}
+body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-header {
+    margin-left: 0;
+    z-index: 99999;
+	border: none;
+}
+.sidebar-mini.sidebar-collapse .main-header {
+	margin-left: 0rem !important;
+}
+.layout-navbar-fixed.sidebar-mini.sidebar-collapse .wrapper .brand-link {
+    height: inherit;
+    width: 200px;
+}
+.main-header i.fas.fa-bars {
+    color: var(--primary);
+    font-size: 16px;
+    padding: 4px 6px 0;
+}
+.layout-navbar-fixed .wrapper .brand-link {
+    width: 200px;
 }

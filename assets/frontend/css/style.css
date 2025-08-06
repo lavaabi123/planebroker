@@ -257,8 +257,9 @@ h1 strong, h2 strong, h3 strong, h4 strong, h5 strong, h6 strong {
 
 /** Pagination **/
 ul.pagination li a.page-link {
-    background: var(--light-grey);
+    background: var(--bs-gray-400);
 	margin: 0 10px;
+	color: var(--white);
 }
 ul.pagination li a {
     border-radius: 100% !important;
@@ -271,8 +272,14 @@ ul.pagination li a {
     font-weight: 900;
 }
 ul.pagination li:hover a.page-link, ul.pagination li.active a.page-link  {
-	background-color: var(--bs-pagination-active-bg);
-    border-color: var(--bs-pagination-active-border-color);
+	background-color: var(--b-blue);
+    border-color: var(--b-blue);
+	color: var(--white);
+}
+ul.pagination li.previous a.page-link, ul.pagination li.next a.page-link  {
+	background-color: var(--primary);
+    border-color: var(--primary);
+	color: var(--b-blue);
 }
 /** Header **/
 #header {
@@ -1460,6 +1467,9 @@ p.date_time {
     border-radius: 36px !important;
 	background: #e6eaee;
 }
+.dbContent.billingpage .table-responsive.proMsg, .dbContent.subpage .table-responsive.proMsg {
+    overflow: visible;
+}
 .include-plan tbody tr:nth-child(odd) > td {
 	background: var(--light-grey);
 }
@@ -2025,6 +2035,7 @@ span.save-listing
 @media(min-width:768px) {
 .left-section {
     width: 30%;
+	max-width: 400px;
 }
 	.box p {
     font-size: calc(var(--title-xs) - 5px);
@@ -2887,4 +2898,53 @@ footer li {
     font-size: 13px !important;
 }
 
+}
+
+.dataTables_length .ss-main {
+    margin-bottom: 0 !important;
+	    max-width: 100px;
+}
+.dataTables_wrapper input.form-control {
+    margin-bottom: 0 !important;
+}
+.daterange-container {
+    position: relative;
+}
+.daterange-container::before {
+    content: "\f073";
+    font-family: 'FontAwesome';
+    position: absolute;
+    top: calc(50% - 12px);
+    left: 15px;
+}
+.daterange-container::after {
+        content: "\f078";
+    font-family: 'FontAwesome';
+    position: absolute;
+    top: calc(50% - 12px);
+    right: 15px;
+    font-size: 14px;
+}
+.dataTables_wrapper input#dateRange {
+    padding-left: 40px !important;
+    padding-right: 32px !important;
+	font-family: 'TwCenMT' !important;
+}
+div.dataTables_wrapper div.dataTables_info {
+    padding-top: 0;
+    font-size: 12px;
+	    display: none;
+}
+@media (max-width:767px) {
+.reset-filter {
+    width: 100%;
+    margin-left: 0 !important;
+}
+.dataTables_wrapper > div {
+	flex-wrap: wrap;
+	gap:10px;
+}
+.dataTables_wrapper > div > div {
+    width: 100%;
+}
 }

@@ -865,7 +865,7 @@ $(document).ready(function () {
         "lengthChange": true,
         "lengthMenu": [5, 10, 25, 50, 100],
         "dom":
-        '<"d-flex justify-content-between align-items-center mb-3"l<"date-filter mx-auto">f<"reset-filter ms-2">>t<"d-flex justify-content-between align-items-center mt-3"ip>',
+        '<"d-flex justify-content-between align-items-center mb-3"l<"date-filter">f<"reset-filter ms-4">>t<"d-flex justify-content-center align-items-center mt-3"ip>',
         "language": {
             "paginate": {
                 "previous": "<i class='fas fa-caret-left'></i>",
@@ -885,12 +885,12 @@ $(document).ready(function () {
 // Inject date input and reset button
 $('.date-filter').html(`
     <div class="daterange-container">
-        <input type="text" id="dateRange" class="form-control" placeholder="Start Date - End Date">
+        <input type="text" id="dateRange" class="form-control mb-0" placeholder="Start Date - End Date">
     </div>
 `);
 
 $('.reset-filter').html(`
-    <button type="button" id="resetFilters" class="btn btn-outline-secondary btn-sm">Reset</button>
+    <button type="button" id="resetFilters" class="btn btn-sm min-w-auto px-5">Reset</button>
 `);
 
 let startDate = null;
@@ -948,7 +948,11 @@ $(document).on('click', '#resetFilters', function () {
     // Redraw table
     table.draw();
 });
+$('#DataTables_Table_0_filter label').contents().filter(function () {
+        return this.nodeType === 3; // Node.TEXT_NODE
+    }).remove();
 
+    $('#DataTables_Table_0_filter input').attr('placeholder', 'Search');
 	
 	new SlimSelect({
         select: '.dataTables_length select'
@@ -960,7 +964,7 @@ $(document).on('click', '#resetFilters', function () {
 .dataTables_wrapper {
     padding: 1rem;
     background: #f8f9fa;
-    border-radius: 1rem;
+    border-radius: 35px;
 }
 
 /* Top controls (Show entries + Search) */
@@ -1017,8 +1021,15 @@ table.dataTable thead .sorting_desc:before {
 table.dataTable thead>tr>th.sorting_asc:before, table.dataTable thead>tr>th.sorting_desc:after, table.dataTable thead>tr>td.sorting_asc:before, table.dataTable thead>tr>td.sorting_desc:after{
 	opacity: 1 !important;
 }
-
-
+@media (max-width:767px) {
+	.dataTables_wrapper {
+    border-radius: 15px;
+}
+}
+.date-filter{
+    margin-left: auto;
+    width: 20rem;
+}
 </style>
 
 

@@ -1584,6 +1584,14 @@ class UsersModel extends Model
             ->orderBy('pm.id', 'DESC');
         return $query->get()->getRow();
     }
+	public function get_active_stripe_subscriptions(){
+		$query = $this->db->table('sales AS s')
+            ->select('s.*,u.fullname as first_name,u.email')
+			->join('users u','u.id = s.user_id','left')
+			->where('s.is_cancel', 0)
+            ->orderBy('s.id', 'DESC');
+		return $query->get()->getResult();
+	}
     public function get_stripe_subscribed_expired_users($gracePeriod = false)
     {
         $sql = "SELECT id, fullname, first_name, email,plan_id,stripe_subscription_customer_id,stripe_invoice_id,stripe_subscription_price_id,

@@ -24,18 +24,18 @@ class CronController extends BaseController
 
     public function index()
     {        
-        $this->usersModel->process_admin_upgraded_users();
+        //$this->usersModel->process_admin_upgraded_users();
         
-        $users = $this->usersModel->get_stripe_subscribed_expired_users();
-        $this->processStripeSubscriptions($users);
+        $subscriptions = $this->usersModel->get_active_stripe_subscriptions();
+        $this->processStripeSubscriptions($subscriptions);
 
-        $users = $this->usersModel->get_stripe_subscribed_expired_users(true);
-        $this->processStripeSubscriptions($users, true);
+        //$users = $this->usersModel->get_stripe_subscribed_expired_users(true);
+        //$this->processStripeSubscriptions($users, true);
 		
-        $users = $this->usersModel->get_stripe_subscribed_trial_users(true);
-        $this->sendReminderEmail($users);                
+        //$users = $this->usersModel->get_stripe_subscribed_trial_users(true);
+        //$this->sendReminderEmail($users);                
 
-        $this->processPaypalSubscriptions();
+        //$this->processPaypalSubscriptions();
 		
         $arrContent = [
                         '-------------CRON EXECUTED------------------',
@@ -43,7 +43,7 @@ class CronController extends BaseController
                         '-------------------------------------------------------'
                         ];
         $this->cron_log($arrContent);
-        $this->send_cron_mail($arrContent);
+        //$this->send_cron_mail($arrContent);
 
         echo "DONE";
     }
@@ -146,19 +146,23 @@ class CronController extends BaseController
 		
 	}
 
-    public function processStripeSubscriptions($users,$gracePeriod = false){
+    public function processStripeSubscriptions($subscriptions,$gracePeriod = false){
+		
+		
+		
         Stripe\Stripe::setApiKey(env('stripe.secret'));
-
-        foreach ($users as $user) {
+        foreach ($subscriptions as $user) {
+			if(!empty($user->stripe_subscription_id)){
             $moveToFreePlan = 0;
             // Retrieve the subscription
             try {
-                $subscription = Subscription::retrieve($user->stripe_subscription_id);                
+                $subscription = Subscription::retrieve($user->stripe_subscription_id);					
             }catch (\Stripe\Exception\ApiErrorException $e) {
                 $error_message = $e->getMessage();
-                
                 if (strpos($error_message, 'No such subscription') !== false) {
-                    $moveToFreePlan = 1;                    
+                    $moveToFreePlan = 1;  
+					$db = db_connect();
+					$db->table('sales')->where('id', $user->id)->delete();                
                 } else {                    
                     // LOG
                     $arrContent = [
@@ -169,7 +173,7 @@ class CronController extends BaseController
                         '-------------------------------------------------------'
                         ];
                     $this->cron_log($arrContent);
-                    $this->send_cron_mail($arrContent, $user->id);
+                    //$this->send_cron_mail($arrContent, $user->id);
 
                     continue;
                 }               
@@ -184,40 +188,8 @@ class CronController extends BaseController
                                ];
 
             if($moveToFreePlan == 1 || (isset($subscription->status) && $subscription->status != 'active')){
-               if($gracePeriod){
-                   $updateUser = [
-                                    'plan_id'                         => 1,
-                                    'stripe_subscription_customer_id' => NULL,
-                                    'stripe_invoice_id'               => NULL,
-                                    'stripe_subscription_price_id'    => NULL,
-                                    'stripe_subscription_id'          => NULL,
-                                    'stripe_subscription_start_date'  => NULL,
-                                    'stripe_subscription_end_date'    => NULL,
-                                    'stripe_subscription_status'      => NULL,
-									'is_trial' 						  => 0,
-									'is_cancel'						  => 0
-                                  ];
-                    $this->usersModel->update_user_plan($user->id,$updateUser);
-
-                    if($moveToFreePlan == 1){
-                        $mailToProvider['skipsubscription'] = 1;
-                        $this->subscription_failed_mail($mailToProvider);
-                    }
-                
-                    // LOG
-                    $arrContent = [
-                        '-------------MOVE TO FREE PLAN------------------',
-                        date('Y-m-d H:i:s'),
-                        $user->stripe_subscription_id,
-                        $user->id,
-                        json_encode($updateUser, true),                        
-                        '-------------------------------------------------------'
-                        ];
-                    $this->cron_log($arrContent);
-                    $this->send_cron_mail($arrContent, $user->id);
-
-                }
-                continue;
+				$db = db_connect();
+				$db->table('sales')->where('id', $user->id)->delete();   
             }
 
             if(!isset($subscription->latest_invoice)){
@@ -227,7 +199,7 @@ class CronController extends BaseController
             $latestInvoiceId = $subscription->latest_invoice;
            
             try {
-                $invoice = \Stripe\Invoice::retrieve($latestInvoiceId);
+                $invoice = \Stripe\Invoice::retrieve($latestInvoiceId); 	
             }catch (\Stripe\Exception\ApiErrorException $e) {
                 $error_message = $e->getMessage();
 
@@ -248,6 +220,7 @@ class CronController extends BaseController
             }
             //print_r($invoice);
             $paymentStatus = $invoice->status;
+
 
             if($latestInvoiceId != $user->stripe_invoice_id){
                 // new invoice
@@ -271,21 +244,17 @@ class CronController extends BaseController
                     $sales_created_at                     = date('Y-m-d H:i:s', $invoice->created);
 
                     $data_insert = [
-                        'user_id'                         => $user->id,
-                        'stripe_subscription_id'          => $stripe_subscription_id,
-                        'stripe_subscription_customer_id' => $stripe_subscription_customer_id,
-                        'stripe_subscription_price_id'    => $stripe_subscription_price_id,
-                        'stripe_subscription_amount_paid' => $stripe_subscription_amount_paid,
                         'stripe_subscription_start_date'  => $stripe_subscription_start_date,
                         'stripe_subscription_end_date'    => $stripe_subscription_end_date,
                         'stripe_invoice_id'               => $stripe_invoice_id,
                         'stripe_invoice_charge_id'        => $stripe_invoice_charge_id,
                         'stripe_invoice_status'           => $stripe_invoice_status,
                         'created_at'                      => $sales_created_at,
-                        'plan_id'                         => $user->plan_id,
                     ];
-
-                    $this->usersModel->insert_sales($data_insert);
+  
+					$db = db_connect();
+					$db->table('sales')->where('id', $user->id)->update($data_insert);
+                    //$this->usersModel->insert_sales($data_insert);
 
                     // LOG
                     $arrContent = [
@@ -297,86 +266,15 @@ class CronController extends BaseController
                         '-------------------------------------------------------'
                         ];
                     $this->cron_log($arrContent);
-                    $this->send_cron_mail($arrContent, $user->id);
-
-                    $updateUser = [
-                                    'plan_id'                         => $user->plan_id,
-                                    'stripe_subscription_customer_id' => $stripe_subscription_customer_id,
-                                    'stripe_invoice_id'               => $stripe_invoice_id,
-                                    'stripe_subscription_price_id'    => $stripe_subscription_price_id,
-                                    'stripe_subscription_id'          => $stripe_subscription_id,
-                                    'stripe_subscription_start_date'  => $stripe_subscription_start_date,
-                                    'stripe_subscription_end_date'    => $stripe_subscription_end_date,
-                                    'stripe_subscription_status'      => $subscription->status,
-                                    'admin_plan_update'               => 0,
-                                    'admin_plan_end_date'             => NULL,
-									'is_cancel'						  => 0
-                                  ];
-
-                    $this->usersModel->update_user_plan($user->id,$updateUser);    
-
-                    // LOG
-                    $arrContent = [
-                        '-------------UPDATE USER PLAN------------------',
-                        date('Y-m-d H:i:s'),
-                        $user->id,
-                        $user->stripe_subscription_id,
-                        json_encode($updateUser, true),
-                        '-------------------------------------------------------'
-                        ];
-                    $this->cron_log($arrContent);
-                    $this->send_cron_mail($arrContent, $user->id);      
+                    //$this->send_cron_mail($arrContent, $user->id);
+    
                 } else {
-                    // Payment has not been made for the next billing cycle for this subscription
-                    if($gracePeriod){
-                        $updateUser = [
-                                'plan_id'                         => 1,
-                                'stripe_subscription_status'      => $subscription->status,
-								'is_cancel'						  => 0
-                              ];
-
-                        $this->usersModel->update_user_plan($user->id,$updateUser);  
-
-                        $this->subscription_failed_mail($mailToProvider);
-                        // LOG
-                        $arrContent = [
-                            '-------------PAYMENT NOT MADE------------------',
-                            date('Y-m-d H:i:s'),
-                            $user->id,
-                            $user->stripe_subscription_id,
-                            json_encode($updateUser, true),
-                            '-------------------------------------------------------'
-                            ];
-                        $this->cron_log($arrContent);
-                        $this->send_cron_mail($arrContent, $user->id);
-                    }                    
+                                       
                 }
             }else{                
-                //same old invoice
-                if($gracePeriod){
-                    $updateUser = [
-                                    'plan_id'                         => 1,
-                                    'stripe_subscription_status'      => $subscription->status,
-									'is_cancel'						  => 0
-                                  ];
-
-                    $this->usersModel->update_user_plan($user->id,$updateUser);  
-
-                    $this->subscription_failed_mail($mailToProvider);
-                    
-                    // LOG
-                    $arrContent = [
-                            '-------------SAME OLD INVOICE------------------',
-                            date('Y-m-d H:i:s'),
-                            $user->id,
-                            $user->stripe_subscription_id,
-                            json_encode($updateUser, true),
-                            '-------------------------------------------------------'
-                            ];
-                    $this->cron_log($arrContent);                            
-                    $this->send_cron_mail($arrContent, $user->id);
-               }                         
-            }           
+                //same old invoice                         
+            }  
+		}			
         }
     }
 

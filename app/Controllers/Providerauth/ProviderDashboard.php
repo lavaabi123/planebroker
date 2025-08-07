@@ -1371,7 +1371,7 @@ class ProviderDashboard extends ProviderauthController
 		$sale_detail = $this->UsersModel->get_sales_by_id($_GET['sale_id']);
 		$request_from = '';
 		if(!empty($sale_detail) && $sale_detail->stripe_subscription_id != NULL){
-			
+					if(empty($payment->admin_plan_update)){
 			\Stripe\Stripe::setApiKey(env('stripe.secret'));
 
 			try {
@@ -1407,7 +1407,16 @@ class ProviderDashboard extends ProviderauthController
 					return redirect()->to(base_url('subscriptions'));
 				}
 			}
-
+					}else{
+						$this->db->table('sales')->where('stripe_subscription_id',$subscriptionId)->update(['is_cancel' => 1]);
+						$this->db->table('products')->where('id', $sale_detail->product_id)->update(['is_cancel' => 1]);
+						$this->session->setFlashData('success_form2', trans("Subscription renewed successfully!"));
+						if ($request_from == 'admin') {
+							return redirect()->to(admin_url().'listings/sales');
+						} else {
+							return redirect()->to(base_url('subscriptions'));
+						}
+					}
 			
 		}
 	}
@@ -1424,7 +1433,7 @@ class ProviderDashboard extends ProviderauthController
 		$data['user_detail'] = $this->UsersModel->get_user($this->session->get('vr_sess_user_id'));
 		$sale_detail = $this->UsersModel->get_sales_by_id($subscriptionId);
 		if($payment_type == 'Stripe'){
-			
+
 			
 			if(!empty($sale_detail) && $sale_detail->stripe_subscription_customer_id != NULL){
 			Stripe\Stripe::setApiKey(env('stripe.secret'));
@@ -1503,14 +1512,15 @@ class ProviderDashboard extends ProviderauthController
 					$this->session->setFlashData('success', trans("Subscription canceled successfully!"));
 					return redirect()->to(admin_url().'listings/sales');
 				}else{
-					if(strtotime($s_detail->stripe_subscription_end_date) > time()){
-						$this->session->setFlashData('success_form2', "Your subscription has been successfully canceled. You will continue to have access to your account and all subscription features until ". date("m/d/Y", strtotime($s_detail->stripe_subscription_end_date)));
+					if(strtotime($sale_detail->stripe_subscription_end_date) > time()){
+						$this->session->setFlashData('success_form2', "Your subscription has been successfully canceled. You will continue to have access to your account and all subscription features until ". date("m/d/Y", strtotime($sale_detail->stripe_subscription_end_date)));
 					}else{
 						$this->session->setFlashData('success_form', trans("Subscription canceled successfully!"));
 					}
 					return redirect()->to(base_url('subscriptions'));
 				}
 			}
+		
 		}else{
 			if(!empty($sale_detail) && $sale_detail->stripe_subscription_customer_id != NULL){
 				$subscriptionId = $sale_detail->stripe_subscription_id;

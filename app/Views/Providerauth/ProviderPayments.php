@@ -31,11 +31,12 @@
 								<?php if(empty($payment->is_cancel)){ ?>
 								<a href="javascript:void(0)" onclick="confirm_cancel('<?php echo $payment->id;?>','<?php echo $payment->payment_type;?>')" class="cancel me-2"><i class="far fa-circle-xmark me-1"></i>Cancel</a>
 								<?php 
+								}
 								?>
 								</td>
 								
 								<?php
-								}
+								
 								 echo '<td style="padding-left: 0;">'.(($user_detail->user_level == 0) ? ((!empty($payment->is_cancel))?'<a href="'.base_url('/renew_plan?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type)).'" class="btn btn-sm">RENEW</a>' : ((!empty($highest_plan) && $highest_plan[0]->id == $payment->plan_id)?'':'<a href="'.base_url('/plan?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type).'&plan_id='.$payment->plan_id).'" class="btn btn-sm">UPGRADE</a>')) : ((!empty($payment->is_cancel))?'<a href="javascript:void(0);" onclick="change_subs_status('.$payment->id.','.$payment->product_id.')" class="btn btn-sm">Activate</a>':'')); 
 								?>
 								</td>

@@ -292,18 +292,37 @@ class UsersModel extends Model
                 $this->session->setFlashData('errors_form', 'Banned');
                 return false;
             }
-            //set user data
-            $user_data = array(
-                'vr_sess_user_id' => $user->id,
-                'vr_sess_user_email' => $user->email,
-                'vr_sess_user_role' => $user->role,
-                'vr_sess_logged_in' => true,
-                'vr_sess_user_ps' => md5($user->password),
-                'vr_sess_app_key' => config('app')->AppKey,
-                'vr_sess_email_status' => $user->email_status,
-            );
-            $this->session->set($user_data);
-
+			
+			if($user->role == 1){
+			
+				//set user data
+				$user_data = array(
+					'admin_sess_user_id' => $user->id,
+					'admin_sess_user_email' => $user->email,
+					'admin_sess_user_role' => $user->role,
+					'admin_sess_logged_in' => true,
+					'admin_sess_user_ps' => md5($user->password),
+					'admin_sess_app_key' => config('app')->AppKey,
+					'admin_sess_email_status' => $user->email_status,
+				);
+				$this->session->set($user_data);
+			
+			}else{
+			
+				//set user data
+				$user_data = array(
+					'vr_sess_user_id' => $user->id,
+					'vr_sess_user_email' => $user->email,
+					'vr_sess_user_role' => $user->role,
+					'vr_sess_logged_in' => true,
+					'vr_sess_user_ps' => md5($user->password),
+					'vr_sess_app_key' => config('app')->AppKey,
+					'vr_sess_email_status' => $user->email_status,
+				);
+				$this->session->set($user_data);
+				
+			}
+			
             return true;
         } else {
             $this->session->setFlashData('errors_form', 'Wrong username or password!');
@@ -415,16 +434,30 @@ class UsersModel extends Model
     //login direct
     public function login_direct($user)
     {
-        //set user data
-        $user_data = array(
-            'vr_sess_user_id' => $user->id,
-            'vr_sess_user_email' => $user->email,
-            'vr_sess_user_role' => $user->role,
-            'vr_sess_logged_in' => true,
-            'vr_sess_user_ps' => md5($user->password),
-            'vr_sess_app_key' => config('app')->AppKey,
-            'vr_sess_email_status' => $user->email_status,
-        );
+		if($user->role == 1){			
+			//set user data
+			$user_data = array(
+				'admin_sess_user_id' => $user->id,
+				'admin_sess_user_email' => $user->email,
+				'admin_sess_user_role' => $user->role,
+				'admin_sess_logged_in' => true,
+				'admin_sess_user_ps' => md5($user->password),
+				'admin_sess_app_key' => config('app')->AppKey,
+				'admin_sess_email_status' => $user->email_status,
+			);
+			
+		}else{				
+			//set user data
+			$user_data = array(
+				'vr_sess_user_id' => $user->id,
+				'vr_sess_user_email' => $user->email,
+				'vr_sess_user_role' => $user->role,
+				'vr_sess_logged_in' => true,
+				'vr_sess_user_ps' => md5($user->password),
+				'vr_sess_app_key' => config('app')->AppKey,
+				'vr_sess_email_status' => $user->email_status,
+			);
+		}
 
         $this->session->set($user_data);
     }
@@ -846,15 +879,20 @@ class UsersModel extends Model
     //update
     public function update_user_password($id)
     {
+		$udetail= $this->get_user($id);
         $data = $this->input_values(); 
         $data['password'] = password_hash($this->request->getVar('new_password'), PASSWORD_BCRYPT);
 		unset($data['username']);
 		unset($data['email']);
         $save_id = $this->protect(false)->update($id,$data);	
-        $this->session->set("vr_sess_user_ps", md5($data['password']));	
+		if($udetail->role == 1){
+			$this->session->set("admin_sess_user_ps", md5($data['password']));	
+		}else{
+			$this->session->set("vr_sess_user_ps", md5($data['password']));	
+		}
 		
         if ($save_id) {
-            return $this->get_user($id);
+            return $udetail;
         } else {
             return false;
         }
@@ -1172,13 +1210,22 @@ class UsersModel extends Model
     //is logged in
     public function is_logged_in()
     {
-        //check if user logged in
-        if ($this->session->get('vr_sess_logged_in') == true && $this->session->get('vr_sess_app_key') == config('app')->AppKey) {
-            $sess_user_id = @clean_number($this->session->get('vr_sess_user_id'));
-            if (!empty($sess_user_id) && !empty($this->get_user($sess_user_id))) {
-                return true;
-            }
-        }
+		if (strpos($_SERVER['REQUEST_URI'], 'admin') !== false) {	
+			//check if user logged in
+			if ($this->session->get('admin_sess_logged_in') == true && $this->session->get('admin_sess_app_key') == config('app')->AppKey) {
+				$sess_user_id = @clean_number($this->session->get('admin_sess_user_id'));
+				if (!empty($sess_user_id) && !empty($this->get_user($sess_user_id))) {
+					return true;
+				}
+			}
+		}else{
+			if ($this->session->get('vr_sess_logged_in') == true && $this->session->get('vr_sess_app_key') == config('app')->AppKey) {
+				$sess_user_id = @clean_number($this->session->get('vr_sess_user_id'));
+				if (!empty($sess_user_id) && !empty($this->get_user($sess_user_id))) {
+					return true;
+				}
+			}			
+		}
         return false;
     }
 
@@ -1186,16 +1233,29 @@ class UsersModel extends Model
     //function get user
     public function get_logged_user()
     {
-        if ($this->session->get('vr_sess_logged_in') == true && $this->session->get('vr_sess_app_key') == config('app')->AppKey && !empty($this->session->get('vr_sess_user_id'))) {
-            $sess_user_id = @clean_number($this->session->get('vr_sess_user_id'));
-            if (!empty($sess_user_id)) {
-                $sess_pass = $this->session->get("vr_sess_user_ps");
-                $user = $this->get_user($sess_user_id);
-                if (!empty($user) && !empty($sess_pass) && md5($user->password) == $sess_pass) {
-                    return $user;
-                }
-            }
-        }
+		if (strpos($_SERVER['REQUEST_URI'], 'admin') !== false) {			
+			if ($this->session->get('admin_sess_logged_in') == true && $this->session->get('admin_sess_app_key') == config('app')->AppKey && !empty($this->session->get('admin_sess_user_id'))) {
+				$sess_user_id = @clean_number($this->session->get('admin_sess_user_id'));
+				if (!empty($sess_user_id)) {
+					$sess_pass = $this->session->get("admin_sess_user_ps");
+					$user = $this->get_user($sess_user_id);
+					if (!empty($user) && !empty($sess_pass) && md5($user->password) == $sess_pass) {
+						return $user;
+					}
+				}
+			}
+		}else{				
+			if ($this->session->get('vr_sess_logged_in') == true && $this->session->get('vr_sess_app_key') == config('app')->AppKey && !empty($this->session->get('vr_sess_user_id'))) {
+				$sess_user_id = @clean_number($this->session->get('vr_sess_user_id'));
+				if (!empty($sess_user_id)) {
+					$sess_pass = $this->session->get("vr_sess_user_ps");
+					$user = $this->get_user($sess_user_id);
+					if (!empty($user) && !empty($sess_pass) && md5($user->password) == $sess_pass) {
+						return $user;
+					}
+				}
+			}
+		}
         return false;
     }
 
@@ -1424,6 +1484,21 @@ class UsersModel extends Model
         helper_deletecookie("remember_user_id");
         helper_deletecookie("_remember_user_id");
     }
+
+    public function logout_admin()
+    {
+        //unset user data
+        $this->session->remove('admin_sess_user_id');
+        $this->session->remove('admin_sess_user_email');
+        $this->session->remove('admin_sess_user_role');
+        $this->session->remove('admin_sess_logged_in');
+        $this->session->remove('admin_sess_app_key');
+        $this->session->remove('admin_sess_user_ps');
+        helper_deletecookie("remember_user_id_admin");
+        helper_deletecookie("_remember_user_id_admin");
+    }
+	
+	
 
     //get paginated provider messages
     public function get_paginated_provider_messages($per_page='', $offset='', $id='')

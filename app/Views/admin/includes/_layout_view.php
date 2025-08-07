@@ -47,7 +47,7 @@
         csrfName = '<?php echo csrf_token() ?>';
         csrfCookie = '<?php echo config('cookie')->prefix . config('security')->cookieName ?>';
         baseUrl = "<?php echo base_url(); ?>";
-        userId = "<?php echo session()->get('vr_sess_user_id'); ?>";
+        userId = "<?php echo session()->get('admin_sess_user_id'); ?>";
         select_image = "<?php echo trans("select_image"); ?>";
         sweetalert_ok = "<?php echo trans("ok"); ?>";
         sweetalert_cancel = "<?php echo trans("cancel"); ?>";

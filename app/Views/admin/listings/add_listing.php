@@ -353,15 +353,15 @@ video{
 																	
 																	if(!empty($dynamic_fields_values[$field->id][$df]['field_value'])){
 																		echo '<div class="existing-files-wrapper existing-file mb-2" data-file-index="'.$df.'" data-field-id="'.$field->id.'">';
-																		echo '<input type="hidden" value="'.$dynamic_fields_values[$field->id][$df]['field_value'].'" name="dynamic_fields_old['.$field->id.'][]"  data-url="'.base_url().'/uploads/userimages/'.session()->get('vr_sess_user_id').'/'.$dynamic_fields_values[$field->id][$df]['field_value'].'"  />';
+																		echo '<input type="hidden" value="'.$dynamic_fields_values[$field->id][$df]['field_value'].'" name="dynamic_fields_old['.$field->id.'][]"  data-url="'.base_url().'/uploads/userimages/'.session()->get('admin_sess_user_id').'/'.$dynamic_fields_values[$field->id][$df]['field_value'].'"  />';
 																		echo '<input type="hidden" value="'.$dynamic_fields_values[$field->id][$df]['file_field_title'].'" name="dynamic_fields_titles_old['.$field->id.'][]" /></div>';
 																	}
 																}
 															}else{
-																//echo !empty($dynamic_fields_values[$field->id]) ? '<a class="btn" target="_blank" href="'.base_url().'/uploads/userimages/'.session()->get('vr_sess_user_id').'/'.$dynamic_fields_values[$field->id].'" >View '.$field->name.'</a><button type="button" class="btn btn-danger btn-sm remove-existing-btn">Remove</button>' : '';
+																//echo !empty($dynamic_fields_values[$field->id]) ? '<a class="btn" target="_blank" href="'.base_url().'/uploads/userimages/'.session()->get('admin_sess_user_id').'/'.$dynamic_fields_values[$field->id].'" >View '.$field->name.'</a><button type="button" class="btn btn-danger btn-sm remove-existing-btn">Remove</button>' : '';
 																if(!empty($dynamic_fields_values[$field->id])){
 																	echo '<div class="existing-files-wrapper existing-file mb-2" data-file-index="0" data-field-id="'.$field->id.'">';
-																	echo '<input type="hidden" value="'.$dynamic_fields_values[$field->id].'" name="dynamic_fields_old['.$field->id.'][]"  data-url="'.base_url().'/uploads/userimages/'.session()->get('vr_sess_user_id').'/'.$dynamic_fields_values[$field->id].'"  />';
+																	echo '<input type="hidden" value="'.$dynamic_fields_values[$field->id].'" name="dynamic_fields_old['.$field->id.'][]"  data-url="'.base_url().'/uploads/userimages/'.session()->get('admin_sess_user_id').'/'.$dynamic_fields_values[$field->id].'"  />';
 																	echo '<input type="hidden" value="'.$dynamic_fields_values[$field->id].'" name="dynamic_fields_titles_old['.$field->id.'][]" /></div>';
 																}
 															}

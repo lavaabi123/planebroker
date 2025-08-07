@@ -111,7 +111,7 @@ class ProfileModel extends Model
     //change password
     public function change_password($old_password_exists)
     {
-        $user = user();
+        $user = $this->builder()->where('id', $this->session->set("admin_sess_user_id"))->get()->getRow();
         if (!empty($user)) {
             $data = $this->change_password_input_values();
             if ($old_password_exists == 1) {
@@ -126,7 +126,11 @@ class ProfileModel extends Model
             );
 
             if ($this->builder()->where('id', $user->id)->update($data)) {
-                $this->session->set("vr_sess_user_ps", md5($data['password']));
+				if($user->role == 1){
+					$this->session->set("admin_sess_user_ps", md5($data['password']));	
+				}else{
+					$this->session->set("vr_sess_user_ps", md5($data['password']));	
+				}
                 return true;
             }
         } else {

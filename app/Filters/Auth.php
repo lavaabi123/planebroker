@@ -38,14 +38,25 @@ class Auth implements FilterInterface
 
 				if ($user) {
 					//set user data
-					$user_data = array(
-						'vr_sess_user_id' => $user->id,
-						'vr_sess_user_email' => $user->email,
-						'vr_sess_user_role' => $user->role,
-						'vr_sess_logged_in' => true,
-						'vr_sess_user_ps' => md5($user->password),
-						'vr_sess_email_status' => $user->email_status,
-					);
+					if($user->role == 1){
+						$user_data = array(
+							'admin_sess_user_id' => $user->id,
+							'admin_sess_user_email' => $user->email,
+							'admin_sess_user_role' => $user->role,
+							'admin_sess_logged_in' => true,
+							'admin_sess_user_ps' => md5($user->password),
+							'admin_sess_email_status' => $user->email_status,
+						);
+					}else{
+						$user_data = array(
+							'vr_sess_user_id' => $user->id,
+							'vr_sess_user_email' => $user->email,
+							'vr_sess_user_role' => $user->role,
+							'vr_sess_logged_in' => true,
+							'vr_sess_user_ps' => md5($user->password),
+							'vr_sess_email_status' => $user->email_status,
+						);
+					}
 					session()->set($user_data);
 				}
 			}

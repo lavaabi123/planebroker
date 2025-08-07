@@ -24,8 +24,12 @@ class Login extends AuthController
     public $analytics;
     public function index()
     {
-        if ($this->session->get('vr_sess_logged_in') == TRUE) {
-            return redirect()->to(base_url('/'));
+        if ($this->session->get('admin_sess_logged_in') == TRUE) {
+			if ($this->session->get('admin_sess_user_role') == 1) {
+				return redirect()->to(base_url('/admin/dashboard'));
+			}else{
+				return redirect()->to(base_url('/'));				
+			}
         }
 
         $data['title'] = trans('login');
@@ -72,7 +76,7 @@ class Login extends AuthController
                 if ($remember_me == 1) {
                     $this->response->setCookie('_remember_user_id', user()->id, time() + 86400);
                 }
-                if($this->session->get('vr_sess_user_role') > 1){
+                if($this->session->get('admin_sess_user_role') > 1){
                     return redirect()->to(base_url('/'))->withCookies();
                 }else{
                     return redirect()->to(admin_url())->withCookies();
@@ -94,13 +98,14 @@ class Login extends AuthController
     public function Logout()
     {
         //unset user data
-        $this->session->remove('vr_sess_user_id');
-        $this->session->remove('vr_sess_user_email');
-        $this->session->remove('vr_sess_user_role');
-        $this->session->remove('vr_sess_logged_in');
-        $this->session->remove('vr_sess_app_key');
-        $this->session->remove('vr_sess_user_ps');
-        helper_deletecookie("remember_user_id");
+        $this->session->remove('admin_sess_user_id');
+        $this->session->remove('admin_sess_user_email');
+        $this->session->remove('admin_sess_user_role');
+        $this->session->remove('admin_sess_logged_in');
+        $this->session->remove('admin_sess_app_key');
+        $this->session->remove('admin_sess_user_ps');
+        helper_deletecookie("remember_user_id_admin");
+        helper_deletecookie("_remember_user_id_admin");
         return redirect()->to('/');
     }
 

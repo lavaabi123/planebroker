@@ -21,7 +21,7 @@ class ForgotPassword extends AuthController
     public $analytics;
     public function index()
     {
-        if ($this->session->get('vr_sess_logged_in') == TRUE) {
+        if ($this->session->get('admin_sess_logged_in') == TRUE) {
             return redirect()->to(base_url('/'));
         }
 

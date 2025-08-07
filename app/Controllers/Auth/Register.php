@@ -22,7 +22,7 @@ class Register extends AuthController
     {
         $this->is_registration_active();
 
-        if ($this->session->get('vr_sess_logged_in') == TRUE) {
+        if ($this->session->get('admin_sess_logged_in') == TRUE) {
             return redirect()->to(base_url('/'));
         }
 
@@ -125,7 +125,7 @@ class Register extends AuthController
                     $this->session->setFlashData('success_form', trans("msg_register_success"));
                 }
                 if ($userModel->is_logged_in()) {
-                    if($this->session->get('vr_sess_user_role') > 1){
+                    if($this->session->get('admin_sess_user_role') > 1){
                         return redirect()->to(base_url('/'));
                     }else{
                         return redirect()->to(admin_url());

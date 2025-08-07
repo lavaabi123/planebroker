@@ -12,7 +12,7 @@ class Authentication implements FilterInterface
 	public function before(RequestInterface $request, $arguments = null)
 	{
 		
-		if (!session()->get('vr_sess_logged_in')) {
+		if (!session()->get('vr_sess_logged_in') && !session()->get('admin_sess_logged_in')) {
 			$currentPath = $request->getPath(); // e.g., "admin/dashboard"
 
 			if (str_starts_with($currentPath, '/admin')) {

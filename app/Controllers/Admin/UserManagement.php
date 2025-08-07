@@ -192,7 +192,7 @@ class UserManagement extends AdminController
 			if(!empty($_GET['sale_id'])){
 				$card_existing = $this->UsersModel->get_sales_by_id($_GET['sale_id']);
 			}else{
-				$card_existing_res = $this->UsersModel->get_sales_user_with_cus_id($this->session->get('vr_sess_user_id'));
+				$card_existing_res = $this->UsersModel->get_sales_user_with_cus_id($this->session->get('admin_sess_user_id'));
 				$card_existing = (count($card_existing_res) > 0) ? $card_existing_res[0] : array() ;
 			}
 			if(!empty($card_existing) && $card_existing->stripe_subscription_customer_id != ''&& $card_existing->payment_type=='Stripe'){

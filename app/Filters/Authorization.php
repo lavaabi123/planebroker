@@ -29,6 +29,20 @@ class Authorization implements FilterInterface
 				return view('errors/html/error_404');
 			// return redirect()->to(base_url('/'));
 			else :
+			$currentPath = $request->getPath(); // e.g., "admin/dashboard"
+
+			if (str_starts_with($currentPath, '/admin')) {
+				$dataAccess = [
+					'roleID' => session()->get('admin_sess_user_role'),
+					'menuID' => $menu['id']
+				];
+				$userAccess = $this->permissionModel->checkUserMenuAccess($dataAccess);
+				if(session()->get('admin_sess_user_role') > 1){
+					return redirect()->to(base_url('/'));
+				}else if(!$userAccess && !is_superadmin()){					// not granted
+					return redirect()->to(base_url('admin/blocked'));
+				}
+			}else{
 				$dataAccess = [
 					'roleID' => session()->get('vr_sess_user_role'),
 					'menuID' => $menu['id']
@@ -39,6 +53,9 @@ class Authorization implements FilterInterface
 				}else if(!$userAccess && !is_superadmin()){					// not granted
 					return redirect()->to(base_url('admin/blocked'));
 				}
+			}
+				
+				
 			endif;
 		endif;
 	}

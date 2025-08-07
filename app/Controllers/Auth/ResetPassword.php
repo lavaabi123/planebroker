@@ -21,7 +21,7 @@ class ResetPassword extends AuthController
     public function index()
     {
         $userModel = new UsersModel();
-        if ($this->session->get('vr_sess_logged_in') == TRUE) {
+        if ($this->session->get('admin_sess_logged_in') == TRUE) {
             return redirect()->to(base_url('/'));
         }
 

@@ -18,7 +18,7 @@
         csrfName = '<?php echo csrf_token() ?>';
         csrfCookie = '<?php echo config('cookie')->prefix . config('security')->cookieName ?>';
         baseUrl = "<?php echo base_url(); ?>";
-        userId = "<?php echo session()->get('vr_sess_user_id'); ?>";
+        userId = "<?php echo session()->get('admin_sess_user_id'); ?>";
     </script>
     <script src="<?php echo base_url(); ?>/public/assets/admin/js/custom.js"></script>
 </head>

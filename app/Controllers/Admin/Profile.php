@@ -356,7 +356,7 @@ class Profile extends AdminController
 
             //delete account
             $this->userModel->delete_user($user->id);
-            $this->userModel->logout();
+            $this->userModel->logout_admin();
             return redirect()->to(base_url());
         }
     }

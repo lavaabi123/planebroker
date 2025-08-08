@@ -373,7 +373,7 @@ transform-origin: top center;
     border: none !important;
     font-size: 14px;
     border-radius: 50px !important;
-    padding: 0.8rem 1.75rem;
+    padding: 1rem 1.75rem;
     letter-spacing: 0.75px;
 	min-width: 300px;
 	    font-family: 'Gotham';
@@ -404,7 +404,7 @@ transform-origin: top center;
     max-width: 100%;
 }
 a.btn.btn-sm {
-    min-width: auto;
+    min-width: 110px;
     font-size: 12px;
     padding: 0.6rem 1.2rem;
 }
@@ -723,11 +723,30 @@ height: 75vh;
 	border: 2px solid #eaeaea !important;
     box-shadow: 5px 5px 10px #00000011;
 	overflow: hidden;
+	    font-size: 14px;
 }
 .blogs .col img {
 	aspect-ratio: 4 / 2.5;
 	object-fit: cover;
 	max-width: 100%;
+}
+.blogs .col h6 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: initial;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    min-height: 47px;
+}
+.blog_content {
+	overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: initial;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+	height: 70px;
 }
 footer .blogs {
     max-width: 1080px;
@@ -2936,15 +2955,30 @@ div.dataTables_wrapper div.dataTables_info {
 	    display: none;
 }
 @media (max-width:767px) {
-.reset-filter {
-    width: 100%;
-    margin-left: 0 !important;
-}
+
 .dataTables_wrapper > div {
 	flex-wrap: wrap;
 	gap:10px;
 }
 .dataTables_wrapper > div > div {
-    width: 100%;
+	width:48%;
+}
+.dataTables_wrapper > div .dataTables_length {
+	width:100%;
+}
+div.dataTables_wrapper div.dataTables_filter label {
+    margin-left: 0;
+}
+div.dataTables_wrapper div.dataTables_filter input{
+            margin-left: 0 !important;
+        width: 100% !important;
+}
+div.dataTables_wrapper div.dataTables_length label {
+    margin-left: 0;
+    text-align: center !important;
+}
+.reset-filter {
+    width: 100% !important;
+    margin-left: 0 !important;
 }
 }

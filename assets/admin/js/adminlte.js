@@ -1691,7 +1691,7 @@
     scrollbarTheme: 'os-theme-light',
     scrollbarAutoHide: 'l',
     panelAutoHeight: true,
-    panelAutoHeightMode: '--min-height',
+    panelAutoHeightMode: 'min-height',
     preloadDuration: 200,
     loginRegisterAutoHeight: true
   };

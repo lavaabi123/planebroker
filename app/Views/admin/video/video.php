@@ -2,7 +2,7 @@
 
 <?php echo $this->section('content') ?>
 <!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
+<div class="content-wrapper bg-grey">
     <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
@@ -33,11 +33,8 @@
             <div class="row">
                 <?php echo $this->include('admin/includes/_messages') ?>
                 <div class="col-lg-12 col-xl-12">
-                    <div class="card p-0">
-                        <div class="card-header border-0 px-4 pt-4 pb-0 filter_Sec">
-                            <?php echo $this->include('admin/video/_filter') ?>
-                        </div>
-                        <div class="card-body filter_list pt-0">
+                        <?php echo $this->include('admin/video/_filter') ?>
+                        <div class="filter_list pt-0">
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="table-responsive">
@@ -90,7 +87,6 @@
                                 </div>
                             </div>
                         </div> <!-- end card-body -->
-                    </div> <!-- end card -->
                 </div> <!-- end col -->
 
             </div>

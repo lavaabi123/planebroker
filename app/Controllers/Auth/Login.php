@@ -74,7 +74,7 @@ class Login extends AuthController
                 //remember user
                 $remember_me = $this->request->getVar('remember_me');
                 if ($remember_me == 1) {
-                    $this->response->setCookie('_remember_user_id', user()->id, time() + 86400);
+                    $this->response->setCookie('_remember_user_id_admin', user()->id, time() + 86400);
                 }
                 if($this->session->get('admin_sess_user_role') > 1){
                     return redirect()->to(base_url('/'))->withCookies();

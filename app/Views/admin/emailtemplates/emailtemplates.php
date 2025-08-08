@@ -2,7 +2,7 @@
 
 <?php echo $this->section('content') ?>
 <!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
+<div class="content-wrapper bg-grey">
     <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
@@ -33,19 +33,15 @@
             <div class="row">
                 <?php echo $this->include('admin/includes/_messages') ?>
                 <div class="col-lg-12 col-xl-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <?php echo $this->include('admin/emailtemplates/_filter') ?>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-sm-12">
+                    <?php echo $this->include('admin/emailtemplates/_filter') ?>
+                    
+                                <div class="filter_list">
                                     <div class="table-responsive">
 
                                         <table class="table table-bordered table-striped">
                                             <thead>
                                                 <tr role="row">
-                                                    <th width="20"><?php echo trans('id'); ?></th>
+                                                    <th width="60" class="text-end"><?php echo trans('id'); ?></th>
                                                     <th><?php echo trans('Title'); ?></th>
                                                     <th><?php echo trans('subject'); ?></th>
                                                     <?php /*<th><?php echo trans('date'); ?></th> */?>
@@ -55,7 +51,7 @@
                                             <tbody>
                                                 <?php foreach ($paginate['emailtemplates'] as $emailtemplate) : ?>
                                                     <tr>
-                                                        <td><?php echo clean_number($emailtemplate['id']); ?></td>
+                                                        <td width="60" class="text-end"><?php echo clean_number($emailtemplate['id']); ?></td>
                                                         <td><?php echo $emailtemplate['email_title']; ?> </td>
                                                         <td><?php echo $emailtemplate['name']; ?> </td>
                                                         <?php /*<td><?php echo formatted_dateonly($emailtemplate['created_at']); ?></td> */?>
@@ -67,8 +63,8 @@
                                                                 <div class="dropdown-menu dropdown-menu-animated">
                                                                     <?php if (is_admin()) : ?>
                                                                         <a class="dropdown-item" href="<?php echo admin_url() . 'emailtemplates/edit-emailtemplate/'; ?><?php echo html_escape($emailtemplate['id']); ?>"><?php echo trans('edit'); ?></a>
-                                                                        <div class="dropdown-divider"></div>
-                                                                        <a class="dropdown-item" href="javascript:void(0)" onclick="delete_item('/admin/emailtemplates/delete_emailtemplate_post','<?php echo $emailtemplate['id']; ?>','<?php echo trans('confirm_emailtemplate'); ?>')"><?php echo trans('delete'); ?></a>
+                                                                        <!--<div class="dropdown-divider"></div>
+                                                                        <a class="dropdown-item" href="javascript:void(0)" onclick="delete_item('/admin/emailtemplates/delete_emailtemplate_post','<?php echo $emailtemplate['id']; ?>','<?php echo trans('confirm_emailtemplate'); ?>')"><?php echo trans('delete'); ?></a>-->
                                                                     <?php endif; ?>
                                                                 </div>
                                                             </div>
@@ -86,9 +82,6 @@
                                 <div class="col-sm-12 float-right">
                                     <?php echo $pager->Links('default', 'custom_pager') ?>
                                 </div>
-                            </div>
-                        </div> <!-- end card-body -->
-                    </div> <!-- end card -->
                 </div> <!-- end col -->
 
             </div>

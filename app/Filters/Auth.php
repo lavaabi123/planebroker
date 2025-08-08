@@ -32,31 +32,39 @@ class Auth implements FilterInterface
 		if (!session()->has('user_id')) {
 			helper('cookie');
 			$token = get_cookie('_remember_user_id');
+			$token1 = get_cookie('_remember_user_id_admin');
 			if ($token) {
 				$userModel = new \App\Models\UserModel();
 				$user = $userModel->where('id', $token)->first();
 
 				if ($user) {
 					//set user data
-					if($user->role == 1){
-						$user_data = array(
-							'admin_sess_user_id' => $user->id,
-							'admin_sess_user_email' => $user->email,
-							'admin_sess_user_role' => $user->role,
-							'admin_sess_logged_in' => true,
-							'admin_sess_user_ps' => md5($user->password),
-							'admin_sess_email_status' => $user->email_status,
-						);
-					}else{
-						$user_data = array(
-							'vr_sess_user_id' => $user->id,
-							'vr_sess_user_email' => $user->email,
-							'vr_sess_user_role' => $user->role,
-							'vr_sess_logged_in' => true,
-							'vr_sess_user_ps' => md5($user->password),
-							'vr_sess_email_status' => $user->email_status,
-						);
-					}
+					$user_data = array(
+						'vr_sess_user_id' => $user->id,
+						'vr_sess_user_email' => $user->email,
+						'vr_sess_user_role' => $user->role,
+						'vr_sess_logged_in' => true,
+						'vr_sess_user_ps' => md5($user->password),
+						'vr_sess_email_status' => $user->email_status,
+					);
+					
+					session()->set($user_data);
+				}
+			}
+			if ($token1) {
+				$userModel = new \App\Models\UserModel();
+				$user = $userModel->where('id', $token1)->first();
+
+				if ($user) {
+					//set user data
+					$user_data = array(
+						'admin_sess_user_id' => $user->id,
+						'admin_sess_user_email' => $user->email,
+						'admin_sess_user_role' => $user->role,
+						'admin_sess_logged_in' => true,
+						'admin_sess_user_ps' => md5($user->password),
+						'admin_sess_email_status' => $user->email_status,
+					);
 					session()->set($user_data);
 				}
 			}

@@ -6,7 +6,7 @@ td:hover {
     cursor: move;
 }
 </style>
-<div class="content-wrapper">
+<div class="content-wrapper bg-grey">
     <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
@@ -37,14 +37,13 @@ td:hover {
             <!-- Main row -->
             <div class="row">
                 <div class="col-lg-12 col-xl-12">
-                    <div class="card card-primary card-outline card-outline-tabs p-0">
-                        <div class="card-body filter_list">
+                        <div class="filter_list">
                             <div class="tab-content" id="custom-tabs-fields_group">
                                 <div class="tab-pane fade show active" id="custom-tabs-fields_group" role="tabpanel" aria-labelledby="custom-tabs-fields_group-tab">
                                     <div class="table-responsive">
                                         <table id="fields_group_table" class="table table-bordered table-striped nowrap w-100 pageResize">
                                             <div class="row table-filter-container m-0">
-                                                <div class="col-sm-6">
+                                                <div class="col-sm-6 p-0">
                                                     <?php $request = \Config\Services::request(); ?>
                                                     <?php echo form_open(admin_url() . "groups/index/".$categoryId, ['method' => 'GET']); ?>
                                                     <input type="hidden" name="page" value="<?php echo (!empty($request->getVar('page'))) ? $request->getVar('page') : '1'; ?>">
@@ -71,7 +70,8 @@ td:hover {
 
                                                     <?php echo form_close(); ?>
                                                 </div>
-                                                <div class="col-sm-6 text-right">
+                                                <div class="col-sm-6 p-0 text-right">
+													<label style="display: block">&nbsp;</label>
                                                     <a href="javascript:void(0)" class="btn small bg-primary" onclick="manage_fields_group('<?php echo html_escape($categoryId); ?>','','');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
                                                 </div>
                                             </div>
@@ -126,7 +126,7 @@ td:hover {
 
                         </div> 
                         <!-- /.card -->
-                    </div>
+                    
                 </div>
             </div> <!-- end col -->
             <!-- /.row (main row) -->
@@ -136,11 +136,11 @@ td:hover {
 </div>
 <!-- Modal -->
 <div id="modal-fields_group" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal-modalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="modal-modalLabel"><?php echo trans('add'); ?></h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <div class="modal-header justify-content-center p-2 pb-0">
+                <h4 class="modal-title mb-0 fw-bolder" id="modal-modalLabel"><?php echo trans('add'); ?></h4>
+                <button type="button" class="close fs-5 position-absolute top-0 end-0 m-0" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -156,7 +156,7 @@ td:hover {
                         <input type="hidden" id="modal_categoryId" name="category_id">
                     </div>                                
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary"><?php echo trans('save'); ?></button>
                 </div>

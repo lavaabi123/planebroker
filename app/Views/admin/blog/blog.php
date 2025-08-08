@@ -2,7 +2,7 @@
 
 <?php echo $this->section('content') ?>
 <!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
+<div class="content-wrapper bg-grey">
     <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
@@ -33,13 +33,8 @@
             <div class="row">
                 <?php echo $this->include('admin/includes/_messages') ?>
                 <div class="col-lg-12 col-xl-12">
-                    <div class="card">
-                        <div class="card-header">
                             <?php echo $this->include('admin/blog/_filter') ?>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-sm-12">
+                                <div class="filter_list">
                                     <div class="table-responsive">
 
                                         <table class="table table-bordered table-striped">
@@ -89,9 +84,6 @@
                                 <div class="col-sm-12 float-right">
                                     <?php echo $pager->Links('default', 'custom_pager') ?>
                                 </div>
-                            </div>
-                        </div> <!-- end card-body -->
-                    </div> <!-- end card -->
                 </div> <!-- end col -->
 
             </div>

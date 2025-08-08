@@ -2,7 +2,7 @@
 
 <?php echo $this->section('content') ?>
 <!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
+<div class="content-wrapper bg-grey">
     <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
@@ -33,11 +33,8 @@
             <div class="row">
                 <?php echo $this->include('admin/includes/_messages') ?>
                 <div class="col-lg-12 col-xl-12">
-                    <div class="card p-0">
-                        <div class="card-header border-0 px-4 pt-4 pb-0 filter_Sec">
                             <?php echo $this->include('admin/contacts/_filter_contact_messages') ?>
-                        </div>
-                        <div class="card-body filter_list pt-0">
+                        <div class="filter_list pt-0">
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="table-responsive">
@@ -45,7 +42,7 @@
                                         <table class="table table-bordered table-striped">
                                             <thead>
                                                 <tr role="row">
-                                                    <th width="20"><?php echo trans('id'); ?></th>
+                                                    <th width="40" class="text-end"><?php echo trans('id'); ?></th>
                                                     <th><?php echo trans('From Name'); ?></th>
                                                     <th><?php echo trans('From Email'); ?></th>
                                                     <th><?php echo trans('From Phone'); ?></th>
@@ -60,7 +57,7 @@
 												$slno_start = $paginate['total'] - (($page-1) * $paginate['per_page_no']);
 												foreach ($contacts as $provider_message) : ?>
                                                     <tr>
-                                                        <td><?php echo clean_number($slno_start); $slno_start--; ?></td>
+                                                        <td width="40" class="text-end"><?php echo clean_number($slno_start); $slno_start--; ?></td>
                                                         <td><?php echo $provider_message->from_name; ?> </td>
                                                         <td><?php echo $provider_message->from_email; ?></td>
                                                         <td><?php echo $provider_message->from_phone; ?></td>
@@ -81,7 +78,6 @@
                                 </div>
                             </div>
                         </div> <!-- end card-body -->
-                    </div> <!-- end card -->
                 </div> <!-- end col -->
 
             </div>

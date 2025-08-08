@@ -2,7 +2,7 @@
 
 <?php echo $this->section('content') ?>
 <!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
+<div class="content-wrapper bg-grey">
     <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
@@ -33,11 +33,8 @@
             <div class="row">
                 <?php echo $this->include('admin/includes/_messages') ?>
                 <div class="col-lg-12 col-xl-12">
-                    <div class="card p-0">
-                        <div class="card-header border-0 px-4 pt-4 pb-0 filter_Sec">
-                            <?php echo $this->include('admin/testimonial/_filter') ?>
-                        </div>
-                        <div class="card-body filter_list pt-0">
+                        <?php echo $this->include('admin/testimonial/_filter') ?>
+                        <div class="filter_list pt-0">
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="table-responsive">
@@ -45,7 +42,7 @@
                                         <table class="table table-bordered table-striped">
                                             <thead>
                                                 <tr role="row">
-                                                    <th width="20"><?php echo trans('id'); ?></th>
+                                                    <th width="40" class="text-right"><?php echo trans('id'); ?></th>
                                                     <th><?php echo trans('Name'); ?></th>
                                                     <th><?php echo trans('Created at'); ?></th>
                                                     <th><?php echo trans('Status'); ?></th>
@@ -55,7 +52,7 @@
                                             <tbody>
                                                 <?php foreach ($paginate['testimonial'] as $testimonial) : ?>
                                                     <tr>
-                                                        <td><?php echo clean_number($testimonial['id']); ?></td>
+                                                        <td width="40" class="text-right"><?php echo clean_number($testimonial['id']); ?></td>
                                                         <td><?php echo $testimonial['name']; ?> </td>
                                                         <td><?php echo date("m-d-Y", strtotime($testimonial['created_at'])); ?>
                                                         <td><?php echo ($testimonial['status'] == 1) ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>'; ?> </td></td>
@@ -88,7 +85,6 @@
                                 </div>
                             </div>
                         </div> <!-- end card-body -->
-                    </div> <!-- end card -->
                 </div> <!-- end col -->
 
             </div>

@@ -1,7 +1,7 @@
 <?php echo $this->extend('admin/includes/_layout_view') ?> 
 
 <?php echo $this->section('content') ?>
-<div class="content-wrapper">
+<div class="content-wrapper bg-grey">
     <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
@@ -73,7 +73,7 @@
 						<div class="row">
 							<div class="col-6">
 								<div class="form-group mb-3">
-									<label class=" ml-0"><?php echo trans("Status"); ?><span class="required"> *</span></label>
+									<label class=""><?php echo trans("Status"); ?><span class="required"> *</span></label>
 									<select name="status" class="form-control" required>
 									<option value="1" <?php echo (old("status") == 1) ? 'selected':''; ?>>Active</option>
 									<option value="2" <?php echo (old("status") == 2) ? 'selected':''; ?>>Inactive</option>

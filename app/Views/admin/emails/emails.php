@@ -2,7 +2,7 @@
 
 <?php echo $this->section('content') ?>
 <!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
+<div class="content-wrapper bg-grey">
     <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
@@ -37,7 +37,7 @@
                         <div class="card-header">
                             <?php echo $this->include('admin/emails/_filter') ?>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body p-0">
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="table-responsive">

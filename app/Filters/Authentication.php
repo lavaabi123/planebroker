@@ -19,7 +19,7 @@ class Authentication implements FilterInterface
 			}
 		} else {
 			if (!session()->get('vr_sess_logged_in')) {
-				return redirect()->to(base_url('login'));
+				//return redirect()->to(base_url('login'));
 			}
 		}		
 		

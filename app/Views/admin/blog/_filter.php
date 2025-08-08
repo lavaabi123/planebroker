@@ -19,7 +19,7 @@
 
         <div class="item-table-filter item-table-filter-long">
             <label><?php echo trans("search"); ?></label>
-            <input name="search" class="form-control" placeholder="<?php echo trans("search") ?>" type="search" value="<?php echo $request->getVar('search'); ?>">
+            <input name="search" class="form-control mb-0" placeholder="<?php echo trans("search") ?>" type="search" value="<?php echo $request->getVar('search'); ?>">
         </div>
         <div class="item-table-filter">
             <label><?php echo trans("Type"); ?></label>
@@ -39,14 +39,17 @@
         </div>
         <input type="hidden" name="page" value="<?php echo (!empty($request->getVar('page'))) ? $request->getVar('page') : '1'; ?>">
 
-        <div class="item-table-filter md-top-10" style="width: 65px; min-width: 65px;">
+        <div class="item-table-filter">
             <label style="display: block">&nbsp;</label>
-            <button type="submit" class="btn btn-primary"><?php echo trans("filter"); ?></button>
+            <button type="submit" class="btn small bg-primary"><?php echo trans("filter"); ?></button>
         </div>
         <?php echo form_close(); ?>
 		
     </div>
-	<div class="col-sm-2 float-right">
-		<a href="<?php echo admin_url() . 'blog/add-blog/'; ?>"><button type="button" class="btn btn-primary">Add Blog</button></a>
+	<div class="col-sm-2 text-right">
+		<div class="item-table-filter float-none">
+			<label style="display: block">&nbsp;</label>
+			<a href="<?php echo admin_url() . 'blog/add-blog/'; ?>"><button type="button" class="btn small bg-primary">Add Blog</button></a>
+		</div>
 	</div>
 </div>

@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/js/selectize/css/selectize.min.css" />
 <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/admin/css/send-mail.css" />
 <script type="text/javascript" src="<?php echo base_url(); ?>/assets/frontend/js/selectize/js/standalone/selectize.min.js"></script>
-<div class="content-wrapper">
+<div class="content-wrapper bg-grey">
     <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
@@ -38,9 +38,9 @@
            <!-- <input type="hidden" id="crsf">-->
            
             <div class="row" style="">
-                 <div class="small-12 medium-4 columns" style="width: 30%;float: left;border: 1px solid rgba(0,0,0,.1);padding: 10px;">
-                                    
-                <div class="panel">
+                 <div class="col-12 col-sm-6 col-lg-4 small-12">
+                    <div class="card card-primary card-outline p-0">                
+                <div class="panel mb-0 bg-transparent border-0">
                 
                     <span class="label success numRows" style='cursor: pointer'>0</span> recipients.<br> 
                     <h5>Send To Customers Who:</h5><hr>
@@ -81,14 +81,14 @@
                     <div class="alert-box warning">If you enter one of the above [including the brackets] in the message or subject, it will be automatically converted when you send the message</div>
                     
                 </div>
-                
+                </div>
             </div>
 
-                <div class="col-lg-12 col-xl-12" style="float: left;max-width: 70%;">
+                <div class="col-12 col-sm-6 col-lg-8">
                     <div class="card card-primary card-outline card-outline-tabs">
                         <div class="card-header p-0 border-bottom-0">
                         </div>
-                        <div class="card-body">
+                        <div class="card-body p-0">
                             <div class="row">
                                 <div class="col-12">
                                     <div class="form-group mb-3 to-email-div" style="min-height: 85px;">
@@ -124,7 +124,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-8">
+                                <div class="col-10">
                             <div class="form-group mb-3">
                                 <label><?php echo trans('select_email_template'); ?>&nbsp;&nbsp;<em style="font-size: 13px">(To prefill subject and mail content from email template)</em></label>
                                 <select id="emailtemplate_id" name="emailtemplate_id" class="form-control" onchange="get_emailtemplate($(this));">
@@ -219,7 +219,7 @@
                             <input type="hidden" id="toNames" name="toNames">
                             <button type="submit" id="single_submit" name="validate" class="btn btn-primary"><?php echo trans('Send Mail'); ?></button>
                         </div>
-                        <div class="card-footer clearfix" style="clear: both">
+                        <div class="card-footer p-0 pt-3 clearfix" style="clear: both">
                             <small><strong><span class="required"> *</span> Must be filled</strong></small>
                         </div>
                         <!-- /.card -->

@@ -1,7 +1,7 @@
 <?php echo $this->extend('admin/includes/_layout_view') ?>
 
 <?php echo $this->section('content') ?>
-<div class="content-wrapper">
+<div class="content-wrapper bg-grey">
     <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
@@ -31,14 +31,13 @@
             <!-- Main row -->
             <div class="row">
                 <div class="col-lg-12 col-xl-12">
-                    <div class="card card-primary card-outline card-outline-tabs p-0">
-                        <div class="card-body filter_list">
+                        <div class="filter_list">
                             <div class="tab-content" id="custom-tabs-categories">
                                 <div class="tab-pane fade show active" id="custom-tabs-categories" role="tabpanel" aria-labelledby="custom-tabs-categories-tab">
                                     <div class="table-responsive">
                                         <table id="categories_table" class="table table-bordered table-striped nowrap w-100 pageResize">
                                             <div class="row table-filter-container m-0" style="align-items: center;">
-                                                <div class="col-sm-10">
+                                                <div class="col-sm-10 p-0">
                                                     <?php $request = \Config\Services::request(); ?>
                                                     <?php echo form_open(admin_url() . "sub-categories", ['method' => 'GET']); ?>
                                                     <input type="hidden" name="page" value="<?php echo (!empty($request->getVar('page'))) ? $request->getVar('page') : '1'; ?>">
@@ -79,13 +78,13 @@
 
                                                     <?php echo form_close(); ?>
                                                 </div>
-                                                <div class="col-sm-2 md-top-10 text-right">
+                                                <div class="col-sm-2 mt-3 text-right p-0">
                                                     <a href="javascript:void(0)" class="btn small bg-primary" onclick="manage_categories('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
                                                 </div>
                                             </div>
                                             <thead>
                                                 <tr>
-                                                    <th class="text-center" width="60"><?php echo trans('id'); ?></th>
+                                                    <th width="40" class="text-end"><?php echo trans('id'); ?></th>
                                                     <th><?php echo trans('name'); ?></th>
                                                     <th><?php echo trans('Parent Category'); ?></th>
                                                     <?php /*<th><?php echo trans('status'); ?></th> */ ?>
@@ -95,7 +94,7 @@
                                             <tbody>
                                                 <?php foreach ($categories as $h => $item) : ?>
                                                     <tr>
-                                                        <td class="text-center" width="60"><?php echo ($h+1); ?></td>
+                                                        <td width="40" class="text-end"><?php echo ($h+1); ?></td>
                                                         <td><?php echo html_escape($item->name); ?></td>
                                                         <td><?php echo html_escape($item->category_name); ?></td>
                                                        <?php /* <td class="text-center">
@@ -152,7 +151,6 @@
 
                         </div> 
                         <!-- /.card -->
-                    </div>
                 </div>
             </div> <!-- end col -->
             <!-- /.row (main row) -->
@@ -162,75 +160,76 @@
 </div>
 <!-- Modal -->
 <div id="modal-categories" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal-modalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="modal-modalLabel"><?php echo trans('add'); ?></h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <div class="modal-header justify-content-center p-2 pb-0">
+                <h4 class="modal-title mb-0 fw-bolder" id="modal-modalLabel"><?php echo trans('add'); ?></h4>
+                <button type="button" class="close fs-5 position-absolute top-0 end-0 m-0" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="form_safe" action="<?php echo admin_url() .'sub-categories/saved_sub_categories_post';?>" method="post">
-                <input type="hidden" id="modal_id" name="id" class="form-control form-input">
-                <?php //echo csrf_field() ?>
-                <input type="hidden" id="crsf">
 
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label><?php echo trans("name"); ?></label>
-                        <input type="text" id="modal_name" name="name" maxlength="100" class="form-control form-input" placeholder="<?php echo trans("name"); ?>" required>
-                    </div>                                
+			<div class="modal-body pb-0">
+				<form id="form_safe" action="<?php echo admin_url() .'sub-categories/saved_sub_categories_post';?>" method="post">
+					<input type="hidden" id="modal_id" name="id" class="form-control form-input">
+					<?php //echo csrf_field() ?>
+					<input type="hidden" id="crsf">
+				<div class="form-group">
+					<label><?php echo trans("name"); ?></label>
+					<input type="text" id="modal_name" name="name" maxlength="100" class="form-control form-input" placeholder="<?php echo trans("name"); ?>" required>
+				</div>                                
 
-                    <div class="form-group">
-                        <label><?php echo trans("category"); ?></label>
-						 <select name="category_id" id="category_id" class="form-control" required>
-							<option value=""><?php echo trans('Select Category') ?></option>
-							<?php
-							if(!empty($categories_list)){
-								foreach($categories_list as $category_row){ ?>
-									<option value="<?php echo $category_row->id; ?>"><?php echo $category_row->name; ?></option>
-							<?php }
-							}
-							?>
-						</select>
-                    </div>  
-					
-                    <div class="form-group">
-                        <label><?php echo trans("seo_title"); ?></label>
-                        <input type="text" id="modal_seo_title" name="seo_title" maxlength="255" class="form-control form-input" placeholder="<?php echo trans("seo_title"); ?>" required>
-                    </div>             
+				<div class="form-group">
+					<label><?php echo trans("category"); ?></label>
+					 <select name="category_id" id="category_id" class="form-control" required>
+						<option value=""><?php echo trans('Select Category') ?></option>
+						<?php
+						if(!empty($categories_list)){
+							foreach($categories_list as $category_row){ ?>
+								<option value="<?php echo $category_row->id; ?>"><?php echo $category_row->name; ?></option>
+						<?php }
+						}
+						?>
+					</select>
+				</div>  
+				
+				<div class="form-group">
+					<label><?php echo trans("seo_title"); ?></label>
+					<input type="text" id="modal_seo_title" name="seo_title" maxlength="255" class="form-control form-input" placeholder="<?php echo trans("seo_title"); ?>" required>
+				</div>             
 
-                    <div class="form-group">
-                        <label><?php echo trans("seo_keywords"); ?></label>
-                        <textarea id="modal_seo_keywords" name="seo_keywords" class="form-control form-input" placeholder="<?php echo trans("seo_keywords"); ?>" required></textarea>
-                    </div>     
+				<div class="form-group">
+					<label><?php echo trans("seo_keywords"); ?></label>
+					<textarea id="modal_seo_keywords" name="seo_keywords" class="form-control form-input" placeholder="<?php echo trans("seo_keywords"); ?>" required></textarea>
+				</div>     
 
-                    <div class="form-group">
-                        <label><?php echo trans("seo_description"); ?></label>
-                        <textarea id="modal_seo_description" name="seo_description" class="form-control form-input" placeholder="<?php echo trans("seo_description"); ?>" required></textarea>
-                    </div>        
+				<div class="form-group">
+					<label><?php echo trans("seo_description"); ?></label>
+					<textarea id="modal_seo_description" name="seo_description" class="form-control form-input" placeholder="<?php echo trans("seo_description"); ?>" required></textarea>
+				</div>        
 
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-sm-4 col-xs-12">
-                                <label><?php echo trans('status'); ?></label>
-                            </div>
-                            <div class="col-sm-4 col-xs-12 col-option">
-                                <input type="radio" name="status" value="1" id="status_1" class="status_modal square-purple" checked="checked">
-                                <label for="status_1" class="option-label"><?php echo trans('enable'); ?></label>
-                            </div>
-                            <div class="col-sm-4 col-xs-12 col-option">
-                                <input type="radio" name="status" value="0" id="status_2" class="status_modal square-purple">
-                                <label for="status_2" class="option-label"><?php echo trans('disable'); ?></label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary"><?php echo trans('save'); ?></button>
-                </div>
-            </form>
+				<div class="form-group">
+					<div class="row align-items-center">
+						<div class="col-auto">
+							<label class="ms-0"><?php echo trans('status'); ?></label>
+						</div>
+						<div class="col-auto d-flex align-items-center">
+							<input type="radio" name="status" value="1" id="status_1" class="status_modal square-purple" checked="checked">
+							<label for="status_1" class="option-label ms-0"><?php echo trans('enable'); ?></label>
+						</div>
+						<div class="col-auto d-flex align-items-center">
+							<input type="radio" name="status" value="0" id="status_2" class="status_modal square-purple">
+							<label for="status_2" class="option-label ms-0"><?php echo trans('disable'); ?></label>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer bg-white px-0 justify-content-between position-sticky bottom-0 rounded-0 z-3">
+					<button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+					<button type="submit" class="btn btn-primary"><?php echo trans('save'); ?></button>
+				</div>
+				</form>
+			</div>
+                
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->

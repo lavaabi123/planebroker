@@ -1,5 +1,5 @@
 <?php
-$baseUrl = 'http://localhost/plane_broker/';
+$baseUrl = 'http://localhost/planebroker/';
 // Specify the path to save the uploaded files
 if(!empty($_GET['uploadpath'])){
 	$uploadPath = 'uploads/'.$_GET['uploadpath'].'/';
@@ -18,6 +18,12 @@ if ($_FILES['upload']['error'] === UPLOAD_ERR_OK) {
     // Get the uploaded file information
     $file = $_FILES['upload'];
 
+	$finfo = finfo_open(FILEINFO_MIME_TYPE);
+	$mimeType = finfo_file($finfo, $file['tmp_name']);
+	finfo_close($finfo);
+	$isImage = str_starts_with($mimeType, 'image/');
+	$isVideo = str_starts_with($mimeType, 'video/');
+	
     // Generate a unique filename to prevent conflicts
     $filename = rand(). '_' .time(). '_' .uniqid() . '_' . $file['name'];
 
@@ -28,7 +34,9 @@ if ($_FILES['upload']['error'] === UPLOAD_ERR_OK) {
         $response = [
             'uploaded' => 1,
             'fileName' => $filename,
-            'url' => $url
+			'fileType' => $isImage ? 'image' : 'video',
+            'url' => $url,
+			'tag' => !empty($_POST['tag']) ? $_POST['tag'] : ''
         ];
     } else {
         // File upload failed

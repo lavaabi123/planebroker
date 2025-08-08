@@ -165,4 +165,10 @@ class VideoModel extends Model
             'pager'     => $this->pager,
         ];
     }
+    public function video_list()
+    {
+        $sql = "SELECT * FROM videos WHERE deleted_at IS NULL";
+        $query = $this->db->query($sql);
+        return $query->getResultArray();
+    }
 }

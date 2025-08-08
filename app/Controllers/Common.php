@@ -474,7 +474,7 @@ class Common extends BaseController
 			$option_html = '';
 			if (!empty($decoded_option) && count($decoded_option) > 0) {
 				foreach($decoded_option as $option){
-					$option_html .= '<div class="d-flex fieldoption gap-2 gap-sm-4"><div class="col"><input type="text" class="form-control" placerholder="Option Name" value="'.$option.'" name="field_options[]"></div><a href="javascript:void(0)" class="button tiny alert removeOption p-2"><i class="fas fa-trash"></i></a></div>';
+					$option_html .= '<div class="d-flex fieldoption gap-2"><div class="col px-0"><input type="text" class="form-control" placerholder="Option Name" value="'.$option.'" name="field_options[]"></div><a href="javascript:void(0)" class="button tiny alert removeOption p-2"><i class="fas fa-trash"></i></a></div>';
 				}
 			}
 

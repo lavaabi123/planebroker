@@ -165,4 +165,11 @@ class SupportModel extends Model
             'pager'     => $this->pager,
         ];
     }
+	
+    public function support_list()
+    {
+        $sql = "SELECT * FROM supports WHERE deleted_at IS NULL";
+        $query = $this->db->query($sql);
+        return $query->getResultArray();
+    }
 }

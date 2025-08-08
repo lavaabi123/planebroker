@@ -82,6 +82,32 @@ class FieldsModel extends Model
             'current_page' => $this->pager->getCurrentPage('default'),
         ];
     }
+    public function field_lists($orderby = 'field_order')
+    {
+       
+        $paginateData = $this->select('fields.*, categories.id as category_id,
+			GROUP_CONCAT(DISTINCT field_categories.category_id) AS category_ids,
+			GROUP_CONCAT(DISTINCT categories.name) AS category_names,
+			GROUP_CONCAT(DISTINCT field_sub_categories.sub_category_id) AS subcategory_ids,
+			GROUP_CONCAT(DISTINCT categories_sub.name) AS subcategory_names');
+			$this->builder->select("GROUP_CONCAT(DISTINCT CONCAT(fields_group.name, ' (', c.name, ')')) AS group_names", false);
+
+		$this->builder->join('field_categories', 'field_categories.field_id = fields.id', 'left');
+		$this->builder->join('categories', 'categories.id = field_categories.category_id', 'left');
+		$this->builder->join('field_sub_categories', 'field_sub_categories.field_id = fields.id', 'left');
+		$this->builder->join('categories_sub', 'categories_sub.id = field_sub_categories.sub_category_id', 'left');
+		$this->builder->join('field_groups', 'field_groups.field_id = fields.id', 'left');
+		$this->builder->join('fields_group', 'fields_group.id = field_groups.fields_group_id', 'left');
+		$this->builder->join('categories c', 'c.id = fields_group.category_id', 'left');
+
+
+		$this->builder()->groupby('fields.id');
+		$this->builder()->orderby('categories.id,fields.'.$orderby);
+        
+		$query = $this->builder()->get();
+		return $query->getResult();
+
+    }
 	public function get_fields($category_id=1)
     {
 		$db = \Config\Database::connect();

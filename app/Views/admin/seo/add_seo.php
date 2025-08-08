@@ -1,7 +1,7 @@
 <?php echo $this->extend('admin/includes/_layout_view') ?> 
 
 <?php echo $this->section('content') ?>
-<div class="content-wrapper">
+<div class="content-wrapper bg-grey">
     <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
@@ -38,11 +38,11 @@
                     <div class="card card-primary card-outline card-outline-tabs">
                         <div class="card-header p-0 border-bottom-0">
                         </div>
-                        <div class="card-body">
+                        <div class="card-body subscrip-center p-0">
                             <div class="row">
                                 <div class="col-6">
                                     <div class="form-group mb-3">
-                                        <label class=" ml-0"><?php echo trans("Page"); ?><span class="required"> *</span></label>  
+                                        <label class=""><?php echo trans("Page"); ?><span class="required"> *</span></label>  
 										<select name="page_name" class="form-control" required>
 										<option value="">Select</option>
 										<option value="Home" <?php echo (old("page_name") == "Home") ? 'selected':''; ?>>Home</option>
@@ -73,7 +73,7 @@
                             <div class="row">
                                 <div class="col-6">
                                     <div class="form-group mb-3">
-                                        <label class=" ml-0"><?php echo trans("Meta Title"); ?><span class="required"> *</span></label>
+                                        <label class=""><?php echo trans("Meta Title"); ?><span class="required"> *</span></label>
                                         <input type="text" name="meta_title" class="form-control auth-form-input" placeholder="<?php echo trans("Meta Title"); ?>" value="<?php echo old("meta_title"); ?>" required>
                                     </div>
                                 </div>
@@ -81,7 +81,7 @@
                             <div class="row">
                                 <div class="col-6">
                                     <div class="form-group mb-3">
-                                        <label class=" ml-0"><?php echo trans("Meta Description"); ?><span class="required"> *</span></label>
+                                        <label class=""><?php echo trans("Meta Description"); ?><span class="required"> *</span></label>
                                         <textarea name="meta_description" class="form-control auth-form-input" placeholder="<?php echo trans("Meta Description"); ?>" required><?php echo old("meta_description"); ?></textarea>
                                     </div>
                                 </div>
@@ -96,10 +96,10 @@
                                 </div>
                             </div>-->
 
-                        <div class="form-group mb-3 float-right">
+                        <div class="form-group mb-3 text-center">
                             <button type="submit" id="single_submit" name="validate" class="btn btn-primary"><?php echo trans('save_changes'); ?></button>
                         </div>
-                        <div class="card-footer clearfix" style="clear: both">
+                        <div class="card-footer p-0 pt-3 clearfix" style="clear: both">
                             <small><strong><span class="required"> *</span> Must be filled</strong></small>
                         </div>
                         <!-- /.card -->

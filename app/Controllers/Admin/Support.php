@@ -36,8 +36,7 @@ class Support extends AdminController
         ]);
 
         //paginate
-        $data['paginate'] = $this->supportModel->supportPaginate();
-        $data['pager'] =  $data['paginate']['pager'];
+        $data['supports'] = $this->supportModel->support_list();
 
 
         return view('admin/support/support', $data);

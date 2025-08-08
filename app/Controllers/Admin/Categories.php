@@ -57,14 +57,14 @@ class Categories extends AdminController
         ]);
 
         // Paginations
-        $paginate = $this->categoriessubModel->DataPaginations();
-        $data['categories'] =   $paginate['categories'];
+        $paginate = $this->categoriessubModel->get_all_categories();
+        $data['categories'] =   $paginate;
 		
 		
         $this->CategoriesModel = new CategoriesModel();
         $data['categories_list'] = $this->CategoriesModel->get_categories();
 
-        $data['paginations'] =  $paginate['pager']->Links('default', 'custom_pager');
+        //$data['paginations'] =  $paginate['pager']->Links('default', 'custom_pager');
 
         return view('admin/categories/sub_categories', $data);
     }

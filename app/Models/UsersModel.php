@@ -1422,6 +1422,12 @@ class UsersModel extends Model
 			'total' => $this->pager->gettotal()
         ];
     }
+    public function users_lists()
+    {
+        $sql = "SELECT * FROM users WHERE id != ? order by id desc";
+        $query = $this->db->query($sql, array(1));
+        return $query->getResultArray();
+    }
 
     //get paginated users
     public function get_paginated_admin($per_page, $offset)
@@ -1547,28 +1553,16 @@ class UsersModel extends Model
     
     
     //get paginated provider messages
-    public function get_paginated_provider_messages_admin($per_page='', $offset='', $id='')
+    public function get_provider_messages_admin()
     {
         
-		if($id != ''){
-			$query = $this->db->table('provider_messages AS pm')
-            ->select('pm.*, u.fullname AS to_provider')
-            ->join('users AS u', 'u.id = pm.to_user_id', 'left')
-            ->where('u.deleted_at', null)
-			->where('pm.to_user_id', $id)
-            ->orderBy('pm.id', 'DESC');
-		}else{
-			$query = $this->db->table('provider_messages AS pm')
-            ->select('pm.*, u.fullname AS to_provider')
-            ->join('users AS u', 'u.id = pm.to_user_id', 'left')
-            ->where('u.deleted_at', null)
-            ->orderBy('pm.id', 'DESC');
-		}
 		
-
-        $query = $this->filter_provider_messages($query);
-
-        return $query->get($per_page, $offset)->getResultArray();
+			$query = $this->db->table('provider_messages AS pm')
+            ->select('pm.*, u.fullname AS to_provider')
+            ->join('users AS u', 'u.id = pm.to_user_id', 'left')
+            ->where('u.deleted_at', null)
+            ->orderBy('pm.id', 'DESC');
+        return $query->get()->getResultArray();
     }
 
     //get paginated provider messages count
@@ -1740,6 +1734,19 @@ class UsersModel extends Model
         $query = $this->filter_sales($query);
 
         return $query->get($per_page, $offset)->getResultArray();
+    }
+	//get paginated sales count
+	public function get_sales()
+    {      			
+		$query = $this->db->table('sales AS s')
+            ->select('s.*, u.fullname AS provider,u.user_level,p.name as plan_name,p.price as plan_price,pr.id as product_id,c.permalink,pr.category_id,(SELECT GROUP_CONCAT(pd.field_value ORDER BY t.sort_order SEPARATOR " ") AS field_values FROM products_dynamic_fields pd JOIN ( SELECT t.field_id, t.sort_order FROM title_fields t LEFT JOIN fields f ON f.id = t.field_id WHERE t.title_type = "title") t ON t.field_id = pd.field_id WHERE pd.product_id = pr.id) as display_name')
+            ->join('users AS u', 'u.id = s.user_id', 'left')
+            ->join('plans AS p', 'p.id = s.plan_id', 'left')
+            ->join('products AS pr', 'pr.id = s.product_id', 'left')
+            ->join('categories AS c', 'c.id = pr.category_id', 'left')
+            ->orderBy('s.id', 'DESC');
+
+        return $query->get()->getResultArray();
     }
 	public function get_paginated_paypal_sales($per_page='', $offset='')
     {

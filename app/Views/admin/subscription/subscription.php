@@ -7,8 +7,8 @@
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1 class="m-0"><?php echo $title ?></h1>
+                <div class="col-sm-6 d-flex">
+                    <h1 class="m-0"><?php echo $title ?></h1><a href="<?php echo admin_url() . 'subscription/add-subscription/'; ?>"><button type="button" class="btn small btn-primary ms-3"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></button></a>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -33,33 +33,28 @@
             <div class="row">
                 <?php echo $this->include('admin/includes/_messages') ?>
                 <div class="col-lg-12 col-xl-12">
-                            <?php echo $this->include('admin/subscription/_filter') ?>
+                            <?php //echo $this->include('admin/subscription/_filter') ?>
                                 <div class="filter_list">
                                     <div class="table-responsive">
 
                                         <table class="table table-bordered table-striped">
                                             <thead>
                                                 <tr role="row">
-                                                    <th width="40" class="text-end"><?php echo trans('id'); ?></th>
                                                     <th width="200px"><?php echo trans('Package Name'); ?></th>
                                                     <th><?php echo trans('Price'); ?></th>
                                                     <th width="200px"><?php echo trans('Stripe ID'); ?></th>
-                                                    <th width="200px"><?php echo trans('Paypal Plan ID with Trial'); ?></th>
-                                                    <th width="200px"><?php echo trans('Paypal Plan ID without Trial'); ?></th>
                                                     <th><?php echo trans('Status'); ?></th>
                                                     <th><?php echo trans('Recommended?'); ?></th>
-                                                    <th class="max-width-120"><?php echo trans('options'); ?></th>
+                                                    <th class="text-center max-width-120"><?php echo trans('options'); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <?php foreach ($paginate['subscription'] as $subscription) : ?>
+                                                <?php foreach ($paginate['subscription'] as $h => $subscription) :
+if($subscription['id'] != 999){												?>
                                                     <tr>
-                                                        <td class="text-end"><?php echo clean_number($subscription['id']); ?></td>
                                                         <td><?php echo $subscription['name']; ?> </td>
                                                         <td><?php echo '$'.$subscription['price']; ?> </td>
                                                         <td style="word-break: break-all;"><?php echo $subscription['stripe_price_id']; ?> </td>
-                                                        <td style="word-break: break-all;"><?php echo $subscription['paypal_plan_id_with_trial']; ?> </td>
-                                                        <td style="word-break: break-all;"><?php echo $subscription['paypal_plan_id_without_trial']; ?> </td>
                                                         <td><?php echo ($subscription['status'] == 1) ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>'; ?> </td>
                                                         <td><?php echo ($subscription['is_recommended'] == 1) ? '<span class="badge bg-success">Yes</span>' : '<span class="badge bg-danger">No</span>'; ?> </td>
                                                         <td>
@@ -78,16 +73,13 @@
 
                                                         </td>
                                                     </tr>
-                                                <?php endforeach; ?>
+<?php } endforeach; ?>
                                             </tbody>
                                         </table>
-                                        <?php if (empty($paginate['subscription'])) : ?>
-                                            <p class="text-center text-muted"><?= trans("no_records_found"); ?></p>
-                                        <?php endif; ?>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 float-right">
-                                    <?php echo $pager->Links('default', 'custom_pager') ?>
+                                    <?php //echo $pager->Links('default', 'custom_pager') ?>
                                 </div>
                     </div> <!-- end card -->
                 </div> <!-- end col -->

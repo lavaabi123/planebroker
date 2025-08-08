@@ -59,6 +59,13 @@ class ContactsModel extends Model
         ];
     }
 
+	public function get_contacts_list()
+    {
+		
+         return $this->asObject()->findAll();
+		 //echo $this->db->getLastQuery(); die;
+        
+    }
 	public function get_contacts()
     {
 		

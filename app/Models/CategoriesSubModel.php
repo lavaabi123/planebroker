@@ -60,6 +60,13 @@ class CategoriesSubModel extends Model
         ];
     }
 	
+	public function get_all_categories()
+    {
+		
+         return $this->select('categories_sub.*,categories.name as category_name')->join('categories', 'categories_sub.category_id = categories.id','left')->asObject()->findAll();
+		 //echo $this->db->getLastQuery(); die;
+        
+    }
 	public function get_categories()
     {
 		

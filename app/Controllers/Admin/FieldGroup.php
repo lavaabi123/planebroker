@@ -47,10 +47,7 @@ class FieldGroup extends AdminController
         ]);
 
         // Paginations
-        $paginate = $this->FieldGroupModel->DataPaginations($categoryId);
-        $data['fields_group'] =   $paginate['fields_group'];
-
-        $data['paginations'] =  $paginate['pager']->Links('default', 'custom_pager');
+        $data['fields_group'] = $this->FieldGroupModel->field_group_lists($categoryId);
 
         return view('admin/categories/fields_group', $data);
     }

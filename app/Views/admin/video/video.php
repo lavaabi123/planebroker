@@ -7,8 +7,8 @@
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1 class="m-0"><?php echo $title ?></h1>
+                <div class="col-sm-6 d-flex">
+                    <h1 class="m-0"><?php echo $title ?></h1><a href="<?php echo admin_url() . 'video/add-video/'; ?>"><button type="button" class="btn small btn-primary ms-3"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></button></a>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -33,7 +33,7 @@
             <div class="row">
                 <?php echo $this->include('admin/includes/_messages') ?>
                 <div class="col-lg-12 col-xl-12">
-                        <?php echo $this->include('admin/video/_filter') ?>
+                        <?php //echo $this->include('admin/video/_filter') ?>
                         <div class="filter_list pt-0">
                             <div class="row">
                                 <div class="col-sm-12">
@@ -42,18 +42,16 @@
                                         <table class="table table-bordered table-striped">
                                             <thead>
                                                 <tr role="row">
-                                                    <th width="20"><?php echo trans('id'); ?></th>
                                                     <th><?php echo trans('Title'); ?></th>
                                                     <th><?php echo trans('Video URL'); ?></th>
                                                     <th><?php echo trans('Created at'); ?></th>
                                                     <th><?php echo trans('Status'); ?></th>
-                                                    <th class="max-width-120"><?php echo trans('options'); ?></th>
+                                                    <th class="text-center max-width-120"><?php echo trans('options'); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <?php foreach ($paginate['video'] as $video) : ?>
+                                                <?php foreach ($videos as $h => $video) : ?>
                                                     <tr>
-                                                        <td><?php echo clean_number($video['id']); ?></td>
                                                         <td><?php echo $video['name']; ?> </td>
                                                         <td><?php echo $video['video_url']; ?> </td>
                                                         <td><?php echo date("m-d-Y", strtotime($video['created_at'])); ?>
@@ -77,13 +75,10 @@
                                                 <?php endforeach; ?>
                                             </tbody>
                                         </table>
-                                        <?php if (empty($paginate['video'])) : ?>
-                                            <p class="text-center text-muted"><?= trans("no_records_found"); ?></p>
-                                        <?php endif; ?>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 float-right">
-                                    <?php echo $pager->Links('default', 'custom_pager') ?>
+                                    <?php //echo $pager->Links('default', 'custom_pager') ?>
                                 </div>
                             </div>
                         </div> <!-- end card-body -->

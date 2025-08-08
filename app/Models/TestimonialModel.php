@@ -166,4 +166,10 @@ class TestimonialModel extends Model
             'pager'     => $this->pager,
         ];
     }
+    public function testimonial_list()
+    {
+        $sql = "SELECT * FROM testimonials WHERE deleted_at IS NULL";
+        $query = $this->db->query($sql);
+        return $query->getResultArray();
+    }
 }

@@ -37,8 +37,7 @@ class Testimonial extends AdminController
         ]);
 
         //paginate
-        $data['paginate'] = $this->testimonialModel->testimonialPaginate();
-        $data['pager'] =  $data['paginate']['pager'];
+        $data['testimonial_list'] = $this->testimonialModel->testimonial_list();
 
 
         return view('admin/testimonial/testimonial', $data);

@@ -180,4 +180,14 @@ class BlogModel extends Model
             'pager'     => $this->pager,
         ];
     }
+	
+    public function blogs_list()
+    {
+
+        $sql = "SELECT * FROM blogs WHERE deleted_at IS NULL";
+        
+        $query = $this->db->query($sql);
+        return $query->getResultArray();
+
+    }
 }

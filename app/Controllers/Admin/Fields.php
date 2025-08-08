@@ -47,16 +47,12 @@ class Fields extends AdminController
         ]);
 
         // Paginations
-        $paginate = $this->fieldsModel->DataPaginations();
-        $data['fields'] =   $paginate['fields'];
+        $data['fields'] = $this->fieldsModel->field_lists();
 		
         $data['categories_list'] = $this->CategoriesModel->get_categories();
         $data['sub_categories_list'] = $this->categoriessubModel->get_categories();
 		
         $data['field_group'] = $this->FieldGroupModel->get_fields_group();
-
-        $data['paginations'] =  $paginate['pager']->Links('default', 'custom_pager');
-
 
         return view('admin/fields/fields', $data);
     }
@@ -64,19 +60,14 @@ class Fields extends AdminController
     public function filter_fields()
     {
         $data = array_merge($this->data, [
-            'title'     => trans('Dynamic Fields'),
-            'active_tab'     => 'dynamic-fields',
+            'title'     => trans('Filter Fields'),
+            'active_tab'     => 'filter-fields',
         ]);
 
         // Paginations
-        $paginate = $this->fieldsModel->DataPaginations('filter_order');
-        $data['fields'] =   $paginate['fields'];
-		
+        $data['fields'] = $this->fieldsModel->field_lists();
         $data['categories_list'] = $this->CategoriesModel->get_categories();
         $data['sub_categories_list'] = $this->categoriessubModel->get_categories();
-
-        $data['paginations'] =  $paginate['pager']->Links('default', 'custom_pager');
-
 
         return view('admin/fields/filter_fields', $data);
     }

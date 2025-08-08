@@ -13,14 +13,14 @@
 }
 </style>
 <!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
+<div class="content-wrapper bg-grey">
     <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
-                <div class="col-sm-6">
+                <div class="col-sm-6 d-flex">
                   <h1 class="m-0"><?php echo $title ?> 
-                    <a class="btn btn-primary" href="<?php echo admin_url() . 'listings/add/'; ?>"><?php echo trans('Add Listing'); ?></a>
+                    <a class="btn btn-primary ms-3" href="<?php echo admin_url() . 'listings/add/'; ?>"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
                   </h1>                     
                 </div><!-- /.col -->
                 <div class="col-sm-6">
@@ -43,104 +43,86 @@
     <section class="content">
         <div class="container-fluid">
             <!-- Main row -->
-			<div class="filter_Sec">
-				<?php echo $this->include('admin/listings/_filter') ?>
-			</div>
             <div class="row filter_list">
                 <?php echo $this->include('admin/includes/_messages') ?>
                 <div class="col-lg-12 col-xl-12">
-                    <div class="card p-0">
-                        <div class="card-body p-0">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="table-responsive">
+					<div class="table-responsive">
 
-                                        <table class="table table-bordered table-striped">
-                                            <thead>
-                                                <tr role="row">
-                                                    <th width="20"><?php echo trans('id'); ?></th>
-                                                    <th><?php echo trans('Listing Name'); ?></th>
-                                                    <th><?php echo trans('Package Name'); ?></th>
-                                                    <th><?php echo trans('Category Name'); ?></th>
-                                                    <th><?php echo trans('User'); ?></th>
-                                                    <th><?php echo trans('Listing Status'); ?></th>
-                                                    <th><?php echo trans('Subscription Status'); ?></th>
-                                                    <th><?php echo trans('Created at'); ?></th>
-                                                    <th><?php echo trans('Added By'); ?></th>
-                                                    <th class="max-width-120"><?php echo trans('options'); ?></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php 
-												$page = !empty($_GET['page']) ? $_GET['page'] : 1;
-												$slno_start = $paginate['total'] - (($page-1) * $paginate['per_page_no']);
-												foreach ($paginate['users'] as $u => $user) :
-												?>
-                                                    <tr id="p_id_<?php echo $user['id']; ?>">
-                                                        <td><?php echo $u+1; ?></td>
-                                                        <td>
-                                                            <a href="<?php echo base_url('listings/'.$user['permalink'].'/'.$user['id'].'/'.(!empty($user['display_name'])?str_replace(' ','-',strtolower($user['display_name'])):'')); ?>" target="_blank"><?php echo $user['display_name']; ?></a>
-                                                        </td>         
-                                                        <td><?php echo $user['package_names']; ?></td>
-                                                        <td><?php echo $user['category_name']; ?></td>
-                                                        <td><?php echo $user['fullname']; ?></td>  
-                                                        <td class="statustext" style="text-align: center;">     
-															<?php if ($user['status'] == 1){ ?>
-																<span class="text-success" title="<?php echo trans('ACTIVE'); ?>">ACTIVE</span>
-															<?php }else if ($user['status'] == 0){ ?>
-																<span class="text-danger" title="<?php echo trans('INACTIVE'); ?>">INACTIVE</span>
-															<?php } ?>
-														</td>  
-														<td style="text-align: center;"> 
-															<?php if ($user['is_cancel'] == 0){ ?>
-																<span class="text-success" title="<?php echo trans('active'); ?>">ACTIVE</span>
-															<?php }else{ ?>
-																<span class="text-danger" title="<?php echo trans('banned'); ?>">CANCELED</span>
-															<?php } ?>   
-                                                        </td>														
-                                                        <td><?php echo date("m-d-Y",strtotime($user['created_at'])); ?></td>
-                                                        <td><?php echo ( empty($user['added_by']) ) ? 'User' : 'Admin'; ?></td>  
-                                                        <td>
-                                                            <div class="dropdown btn-group">
-                                                                <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                                    <i class="mdi mdi-circle-edit-outline mr-2"></i><?php echo trans('select_an_option'); ?>
-                                                                </button>
+						<table class="table table-bordered table-striped">
+							<thead>
+								<tr role="row">
+									<th><?php echo trans('Listing Name'); ?></th>
+									<th><?php echo trans('Package'); ?></th>
+									<th><?php echo trans('Category'); ?></th>
+									<th><?php echo trans('User'); ?></th>
+									<th><?php echo trans('Listing Status'); ?></th>
+									<th><?php echo trans('Subscription Status'); ?></th>
+									<th><?php echo trans('Created at'); ?></th>
+									<th><?php echo trans('Added By'); ?></th>
+									<th class="max-width-120 text-center"><?php echo trans('options'); ?></th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php 
+								foreach ($listings as $u => $user) :
+								if($user['fullname'] != ''){
+								?>
+									<tr id="p_id_<?php echo $user['id']; ?>">
+										<td>
+											<a href="<?php echo base_url('listings/'.$user['permalink'].'/'.$user['id'].'/'.(!empty($user['display_name'])?str_replace(' ','-',strtolower($user['display_name'])):'')); ?>" target="_blank"><?php echo $user['display_name']; ?></a>
+										</td>         
+										<td><?php echo $user['package_names']; ?></td>
+										<td><?php echo $user['category_name']; ?></td>
+										<td><?php echo $user['fullname']; ?></td>  
+										<td class="statustext" style="text-align: center;">     
+											<?php if ($user['status'] == 1){ ?>
+												<span class="text-success" title="<?php echo trans('ACTIVE'); ?>">ACTIVE</span>
+											<?php }else if ($user['status'] == 0){ ?>
+												<span class="text-danger" title="<?php echo trans('INACTIVE'); ?>">INACTIVE</span>
+											<?php } ?>
+										</td>  
+										<td style="text-align: center;"> 
+											<?php if ($user['is_cancel'] == 0){ ?>
+												<span class="text-success" title="<?php echo trans('active'); ?>">ACTIVE</span>
+											<?php }else{ ?>
+												<span class="text-danger" title="<?php echo trans('banned'); ?>">CANCELED</span>
+											<?php } ?>   
+										</td>														
+										<td><?php echo date("m-d-Y",strtotime($user['created_at'])); ?></td>
+										<td><?php echo ( empty($user['added_by']) ) ? 'User' : 'Admin'; ?></td>  
+										<td class="text-center">
+											<div class="dropdown btn-group">
+												<button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+													<i class="mdi mdi-circle-edit-outline mr-2"></i><?php echo trans('select_an_option'); ?>
+												</button>
 
-                                                                <div class="dropdown-menu dropdown-menu-animated">
-                                                                    <?php 
-																		if (is_admin()) : ?>
-                                                                        <a class="dropdown-item" href="<?php echo admin_url() . 'listings/add?id='.$user['id'].'&category='.$user['category_id'].'&plan_id='.$user['plan_id'].'&user_id='.$user['user_id'].'&sale_id='.$user['sale_id']; ?>"><?php echo trans('edit'); ?></a>
-                                                                        <div class="dropdown-divider"></div>
-                                                                        <a class="dropdown-item openDeleteModal" data-id="<?php echo $user['id']; ?>" href="javascript:void(0)" ><?php echo trans('delete'); ?></a>
-                                                                        <div class="dropdown-divider"></div>
-                                                                        <a class="dropdown-item" target="_blank" href="<?php echo base_url('/listings/'.$user['permalink'].'/'.$user['id'].'/'.(!empty($user['display_name'])?str_replace(' ','-',strtolower($user['display_name'])):'')); ?>"><?php echo trans('View Listing'); ?></a>
-                                                                        <div class="dropdown-divider"></div>
-																		<?php if ($user['status'] == 1){ ?>
-																			 <a class="dropdown-item toggle-status" data-id="<?php echo $user['id']; ?>" data-val="0" href="javascript:void(0)" >Disable</a>
-																		<?php }else if ($user['status'] == 0){ ?>
-																			 <a class="dropdown-item toggle-status" data-id="<?php echo $user['id']; ?>" data-val="1" href="javascript:void(0)" >Enable</a>
-																		<?php } ?>
-                                                                    <?php endif;  ?>
-																	
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                <?php endforeach; ?>
-                                            </tbody>
-                                        </table>
-                                        <?php if (empty($paginate['users'])) : ?>
-                                            <p class="text-center text-muted"><?= trans("no_records_found"); ?></p>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12 float-right">
-                                    <?php echo $pager->links('default', 'custom_pager') ?>
-                                </div>
-                            </div>
-                        </div> <!-- end card-body -->
-                    </div> <!-- end card -->
-                </div> <!-- end col -->
+												<div class="dropdown-menu dropdown-menu-animated">
+													<?php 
+														if (is_admin()) : ?>
+														<a class="dropdown-item" href="<?php echo admin_url() . 'listings/add?id='.$user['id'].'&category='.$user['category_id'].'&plan_id='.$user['plan_id'].'&user_id='.$user['user_id'].'&sale_id='.$user['sale_id']; ?>"><?php echo trans('edit'); ?></a>
+														<div class="dropdown-divider"></div>
+														<a class="dropdown-item openDeleteModal" data-id="<?php echo $user['id']; ?>" href="javascript:void(0)" ><?php echo trans('delete'); ?></a>
+														<div class="dropdown-divider"></div>
+														<a class="dropdown-item" target="_blank" href="<?php echo base_url('/listings/'.$user['permalink'].'/'.$user['id'].'/'.(!empty($user['display_name'])?str_replace(' ','-',strtolower($user['display_name'])):'')); ?>"><?php echo trans('View Listing'); ?></a>
+														<div class="dropdown-divider"></div>
+														<?php if ($user['status'] == 1){ ?>
+															 <a class="dropdown-item toggle-status" data-id="<?php echo $user['id']; ?>" data-val="0" href="javascript:void(0)" >Disable</a>
+														<?php }else if ($user['status'] == 0){ ?>
+															 <a class="dropdown-item toggle-status" data-id="<?php echo $user['id']; ?>" data-val="1" href="javascript:void(0)" >Enable</a>
+														<?php } ?>
+													<?php endif;  ?>
+													
+												</div>
+											</div>
+										</td>
+									</tr>
+								<?php } endforeach; ?>
+							</tbody>
+						</table>
+					</div>
+				<div class="col-sm-12 float-right">
+					<?php //echo $pager->links('default', 'custom_pager') ?>
+				</div>
 
             </div>
             <!-- /.row (main row) -->
@@ -358,5 +340,215 @@ function payment_history_get(user_id,stripe_subscription_customer_id){
 	});
 }
 </script>
+
+<script>
+$(function(){
+  let startDate = null;
+  let endDate = null;
+
+  // Custom date range filter
+  $.fn.dataTable.ext.search.push(function (settings, data) {
+    if (!startDate || !endDate) return true;
+
+    // "Registered at" column index (0-based index)
+    let dateStr = data[6];
+    let date = moment(dateStr, 'MM/DD/YYYY hh:mm a');
+
+    if (!date.isValid()) return true;
+
+    return date.isSameOrAfter(startDate, 'day') && date.isSameOrBefore(endDate, 'day');
+  });
+
+  const dt = $('.table').DataTable({
+    searching: true,
+    info: false,
+    lengthChange: true,
+    paging: true,
+    ordering: true,
+    order: [[0, 'asc']],
+    pageLength: 10,
+    lengthMenu: [10, 25, 50, 100],
+    dom: 
+	'<"d-flex align-items-center gap-2 mb-3"lf<"dropdown-filter"><"user-filter"><"date-filter"><"reset-filter">>t<"d-flex justify-content-center align-items-center my-3"ip>',
+    language: {
+      paginate: {
+        previous: "<i class='fas fa-caret-left'></i>",
+        next: "<i class='fas fa-caret-right'></i>"
+      }
+    },
+    columnDefs: [
+      { orderable: false, targets: -1 }
+    ],
+    drawCallback: function () {
+      const info = this.api().page.info();
+      const wrapper = $(this).closest('.dataTables_wrapper');
+      wrapper.find('.dataTables_paginate').toggle(info.pages > 1);
+    },
+    initComplete: function () {
+      const api = this.api();
+      const $thead = $(api.table().header());
+
+      // Add sort icons
+      $thead.find('th').each(function(i){
+        const isSortable = api.settings()[0].aoColumns[i].bSortable;
+        if (isSortable && !$(this).find('.sort-icons').length) {
+          $(this).append(
+            '<span class="sort-icons">' +
+              '<i class="fas fa-sort-up sort-icon-up"></i>' +
+              '<i class="fas fa-sort-down sort-icon-down"></i>' +
+            '</span>'
+          );
+        }
+      });
+
+      // Reset button
+      $('.reset-filter').html(`<label class="d-block">&nbsp;</label>
+        <button type="button" id="resetFilters" class="btn small bg-primary">Reset</button>
+      `);
+
+      // Dropdown filter
+      $('.dropdown-filter').html(`
+        <label>Package</label>
+        <select id="filterDropdown" class="form-control form-select-sm">
+          <option value=""><?php echo trans('All') ?></option>
+				<?php
+				if(!empty($packages)){
+					foreach($packages as $packages_row){ ?>
+						<option value="<?php echo $packages_row->name; ?>"><?php echo $packages_row->name; ?></option>
+				<?php }
+				}
+				?>
+        </select>
+      `);
+	  
+	  $('.user-filter').html(`
+        <label>User</label>
+        <select id="userDropdown" class="form-control form-select-sm">
+          <option value=""><?php echo trans('All') ?></option>
+				<?php
+				if(!empty($users)){
+					foreach($users as $user_row){ ?>
+						<option value="<?php echo $user_row->fullname; ?>"><?php echo $user_row->fullname; ?></option>
+				<?php }
+				}
+				?>
+        </select>
+      `);
+
+      // Date range filter
+      $('.date-filter').html(`
+        <label for="dateRangeFilter">Date Range</label>
+        <input type="text" id="dateRangeFilter" class="form-control form-select-sm" />
+      `);
+
+      $('#dateRangeFilter').daterangepicker({
+        autoUpdateInput: false,
+        locale: { cancelLabel: 'Clear' }
+      });
+
+      $('#dateRangeFilter').on('apply.daterangepicker', function(ev, picker) {
+        startDate = picker.startDate;
+        endDate = picker.endDate;
+        $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+        dt.draw();
+      });
+
+      $('#dateRangeFilter').on('cancel.daterangepicker', function() {
+        startDate = null;
+        endDate = null;
+        $(this).val('');
+        dt.draw();
+      });
+
+      updateSortIcons(api);
+    }
+  });
+
+  // Ordering icons
+  $('.table').on('order.dt', function(){
+    updateSortIcons(dt);
+  });
+
+  // Reset button click
+  $(document).on('click', '#resetFilters', function () {
+    const $wrapper = $(dt.table().container());
+
+    // Clear search box
+    $wrapper.find('.dataTables_filter input[type="search"]').val('');
+    dt.search('');
+
+    // Clear per-column searches
+    dt.columns().every(function () { this.search(''); });
+
+    // Reset dropdown
+    $('#filterDropdown').val('');
+    $('#userDropdown').val('');
+
+    // Reset date filter
+    startDate = null;
+    endDate = null;
+    $('#dateRangeFilter').val('');
+
+    // Reset ordering & page
+    dt.order([[0, 'asc']]);
+    dt.page('first');
+
+    dt.draw();
+  });
+
+  // Dropdown filter change
+  $('#filterDropdown').on('change', function () {
+    const selectedValue = $(this).val();
+    if (selectedValue) {
+      dt.column(1).search(selectedValue).draw();
+    } else {
+      dt.column(1).search('').draw();
+    }
+  });
+  $('#userDropdown').on('change', function () {
+    const selectedValue = $(this).val();
+    if (selectedValue) {
+      dt.column(3).search(selectedValue).draw();
+    } else {
+      dt.column(3).search('').draw();
+    }
+  });
+
+  function updateSortIcons(api){
+    const $thead = $(api.table().header());
+    $thead.find('.sort-icon-up, .sort-icon-down').removeClass('active');
+
+    const ord = api.order();
+    if (ord.length){
+      const colIdx = ord[0][0];
+      const dir = ord[0][1];
+      const $th = $thead.find('th').eq(colIdx);
+      if (dir === 'asc') $th.find('.sort-icon-up').addClass('active');
+      else $th.find('.sort-icon-down').addClass('active');
+    }
+  }
+
+  // UI tweaks
+  	$('.dataTables_filter label').contents().filter(function () {
+        return this.nodeType === 3; // Node.TEXT_NODE
+    }).remove();
+	$('.dataTables_filter label').each(function() {
+		$(this).contents().unwrap(); // This removes the <label> but keeps the input
+	});
+	$('.dataTables_length label').contents().filter(function () {
+        return this.nodeType === 3; // Node.TEXT_NODE
+    }).remove();
+	$('.dataTables_length label').each(function() {
+		$(this).contents().unwrap(); // This removes the <label> but keeps the input
+	});
+  $('.dataTables_filter input').removeClass('form-control-sm').attr('placeholder', 'Search').addClass('m-0');
+  $('.date-filter input').removeClass('form-control-sm').attr('placeholder', 'Start Date - End Date').addClass('m-0');
+  $('.dataTables_length select').removeClass('form-control-sm custom-select-sm');
+  $('.dataTables_filter label, .dataTables_length label').contents().unwrap();
+  $('.dataTables_filter').prepend('<label>Search</label>');
+  $('.dataTables_length').prepend('<label>Show</label>');
+});
+</script>
+
 
 <?php echo $this->endSection() ?>

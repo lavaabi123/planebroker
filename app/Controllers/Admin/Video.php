@@ -36,8 +36,7 @@ class Video extends AdminController
         ]);
 
         //paginate
-        $data['paginate'] = $this->videoModel->videoPaginate();
-        $data['pager'] =  $data['paginate']['pager'];
+        $data['videos'] = $this->videoModel->video_list();
 
 
         return view('admin/video/video', $data);

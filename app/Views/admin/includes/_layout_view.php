@@ -157,7 +157,9 @@
     <?php endif; ?>
 
     <script>
+
         $(document).ready(function() {
+            
             $('#cs_datatable').DataTable({
                 language: {
                     paginate: {
@@ -197,7 +199,44 @@
         });
 		
     </script>
+<style>
+.dataTables_filter,.dataTables_length{
+	display:flex;
+	flex-direction:column;
+}
+/* Remove built-in DataTables arrows */
+table.dataTable thead > tr > th.sorting:before,
+table.dataTable thead > tr > th.sorting:after,
+table.dataTable thead > tr > th.sorting_asc:before,
+table.dataTable thead > tr > th.sorting_asc:after,
+table.dataTable thead > tr > th.sorting_desc:before,
+table.dataTable thead > tr > th.sorting_desc:after {
+    display: none !important;
+}
+/* Default gray arrows */
+.sort-icon-up,
+.sort-icon-down {
+    margin-left: 4px;
+    font-size: 0.7rem;
+    color: #aaa;
+    position: relative;
+}
 
+.sort-icon-up {
+    top: -1px; /* align up arrow */
+}
+
+.sort-icon-down {
+    top: 2px; /* align down arrow */
+}
+
+/* Active arrow white */
+.sort-icon-up.active,
+.sort-icon-down.active {
+    color: #fff;
+}
+
+</style>
 
 </body>
 

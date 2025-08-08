@@ -35,8 +35,7 @@ class Blog extends AdminController
         ]);
 
         //paginate
-        $data['paginate'] = $this->blogModel->blogPaginate();
-        $data['pager'] =  $data['paginate']['pager'];
+        $data['blogs'] = $this->blogModel->blogs_list();
 
 
         return view('admin/blog/blog', $data);

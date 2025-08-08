@@ -59,6 +59,13 @@ class CaptainsModel extends Model
         ];
     }
 
+	public function get_captains_list()
+    {
+		
+         return $this->asObject()->findAll();
+		 //echo $this->db->getLastQuery(); die;
+        
+    }
 	public function get_contacts()
     {
 		

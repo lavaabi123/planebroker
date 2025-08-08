@@ -56,6 +56,11 @@ class FieldGroupModel extends Model
         ];
     }
 
+
+    public function field_group_lists($categoryId)
+    {     
+		return $this->asObject()->where('category_id', clean_number($categoryId))->orderby('sort_order','asc')->findAll();
+    }
 	public function get_fields_group()
     {
 		

@@ -13,14 +13,14 @@
 }
 </style>
 <!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
+<div class="content-wrapper bg-grey">
     <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
                   <h1 class="m-0"><?php echo $title ?> 
-                    <a class="btn btn-primary" href="<?php echo admin_url() . 'add-user/'; ?>"><?php echo trans('Add User'); ?></a>
+                    <a class="btn btn-primary" href="<?php echo admin_url() . 'add-user/'; ?>"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
                   </h1>                     
                 </div><!-- /.col -->
                 <div class="col-sm-6">
@@ -44,106 +44,76 @@
         <div class="container-fluid">
             <!-- Main row -->
 			<div class="filter_Sec">
-				<?php echo $this->include('admin/users/_filter') ?>
+				<?php //echo $this->include('admin/users/_filter') ?>
 			</div>
-            <div class="row filter_list">
+            <div class="row">
 				<?php echo $this->include('admin/includes/_messages') ?>
                 <div class="col-lg-12 col-xl-12">
-                    <div class="card p-0">
-                        <div class="card-body p-0">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="table-responsive">
+					<div class="filter_list">
+						<div class="table-responsive">
 
-                                        <table class="table table-bordered table-striped">
-                                            <thead>
-                                                <tr role="row">
-                                                    <th width="20"><?php echo trans('id'); ?></th>
-                                                    <th><?php echo trans('fullname'); ?></th>
-                                                    <th><?php echo trans('email'); ?></th>
-                                                    <th><?php echo trans('status'); ?></th>
-                                                    <th><?php echo trans('Email Verified'); ?></th>
-                                                    <th><?php echo trans('Phone'); ?></th>
-                                                    <th><?php echo trans('User Level'); ?></th>
-                                                    <th><?php echo trans('Registered at'); ?></th>
-                                                    <th class="max-width-120"><?php echo trans('options'); ?></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php 
-												$page = !empty($_GET['page']) ? $_GET['page'] : 1;
-												$slno_start = $paginate['total'] - (($page-1) * $paginate['per_page_no']);
-												foreach ($paginate['users'] as $u => $user) :
-												?>
-                                                    <tr>
-                                                        <td><?php echo $u+1; ?></td>
-                                                        <td>
-                                                            <?php echo $user['fullname']; ?>
-                                                        </td>         
-                                                        <td><?php echo $user['email']; ?></td>
-                                                        <td style="text-align: center;">                                                            
-                                                            <?php if ($user['status'] == 1) : ?>
-                                                                <span class="text-success" title="<?php echo trans('active'); ?>"><i class="fa fa-check" aria-hidden="true" style="color: green; font-size: 18px"></i></span>
-                                                            <?php else : ?>
-                                                                <span class="text-danger" title="<?php echo trans('banned'); ?>"><i class="fa fa-times" aria-hidden="true" style="color: red; font-size: 18px"></i></span>
-                                                            <?php endif; ?>
-                                                        </td>
-                                                        <td style="text-align: center;">
-                                                            <?php
-                                                            if ($user['email_status'] == 1) : ?>
-                                                                <span class="text-success" style="font-size: 14px" title="<?php echo trans("Email Verified"); ?>"><i class="fa fa-check" aria-hidden="true" style="color: green; font-size: 18px"></i></span>
-                                                            <?php else : ?>
-                                                                <span class="text-danger" style="font-size: 14px" title="<?php echo trans("Email Not Verified"); ?>"><i class="fa fa-times" aria-hidden="true" style="color: red; font-size: 18px"></i></span>
-                                                            <?php endif; ?>
-                                                        </td>
-                                                        <td><?php echo $user['mobile_no']; ?></td>
-                                                        <td><?php echo !empty($user['user_level']) ? 'Captain User' : 'Standard User'; ?></td>
-                                                        <td><?php echo formatted_date($user['created_at'],'m/d/Y h:i a'); ?></td>
-                                                        <td>
-                                                            <div class="dropdown btn-group">
-                                                                <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                                    <i class="mdi mdi-circle-edit-outline mr-2"></i><?php echo trans('select_an_option'); ?>
-                                                                </button>
+							<table class="table table-bordered table-striped">
+								<thead>
+									<tr role="row">
+										<th><?php echo trans('fullname'); ?></th>
+										<th><?php echo trans('email'); ?></th>
+										<th><?php echo trans('Phone'); ?></th>
+										<th><?php echo trans('User Level'); ?></th>
+										<th><?php echo trans('Registered at'); ?></th>
+										<th class="text-center max-width-120"><?php echo trans('options'); ?></th>
+									</tr>
+								</thead>
+								<tbody>
+									<?php 
+									foreach ($users as $u => $user) :
+									?>
+										<tr>
+											<td>
+												<?php echo $user['fullname']; ?>
+											</td>         
+											<td><?php echo $user['email']; ?></td>
+											<td><?php echo $user['mobile_no']; ?></td>
+											<td><?php echo !empty($user['user_level']) ? 'Captain User' : 'Standard User'; ?></td>
+											<td><?php echo formatted_date($user['created_at'],'m/d/Y h:i a'); ?></td>
+											<td>
+												<div class="dropdown btn-group">
+													<button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+														<i class="mdi mdi-circle-edit-outline mr-2"></i><?php echo trans('select_an_option'); ?>
+													</button>
 
-                                                                <div class="dropdown-menu dropdown-menu-animated">
-                                                                    <?php if ($user['email_status'] != 1) : ?>
-                                                                        <a class="dropdown-item" href="javascript:void(0)" onclick="confirm_user_email(<?php echo $user['id']; ?>);"><?php echo trans('confirm_user_email'); ?></a>
-                                                                    <?php endif; ?>
-                                                                    <?php if (is_admin()) : ?>
-                                                                        <?php if ($user['status'] == "1") : ?>
-                                                                            <a class="dropdown-item" href="javascript:void(0)" onclick="ban_user('<?php echo $user['id']; ?>','<?php echo trans('confirm_ban'); ?>', 'ban');"><?php echo trans('ban_user'); ?></a>
-                                                                        <?php else : ?>
-                                                                            <a class="dropdown-item" href="javascript:void(0)" onclick="ban_user('<?php echo $user['id']; ?>', '<?php echo trans('confirm_remove_ban'); ?>', 'remove_ban');"><?php echo trans('remove_ban'); ?></a>
-                                                                        <?php endif; ?>
-                                                                    <?php endif; ?>
+													<div class="dropdown-menu dropdown-menu-animated">
+														<?php if ($user['email_status'] != 1) : ?>
+															<a class="dropdown-item" href="javascript:void(0)" onclick="confirm_user_email(<?php echo $user['id']; ?>);"><?php echo trans('confirm_user_email'); ?></a>
+														<?php endif; ?>
+														<?php if (is_admin()) : ?>
+															<?php if ($user['status'] == "1") : ?>
+																<a class="dropdown-item" href="javascript:void(0)" onclick="ban_user('<?php echo $user['id']; ?>','<?php echo trans('confirm_ban'); ?>', 'ban');"><?php echo trans('ban_user'); ?></a>
+															<?php else : ?>
+																<a class="dropdown-item" href="javascript:void(0)" onclick="ban_user('<?php echo $user['id']; ?>', '<?php echo trans('confirm_remove_ban'); ?>', 'remove_ban');"><?php echo trans('remove_ban'); ?></a>
+															<?php endif; ?>
+														<?php endif; ?>
 
-                                                                    <?php 
-																		if (is_admin()) : ?>
-                                                                        <a class="dropdown-item" href="<?php echo admin_url() . 'edit-user/'; ?><?php echo html_escape($user['id']); ?>/<?php echo (!empty($_GET) && !empty($_GET['page'])) ? $_GET['page'] : '1' ?>"><?php echo trans('edit'); ?></a>
-                                                                        <div class="dropdown-divider"></div>
-                                                                        <a class="dropdown-item" href="javascript:void(0)" onclick="delete_item('/admin/delete_user_post','<?php echo $user['id']; ?>','<?php echo trans('confirm_user'); ?>')"><?php echo trans('delete'); ?></a>
-                                                                        <div class="dropdown-divider"></div>
-                                                                        <a class="dropdown-item" target="_blank" href="<?php echo admin_url().'listings?user_id='.$user['id']; ?>"><?php echo trans('View Listings'); ?></a>
-                                                                    <?php endif;  ?>
-																	
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                <?php endforeach; ?>
-                                            </tbody>
-                                        </table>
-                                        <?php if (empty($paginate['users'])) : ?>
-                                            <p class="text-center text-muted"><?= trans("no_records_found"); ?></p>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12 float-right">
-                                    <?php echo $pager->Links('default', 'custom_pager') ?>
-                                </div>
-                            </div>
-                        </div> <!-- end card-body -->
-                    </div> <!-- end card -->
+														<?php 
+															if (is_admin()) : ?>
+															<a class="dropdown-item" href="<?php echo admin_url() . 'edit-user/'; ?><?php echo html_escape($user['id']); ?>/<?php echo (!empty($_GET) && !empty($_GET['page'])) ? $_GET['page'] : '1' ?>"><?php echo trans('edit'); ?></a>
+															<div class="dropdown-divider"></div>
+															<a class="dropdown-item" href="javascript:void(0)" onclick="delete_item('/admin/delete_user_post','<?php echo $user['id']; ?>','<?php echo trans('confirm_user'); ?>')"><?php echo trans('delete'); ?></a>
+															<div class="dropdown-divider"></div>
+															<a class="dropdown-item" target="_blank" href="<?php echo admin_url().'listings?user_id='.$user['id']; ?>"><?php echo trans('View Listings'); ?></a>
+														<?php endif;  ?>
+														
+													</div>
+												</div>
+											</td>
+										</tr>
+									<?php endforeach; ?>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="col-sm-12 float-right">
+						<?php //echo $pager->Links('default', 'custom_pager') ?>
+					</div>
                 </div> <!-- end col -->
 
             </div>
@@ -251,6 +221,185 @@ function payment_history_get(user_id,stripe_subscription_customer_id){
 		}
 	});
 }
+</script><script>
+$(function(){
+  let startDate = null;
+  let endDate = null;
+
+  // Custom date range filter
+  $.fn.dataTable.ext.search.push(function (settings, data) {
+    if (!startDate || !endDate) return true;
+
+    // "Registered at" column index (0-based index)
+    let dateStr = data[4];
+    let date = moment(dateStr, 'MM/DD/YYYY hh:mm a');
+
+    if (!date.isValid()) return true;
+
+    return date.isSameOrAfter(startDate, 'day') && date.isSameOrBefore(endDate, 'day');
+  });
+
+  const dt = $('.table').DataTable({
+    searching: true,
+    info: false,
+    lengthChange: true,
+    paging: true,
+    ordering: true,
+    order: [[0, 'asc']],
+    pageLength: 10,
+    lengthMenu: [10, 25, 50, 100],
+    dom: 
+	'<"d-flex align-items-center gap-2 mb-3"lf<"dropdown-filter"><"date-filter"><"reset-filter">>t<"d-flex justify-content-center align-items-center my-3"ip>',
+    language: {
+      paginate: {
+        previous: "<i class='fas fa-caret-left'></i>",
+        next: "<i class='fas fa-caret-right'></i>"
+      }
+    },
+    columnDefs: [
+      { orderable: false, targets: -1 }
+    ],
+    drawCallback: function () {
+      const info = this.api().page.info();
+      const wrapper = $(this).closest('.dataTables_wrapper');
+      wrapper.find('.dataTables_paginate').toggle(info.pages > 1);
+    },
+    initComplete: function () {
+      const api = this.api();
+      const $thead = $(api.table().header());
+
+      // Add sort icons
+      $thead.find('th').each(function(i){
+        const isSortable = api.settings()[0].aoColumns[i].bSortable;
+        if (isSortable && !$(this).find('.sort-icons').length) {
+          $(this).append(
+            '<span class="sort-icons">' +
+              '<i class="fas fa-sort-up sort-icon-up"></i>' +
+              '<i class="fas fa-sort-down sort-icon-down"></i>' +
+            '</span>'
+          );
+        }
+      });
+
+      // Reset button
+      $('.reset-filter').html(`<label class="d-block">&nbsp;</label>
+        <button type="button" id="resetFilters" class="btn small bg-primary">Reset</button>
+      `);
+
+      // Dropdown filter
+      $('.dropdown-filter').html(`
+        <label>User Level</label>
+        <select id="filterDropdown" class="form-control form-select-sm">
+          <option value="">All</option> 
+          <option value="Captain User" >Captain User</option>
+          <option value="Standard User" >Standard User</option>
+        </select>
+      `);
+
+      // Date range filter
+      $('.date-filter').html(`
+        <label for="dateRangeFilter">Date Range</label>
+        <input type="text" id="dateRangeFilter" class="form-control form-select-sm" />
+      `);
+
+      $('#dateRangeFilter').daterangepicker({
+        autoUpdateInput: false,
+        locale: { cancelLabel: 'Clear' }
+      });
+
+      $('#dateRangeFilter').on('apply.daterangepicker', function(ev, picker) {
+        startDate = picker.startDate;
+        endDate = picker.endDate;
+        $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+        dt.draw();
+      });
+
+      $('#dateRangeFilter').on('cancel.daterangepicker', function() {
+        startDate = null;
+        endDate = null;
+        $(this).val('');
+        dt.draw();
+      });
+
+      updateSortIcons(api);
+    }
+  });
+
+  // Ordering icons
+  $('.table').on('order.dt', function(){
+    updateSortIcons(dt);
+  });
+
+  // Reset button click
+  $(document).on('click', '#resetFilters', function () {
+    const $wrapper = $(dt.table().container());
+
+    // Clear search box
+    $wrapper.find('.dataTables_filter input[type="search"]').val('');
+    dt.search('');
+
+    // Clear per-column searches
+    dt.columns().every(function () { this.search(''); });
+
+    // Reset dropdown
+    $('#filterDropdown').val('');
+
+    // Reset date filter
+    startDate = null;
+    endDate = null;
+    $('#dateRangeFilter').val('');
+
+    // Reset ordering & page
+    dt.order([[0, 'asc']]);
+    dt.page('first');
+
+    dt.draw();
+  });
+
+  // Dropdown filter change
+  $('#filterDropdown').on('change', function () {
+    const selectedValue = $(this).val();
+    if (selectedValue) {
+      dt.column(3).search(selectedValue).draw();
+    } else {
+      dt.column(3).search('').draw();
+    }
+  });
+
+  function updateSortIcons(api){
+    const $thead = $(api.table().header());
+    $thead.find('.sort-icon-up, .sort-icon-down').removeClass('active');
+
+    const ord = api.order();
+    if (ord.length){
+      const colIdx = ord[0][0];
+      const dir = ord[0][1];
+      const $th = $thead.find('th').eq(colIdx);
+      if (dir === 'asc') $th.find('.sort-icon-up').addClass('active');
+      else $th.find('.sort-icon-down').addClass('active');
+    }
+  }
+
+  // UI tweaks
+  	$('.dataTables_filter label').contents().filter(function () {
+        return this.nodeType === 3; // Node.TEXT_NODE
+    }).remove();
+	$('.dataTables_filter label').each(function() {
+		$(this).contents().unwrap(); // This removes the <label> but keeps the input
+	});
+	$('.dataTables_length label').contents().filter(function () {
+        return this.nodeType === 3; // Node.TEXT_NODE
+    }).remove();
+	$('.dataTables_length label').each(function() {
+		$(this).contents().unwrap(); // This removes the <label> but keeps the input
+	});
+  $('.dataTables_filter input').removeClass('form-control-sm').attr('placeholder', 'Search').addClass('m-0');
+  $('.date-filter input').removeClass('form-control-sm').attr('placeholder', 'Start Date - End Date').addClass('m-0');
+  $('.dataTables_length select').removeClass('form-control-sm custom-select-sm');
+  $('.dataTables_filter label, .dataTables_length label').contents().unwrap();
+  $('.dataTables_filter').prepend('<label>Search</label>');
+  $('.dataTables_length').prepend('<label>Show</label>');
+});
 </script>
 
 <?php echo $this->endSection() ?>

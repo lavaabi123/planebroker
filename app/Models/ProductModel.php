@@ -180,6 +180,53 @@ class ProductModel extends Model
     ];
 	
 }
+
+
+	
+    public function product_lists()
+{
+    
+    $builder = $this->db->table('products p');
+    $builder->select("
+        p.*, 
+        pl.is_premium_listing,pl.name as package_names,
+        u.fullname,
+        c.name as category_name,
+        sc.name as sub_category_name,
+        c.permalink,s.admin_plan_update,
+        (
+            SELECT GROUP_CONCAT(pd.field_value ORDER BY t.sort_order SEPARATOR ' ') 
+            FROM products_dynamic_fields pd 
+            JOIN (
+                SELECT t.field_id, t.sort_order 
+                FROM title_fields t 
+                LEFT JOIN fields f ON f.id = t.field_id 
+                WHERE t.title_type = 'title'
+            ) t ON t.field_id = pd.field_id 
+            WHERE pd.product_id = p.id
+        ) as display_name,
+        (
+            SELECT field_value 
+            FROM products_dynamic_fields 
+            WHERE product_id = p.id 
+            AND field_id = (
+                SELECT fi.id FROM `fields` fi  join field_categories fc on fc.field_id=fi.id where fi.name = 'price' and fc.category_id=p.category_id LIMIT 1
+            ) 
+            LIMIT 1
+        ) as price
+    ");
+    $builder->join('categories c', 'c.id = p.category_id', 'left');
+    $builder->join('categories_sub sc', 'sc.id = p.sub_category_id', 'left');
+    $builder->join('users u', 'u.id = p.user_id', 'left');
+    $builder->join('plans pl', 'pl.id = p.plan_id', 'left');
+    $builder->join('sales s', 's.id = p.sale_id', 'left');
+
+	
+	$builder->orderBy('p.id','DESC');
+    return $result = $builder->get()->getResultArray(); // You cannot paginate here directly
+
+	
+}
 	public function get_products($category='all',$where='',$orderby='p.is_cancel ASC,p.status DESC,p.plan_id DESC'){
 		
 		if($category == 'all'){

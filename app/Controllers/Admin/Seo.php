@@ -36,8 +36,7 @@ class Seo extends AdminController
         ]);
 
         //paginate
-        $data['paginate'] = $this->seoModel->seoPaginate();
-        $data['pager'] =  $data['paginate']['pager'];
+        $data['seos'] = $this->seoModel->get_all_seo();
 
 
         return view('admin/seo/seo', $data);

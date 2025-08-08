@@ -6,13 +6,14 @@ td:hover {
     cursor: move;
 }
 </style>
-<div class="content-wrapper">
+<div class="content-wrapper bg-grey">
     <!-- Content Header (Page header) -->
-    <div class="content-header">
+    <div class="content-header ">
         <div class="container-fluid">
             <div class="row mb-2">
-                <div class="col-sm-6">
+                <div class="col-sm-6 d-flex">
                     <h1 class="m-0"><?php echo $title ?></h1>
+					<a href="javascript:void(0)" class="btn small bg-primary ms-3" onclick="manage_fields('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -36,77 +37,14 @@ td:hover {
             <!-- Main row -->
             <div class="row">
                 <div class="col-lg-12 col-xl-12">
-                    <div class="card card-primary card-outline card-outline-tabs p-0">
-                        <div class="card-body filter_list">
+                        <div class="filter_list">
                             <div class="tab-content" id="custom-tabs-fields">
                                 <div class="tab-pane fade show active" id="custom-tabs-fields" role="tabpanel" aria-labelledby="custom-tabs-fields-tab">
                                     <div class="table-responsive overflow-hidden">
                                         <table id="fields_table" class="table table-bordered table-striped nowrap w-100 pageResize">
-                                            <div class="row table-filter-container align-items-center">
-                                                <div class="col-sm-12 d-flex">
-                                                    <?php $request = \Config\Services::request(); ?>
-                                                    <?php echo form_open(admin_url() . "fields", ['method' => 'GET']); ?>
-                                                    <input type="hidden" name="page" value="<?php echo (!empty($request->getVar('page'))) ? $request->getVar('page') : '1'; ?>">
-                                                    <div class="item-table-filter">
-                                                        <label><?php echo trans("show"); ?></label>
-                                                        <select name="show" class="form-control">
-                                                            <option value="15" <?php echo ($request->getVar('show') == '15') ? 'selected' : ''; ?>>15</option>
-                                                            <option value="30" <?php echo ($request->getVar('show') == '30') ? 'selected' : ''; ?>>30</option>
-                                                            <option value="60" <?php echo ($request->getVar('show') == '60') ? 'selected' : ''; ?>>60</option>
-                                                            <option value="100" <?php echo ($request->getVar('show') == '100') ? 'selected' : ''; ?>>100</option>
-                                                        </select>
-                                                    </div>
-
-													 <div class="item-table-filter">
-														<label><?php echo trans("Category"); ?></label>
-														<select name="category_id" id="category_id_filter" class="form-control">
-															<option value=""><?php echo trans("all"); ?></option>
-														   <?php
-															if(!empty($categories_list)){
-																foreach($categories_list as $category){ ?>
-																	<option value="<?php echo $category->id; ?>" <?php echo ($request->getVar('category_id') !== null && $request->getVar('category_id') == $category->id) ? 'selected':''; ?>><?php echo $category->name; ?></option>
-															<?php }
-															}
-															?>
-														</select>
-													</div>
-													
-													
-													 <div class="item-table-filter">
-														<label><?php echo trans("Field Group"); ?></label>
-														<select name="field_group" id="field_group_filter" class="form-control">
-															<option value=""><?php echo trans("all"); ?></option>
-														   <?php
-															if(!empty($field_group)){
-																foreach($field_group as $fieldgroup){ ?>
-																	<option value="<?php echo $fieldgroup->id; ?>" <?php echo ($request->getVar('field_group') !== null && $request->getVar('field_group') == $fieldgroup->id) ? 'selected':''; ?>><?php echo $fieldgroup->name; ?></option>
-															<?php }
-															}
-															?>
-														</select>
-													</div>
-													
-                                                    <div class="item-table-filter">
-                                                        <label><?php echo trans("search"); ?></label>
-                                                        <input name="q" class="form-control" style="margin-bottom:0 !important;" placeholder="<?php echo trans("search"); ?>" type="search" value="<?php echo html_escape($request->getVar('q')); ?>">
-                                                    </div>
-
-                                                    <div class="item-table-filter align-self-end">
-                                                        <label style="display: block">&nbsp;</label>
-                                                        <button type="submit" class="btn small btn-primary"><?php echo trans("filter"); ?></button>
-
-                                                    </div>
-
-                                                    <?php echo form_close(); ?>
-													<div class="text-right align-self-end" style="margin-bottom:10px;">
-														<a href="javascript:void(0)" class="btn small bg-primary" onclick="manage_fields('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
-													</div>
-                                                </div>
-                                                
-                                            </div>
+                                            
                                             <thead>
-                                                <tr class="text-center">
-                                                    <th width="20"><?php echo trans('S.no'); ?></th>
+                                                <tr>
                                                     <th><?php echo trans('Field Name'); ?></th>
                                                     <th><?php echo trans('Field Type'); ?></th>
                                                     <th><?php echo trans('Category'); ?></th>
@@ -114,14 +52,13 @@ td:hover {
                                                     <th><?php echo trans('Field Group(Title)'); ?></th>
                                                     <th><?php echo trans('Order'); ?></th>
                                                     <th><?php echo trans('Position'); ?></th>
-                                                    <th><?php echo trans('status'); ?></th>
+                                                    <th class="text-center"><?php echo trans('status'); ?></th>
                                                     <th class="text-center"><?php echo trans('options'); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php foreach ($fields as $i => $item) : ?>
 													<tr data-id="<?= $item->id; ?>">
-                                                        <td><?php echo html_escape($i+1); ?></td>
                                                         <td><?php echo html_escape($item->name); ?></td>
                                                         <td><?php echo html_escape($item->field_type); ?></td>
                                                         <td><?php echo html_escape($item->category_names); ?></td>
@@ -159,12 +96,6 @@ td:hover {
                                                 <?php endforeach; ?>
                                             </tbody>
                                         </table>
-                                        <?php if (empty($fields)) : ?>
-                                            <p class="text-center text-muted"><?= trans("no_records_found"); ?></p>
-                                        <?php endif; ?>
-
-
-
                                     </div>
                                 </div>
                             </div>
@@ -177,13 +108,11 @@ td:hover {
                                 </div>*/ ?>
                                 <div class="col-sm-6 float-right">
 
-                                    <?php echo $paginations ?>
+                                    <?php //echo $paginations ?>
                                 </div>
                             </div>
 
                         </div> 
-                        <!-- /.card -->
-                    </div>
                 </div>
             </div> <!-- end col -->
             <!-- /.row (main row) -->
@@ -193,20 +122,21 @@ td:hover {
 </div>
 <!-- Modal -->
 <div id="modal-fields" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal-modalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="modal-modalLabel"><?php echo trans('add'); ?></h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <div class="modal-header justify-content-center p-2 pb-0">
+                <h4 class="modal-title mb-0 fw-bolder" id="modal-modalLabel"><?php echo trans('add'); ?></h4>
+                <button type="button" class="close fs-5 position-absolute top-0 end-0 m-0" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="form_safe" action="<?php echo admin_url() .'fields/saved_fields_post';?>" method="post">
-                <input type="hidden" id="modal_id" name="id" class="form-control form-input">
-                <?php //echo csrf_field() ?>
-                <input type="hidden" id="crsf">
+            
 
-                <div class="modal-body">
+                <div class="modal-body pb-0">
+					<form id="form_safe" action="<?php echo admin_url() .'fields/saved_fields_post';?>" method="post">
+						<input type="hidden" id="modal_id" name="id" class="form-control form-input">
+						<?php //echo csrf_field() ?>
+						<input type="hidden" id="crsf">
 				
                     <div class="form-group">
                         <label><?php echo trans("Field Name"); ?></label>
@@ -229,30 +159,26 @@ td:hover {
 					<div class="form-group fieldoptiondiv" style="display:none;">
 						<div class="row">
 							<div class="col-12">
-								<div class="form-group mb-3"> 
-									<div class="form-group mb-3 mb-lg-5">
-										<div class='panel rates text-center'>                  
-											<a href="javascript:void(0)" class='addOption btn btn-sm yellowbtn mb-3'>Add Options</a>
-											<div class='text-sm'>Options will automatically be ordered by name, ascending</div>
-										</div>
-									</div>
+								<div class='panel rates'>                  
+									<a href="javascript:void(0)" class='addOption btn btn-sm yellowbtn mb-3'>Add Options</a>
+									<div class='text-sm'>Options will automatically be ordered by name, ascending</div>
 								</div>
 							</div>                                    
 						</div>
 					</div>	
 
                     <div class="form-group">
-						<div class="row">
-                            <div class="col-sm-4 col-xs-12">
-                                <label><?php echo trans('Field Position'); ?></label>
+						<div class="row align-items-center">
+                            <div class="col-auto">
+                                <label class="ms-0"><?php echo trans('Field Position'); ?></label>
                             </div>					
-							<div class="col-sm-4 col-xs-12 col-option d-flex align-items-center">
+							<div class="col-auto d-flex align-items-center">
 								<input type="radio" name="field_position" value="Right" id="field_position_1" class="square-purple" checked="checked">
-								<label for="field_position_1" class="option-label">Right</label>
+								<label for="field_position_1" class="option-label ms-0">Right</label>
 							</div>
-							<div class="col-sm-4 col-xs-12 col-option d-flex align-items-center">
+							<div class="col-auto d-flex align-items-center">
 								<input type="radio" name="field_position" value="Left" id="field_position_2" class="square-purple">
-								<label for="field_position_2" class="option-label">Left</label>
+								<label for="field_position_2" class="option-label ms-0">Left</label>
 							</div>
 						</div> 
                     </div>        
@@ -276,7 +202,7 @@ td:hover {
                     </div>  					
 				
                     <div class="form-group">
-                        <label><?php echo trans("Sub Category"); ?></label>
+                        <label class="ms-0"><?php echo trans("Sub Category"); ?></label>
 						 <select name="sub_category_id[]" id="sub_category_id" class="form-control" multiple required>
 							<option value=""><?php echo trans('Select Category First') ?></option>							
 						</select>
@@ -289,26 +215,27 @@ td:hover {
                     </div> 										
 										
                     <div class="form-group">
-                        <div class="row">
-                            <div class="col-sm-4 col-xs-12">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
                                 <label><?php echo trans('status'); ?></label>
                             </div>
-                            <div class="col-sm-4 col-xs-12 col-option d-flex align-items-center">
+                            <div class="col-auto d-flex align-items-center">
                                 <input type="radio" name="status" value="1" id="status_1" class="square-purple" checked="checked">
-                                <label for="status_1" class="option-label"><?php echo trans('enable'); ?></label>
+                                <label for="status_1" class="option-label ms-0"><?php echo trans('enable'); ?></label>
                             </div>
-                            <div class="col-sm-4 col-xs-12 col-option d-flex align-items-center">
+                            <div class="col-auto d-flex align-items-center">
                                 <input type="radio" name="status" value="0" id="status_2" class="square-purple">
-                                <label for="status_2" class="option-label"><?php echo trans('disable'); ?></label>
+                                <label for="status_2" class="option-label ms-0"><?php echo trans('disable'); ?></label>
                             </div>
                         </div>
                     </div>
+					<div class="modal-footer bg-white px-0 justify-content-between position-sticky bottom-0 rounded-0 z-3">
+						<button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+						<button type="submit" class="btn btn-primary"><?php echo trans('save'); ?></button>
+					</div>
+				</form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary"><?php echo trans('save'); ?></button>
-                </div>
-            </form>
+                
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
@@ -360,7 +287,7 @@ function change_field_type(_this){
 var addOption = $('.addOption');
 addOption.on('click', function(e){
 	e.preventDefault();
-	$(this).before('<div class="d-flex fieldoption gap-2 gap-sm-4"><div class="col"><input type="text" class="form-control" placerholder="Option Name" value="" name="field_options[]"></div><a href="javascript:void(0)" class="button tiny alert removeOption p-2"><i class="fas fa-trash"></i></a></div>');
+	$(this).before('<div class="d-flex fieldoption gap-2"><div class="col px-0"><input type="text" class="form-control" placerholder="Option Name" value="" name="field_options[]"></div><a href="javascript:void(0)" class="button tiny alert removeOption p-2"><i class="fas fa-trash"></i></a></div>');
 });
 	
 $('body').on('click', '.removeOption', function(e){
@@ -505,4 +432,215 @@ $(function() {
   });
 </script>   
 <div class="loader"></div>
+
+<script>
+$(function(){
+  let startDate = null;
+  let endDate = null;
+
+  // Custom date range filter
+  $.fn.dataTable.ext.search.push(function (settings, data) {
+    if (!startDate || !endDate) return true;
+
+    // "Registered at" column index (0-based index)
+    let dateStr = data[3];
+    let date = moment(dateStr, 'MM/DD/YYYY hh:mm a');
+
+    if (!date.isValid()) return true;
+
+    return date.isSameOrAfter(startDate, 'day') && date.isSameOrBefore(endDate, 'day');
+  });
+
+  const dt = $('.table').DataTable({
+    searching: true,
+    info: false,
+    lengthChange: true,
+    paging: true,
+    ordering: true,
+    order: [[0, 'asc']],
+    pageLength: 10,
+    lengthMenu: [10, 25, 50, 100],
+    dom: 
+	'<"d-flex align-items-center gap-2 mb-3"lf<"dropdown-filter"><"reset-filter">>t<"d-flex justify-content-center align-items-center my-3"ip>',
+    language: {
+      paginate: {
+        previous: "<i class='fas fa-caret-left'></i>",
+        next: "<i class='fas fa-caret-right'></i>"
+      }
+    },
+    columnDefs: [
+      { orderable: false, targets: -1 }
+    ],
+    drawCallback: function () {
+      const info = this.api().page.info();
+      const wrapper = $(this).closest('.dataTables_wrapper');
+      wrapper.find('.dataTables_paginate').toggle(info.pages > 1);
+    },
+    initComplete: function () {
+      const api = this.api();
+      const $thead = $(api.table().header());
+
+      // Add sort icons
+      $thead.find('th').each(function(i){
+        const isSortable = api.settings()[0].aoColumns[i].bSortable;
+        if (isSortable && !$(this).find('.sort-icons').length) {
+          $(this).append(
+            '<span class="sort-icons">' +
+              '<i class="fas fa-sort-up sort-icon-up"></i>' +
+              '<i class="fas fa-sort-down sort-icon-down"></i>' +
+            '</span>'
+          );
+        }
+      });
+
+      // Reset button
+      $('.reset-filter').html(`<label class="d-block">&nbsp;</label>
+        <button type="button" id="resetFilters" class="btn small bg-primary">Reset</button>
+      `);
+
+      // Dropdown filter
+      $('.dropdown-filter').html(`
+        <label>Category</label>
+        <select id="filterDropdown" class="form-control form-select-sm">
+          <option value=""><?php echo trans('All') ?></option>
+				<?php
+				if(!empty($categories_list)){
+					foreach($categories_list as $category){ ?>
+						<option value="<?php echo $category->name; ?>"><?php echo $category->name; ?></option>
+				<?php }
+				}
+				?>
+        </select>
+      `);
+	  
+	  $('.user-filter').html(`
+        <label>Field Group</label>
+        <select id="userDropdown" class="form-control form-select-sm">
+          <option value=""><?php echo trans('All') ?></option>
+				<?php
+				if(!empty($field_group)){
+					foreach($field_group as $fieldgroup){ ?>
+						<option value="<?php echo $fieldgroup->name; ?>"><?php echo $fieldgroup->name; ?></option>
+				<?php }
+				}
+				?>
+        </select>
+      `);
+
+      // Date range filter
+      $('.date-filter').html(`
+        <label for="dateRangeFilter">Date Range</label>
+        <input type="text" id="dateRangeFilter" class="form-control form-select-sm" />
+      `);
+
+      $('#dateRangeFilter').daterangepicker({
+        autoUpdateInput: false,
+        locale: { cancelLabel: 'Clear' }
+      });
+
+      $('#dateRangeFilter').on('apply.daterangepicker', function(ev, picker) {
+        startDate = picker.startDate;
+        endDate = picker.endDate;
+        $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+        dt.draw();
+      });
+
+      $('#dateRangeFilter').on('cancel.daterangepicker', function() {
+        startDate = null;
+        endDate = null;
+        $(this).val('');
+        dt.draw();
+      });
+
+      updateSortIcons(api);
+    }
+  });
+
+  // Ordering icons
+  $('.table').on('order.dt', function(){
+    updateSortIcons(dt);
+  });
+
+  // Reset button click
+  $(document).on('click', '#resetFilters', function () {
+    const $wrapper = $(dt.table().container());
+
+    // Clear search box
+    $wrapper.find('.dataTables_filter input[type="search"]').val('');
+    dt.search('');
+
+    // Clear per-column searches
+    dt.columns().every(function () { this.search(''); });
+
+    // Reset dropdown
+    $('#filterDropdown').val('');
+    $('#userDropdown').val('');
+
+    // Reset date filter
+    startDate = null;
+    endDate = null;
+    $('#dateRangeFilter').val('');
+
+    // Reset ordering & page
+    dt.order([[0, 'asc']]);
+    dt.page('first');
+
+    dt.draw();
+  });
+
+  // Dropdown filter change
+  $('#filterDropdown').on('change', function () {
+    const selectedValue = $(this).val();
+    if (selectedValue) {
+      dt.column(2).search(selectedValue).draw();
+    } else {
+      dt.column(2).search('').draw();
+    }
+  });
+  $('#userDropdown').on('change', function () {
+    const selectedValue = $(this).val();
+    if (selectedValue) {
+      dt.column(4).search(selectedValue).draw();
+    } else {
+      dt.column(4).search('').draw();
+    }
+  });
+
+  function updateSortIcons(api){
+    const $thead = $(api.table().header());
+    $thead.find('.sort-icon-up, .sort-icon-down').removeClass('active');
+
+    const ord = api.order();
+    if (ord.length){
+      const colIdx = ord[0][0];
+      const dir = ord[0][1];
+      const $th = $thead.find('th').eq(colIdx);
+      if (dir === 'asc') $th.find('.sort-icon-up').addClass('active');
+      else $th.find('.sort-icon-down').addClass('active');
+    }
+  }
+
+  // UI tweaks
+  	$('.dataTables_filter label').contents().filter(function () {
+        return this.nodeType === 3; // Node.TEXT_NODE
+    }).remove();
+	$('.dataTables_filter label').each(function() {
+		$(this).contents().unwrap(); // This removes the <label> but keeps the input
+	});
+	$('.dataTables_length label').contents().filter(function () {
+        return this.nodeType === 3; // Node.TEXT_NODE
+    }).remove();
+	$('.dataTables_length label').each(function() {
+		$(this).contents().unwrap(); // This removes the <label> but keeps the input
+	});
+  $('.dataTables_filter input').removeClass('form-control-sm').attr('placeholder', 'Search').addClass('m-0');
+  $('.date-filter input').removeClass('form-control-sm').attr('placeholder', 'Start Date - End Date').addClass('m-0');
+  $('.dataTables_length select').removeClass('form-control-sm custom-select-sm');
+  $('.dataTables_filter label, .dataTables_length label').contents().unwrap();
+  $('.dataTables_filter').prepend('<label>Search</label>');
+  $('.dataTables_length').prepend('<label>Show</label>');
+});
+</script>
+
+
 <?php echo $this->endSection() ?>

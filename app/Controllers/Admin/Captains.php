@@ -39,11 +39,7 @@ class Captains extends AdminController
         ]);
 
         // Paginations
-        $paginate = $this->CaptainsModel->DataPaginations();
-        $data['contacts'] =   $paginate['contacts'];
-		$data['paginate'] =   $paginate;
-
-        $data['paginations'] =  $paginate['pager']->Links('default', 'custom_pager');
+        $data['captains']  = $this->CaptainsModel->get_captains_list();
 
 
         return view('admin/contacts/captains', $data);

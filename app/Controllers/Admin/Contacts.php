@@ -39,12 +39,7 @@ class Contacts extends AdminController
         ]);
 
         // Paginations
-        $paginate = $this->ContactsModel->DataPaginations();
-        $data['contacts'] =   $paginate['contacts'];
-		$data['paginate'] =   $paginate;
-
-        $data['paginations'] =  $paginate['pager']->Links('default', 'custom_pager');
-
+        $data['contacts']  = $this->ContactsModel->get_contacts_list();
 
         return view('admin/contacts/contacts', $data);
     }

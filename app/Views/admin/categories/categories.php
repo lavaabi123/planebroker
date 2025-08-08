@@ -6,8 +6,9 @@
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
-                <div class="col-sm-6">
+                <div class="col-sm-6 d-flex">
                     <h1 class="m-0"><?php echo $title ?></h1>
+                    <a href="javascript:void(0)" class="btn small bg-primary ms-3" onclick="manage_categories('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -37,50 +38,20 @@
                                     <div class="table-responsive">
                                         <table id="categories_table" class="table table-bordered table-striped nowrap w-100 pageResize">
                                             <div class="row table-filter-container m-0">
-                                                <div class="col-sm-6 p-0">
-                                                    <?php $request = \Config\Services::request(); ?>
-                                                    <?php echo form_open(admin_url() . "categories", ['method' => 'GET']); ?>
-                                                    <input type="hidden" name="page" value="<?php echo (!empty($request->getVar('page'))) ? $request->getVar('page') : '1'; ?>">
-                                                    <div class="item-table-filter">
-                                                        <label><?php echo trans("show"); ?></label>
-                                                        <select name="show" class="form-control">
-                                                            <option value="15" <?php echo ($request->getVar('show') == '15') ? 'selected' : ''; ?>>15</option>
-                                                            <option value="30" <?php echo ($request->getVar('show') == '30') ? 'selected' : ''; ?>>30</option>
-                                                            <option value="60" <?php echo ($request->getVar('show') == '60') ? 'selected' : ''; ?>>60</option>
-                                                            <option value="100" <?php echo ($request->getVar('show') == '100') ? 'selected' : ''; ?>>100</option>
-                                                        </select>
-                                                    </div>
-
-                                                    <div class="item-table-filter">
-                                                        <label><?php echo trans("search"); ?></label>
-                                                        <input name="q" class="form-control" style="margin-bottom:0 !important;"  placeholder="<?php echo trans("search"); ?>" type="search" value="<?php echo html_escape($request->getVar('q')); ?>">
-                                                    </div>
-
-                                                    <div class="item-table-filter md-top-10 align-self-end">
-                                                        <label style="display: block">&nbsp;</label>
-                                                        <button type="submit" class="btn small bg-primary"><?php echo trans("filter"); ?></button>
-
-                                                    </div>
-
-                                                    <?php echo form_close(); ?>
-                                                </div>
-                                                <div class="col-sm-6 text-right p-0">
-                                                    <a href="javascript:void(0)" class="btn small bg-primary" onclick="manage_categories('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
+                                                <div class="text-right p-0">
                                                 </div>
                                             </div>
                                             <thead>
                                                 <tr>
-                                                    <th width="40" class="text-end"><?php echo trans('id'); ?></th>
                                                     <th><?php echo trans('name'); ?></th>													
                                                     <th><?php echo trans('Image'); ?></th>
                                                     <th class="text-center"><?php echo trans('status'); ?></th>
-                                                    <th class="text-center"><?php echo trans('options'); ?></th>
+                                                    <th class="text-center max-width-120"><?php echo trans('options'); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <?php foreach ($categories as $item) : ?>
+                                                <?php foreach ($categories as $h => $item) : ?>
                                                     <tr>
-                                                        <td width="40" class="text-end"><?php echo html_escape($item->id); ?></td>
                                                         <td><?php echo html_escape($item->name); ?></td>
 														
                                                         <td><?php echo !empty($item->category_icon) ? '<img width="50px" height="50px" src="'.base_url().'/uploads/category/'.$item->category_icon.'" />' : ''; ?> </td>
@@ -116,9 +87,6 @@
                                                 <?php endforeach; ?>
                                             </tbody>
                                         </table>
-                                        <?php if (empty($categories)) : ?>
-                                            <p class="text-center text-muted"><?= trans("no_records_found"); ?></p>
-                                        <?php endif; ?>
 
 
 
@@ -134,7 +102,7 @@
                                 </div>*/ ?>
                                 <div class="col-sm-6 float-right">
 
-                                    <?php echo $paginations ?>
+                                    <?php //echo $paginations ?>
                                 </div>
                             </div>
                         </div> 

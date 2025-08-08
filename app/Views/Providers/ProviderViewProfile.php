@@ -399,40 +399,26 @@ $count = !empty($images) ? count($images) : 0;
 								<?php 
 								if($pds['field_type'] == 'File'){
 									if(!empty($pds['items'])){ ?>
-										<div class="row align-items-center">
-										 <div class="col-md-6">
-										 <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-										<?php 
-										$gty = 0;
-										foreach($pds['items'] as $rgi => $pdssv){
-											if(!empty($pdssv)){	 ?>	
-												<button class="nav-link <?= ($gty == 0) ? 'active' : '' ; ?>" id="gtab<?= $gty; ?>-tab" data-bs-toggle="pill" data-bs-target="#gtab<?= $gty; ?>" type="button" role="tab"><?= '<h6>'.$rgi.'</h6>'; ?></button>											
-											<?php
-											}
-											$gty++;
-										} ?>
-										</div>
-										</div>
-										<div class="col-md-6 bg-blue px-5 py-4">
-										<div class="tab-content" id="v-pills-tabContent">
-										<?php 
-										$gty = 0;
-										foreach($pds['items'] as $rgi => $pdssv){
-											if(!empty($pdssv)){	 ?>		
-											<div class="tab-pane fade <?= ($gty == 0) ? 'show active' : '' ; ?>" id="gtab<?= $gty; ?>" role="tabpanel">
-												<div class="bookContent d-flex flex-column gap-3">
-											<?php	
-												foreach($pdssv as $pdss){
-													echo '<a class="" download href="'.base_url().'/uploads/userimages/'.$userId.'/'.$pdss['name'].'" ><i class="fa '.getFileIconClass($pdss['name']).'"></i> '.(!empty($pdss['file_field_title']) ? $pdss['file_field_title'] : $pdss['field_name']).'</a>';
-												} ?>
-												</div>
-											</div>
-											<?php }
-											$gty++;
-										} ?>
-										</div>
-										</div>
-										</div>
+									<?php 
+											$gty = 0;
+											foreach($pds['items'] as $rgi => $pdssv){
+												if(!empty($pdssv)){	 ?>
+									<div class="row">
+										 <div class="col-auto col-md-4">
+										 <?= '<h6>'.$rgi.'</h6>'; ?>
+										 </div>
+										 <div class="col-auto col-md-8 py-4">
+										 <?php
+										 													foreach($pdssv as $pdss){
+										 echo '<a class="" download href="'.base_url().'/uploads/userimages/'.$userId.'/'.$pdss['name'].'" ><i class="fa '.getFileIconClass($pdss['name']).'"></i> '.(!empty($pdss['file_field_title']) ? $pdss['file_field_title'] : $pdss['field_name']).'</a>';
+																							}
+										 ?>
+										 </div>
+									</div>
+									<?php
+												}
+												$gty++;
+											} ?>
 									<?php }else{
 										echo '<h6>'.$pds['field_name'].'</h6>';
 										echo '<a class="card p-3 text-center" download href="'.base_url().'/uploads/userimages/'.$userId.'/'.$pds['name'].'" ><i class="fa '.getFileIconClass($pds['name']).'"></i> '.(!empty($pds['file_field_title']) ? $pds['file_field_title'] : $pds['field_name']).'</a>';

@@ -103,8 +103,8 @@ class UserManagement extends AdminController
         $this->CategoriesModel = new CategoriesModel();
         $data['categories'] = $this->CategoriesModel->get_categories();
         //paginate
-        $data['paginate'] = $this->userModel->userPaginate();
-        $data['pager'] =  $data['paginate']['pager'];
+        $data['users'] = $this->userModel->users_lists();
+        //$data['pager'] =  $data['paginate']['pager'];
         
         $data['search_location_id']   = '';
         $data['search_location_name'] = '';
@@ -133,8 +133,7 @@ class UserManagement extends AdminController
         $data['categories'] = $this->CategoriesModel->get_categories();
         //paginate
         $this->ProductModel = new ProductModel();
-        $data['paginate'] = $this->ProductModel->productPaginate();
-        $data['pager'] =  $data['paginate']['pager'];
+        $data['listings'] = $this->ProductModel->product_lists();
         $data['users'] = $this->userModel->get_users();
 		$data['packages'] = $this->SubscriptionModel->get_all_subscription();
 			
@@ -1073,10 +1072,8 @@ class UserManagement extends AdminController
             'title' => trans('provider_messages'),
         ]);
 
-        $pagination = $this->paginate($this->userModel->get_paginated_provider_messages_count_admin());
-        $data['provider_messages'] =   $this->userModel->get_paginated_provider_messages_admin($pagination['per_page'], $pagination['offset']);
+        $data['provider_messages'] =   $this->userModel->get_provider_messages_admin();
 
-        $data['paginations'] = $pagination['pagination'];
 
         $data['providers'] = $this->userModel->get_users();
 
@@ -1086,14 +1083,12 @@ class UserManagement extends AdminController
     public function sales()
     {
         $data = array_merge($this->data, [
-            'title' => trans('Sales'),
+            'title' => trans('Subscriptions'),
         ]);
 
-        $pagination = $this->paginate($this->userModel->get_paginated_sales_count());
-        $data['sales'] =   $this->userModel->get_paginated_sales($pagination['per_page'], $pagination['offset']);
+        $data['sales'] =   $this->userModel->get_sales();
 		$data['total_amount'] =   $this->userModel->get_total_amount_sales();
 		
-        $data['paginations'] = $pagination['pagination'];
 		
 		
 		

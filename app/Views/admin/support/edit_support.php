@@ -38,7 +38,7 @@
                     <div class="card card-primary card-outline card-outline-tabs">
                         <div class="card-header p-0 border-bottom-0">
                         </div>
-                        <div class="card-body subscrip-center p-0">
+                        <div class="card-body p-0">
                                     <input type="hidden" name="id" value="<?php echo html_escape($support->id); ?>">
                                     <input type="hidden" id="crsf">
 
@@ -84,7 +84,7 @@
 								</div>
 							</div>
 						</div>
-                        <div class="form-group mb-3 text-center">
+                        <div class="form-group mb-3">
                             <button type="submit" id="single_submit" name="validate" class="btn btn-primary"><?php echo trans('save_changes'); ?></button>
                         </div>
                         <div class="card-footer p-0 pt-3 clearfix" style="clear: both;">

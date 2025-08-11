@@ -10,7 +10,7 @@
 							<th><?php echo trans('End Date'); ?></th>
 							<th><?php echo trans('Status'); ?></th>
 							<th><?php echo trans('Action'); ?></th>
-							<th style="padding-left: 0;"></th>
+							<th class="max-width-120" style="padding-left: 0;"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -37,7 +37,7 @@
 								
 								<?php
 								
-								 echo '<td style="padding-left: 0;">'.(($user_detail->user_level == 0) ? ((!empty($payment->is_cancel))?'<a href="'.base_url('/renew_plan?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type)).'" class="btn btn-sm">RENEW</a>' : ((!empty($highest_plan) && $highest_plan[0]->id == $payment->plan_id)?'':'<a href="'.base_url('/plan?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type).'&plan_id='.$payment->plan_id).'" class="btn btn-sm">UPGRADE</a>')) : ((!empty($payment->is_cancel))?'<a href="javascript:void(0);" onclick="change_subs_status('.$payment->id.','.$payment->product_id.')" class="btn btn-sm">Activate</a>':'')); 
+								 echo '<td style="padding-left: 0;">'.(($user_detail->user_level == 0) ? ((!empty($payment->is_cancel))?'<a href="'.base_url('/renew_plan?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type)).'" class="btn btn-sm w-100">RENEW</a>' : ((!empty($highest_plan) && $highest_plan[0]->id == $payment->plan_id)?'':'<a href="'.base_url('/plan?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type).'&plan_id='.$payment->plan_id).'" class="btn btn-sm w-100">UPGRADE</a>')) : ((!empty($payment->is_cancel))?'<a href="javascript:void(0);" onclick="change_subs_status('.$payment->id.','.$payment->product_id.')" class="btn btn-sm w-100">Activate</a>':'')); 
 								?>
 								</td>
 							</tr>

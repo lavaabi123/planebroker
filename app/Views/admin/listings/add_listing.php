@@ -387,7 +387,7 @@ video{
 						
 						
 							<div class='col-12 <?php if(!empty($user_photos)){ ?>col-sm-6<?php }else{ ?>col-sm-6<?php } ?>'>
-								<h3 class="title-xl black mt-3 mb-4"><?php echo trans('Photos and Videos') ?></h3>
+								<h3 class="title-xl black lh-1 mb-2"><?php echo trans('Photos and Videos') ?></h3>
 								<h5 class="mb-3">Add Photo or Video <span style="font-weight: 100;font-size: 0.7rem;vertical-align: middle;">(.jpg, .jpeg, .png, .mp4, .mov)</span></h5>
 								
 									<div class="mt-4 file-upload">

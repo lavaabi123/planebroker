@@ -15,9 +15,10 @@
 				<div class="dbContent">
 					<div class="container-fluid px-0">
 				<?php if(!empty($results)){ ?>
-				<div class="d-grid gap-3 proList grid-col-4 px-0">
+				<div class="row proList g-3 justify-content-center">
 				<?php foreach($results as $row){ ?>
-				<div class="card rounded-5 p-3" id="p_id_<?php echo $row['id']; ?>">
+				<div class="col-12 col-sm-6 col-xl-3" id="p_id_<?php echo $row['id']; ?>">
+				<div class="card rounded-5 p-3 h-100">
 					<?php if ($row['status'] == 1 && $row['is_cancel'] == 1){ ?>
 						<span class="text-danger" title="<?php echo trans('active'); ?>">CANCELED</span>
 					<?php }else if ($row['status'] == 1 && $row['is_cancel'] == 0){ ?>
@@ -46,6 +47,7 @@
 						</div>
 						<a class="text-danger openDeleteModal" data-id="<?php echo $row['id']; ?>" href="javascript:void(0);">DELETE LISTING</a>
 					</div>
+				</div>
 				</div>
 				<?php } ?>
 				</div>

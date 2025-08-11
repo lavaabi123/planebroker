@@ -214,7 +214,7 @@
                                     }
                                 </script>                           
                         </div>
-                        <div class="form-group mb-3 float-right">
+                        <div class="form-group mb-3">
                             <input type="hidden" id="toEmails" name="toEmails">
                             <input type="hidden" id="toNames" name="toNames">
                             <button type="submit" id="single_submit" name="validate" class="btn btn-primary"><?php echo trans('Send Mail'); ?></button>

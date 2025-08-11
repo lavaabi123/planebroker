@@ -77,7 +77,7 @@
                                         });
                                 </script>
                                     </div>
-                        <div class="form-group mb-3 float-right">
+                        <div class="form-group mb-3">
                             <button type="submit" id="single_submit" name="validate" class="btn btn-primary"><?php echo trans('save_changes'); ?></button>
                         </div>
                         <div class="card-footer p-0 pt-3 clearfix" style="clear: both;">

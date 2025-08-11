@@ -15,9 +15,10 @@
 				<div class="dbContent">
 					<div class="container-fluid px-0">
 				<?php if(!empty($results)){ ?>
-				<div class="d-grid gap-3 proList grid-col-4 px-0">
+				<div class="row proList g-3 justify-content-center">
 				<?php foreach($results as $row){ ?>
-				<div class="card rounded-5 p-3" id="p_id_<?php echo $row['id']; ?>">
+				<div class="col-12 col-sm-6 col-xl-3" id="p_id_<?php echo $row['id']; ?>">
+				<div class="card rounded-5 p-3 h-100">
 					<?php if ($row['status'] == 1) : ?>
 						<span class="text-success" title="<?php echo trans('active'); ?>">ACTIVE</span>
 					<?php else : ?>
@@ -34,6 +35,7 @@
 					</div>
 					<a class="btn blue-btn min-w-auto py-3" target="_blank" href="<?php echo base_url('/analytics?id='.$row['id']); ?>">VIEW ANALYTICS</a>
 					
+				</div>
 				</div>
 				<?php } ?>
 				</div>

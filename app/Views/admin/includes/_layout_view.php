@@ -236,7 +236,8 @@ table.dataTable thead > tr > th.sorting_desc:after {
     color: #fff;
 }
 
-</style><script>
+</style>
+<script>
 $(function () {
   // Find the nearest scrollable ancestor for an element
   function getScrollable($el) {

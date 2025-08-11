@@ -13,7 +13,7 @@ td:hover {
             <div class="row mb-2">
                 <div class="col-sm-6 d-flex">
                     <h1 class="m-0"><?php echo $title ?></h1>
-					<a href="javascript:void(0)" class="btn small bg-primary ms-3" onclick="manage_fields('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
+					<a href="javascript:void(0)" class="btn small bg-primary ms-3" onclick="$('#modal-modalLabel').text('<?php echo trans('add'); ?>');manage_fields('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -122,7 +122,7 @@ td:hover {
 </div>
 <!-- Modal -->
 <div id="modal-fields" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal-modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
         <div class="modal-content">
             <div class="modal-header justify-content-center p-2 pb-0">
                 <h4 class="modal-title mb-0 fw-bolder" id="modal-modalLabel"><?php echo trans('add'); ?></h4>
@@ -137,56 +137,13 @@ td:hover {
 						<input type="hidden" id="modal_id" name="id" class="form-control form-input">
 						<?php //echo csrf_field() ?>
 						<input type="hidden" id="crsf">
-				
+				<div class="row">
+				<div class="col-md-6">
                     <div class="form-group">
                         <label><?php echo trans("Field Name"); ?></label>
                         <input type="text" id="modal_name" name="name" maxlength="100" class="form-control form-input" placeholder="<?php echo trans("name"); ?>" required>
                     </div>                                
-
-                    <div class="form-group">
-                        <label><?php echo trans("Field Type"); ?></label>						
-						<select id="modal_field_type" name="field_type" class="form-control" onchange="change_field_type(this)">
-							<option value="Text">Text</option>
-							<option value="Textarea">Textarea</option>
-							<option value="Checkbox">Checkbox</option>
-							<option value="Radio">Radio</option>
-							<option value="Dropdown">Dropdown</option>
-							<option value="File">File</option>
-							<option value="Number">Number</option>
-						</select>						
-                    </div>   
-					
-					<div class="form-group fieldoptiondiv" style="display:none;">
-						<div class="row">
-							<div class="col-12">
-								<div class='panel rates'>                  
-									<a href="javascript:void(0)" class='addOption btn btn-sm yellowbtn mb-3'>Add Options</a>
-									<div class='text-sm'>Options will automatically be ordered by name, ascending</div>
-								</div>
-							</div>                                    
-						</div>
-					</div>	
-
-                    <div class="form-group">
-						<div class="row align-items-center">
-                            <div class="col-auto">
-                                <label class="ms-0"><?php echo trans('Field Position'); ?></label>
-                            </div>					
-							<div class="col-auto d-flex align-items-center">
-								<input type="radio" name="field_position" value="Right" id="field_position_1" class="square-purple" checked="checked">
-								<label for="field_position_1" class="option-label ms-0">Right</label>
-							</div>
-							<div class="col-auto d-flex align-items-center">
-								<input type="radio" name="field_position" value="Left" id="field_position_2" class="square-purple">
-								<label for="field_position_2" class="option-label ms-0">Left</label>
-							</div>
-						</div> 
-                    </div>        
-
-                    <div class="form-group">
-                        <label><?php echo trans("Field Order"); ?></label>
-                        <input type="number" id="modal_field_order" name="field_order" maxlength="100" class="form-control form-input" placeholder="<?php echo trans("Field Order"); ?>" required>
-                    </div>
+		
 				
                     <div class="form-group">
                         <label><?php echo trans("category"); ?></label>
@@ -199,21 +156,14 @@ td:hover {
 							}
 							?>
 						</select>
-                    </div>  					
-				
+                    </div>
                     <div class="form-group">
                         <label class="ms-0"><?php echo trans("Sub Category"); ?></label>
 						 <select name="sub_category_id[]" id="sub_category_id" class="form-control" multiple required>
 							<option value=""><?php echo trans('Select Category First') ?></option>							
 						</select>
-                    </div>  
-                    <div class="form-group">
-                        <label><?php echo trans("Group Name (Title where this field comes under)"); ?></label>
-						 <select name="fields_group_id[]" id="fields_group_id" class="form-control" multiple required>
-							<option value=""><?php echo trans('Select Category') ?></option>							
-						</select>
-                    </div> 										
-										
+                    </div> 
+							
                     <div class="form-group">
                         <div class="row align-items-center">
                             <div class="col-auto">
@@ -228,7 +178,62 @@ td:hover {
                                 <label for="status_2" class="option-label ms-0"><?php echo trans('disable'); ?></label>
                             </div>
                         </div>
+                    </div>  
+					
+				</div>	
+				<div class="col-md-6">	
+                   <!-- <div class="form-group">
+						<div class="row align-items-center">
+                            <div class="col-auto">
+                                <label class="ms-0"><?php echo trans('Field Position'); ?></label>
+                            </div>					
+							<div class="col-auto d-flex align-items-center">
+								<input type="radio" name="field_position" value="Right" id="field_position_1" class="square-purple" checked="checked">
+								<label for="field_position_1" class="option-label ms-0">Right</label>
+							</div>
+							<div class="col-auto d-flex align-items-center">
+								<input type="radio" name="field_position" value="Left" id="field_position_2" class="square-purple">
+								<label for="field_position_2" class="option-label ms-0">Left</label>
+							</div>
+						</div> 
+                    </div>   -->     
+
+                    <div class="form-group">
+                        <label><?php echo trans("Field Order"); ?></label>
+                        <input type="number" id="modal_field_order" name="field_order" maxlength="100" class="form-control form-input" placeholder="<?php echo trans("Field Order"); ?>" required>
                     </div>
+							 
+                    <div class="form-group">
+                        <label><?php echo trans("Group Name (Title where this field comes under)"); ?></label>
+						 <select name="fields_group_id[]" id="fields_group_id" class="form-control" multiple required>
+							<option value=""><?php echo trans('Select Category') ?></option>							
+						</select>
+                    </div> 	
+                    <div class="form-group">
+                        <label><?php echo trans("Field Type"); ?></label>						
+						<select id="modal_field_type" name="field_type" class="form-control" onchange="change_field_type(this)">
+							<option value="Text">Text</option>
+							<option value="Textarea">Textarea</option>
+							<option value="Checkbox">Checkbox</option>
+							<option value="Radio">Radio</option>
+							<option value="Dropdown">Dropdown</option>
+							<option value="File">File</option>
+							<option value="Number">Number</option>
+						</select>						
+                    </div> 
+					<div class="form-group fieldoptiondiv" style="display:none;">
+						<div class="row">
+							<div class="col-12">
+								<div class='panel rates'>                  
+									<a href="javascript:void(0)" class='addOption btn btn-sm yellowbtn mb-3'>Add Options</a>
+									<div class='text-sm'>Options will automatically be ordered by name, ascending</div>
+								</div>
+							</div>                                    
+						</div>
+					</div>										
+							
+					</div>
+					</div>	
 					<div class="modal-footer bg-white px-0 justify-content-between position-sticky bottom-0 rounded-0 z-3">
 						<button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
 						<button type="submit" class="btn btn-primary"><?php echo trans('save'); ?></button>

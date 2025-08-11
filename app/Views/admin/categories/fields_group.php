@@ -12,7 +12,7 @@ td:hover {
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6 d-flex">
-                    <h1 class="m-0"><?php echo $title ?></h1><a href="javascript:void(0)" class="btn small bg-primary ms-3" onclick="manage_fields_group('<?php echo html_escape($categoryId); ?>','','');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
+                    <h1 class="m-0"><?php echo $title ?></h1><a href="javascript:void(0)" class="btn small bg-primary ms-3" onclick="$('#modal-modalLabel').text('<?php echo trans('add'); ?>');manage_fields_group('<?php echo html_escape($categoryId); ?>','','');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">

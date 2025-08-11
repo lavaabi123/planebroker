@@ -8,7 +8,7 @@
             <div class="row mb-2">
                 <div class="col-sm-6 d-flex">
                     <h1 class="m-0"><?php echo $title ?></h1>
-                    <a href="javascript:void(0)" class="btn small bg-primary ms-3" onclick="manage_categories('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
+                    <a href="javascript:void(0)" class="btn small bg-primary ms-3" onclick="$('#modal-modalLabel').text('<?php echo trans('add'); ?>');manage_categories('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -228,6 +228,8 @@ function manage_categories(categoryId) {
             }
         });
     }else{
+		
+		$('.modal_cat_icon').hide();
         $('#modal-categories').modal('show');
     }
 }

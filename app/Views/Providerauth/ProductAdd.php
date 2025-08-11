@@ -487,7 +487,7 @@ video{
 			<a href="javascript:void(0);" data-bs-dismiss="modal" class="fs-5 position-absolute top-0 end-0 m-3"><i class="fa-solid fa-xmark"></i></a>
 			<div class="header-message"><h5 class="mb-0 fw-bolder">Add Tags and Upload</h5></div>
 			<div class="upload-loading" style="display:none; margin-top: 20px;width:80%;">
-			  <div class="progress-label">Starting upload...</div>
+			  <div class="progress-label">Uploading...</div>
 			  <div class="progress-bar-wrapper">
 				<div class="progress-bar" id="upload-progress-bar" style="width: 0%"></div>
 			  </div>
@@ -526,7 +526,7 @@ video{
 					</div>
 						<label class="dz-wrap mb-3" style="display:block !important;margin-left:0 !important;margin-right: 0 !important;">
 							<span>Replace Photo/Video</span>
-							<input type='file' id="userphoto_edit" name='uploads[]' data-type="edit" style="padding: 4px 4px !important;" class="w-100 cropimageedit" accept=".pdf,.doc,.docx,.png,.jpeg,.jpg">	
+							<input type='file' id="userphoto_edit" name='uploads[]' data-type="edit" style="padding: 4px 4px !important;" class="w-100 cropimageedit" accept=".png,.jpeg,.jpg,.mp4,.mov">	
 						</label>						
 					</div>
 				</div>	
@@ -778,7 +778,7 @@ $(document).on('click', '#triggerModalFileInput', function (e) {
 
   const fieldId = $(this).attr('data-field-id');
 
-  const tempInput = $('<input type="file" accept=".pdf,.doc,.docx" multiple style="display:none;">');
+  const tempInput = $('<input type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" multiple style="display:none;">');
   $('body').append(tempInput);
   tempInput.trigger('click');
 
@@ -838,7 +838,9 @@ $(document).ready(function () {
   });
 });
 
-</script><script>
+</script>
+<script>
+/* ========= Shared progress helpers ========= */
 function updateProgress(percent, label, err = 1) {
   $("#upload-progress-bar").css("width", percent + "%");
   if (err == 1) {
@@ -848,9 +850,28 @@ function updateProgress(percent, label, err = 1) {
   }
 }
 
-/* ------------------------------
-   Abort / cancel tracking
---------------------------------*/
+/* Progress slice for precheck (0–15%) */
+const PRECHECK_WEIGHT = 0.15; // 15%
+
+/* Map a sub-phase 0..1 into a slice of the main bar */
+function updateWeightedPhase(startPct, spanPct, loaded, total) {
+  if (!total) return;
+  let pct = startPct + Math.floor((loaded / total) * spanPct);
+  if (pct < lastPct) pct = lastPct;
+  lastPct = pct;
+  updateProgress(pct, "Uploading...");
+}
+
+/* Map overall bytes into a slice (e.g., 15%..100%) */
+function updateOverallProgressFromBase(tempLoaded, basePct, spanPct) {
+  if (!totalBytes) return;
+  let pct = basePct + Math.floor((tempLoaded / totalBytes) * spanPct);
+  if (pct < lastPct) pct = lastPct;
+  lastPct = pct;
+  updateProgress(pct, "Uploading...");
+}
+
+/* ========= Abort / cancel tracking ========= */
 let activeUploads = [];
 let cancelUpload = false;
 function abortAllUploads() {
@@ -859,14 +880,12 @@ function abortAllUploads() {
   activeUploads = [];
 }
 
-/* ------------------------------
-   Smooth overall progress state
---------------------------------*/
+/* ========= Smooth overall progress state ========= */
 let totalBytes = 0;
 let uploadedBytes = 0;
 let lastPct = 0;
 
-function resetProgressUI(msg = "Starting upload...") {
+function resetProgressUI(msg = "Uploading...") {
   totalBytes = 0;
   uploadedBytes = 0;
   lastPct = 0;
@@ -874,46 +893,83 @@ function resetProgressUI(msg = "Starting upload...") {
   $(".progress-bar-wrapper").show();
 }
 
+/* Legacy (kept for non-weighted paths) */
 function updateOverallProgress(tempLoaded) {
   if (!totalBytes) return;
   let pct = Math.floor((tempLoaded / totalBytes) * 100);
-  if (pct < lastPct) pct = lastPct; // never go backwards
+  if (pct < lastPct) pct = lastPct;
   lastPct = pct;
   updateProgress(pct, "Uploading...");
 }
+
 function hardResetProgress(hide = true) {
-  // instantly set to 0% without animating backwards
   const $bar = $("#upload-progress-bar");
   $bar.addClass("no-trans").css("width", "0%");
-  // force reflow so the browser commits the 0% width
   $bar[0]?.offsetHeight;
   $bar.removeClass("no-trans");
-
   $(".progress-label").empty();
   if (hide) $(".progress-bar-wrapper").hide();
-
-  // reset the smooth progress counters too
-  if (typeof totalBytes !== "undefined") totalBytes = 0;
-  if (typeof uploadedBytes !== "undefined") uploadedBytes = 0;
-  if (typeof lastPct !== "undefined") lastPct = 0;
+  totalBytes = 0;
+  uploadedBytes = 0;
+  lastPct = 0;
 }
 
+/* ========= Edit modal progress UI ========= */
+function ensureEditProgressUI() {
+  if (!document.getElementById("edit-upload-progress")) {
+    const html = `
+      <div id="edit-upload-progress" class="upload-loading" style="display:none; margin-top: 12px;">
+        <div class="progress-label edit-progress-label">Uploading...</div>
+        <div class="progress-bar-wrapper">
+          <div class="progress-bar" id="edit-upload-progress-bar" style="width:0%"></div>
+        </div>
+      </div>`;
+    $("#edit-file-modal .modal-body").append(html);
+  }
+}
+function updateEditProgress(percent, label, ok = true) {
+  $("#edit-upload-progress-bar").css("width", percent + "%");
+  $(".edit-progress-label").html(`<div class="${ok ? "text-success" : "text-danger"}">${label}</div>`);
+  $("#edit-upload-progress").show();
+}
+function hardResetEditProgress(hide = true) {
+  ensureEditProgressUI();
+  const $bar = $("#edit-upload-progress-bar");
+  $bar.addClass("no-trans").css("width", "0%");
+  $bar[0]?.offsetHeight;
+  $bar.removeClass("no-trans");
+  $(".edit-progress-label").empty();
+  if (hide) $("#edit-upload-progress").hide();
+}
+
+/* ========= FAST preview with blob URLs ========= */
+let previewURLs = [];
+function revokePreviewURLs(){
+  previewURLs.forEach(u => { try { URL.revokeObjectURL(u); } catch(e){} });
+  previewURLs = [];
+}
+function previewSkeleton(){
+  return `
+    <div class="up-ca" style="padding:2px !important;">
+      <div class="skeleton-box" style="height:200px;border:1px solid #eee;border-radius:25px;display:flex;align-items:center;justify-content:center;background:#f7f7f7;">
+        <div class="spinner-border" role="status" style="width:1.4rem;height:1.4rem;"><span class="visually-hidden">Loading...</span></div>
+      </div>
+      <label>Tags (Optional)</label>
+      <textarea name="image_tag[]" placeholder="Ex: Control Panel, Left Wing, Tail, etc."></textarea>
+    </div>`;
+}
+
+/* ========= Init ========= */
 $(document).ready(function () {
-  let lightbox = GLightbox({
-    selector: ".glightbox-video",
-    touchNavigation: true,
-    autoplayVideos: true,
-  });
-  $("#image_tag").on("itemAdded", function (event) {
-    if ($(".photouploadupdate").is(":visible")) {
-      // $('.photouploadupdate').trigger('click');
-    } else {
-      // $('.photoupload').trigger('click');
-    }
-  });
+  try {
+    GLightbox({ selector: ".glightbox-video", touchNavigation: true, autoplayVideos: true });
+  } catch (e) {}
+
+  $("#image_tag").on("itemAdded", function () {/* no-op */});
 });
 
-function deletephotosdiv(_this) {
+/* ========= Small helpers ========= */
+function deletephotosdiv(_this){
   $(_this).closest(".up-ca").hide();
   if ($("#upload-file-modal .up-ca:visible").length === 0) {
     $("#userphoto").val(null);
@@ -921,18 +977,18 @@ function deletephotosdiv(_this) {
   }
 }
 
-function deletephotos(photo_id, btnEl) {
+function deletephotos(photo_id){
   $.confirm({
     title: "Confirm Deletion",
     content: "Are you sure you want to delete this photo?",
     buttons: {
-      confirm: function () {
-        const req = $.ajax({
+      confirm: function(){
+        $.ajax({
           url: "<?php echo base_url(); ?>/providerauth/photos_delete",
           type: "POST",
           dataType: "html",
           data: {
-            photo_id: photo_id,
+            photo_id,
             product_id: "<?php echo !empty($_GET['id']) ? $_GET['id'] :''; ?>",
           },
           success: function (response) {
@@ -946,427 +1002,329 @@ function deletephotos(photo_id, btnEl) {
               $(".load-images").html(trimmed);
               refreshAfterImageChange();
             }
-          },
+          }
         });
-        // activeUploads.push(req); req.always(()=>{ activeUploads = activeUploads.filter(r=>r!==req); });
       },
-      cancel: function () {},
-    },
+      cancel: function(){}
+    }
   });
 }
 
-function refreshAfterImageChange() {
-  $("#imageListId").sortable({
-    update: function () {
-      getIdsOfImages();
-    },
-  });
-
+function refreshAfterImageChange(){
+  $("#imageListId").sortable({ update: function(){ getIdsOfImages(); } });
   const ids = [];
-  $("#imageListId .listitemClass").each(function () {
-    ids.push($(this).attr("id").replace("imageNo", ""));
-  });
+  $("#imageListId .listitemClass").each(function(){ ids.push($(this).attr("id").replace("imageNo","")); });
   $('input[name="image_ids"]').val(ids.join(","));
-
-  if ($("#imageListId .listitemClass").length === 0) {
-    $(".load-images").html("please upload.");
-  }
-
+  if ($("#imageListId .listitemClass").length === 0) $(".load-images").html("please upload.");
   try {
-    let lightbox = GLightbox({
-      selector: ".glightbox-video",
-      touchNavigation: true,
-      autoplayVideos: true,
-    });
-  } catch (e) {}
+    GLightbox({ selector: ".glightbox-video", touchNavigation: true, autoplayVideos: true });
+  } catch(e){}
 }
 
-function editphotos(photo_id, _this) {
+/* ========= Edit flow ========= */
+function editphotos(photo_id,_this){
   $(".final-result-container").hide();
   $("#userphoto_edit").val(null);
   $("#image_tag").val($(_this).attr("data-tags"));
   $(".photouploadupdate").attr("data-id", photo_id);
-  if ($(_this).attr("data-file-type") == "image") {
+
+  if ($(_this).attr("data-file-type") === "image") {
     $(".editablemedia").html(
-      '<img width="100%" class="load-edit-image" height="auto" style="object-fit:cover;border-radius: 25px;border: 1px solid #eee;height: 200px;" data-id="' +
-        photo_id +
-        '" src="' +
-        $(_this).closest("li").find("img").attr("src") +
-        '" />'
+      `<img width="100%" class="load-edit-image" style="object-fit:cover;border-radius:25px;border:1px solid #eee;height:200px;"
+            data-id="${photo_id}" src="${$(_this).closest("li").find("img").attr("src")}" />`
     );
   } else {
-    const videoWithOverlay = `
-      <div class="video-wrappers w-100" style="position: relative; display: inline-block;border-radius: 25px;border: 1px solid #eee;">
-        <video data-id="${photo_id}" style="object-fit:cover; width: 100%; border-radius: 25px; border: 1px solid #eee; height: 200px;" muted src="${$(_this).closest('li').find('source').attr('src')}"></video>
-      </div>`;
-    $(".editablemedia").html(videoWithOverlay);
+    $(".editablemedia").html(`
+      <div class="video-wrappers w-100" style="position:relative;display:inline-block;border-radius:25px;border:1px solid #eee;">
+        <video data-id="${photo_id}" style="object-fit:cover;width:100%;border-radius:25px;border:1px solid #eee;height:200px;" muted
+               src="${$(_this).closest('li').find('source').attr('src')}"></video>
+      </div>`);
   }
   $(".csimage").removeClass("cropped_image_save").addClass("cropped_image_save_edit");
   $("#edit-file-modal").modal("show");
   $("#userphoto_edit").prop("disabled", false).prop("readonly", false);
+  ensureEditProgressUI();
+  hardResetEditProgress(); // reset bar each time modal opens
 }
 
-function cancel_edit() {
+function cancel_edit(){
   $("#image_tag").val("");
   $(".photouploadupdate").attr("data-id", "");
   $(".load-edit-image").attr("src", "");
   $(".csimage").addClass("cropped_image_save").removeClass("cropped_image_save_edit");
   $("#userphoto_edit").val(null);
   $("#edit-file-modal").modal("hide");
+  hardResetEditProgress(); // reset on cancel
 }
 
-function editphotospost(_this) {
-  var p_id = $(_this).attr("data-id");
+function editphotospost(btn){
+  const p_id = $(btn).attr("data-id");
+  ensureEditProgressUI();
+  hardResetEditProgress(false);
+
+  // Only tags changed (no new file)
   if ($("#userphoto_edit").get(0).files.length === 0) {
+    updateEditProgress(25, "Uploading...");
     const req = $.ajax({
       url: "<?php echo base_url(); ?>/providerauth/photosedit_post",
+      type: "POST",
+      dataType: "HTML",
       data: {
-        p_id: p_id,
+        p_id,
         image_tag: $("#image_tag").val(),
         product_id: "<?php echo !empty($_GET['id']) ? $_GET['id'] :''; ?>",
         plan_id: $('input[name="plan_id"]').val(),
       },
-      type: "POST",
-      dataType: "HTML",
-      success: function (response) {
+      success: function(html){
         if (cancelUpload) return;
-        if (response != "") {
-          $(".load-images").html(response);
-        }
-        $("#imageListId").sortable({
-          update: function (event, ui) {
-            getIdsOfImages();
-          },
-        });
-        $("#image_tag").val("");
-        Swal.fire("Updated Successfully!", "", "success");
-      },
-    });
-    activeUploads.push(req);
-    req.always(() => {
-      activeUploads = activeUploads.filter((r) => r !== req);
-    });
-  } else {
-    var form_data = new FormData();
-    form_data.append("upload", $("#userphoto_edit")[0].files[0]);
-    form_data.append("tag", $("#image_tag").val());
-    var imgt = $("#image_tag").val();
-
-    const reqUp = $.ajax({
-      url:
-        "<?php echo base_url(); ?>/fileupload.php?uploadpath=userimages/" +
-        "<?php echo session()->get('vr_sess_user_id'); ?>",
-      data: form_data,
-      type: "POST",
-      dataType: "JSON",
-      processData: false,
-      contentType: false,
-      cache: false,
-      enctype: "multipart/form-data",
-      xhr: function () {
-        const x = new window.XMLHttpRequest();
-        x.upload.addEventListener("progress", (e) => {
-          if (e.lengthComputable && !cancelUpload) {
-            // For single-file replace we can just map 0..file.size -> 0..100
-            updateProgress(Math.round((e.loaded / e.total) * 100), "Uploading...");
-            $(".progress-bar-wrapper").show();
-          }
-        });
-        return x;
-      },
-      beforeSend: function () {},
-      success: function (response) {
-        if (cancelUpload) return;
-        if (response.uploaded == 1) {
-          $("#userphoto_edit").val(null);
-          const req2 = $.ajax({
-            url: "<?php echo base_url(); ?>/providerauth/photosedit_post",
-            data: {
-              p_id: p_id,
-              image: response.fileName,
-              file_type: response.fileType,
-              image_tag: imgt,
-              product_id: "<?php echo !empty($_GET['id']) ? $_GET['id'] :''; ?>",
-              plan_id: $('input[name="plan_id"]').val(),
-            },
-            type: "POST",
-            dataType: "HTML",
-            success: function (response) {
-              if (cancelUpload) return;
-              if (response != "") {
-                $(".load-images").html(response);
-              }
-              $("#imageListId").sortable({
-                update: function (event, ui) {
-                  getIdsOfImages();
-                },
-              });
-              $(".final-result-container").hide();
-            },
-          });
-          activeUploads.push(req2);
-          req2.always(() => {
-            activeUploads = activeUploads.filter((r) => r !== req2);
-          });
+        if (html) $(".load-images").html(html);
+        $("#imageListId").sortable({ update: function(){ getIdsOfImages(); } });
+        updateEditProgress(100, "Uploading...");
+        setTimeout(()=>{
+          $("#edit-file-modal").modal("hide");
+          hardResetEditProgress();
           $("#image_tag").val("");
           Swal.fire("Updated Successfully!", "", "success");
-        } else {
-          Swal.fire(response.error, "", "error");
-        }
-      },
+        }, 400);
+      }
     });
-    activeUploads.push(reqUp);
-    reqUp.always(() => {
-      activeUploads = activeUploads.filter((r) => r !== reqUp);
-    });
+    activeUploads.push(req); req.always(()=>{ activeUploads = activeUploads.filter(r=>r!==req); });
+    return;
   }
 
-  $(".photouploadupdate").attr("data-id", "");
-  $(".load-edit-image").attr("src", "");
-  $(".csimage").addClass("cropped_image_save").removeClass("cropped_image_save_edit");
-  $("#edit-file-modal").modal("hide");
+  // Replace with new file
+  const fd = new FormData();
+  fd.append("upload", $("#userphoto_edit")[0].files[0]);
+  fd.append("tag", $("#image_tag").val());
+  const imgt = $("#image_tag").val();
+
+  const reqUp = $.ajax({
+    url: "<?php echo base_url(); ?>/fileupload.php?uploadpath=userimages/"+"<?php echo session()->get('vr_sess_user_id'); ?>",
+    type: "POST",
+    data: fd,
+    dataType: "JSON",
+    processData: false,
+    contentType: false,
+    cache: false,
+    enctype: "multipart/form-data",
+    xhr: function(){
+      const x = new window.XMLHttpRequest();
+      x.upload.addEventListener("progress", (e)=>{
+        if (e.lengthComputable && !cancelUpload) {
+          // live progress if you want:
+          // updateEditProgress(Math.round((e.loaded/e.total)*100), "Uploading...");
+        }
+      });
+      return x;
+    },
+    success: function(resp){
+      if (cancelUpload) return;
+      if (resp.uploaded == 1) {
+        updateEditProgress(90, "Uploading...");
+        const req2 = $.ajax({
+          url: "<?php echo base_url(); ?>/providerauth/photosedit_post",
+          type: "POST",
+          dataType: "HTML",
+          data: {
+            p_id,
+            image: resp.fileName,
+            file_type: resp.fileType,
+            image_tag: imgt,
+            product_id: "<?php echo !empty($_GET['id']) ? $_GET['id'] :''; ?>",
+            plan_id: $('input[name="plan_id"]').val(),
+          },
+          success: function(html){
+            if (cancelUpload) return;
+            if (html) $(".load-images").html(html);
+            $("#imageListId").sortable({ update: function(){ getIdsOfImages(); } });
+            $(".final-result-container").hide();
+            updateEditProgress(100, "Uploading...");
+            setTimeout(()=>{
+              $("#edit-file-modal").modal("hide");
+              hardResetEditProgress();
+              $("#userphoto_edit").val(null);
+              $("#image_tag").val("");
+              Swal.fire("Updated Successfully!", "", "success");
+            }, 400);
+          }
+        });
+        activeUploads.push(req2); req2.always(()=>{ activeUploads = activeUploads.filter(r=>r!==req2); });
+      } else {
+        updateEditProgress(100, resp.error || "Upload failed", false);
+        setTimeout(()=> hardResetEditProgress(), 1200);
+        Swal.fire(resp.error || "Upload failed", "", "error");
+      }
+    }
+  });
+  activeUploads.push(reqUp); reqUp.always(()=>{ activeUploads = activeUploads.filter(r=>r!==reqUp); });
 }
 
+/* ========= Sort / order ========= */
 $(function () {
-  $("#imageListId").sortable({
-    update: function (event, ui) {
-      getIdsOfImages();
-    },
-  });
+  $("#imageListId").sortable({ update: function(){ getIdsOfImages(); } });
 });
 
 function getIdsOfImages() {
   var values = [];
-  $(".listitemClass").each(function (index) {
-    values.push($(this).attr("id").replace("imageNo", ""));
-  });
+  $(".listitemClass").each(function(){ values.push($(this).attr("id").replace("imageNo","")); });
   $("#outputvalues").val(values);
   const req = $.ajax({
     url: "<?php echo base_url(); ?>/providerauth/photos_post",
+    type: "POST",
+    dataType: "HTML",
     data: {
       check: "3",
       ids: values,
       product_id: "<?php echo !empty($_GET['id']) ? $_GET['id'] :''; ?>",
       plan_id: $('input[name="plan_id"]').val(),
-    },
-    type: "POST",
-    dataType: "HTML",
-    success: function (response) {
-      if (cancelUpload) return;
-    },
+    }
   });
-  activeUploads.push(req);
-  req.always(() => {
-    activeUploads = activeUploads.filter((r) => r !== req);
-  });
+  activeUploads.push(req); req.always(()=>{ activeUploads = activeUploads.filter(r=>r!==req); });
 }
 
+/* ========= Croppie / previews / modal behaviors ========= */
 function load_croppie(_this) {
   $("#upload-image").attr("data-id", $(_this).find("img").attr("data-id"));
-  $("#upload-image")
-    .croppie("bind", {
-      url: $(_this).find("img").attr("src"),
-    })
-    .then(function () {
-      console.log("jQuery bind complete");
-    });
+  $("#upload-image").croppie("bind", { url: $(_this).find("img").attr("src") });
   $("#crop-image").modal("show");
 }
 
 $(document).ready(function () {
   var myCroppie = $("#upload-image").croppie({
     enableExif: true,
-    viewport: {
-      width: 200,
-      height: 150,
-      type: "rectangle",
-      enableResize: true,
-      enableOrientation: true,
-    },
-    boundary: {
-      width: 400,
-      height: 300,
-    },
+    viewport: { width: 200, height: 150, type: "rectangle", enableResize: true, enableOrientation: true },
+    boundary: { width: 400, height: 300 },
   });
+
   $("#crop-image").on("shown.bs.modal", function () {
-    myCroppie.croppie("bind", {
-      url: $(".test" + $("#upload-image").attr("data-id")).find("img").attr("src"),
-    });
-  });
-  $("#crop-image").on("hide.bs.modal", function () {
-    myCroppie.croppie("bind", {
-      url: "",
-    });
+    myCroppie.croppie("bind", { url: $(".test" + $("#upload-image").attr("data-id")).find("img").attr("src") });
+  }).on("hide.bs.modal", function () {
+    myCroppie.croppie("bind", { url: "" });
   });
 
-  function formatTime(seconds) {
-    seconds = Math.floor(seconds);
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m}:${s.toString().padStart(2, "0")}`;
-  }
-
+  // Input resets so re-selecting same file fires change
   var fileList = [];
   var fileListedit = [];
-  $(".cropimage").on("click", function (event) {
+
+  $(".cropimage").on("click", function(){
+    this.value = null;
     fileList = [];
-    $(".load-images-final").html("");
+    $(".load-images-final").empty();
     $(".final-result-container").hide();
   });
-  $(".cropimageedit").on("click", function (event) {
-    fileListedit = [];
-  });
+
+  $(".cropimageedit").on("click", function(){ fileListedit = []; });
+
+  /* ===== FAST preview using blob URLs (no FileReader) ===== */
   $(".cropimage").on("change", function (event) {
-    $(".load-images-final").html("");
-    if (event.target.files.length) {
-      var i = 0;
-      for (let singleFile of event.target.files) {
-        var reader = new FileReader();
-        reader.onload = function (e) {
-          const isImage = singleFile.type.startsWith("image/");
-          const isVideo = singleFile.type.startsWith("video/");
+    $(".load-images-final").empty();
+    const files = event.target.files;
+    if (!files || !files.length) return;
 
-          if (isImage) {
-            $(".load-images-final").append(
-              '<div class="up-ca" style="padding: 2px !important;">' +
-                '<img width="100%" height="auto" style="object-fit:cover;border-radius: 25px;border: 1px solid #eee;height: 200px;" data-id="' +
-                i +
-                '" src="' +
-                e.target.result +
-                '" />' +
-                '<div class="trash" onclick="deletephotosdiv(this)" style="cursor:pointer"><i class="fa fa-trash-o"></i></div>' +
-                "<label>Tags (Optional)</label>" +
-                '<textarea name="image_tag[]" placeholder="Ex: Control Panel, Left Wing, Tail, etc."></textarea>' +
-                "</div>"
-            );
-            i++;
-          } else if (isVideo) {
-            const video = document.createElement("video");
-            video.src = e.target.result;
-            video.preload = "metadata";
-            video.addEventListener("loadedmetadata", function () {
-              const duration = formatTime(video.duration);
-              const videoWithOverlay = `
-                <div class="video-wrappers" style="position: relative; display: inline-block;border-radius: 25px;border: 1px solid #eee;">
-                  <video data-id="${i}" style="object-fit:cover; width: 100%; border-radius: 25px; border: 1px solid #eee; height: 200px;" muted>
-                    <source src="${e.target.result}" type="${singleFile.type}" />
-                  </video>
-                  <span class="video-duration" style="position:absolute;bottom:8px;right:8px;background-color:rgba(0,0,0,0.6);color:#fff;font-size:12px;padding:2px 6px;border-radius:4px;">${duration}</span>
-                </div>`;
-              $(".load-images-final").append(
-                '<div class="up-ca" style="padding: 2px !important;">' +
-                  videoWithOverlay +
-                  '<div class="trash" onclick="deletephotosdiv(this)" style="cursor:pointer"><i class="fa fa-trash-o"></i></div>' +
-                  "<label>Tags (Optional)</label>" +
-                  '<textarea name="image_tag[]" placeholder="Ex: Control Panel, Left Wing, Tail, etc."></textarea>' +
-                  "</div>"
-              );
-              i++;
-            });
-          }
-          $(".final-result-container").show();
-          $("#upload-file-modal").find(".header-message").html("<h5 class=\"mb-0 fw-bolder\">Add Tags and Upload</h5>");
-          $("#upload-file-modal").find(".modal-footer .photoupload").show();
-          $("#upload-file-modal").find(".modal-footer .photouploaddone").hide();
-          $(".upload-loading").hide();
-          $("#upload-file-modal").modal("show");
-          i++;
-        };
-        fileList.push(singleFile);
-        reader.readAsDataURL(singleFile);
+    $("#upload-file-modal").find(".header-message").html("<h5 class='mb-0 fw-bolder'>Add Tags and Upload</h5>");
+    $("#upload-file-modal").find(".modal-footer .photoupload").show();
+    $("#upload-file-modal").find(".modal-footer .photouploaddone").hide();
+    $(".upload-loading").hide();
+    $(".final-result-container").show();
+    $("#upload-file-modal").modal("show");
+
+    fileList = [];
+    revokePreviewURLs(); // clear old object URLs
+    let i = 0;
+
+    function formatDur(s){ s=Math.floor(s||0); const m=Math.floor(s/60), r=s%60; return `${m}:${r.toString().padStart(2,"0")}`; }
+
+    for (let singleFile of files) {
+      fileList.push(singleFile);
+
+      // skeleton card first
+      const $wrap = $(previewSkeleton()).appendTo(".load-images-final");
+      const $box  = $wrap.find(".skeleton-box");
+
+      const url = URL.createObjectURL(singleFile);
+      previewURLs.push(url);
+
+      if (singleFile.type.startsWith("image/")) {
+        const img = new Image();
+        img.onload = () => { $box.replaceWith(img); };
+        img.style.cssText = "width:100%;height:200px;object-fit:cover;border:1px solid #eee;border-radius:25px;";
+        img.src = url;
+      } else if (singleFile.type.startsWith("video/")) {
+        const v = document.createElement("video");
+        v.preload = "metadata";
+        v.muted = true;
+        v.style.cssText = "width:100%;height:200px;object-fit:cover;border:1px solid #eee;border-radius:25px;";
+        v.src = url;
+        v.addEventListener("loadedmetadata", () => {
+          const dur = formatDur(v.duration);
+          const pill = document.createElement("span");
+          pill.textContent = dur;
+          pill.style.cssText = "position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:2px 6px;border-radius:4px;";
+          const holder = document.createElement("div");
+          holder.style.cssText = "position:relative;border:1px solid #eee;border-radius:25px;overflow:hidden;";
+          holder.appendChild(v);
+          holder.appendChild(pill);
+          $box.replaceWith(holder);
+        }, { once: true });
+        v.addEventListener("error", () => { $box.html('<div class="text-muted small">Preview unavailable</div>'); }, { once: true });
+      } else {
+        $box.html(`<div class="p-3 text-muted small">Selected: ${singleFile.name}</div>`);
       }
+      i++;
     }
-    $(".cropped_image").attr("data-id", $(this).attr("data-id"));
-    $(".cropped_image").attr("data-url", $(this).attr("data-url"));
   });
 
+  // Edit input preview (also blob URL)
   $(".cropimageedit").on("change", function (event) {
-    if (event.target.files.length) {
-      var i = 0;
-      for (let singleFile of event.target.files) {
-        var reader = new FileReader();
-        reader.onload = function (e) {
-          const isImage = singleFile.type.startsWith("image/");
-          const isVideo = singleFile.type.startsWith("video/");
+    revokePreviewURLs();
+    const files = event.target.files;
+    if (files && files.length) {
+      let i = 0;
+      for (let singleFile of files) {
+        const url = URL.createObjectURL(singleFile);
+        previewURLs.push(url);
 
-          if (isImage) {
-            $(".editablemedia").html(
-              '<img width="100%" class="load-edit-image" height="auto" style="object-fit:cover;border-radius: 25px;border: 1px solid #eee;height: 200px;" data-id="' +
-                i +
-                '" src="' +
-                e.target.result +
-                '" />'
-            );
-            i++;
-          } else if (isVideo) {
-            const video = document.createElement("video");
-            video.src = e.target.result;
-            video.preload = "metadata";
-            video.addEventListener("loadedmetadata", function () {
-              const duration = formatTime(video.duration);
-              const videoWithOverlay = `
-                <div class="video-wrappers" style="position: relative; display: inline-block;border-radius: 25px;border: 1px solid #eee;">
-                  <video data-id="${i}" style="object-fit:cover; width: 100%; border-radius: 25px; border: 1px solid #eee; height: 200px;"  muted>
-                    <source src="${e.target.result}" type="${singleFile.type}" />
-                  </video>
-                  <span class="video-duration" style="position:absolute;bottom:8px;right:8px;background-color:rgba(0,0,0,0.6);color:#fff;font-size:12px;padding:2px 6px;border-radius:4px;">${duration}</span>
-                </div>`;
-              $(".editablemedia").html(videoWithOverlay);
-              i++;
-            });
-          }
+        if (singleFile.type.startsWith("image/")) {
+          $(".editablemedia").html(
+            `<img width="100%" class="load-edit-image" style="object-fit:cover;border-radius:25px;border:1px solid #eee;height:200px;" data-id="${i}" src="${url}" />`
+          );
           i++;
-        };
-        fileListedit.push(singleFile);
-        reader.readAsDataURL(singleFile);
+        } else if (singleFile.type.startsWith("video/")) {
+          $(".editablemedia").html(
+            `<div class="video-wrappers w-100" style="position:relative;display:inline-block;border-radius:25px;border:1px solid #eee;">
+               <video data-id="${i}" style="object-fit:cover;width:100%;border-radius:25px;border:1px solid #eee;height:200px;" muted preload="metadata" src="${url}"></video>
+             </div>`
+          );
+          i++;
+        }
       }
     }
   });
 
-  $(document).on("mouseenter", ".load-images-final video, .editablemedia video", function () {
-    this.play();
+  $(document).on("mouseenter", ".load-images-final video, .editablemedia video", function(){ this.play(); });
+  $(document).on("mouseleave", ".load-images-final video, .editablemedia video", function(){ this.pause(); this.currentTime = 0; });
+
+  $(".cropped_image").on("click", function(){
+    myCroppie.croppie("result", { type: "blob", size: "original", quality: 1 }).then(function (blob) {
+      fileList[$("#upload-image").attr("data-id")] = blob;
+      const img = new Image();
+      img.src = URL.createObjectURL(blob);
+      img.style.cssText = "width:150px;height:113px;border:1px solid #eee;border-radius:25px;object-fit:cover;";
+      $(".fid-" + $("#upload-image").attr("data-id")).html(img);
+    });
   });
 
-  $(document).on("mouseleave", ".load-images-final video, .editablemedia video", function () {
-    this.pause();
-    this.currentTime = 0;
-  });
+  $(".cropped_image_save, .cropped_image").on("click", function(){ $("#crop-image").modal("hide"); });
 
-  $(".cropped_image").on("click", function (ev) {
-    myCroppie
-      .croppie("result", {
-        type: "blob",
-        size: "original",
-        quality: 1,
-      })
-      .then(function (response) {
-        fileList[$("#upload-image").attr("data-id")] = response;
-        var image = new Image();
-        image.src = URL.createObjectURL(response);
-        image.style.width = "150px";
-        image.style.height = "113px";
-        image.style.border = "1px solid #eee";
-        image.style.borderRadius = "25px";
-        image.style.objectFit = "cover";
-        $(".fid-" + $("#upload-image").attr("data-id")).html(image);
-      });
-  });
+  $(".open-image-modal").on("click", function(){ $("#crop-image").modal("show"); });
 
-  $(".cropped_image_save").on("click", function () {
-    $("#crop-image").modal("hide");
-  });
-  $(".cropped_image").on("click", function () {
-    $("#crop-image").modal("hide");
-  });
-  $(".open-image-modal").on("click", function () {
-    $("#crop-image").modal("show");
-  });
-  $(".photouploaddone").on("click", function () {
+  $(".photouploaddone").on("click", function(){
     $("#userphoto").val(null);
     $("#upload-file-modal").modal("hide");
   });
 
   let shouldForceClose = false;
+
   $("#upload-file-modal").on("hide.bs.modal", function (e) {
     if (
       !$("#upload-file-modal").find(".modal-footer .photoupload").is(":visible") ||
@@ -1380,20 +1338,20 @@ $(document).ready(function () {
     $("#confirmCloseModal").modal("show");
   });
 
-  $("#continueUpload").on("click", function () {
-    $("#confirmCloseModal").modal("hide");
-  });
+  $("#continueUpload").on("click", function(){ $("#confirmCloseModal").modal("hide"); });
 
   $("#discardUpload").on("click", function () {
     $("#confirmCloseModal").modal("hide");
     shouldForceClose = true;
     abortAllUploads();
     resetUploadState();
-	hardResetProgress();  
+    hardResetProgress();
+    revokePreviewURLs();
     $("#upload-file-modal").modal("hide");
   });
 
   $("#upload-file-modal").on("hidden.bs.modal", function () {
+    revokePreviewURLs();
     if (shouldForceClose) {
       abortAllUploads();
       resetUploadState();
@@ -1404,43 +1362,30 @@ $(document).ready(function () {
   function resetUploadState() {
     if (typeof fileList !== "undefined") fileList.length = 0;
     if (typeof fileListedit !== "undefined") fileListedit.length = 0;
-
     $("#userphoto").val(null);
     $("#userphoto_edit").val(null);
     $(".load-images-final").empty();
     $(".editablemedia").empty();
     $(".final-result-container").hide();
-
-    try {
-      updateProgress(0, "", 1);
-    } catch (e) {}
+    try { updateProgress(0, "", 1); } catch(e){}
     $(".upload-loading").hide();
     $(".progress-bar-wrapper").hide();
-
     $("#upload-file-modal").find(".modal-footer .photoupload").show();
     $("#upload-file-modal").find(".modal-footer .photouploaddone").hide();
     $("#upload-file-modal").find(".trash").show();
     $("#upload-file-modal").find(".header-message").html('<h5 class="mb-0 fw-bolder">Add Tags and Upload</h5>');
   }
 
-  /* ===========================================
-     MAIN UPLOAD CLICK — with smooth progress
-     =========================================== */
-  $(".photoupload").on("click", function () {
-	  hardResetProgress(false); 
-    $(".upload-loading").show();
+  $("#upload-file-modal").on("show.bs.modal", function(){ hardResetProgress(); });
 
-    // fresh run
+  /* ===== MAIN UPLOAD CLICK (with precheck progress) ===== */
+  $(".photoupload").on("click", function () {
+    hardResetProgress(false);
+    $(".upload-loading").show();
     cancelUpload = false;
     activeUploads = activeUploads || [];
-
-    // Reset smooth progress to 0%
     resetProgressUI();
-$("#upload-file-modal").on("show.bs.modal", function(){
-  hardResetProgress();  // keep hidden until Upload is clicked
-});
 
-    // gather files to upload (use fileList you've built from the modal)
     if ((fileList?.length || 0) === 0) {
       updateProgress(0, "Select Image/Video to Upload", 0);
       $(".progress-bar-wrapper").hide();
@@ -1448,29 +1393,43 @@ $("#upload-file-modal").on("show.bs.modal", function(){
     }
 
     if ($(".csimage").hasClass("cropped_image_save")) {
-      // Pre-flight check
-      var form_data1 = new FormData();
-      form_data1.append("upload", $("#userphoto")[0].files[0] || new Blob());
+      // Use the first picked file for precheck
+      const inputFile = ($("#userphoto")[0] && $("#userphoto")[0].files && $("#userphoto")[0].files[0]) || fileList[0] || null;
+
+      const form_data1 = new FormData();
+      form_data1.append("upload", inputFile || new Blob());
       form_data1.append("check", 1);
       form_data1.append("product_id", "<?php echo !empty($_GET['id']) ? $_GET['id'] :''; ?>");
       form_data1.append("plan_id", $('input[name="plan_id"]').val());
 
-      const preReq = $.ajax({
-        url: "<?php echo base_url(); ?>/providerauth/photos_post",
-        data: form_data1,
-        type: "POST",
-        dataType: "JSON",
-        processData: false,
-        contentType: false,
-        cache: false,
-        enctype: "multipart/form-data",
-        beforeSend: function () {
-          $(".loader").show();
+      const filesMeta = Array.from(fileList).map(f => ({ type: f.type, size: f.size }));
+
+		const preReq = $.ajax({
+		  url: "<?php echo base_url(); ?>/providerauth/photos_post",
+		  type: "POST",
+		  dataType: "JSON",
+		  data: {
+			check: 1,
+			product_id: "<?php echo !empty($_GET['id']) ? $_GET['id'] :''; ?>",
+			plan_id: $('input[name="plan_id"]').val(),
+			files: JSON.stringify(filesMeta)
+		  },
+        xhr: function(){
+          const x = new window.XMLHttpRequest();
+          x.upload.addEventListener("progress", (e)=>{
+            if (e.lengthComputable && !cancelUpload) {
+              updateWeightedPhase(0, PRECHECK_WEIGHT * 100, e.loaded, e.total);
+              $(".progress-bar-wrapper").show();
+            }
+          });
+          return x;
         },
-        success: async function (response) {
+        beforeSend: function(){ $(".loader").show(); },
+        success: function (response) {
           if (cancelUpload) return;
+
           if (response == "2" || response.status == "error") {
-            updateProgress(0, response.message, 0);
+            updateProgress(0, response.message || "Validation failed", 0);
             $(".progress-bar-wrapper").hide();
             $("#crop-image").modal("hide");
             $("#userphoto").val("");
@@ -1482,15 +1441,18 @@ $("#upload-file-modal").on("show.bs.modal", function(){
             return;
           }
 
-          // compute totalBytes across this batch
+          const preEnd = Math.floor(PRECHECK_WEIGHT * 100);
+          if (lastPct < preEnd) updateProgress(preEnd, "Uploading...");
+
+          // Compute totals for the batch
           totalBytes = 0;
           uploadedBytes = 0;
           for (let f of fileList) totalBytes += (f && f.size) ? f.size : 0;
 
-          // loop & upload each file with smooth progress
-          var form_data = new FormData();
+          // Upload each file
           const totalfiles = fileList.length;
           let filesDone = 0;
+          const form_data = new FormData();
 
           for (let index = 0; index < totalfiles; index++) {
             form_data.delete("upload");
@@ -1503,37 +1465,35 @@ $("#upload-file-modal").on("show.bs.modal", function(){
             form_data.append("tag", $('textarea[name="image_tag[]"]').eq(index).val());
 
             const upReq = $.ajax({
-              url:
-                "<?php echo base_url(); ?>/fileupload.php?uploadpath=userimages/" +
-                "<?php echo session()->get('vr_sess_user_id'); ?>",
-              data: form_data,
+              url: "<?php echo base_url(); ?>/fileupload.php?uploadpath=userimages/"+"<?php echo session()->get('vr_sess_user_id'); ?>",
               type: "POST",
               dataType: "JSON",
+              data: form_data,
               processData: false,
               contentType: false,
               cache: false,
               enctype: "multipart/form-data",
-              xhr: function () {
+              xhr: function(){
                 const x = new window.XMLHttpRequest();
-                x.upload.addEventListener("progress", (e) => {
+                x.upload.addEventListener("progress", (e)=>{
                   if (e.lengthComputable && !cancelUpload) {
-                    // bytes completed across all previous files + this file's current loaded
                     const tempLoaded = uploadedBytes + e.loaded;
-                    updateOverallProgress(tempLoaded);
+                    updateOverallProgressFromBase(tempLoaded, PRECHECK_WEIGHT * 100, 100 - PRECHECK_WEIGHT * 100);
                   }
                 });
                 return x;
               },
-              success: function (resp) {
+              success: function(resp){
                 if (cancelUpload) return;
 
-                // lock in this file as completed for the accumulator
                 uploadedBytes += sizeForThisReq;
-                updateOverallProgress(uploadedBytes);
+                updateOverallProgressFromBase(uploadedBytes, PRECHECK_WEIGHT * 100, 100 - PRECHECK_WEIGHT * 100);
 
                 if (resp.uploaded == 1) {
                   const saveReq = $.ajax({
                     url: "<?php echo base_url(); ?>/providerauth/photos_post",
+                    type: "POST",
+                    dataType: "HTML",
                     data: {
                       check: "2",
                       image: resp.fileName,
@@ -1542,128 +1502,93 @@ $("#upload-file-modal").on("show.bs.modal", function(){
                       product_id: "<?php echo !empty($_GET['id']) ? $_GET['id'] :''; ?>",
                       plan_id: $('input[name="plan_id"]').val(),
                     },
-                    type: "POST",
-                    dataType: "HTML",
-                    success: function (html) {
+                    success: function(html){
                       if (cancelUpload) return;
-                      if (html != "") {
+                      if (html) {
                         $(".load-images").html(html);
                         const video = document.querySelector("video");
-                        if (video) {
-                          video.addEventListener("loadeddata", function () {
-                            this.currentTime = 0.1;
-                          });
-                        }
-                        let lightbox = GLightbox({
-                          selector: ".glightbox-video",
-                          touchNavigation: true,
-                          autoplayVideos: true,
-                        });
+                        if (video) video.addEventListener("loadeddata", function(){ this.currentTime = 0.1; });
+                        try {
+                          GLightbox({ selector: ".glightbox-video", touchNavigation: true, autoplayVideos: true });
+                        } catch(e){}
                       }
-                      $("#imageListId").sortable({
-                        update: function (event, ui) {
-                          getIdsOfImages();
-                        },
-                      });
-                    },
+                      $("#imageListId").sortable({ update: function(){ getIdsOfImages(); } });
+                    }
                   });
-                  activeUploads.push(saveReq);
-                  saveReq.always(() => {
-                    activeUploads = activeUploads.filter((r) => r !== saveReq);
-                  });
-                } else {
-                  // error on this file
-                  // Optionally show a message for this file; keep the bar moving for others
+                  activeUploads.push(saveReq); saveReq.always(()=>{ activeUploads = activeUploads.filter(r=>r!==saveReq); });
                 }
 
                 filesDone++;
                 if (filesDone === totalfiles) {
-                  // all files completed
-                  updateOverallProgress(totalBytes); // snap to 100%
-                  setTimeout(() => {
+                  updateOverallProgressFromBase(totalBytes, PRECHECK_WEIGHT * 100, 100 - PRECHECK_WEIGHT * 100);
+                  setTimeout(()=>{
                     if (cancelUpload) return;
-                    $(".upload-loading").fadeOut(() => {
+                    $(".upload-loading").fadeOut(()=>{
                       $("#upload-file-modal").find(".modal-footer .photoupload").hide();
                       $("#upload-file-modal").find(".modal-footer .photouploaddone").show();
                       $("#upload-file-modal").find(".trash").hide();
-                      $("#upload-file-modal")
-                        .find(".header-message")
-                        .html(
-                          `<div class="alert alert-success d-flex align-items-start p-3 shadow-sm" role="alert">
-                             <i class="fa-solid fa-check me-2 mt-1 text-success"></i>
-                             <div>Your photos and videos have been uploaded.</div>
-                           </div>`
-                        );
+                      $("#upload-file-modal").find(".header-message").html(`
+                        <div class="alert alert-success d-flex align-items-start p-3 shadow-sm" role="alert">
+                          <i class="fa-solid fa-check me-2 mt-1 text-success"></i>
+                          <div>Your photos and videos have been uploaded.</div>
+                        </div>`);
                       $("#upload-file-modal").modal("hide");
-					  hardResetProgress(); 
+                      hardResetProgress();
                     });
                   }, 600);
                 }
                 $(".loader").hide();
-              },
+              }
             });
 
             activeUploads.push(upReq);
-            upReq.always(() => {
-              activeUploads = activeUploads.filter((r) => r !== upReq);
-            });
+            upReq.always(()=>{ activeUploads = activeUploads.filter(r=>r!==upReq); });
           }
 
           $("#crop-image").modal("hide");
-          // disable only inputs inside the upload modal (not the edit modal)
           $("#upload-file-modal .up-ca").find("input, textarea").prop("readonly", true).prop("disabled", true);
           fileList = [];
-        },
+        }
       });
-      activeUploads.push(preReq);
-      preReq.always(() => {
-        activeUploads = activeUploads.filter((r) => r !== preReq);
-      });
-    } else {
-      // EDIT path with multiple files (if applicable)
-      var p_id = $(".photouploadupdate").attr("data-id");
+      activeUploads.push(preReq); preReq.always(()=>{ activeUploads = activeUploads.filter(r=>r!==preReq); });
 
-      // compute totals for smooth progress
-      totalBytes = 0;
-      uploadedBytes = 0;
+    } else {
+      // EDIT multi-file path (if ever used)
+      const p_id = $(".photouploadupdate").attr("data-id");
+      totalBytes = 0; uploadedBytes = 0;
       for (let f of fileList) totalBytes += (f && f.size) ? f.size : 0;
 
-      var form_data = new FormData();
       const totalfiles = fileList.length;
       let filesDone = 0;
+      const form_data = new FormData();
 
       for (let index = 0; index < totalfiles; index++) {
-        form_data.delete("upload");
-        form_data.delete("tag");
+        form_data.delete("upload"); form_data.delete("tag");
         const fileForThisReq = fileList[index];
         const sizeForThisReq = (fileForThisReq && fileForThisReq.size) ? fileForThisReq.size : 0;
-
         form_data.append("upload", fileForThisReq);
-        var imtg = $('textarea[name="image_tag[]"]').eq(index).val();
+        const imtg = $('textarea[name="image_tag[]"]').eq(index).val();
         form_data.append("tag", imtg);
 
         const upReq2 = $.ajax({
-          url:
-            "<?php echo base_url(); ?>/fileupload.php?uploadpath=userimages/" +
-            "<?php echo session()->get('vr_sess_user_id'); ?>",
-          data: form_data,
+          url: "<?php echo base_url(); ?>/fileupload.php?uploadpath=userimages/"+"<?php echo session()->get('vr_sess_user_id'); ?>",
           type: "POST",
           dataType: "JSON",
+          data: form_data,
           processData: false,
           contentType: false,
           cache: false,
           enctype: "multipart/form-data",
-          xhr: function () {
+          xhr: function(){
             const x = new window.XMLHttpRequest();
-            x.upload.addEventListener("progress", (e) => {
+            x.upload.addEventListener("progress", (e)=>{
               if (e.lengthComputable && !cancelUpload) {
                 const tempLoaded = uploadedBytes + e.loaded;
-                updateOverallProgress(tempLoaded);
+                updateOverallProgress(tempLoaded); // full-range for edit-batch
               }
             });
             return x;
           },
-          beforeSend: function () {},
           success: function (response) {
             if (cancelUpload) return;
 
@@ -1674,34 +1599,23 @@ $("#upload-file-modal").on("show.bs.modal", function(){
               $("#userphoto").val(null);
               const postReq = $.ajax({
                 url: "<?php echo base_url(); ?>/providerauth/photosedit_post",
+                type: "POST",
+                dataType: "HTML",
                 data: {
-                  p_id: p_id,
+                  p_id,
                   image: response.fileName,
                   image_tag: imtg,
                   product_id: "<?php echo !empty($_GET['id']) ? $_GET['id'] :''; ?>",
                   plan_id: $('input[name="plan_id"]').val(),
                 },
-                type: "POST",
-                dataType: "HTML",
-                success: function (response) {
+                success: function (html) {
                   if (cancelUpload) return;
-                  if (response != "") {
-                    $(".load-images").html(response);
-                  }
-                  $("#imageListId").sortable({
-                    update: function (event, ui) {
-                      getIdsOfImages();
-                    },
-                  });
+                  if (html) $(".load-images").html(html);
+                  $("#imageListId").sortable({ update: function(){ getIdsOfImages(); } });
                   $(".final-result-container").hide();
-                },
+                }
               });
-              activeUploads.push(postReq);
-              postReq.always(() => {
-                activeUploads = activeUploads.filter((r) => r !== postReq);
-              });
-            } else {
-              // error for this file
+              activeUploads.push(postReq); postReq.always(()=>{ activeUploads = activeUploads.filter(r=>r!==postReq); });
             }
 
             filesDone++;
@@ -1709,51 +1623,39 @@ $("#upload-file-modal").on("show.bs.modal", function(){
               updateOverallProgress(totalBytes);
               $("#crop-image").modal("hide");
               $(".final-result-container").hide();
-              setTimeout(() => {
-                if (!cancelUpload) $(".upload-loading").fadeOut();
-              }, 600);
+              setTimeout(()=>{ if (!cancelUpload) $(".upload-loading").fadeOut(); }, 600);
             }
-          },
+          }
         });
-        activeUploads.push(upReq2);
-        upReq2.always(() => {
-          activeUploads = activeUploads.filter((r) => r !== upReq2);
-        });
+        activeUploads.push(upReq2); upReq2.always(()=>{ activeUploads = activeUploads.filter(r=>r!==upReq2); });
 
         $(".photoupload").show();
         $(".photouploadupdate").attr("data-id", "");
         $(".load-edit-image").attr("src", "");
         $(".csimage").addClass("cropped_image_save").removeClass("cropped_image_save_edit");
         fileList = [];
-        if ($("#userphoto").hasClass("cmul")) {
-          $("#userphoto").attr("multiple", true);
-        }
+        if ($("#userphoto").hasClass("cmul")) $("#userphoto").attr("multiple", true);
       }
     }
   });
 });
+
 /* ===== end of $(document).ready upload handler block ===== */
 
+/* ========= Subcategory fields toggle ========= */
 $(function () {
   const $subSelect = $('select[name="sub_category_id"]');
   const $allCatBoxes = $(".catbasedfield");
 
   function toggleBoxes() {
     const id = $subSelect.val();
-    if (id != "") {
-      $(".catbasedtitle").show();
-    } else {
-      $(".catbasedtitle").hide();
-    }
+    if (id != "") $(".catbasedtitle").show(); else $(".catbasedtitle").hide();
     $allCatBoxes.hide();
-    if (id) {
-      $allCatBoxes.filter('[data-subcategory="' + id + '"]').show();
-    }
+    if (id) $allCatBoxes.filter('[data-subcategory="' + id + '"]').show();
   }
 
   toggleBoxes();
   $subSelect.on("change", toggleBoxes);
 });
 </script>
-
 <?= $this->endSection() ?>

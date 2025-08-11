@@ -961,7 +961,7 @@ class UsersModel extends Model
 			$query = $this->db->query($sql, array($id,$product_id,$id,$product_id));
 		}
 		
-		$sql .= "  order by file_type,user_images.order asc";
+		$sql .= "  order by file_type,user_images.order,user_images.id asc";
 		$query = $this->db->query($sql, array($id,$product_id,$id,$product_id));
         return $query->getResultArray();
 	}

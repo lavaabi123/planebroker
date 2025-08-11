@@ -342,39 +342,75 @@ class ProviderDashboard extends ProviderauthController
 		//print_r($_POST);
 		//print_r($file);exit;
 		$user_id = !empty($this->request->getVar('user_id')) ? $this->request->getVar('user_id') : $this->session->get('vr_sess_user_id');
-		if($this->request->getVar('check') == '1'){
+		if ($this->request->getVar('check') == '1') {
 			$this->UsersModel = new UsersModel();
 			$user_detail = $this->UsersModel->get_user($user_id);
-			$photos = $this->UsersModel->get_user_photos_isimage($user_id,'',$this->request->getVar('product_id'));
-			$videos = $this->UsersModel->get_user_photos_isvideo($user_id,'',$this->request->getVar('product_id'));
-			$response = '8';
-			if(!empty($this->request->getVar('plan_id'))){
-				$this->PlansModel = new PlansModel();
-				$plan_detail = $this->PlansModel->get_plans_by_id($this->request->getVar('plan_id'));
-				
-				$file = $this->request->getFile('upload');
-				if ($file && $file->isValid()) {
-					$mimeType = $file->getMimeType(); // e.g. image/jpeg, video/mp4
-					$extension = $file->getExtension(); // fallback if needed
-					$isImage = str_starts_with($mimeType, 'image/');
-					$isVideo = str_starts_with($mimeType, 'video/');
-					$response = 1;					
-					if ($isImage) {
-						if(count($photos)+1 > $plan_detail[0]->no_of_photos){
-							$response = json_encode(['status' => 'error', 'message' => 'Please upgrade your plan to upload more photos.']);
-						}
-					}
-					if ($isVideo) {
-						if(count($videos)+1 > $plan_detail[0]->no_of_videos){
-							$response = json_encode(['status' => 'error', 'message' => 'Please upgrade your plan to upload more videos.']);
-						}
-					}
-				}		
-			}else{
-				$response = json_encode(['status' => 'error', 'message' => 'not valid.']);
+			$photos = $this->UsersModel->get_user_photos_isimage($user_id, '', $this->request->getVar('product_id'));
+			$videos = $this->UsersModel->get_user_photos_isvideo($user_id, '', $this->request->getVar('product_id'));
+
+			$planId = $this->request->getVar('plan_id');
+			if (empty($planId)) {
+				echo json_encode(['status' => 'error', 'message' => 'not valid.']);
+				return;
 			}
-			echo $response;
-		}else if($this->request->getVar('check') == '3'){
+
+			$this->PlansModel = new PlansModel();
+			$plan_detail = $this->PlansModel->get_plans_by_id($planId);
+			if (empty($plan_detail)) {
+				echo json_encode(['status' => 'error', 'message' => 'Plan not found.']);
+				return;
+			}
+
+			// Client sends JSON string of [{type:"image/png", size:12345}, ...]
+			$filesJson = $this->request->getVar('files');
+			$filesMeta = [];
+			if ($filesJson) {
+				$decoded = json_decode($filesJson, true);
+				if (is_array($decoded)) {
+					$filesMeta = $decoded;
+				}
+			}
+
+			// Tally selected counts
+			$newPhotos = 0; $newVideos = 0;
+			foreach ($filesMeta as $m) {
+				$t = isset($m['type']) ? (string)$m['type'] : '';
+				if (strpos($t, 'image/') === 0)   $newPhotos++;
+				elseif (strpos($t, 'video/') === 0) $newVideos++;
+			}
+
+			$photoLimit = (int)$plan_detail[0]->no_of_photos;
+			$videoLimit = (int)$plan_detail[0]->no_of_videos;
+
+			if (count($photos) + $newPhotos > $photoLimit) {
+				echo json_encode(['status' => 'error', 'message' => 'Please upgrade your plan to upload more photos.']);
+				return;
+			}
+			if (count($videos) + $newVideos > $videoLimit) {
+				echo json_encode(['status' => 'error', 'message' => 'Please upgrade your plan to upload more videos.']);
+				return;
+			}
+
+			// (Optional) soft-size checks before upload
+			$maxImageBytes = 10 * 1024 * 1024;   // 10MB example
+			$maxVideoBytes = 500 * 1024 * 1024;  // 500MB example
+			foreach ($filesMeta as $m) {
+				$t = $m['type'] ?? '';
+				$s = (int)($m['size'] ?? 0);
+				if (strpos($t, 'image/') === 0 && $s > $maxImageBytes) {
+					echo json_encode(['status' => 'error', 'message' => 'Image exceeds max size.']);
+					return;
+				}
+				if (strpos($t, 'video/') === 0 && $s > $maxVideoBytes) {
+					echo json_encode(['status' => 'error', 'message' => 'Video exceeds max size.']);
+					return;
+				}
+			}
+
+			echo json_encode(['status' => 'ok']); // ✅ no file uploaded for precheck
+			return;
+		}
+else if($this->request->getVar('check') == '3'){
 			$this->UsersModel = new UsersModel();
 			if(!empty($this->request->getVar('ids'))){
 				foreach($this->request->getVar('ids') as $k => $id){

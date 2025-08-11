@@ -89,6 +89,57 @@ class ProviderDashboard extends ProviderauthController
         $data['top_locations'] = $query2;
         $data['top_calls'] = $query3;
 		$data['recent_payments'] = $query1;
+		$userId = $this->session->get('vr_sess_user_id');
+
+$sql = "
+SELECT
+  ic.inactive_count,
+  s0.unassigned_sales_count,
+  (ic.inactive_count + s0.unassigned_sales_count) AS total_count
+FROM
+(
+  /* inactive products count (using latest sale per product) */
+  SELECT COUNT(*) AS inactive_count
+  FROM (
+    SELECT p.id
+    FROM products p
+    LEFT JOIN (
+      SELECT s1.*
+      FROM sales s1
+      JOIN (
+        SELECT product_id, MAX(id) AS max_id
+        FROM sales
+        GROUP BY product_id
+      ) m ON m.product_id = s1.product_id AND m.max_id = s1.id
+    ) s ON s.product_id = p.id
+    WHERE p.user_id = ?
+      AND COALESCE(NULLIF(p.is_cancel,''), 0) = 0
+      AND s.id is not null
+      AND (
+            s.stripe_subscription_end_date IS NULL
+         OR s.stripe_subscription_end_date = '0000-00-00 00:00:00'
+         OR s.stripe_subscription_end_date >= NOW()
+      )
+      /* inactive flag: adjust if your column isn't p.status */
+      AND (p.status IS NULL OR p.status = '' OR p.status = 0)
+  ) t
+) ic
+CROSS JOIN
+(
+  /* sales rows not tied to a product (product_id = 0) */
+  SELECT COUNT(*) AS unassigned_sales_count
+  FROM sales s0
+  WHERE s0.product_id = 0
+    AND s0.user_id = ? AND s0.stripe_subscription_end_date >= NOW() AND s0.is_cancel=0
+) s0;
+";
+
+$q   = $this->UsersModel->db->query($sql, [$userId, $userId]);
+$row = $q->getRowArray();
+
+$data['inactive_subs_count']       = (int)($row['total_count'] ?? 0);
+
+
 
 		$data['zipcodes'] = json_encode($arr);
 		$data['meta_title'] = 'Dashboard | Plane Broker';

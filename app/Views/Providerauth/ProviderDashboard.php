@@ -19,9 +19,9 @@
 			</div>
 			<div class="row">
 				<div class="col-md-6 mb-4">
-					<div class="dbContent h-100 py-4 d-flex flex-column justify-content-center">
+					<div class="dbContent h-100 py-0 py-xl-4 d-flex flex-column justify-content-center">
 						<div class="d-flex row row-cols-4 new_list py-3 row-gap-3">
-							<div class="col-6 col-sm-3 text-center px-md-1">
+							<div class="col-6 col-xl-3 text-center px-xl-1">
 								<a href="<?php echo base_url('my-listing'); ?>">
 									<div class="list-item">
 										<img src="<?php echo base_url('assets/frontend/images/list.png'); ?>" />									
@@ -29,7 +29,7 @@
 									</div>
 								</a>
 							</div>
-							<div class="col-6 col-sm-3 text-center px-md-1">
+							<div class="col-6 col-xl-3 text-center px-xl-1">
 								<a href="<?php echo !empty($user_detail->user_level) ? base_url('add-listing') : base_url('plan'); ?>">
 									<div class="list-item">
 										<img src="<?php echo base_url('assets/frontend/images/new.png'); ?>" />								
@@ -37,7 +37,7 @@
 									</div>
 								</a>
 							</div>
-							<div class="col-6 col-sm-3 text-center px-md-1">
+							<div class="col-6 col-xl-3 text-center px-xl-1">
 								<a href="<?php echo base_url('messages'); ?>">
 									<div class="list-item">
 										<img src="<?php echo base_url('assets/frontend/images/imsg.png'); ?>" />	
@@ -45,7 +45,7 @@
 									</div>
 								</a>
 							</div>
-							<div class="col-6 col-sm-3 text-center px-md-1">
+							<div class="col-6 col-xl-3 text-center px-xl-1">
 								<a href="<?php echo base_url('analytics'); ?>">
 									<div class="list-item">
 										<img src="<?php echo base_url('assets/frontend/images/analytics.png'); ?>" />
@@ -84,6 +84,11 @@
 							<h6 class="fw-bolder mt-1">No Recent Messages found.</h6>
 						</div>
 					<?php } ?>
+					<?php if(!empty($inactive_subs_count)){ ?>
+						<div class="col-md-12 px-md-0 text-center align-self-center">
+							<a href="<?php echo base_url('subscriptions'); ?>"><h6 class="mt-1 red">You have <?= $inactive_subs_count; ?> inactive subscriptions!</h6></a>
+						</div>
+					<?php } ?>
 					</div>
 				</div>
 			</div>
@@ -102,9 +107,9 @@
 						<input type="hidden" name="name" value="<?php echo !empty($request->getVar('name'))?$request->getVar('name'):''; ?>">
 						
 						<input type="hidden" name="page" value="<?php echo (!empty($request->getVar('page'))) ? $request->getVar('page') : '1'; ?>">    
-						<div class="bg-grey form-section d-flex align-items-center justify-content-between gap-2 rounded-pill p-3 mb-4">
+						<div class="bg-grey form-section d-flex flex-wrap flex-xl-nowrap align-items-center justify-content-center justify-content-xl-between gap-2 rounded-5 p-3 mb-4 text-center text-xl-start">
 						<div class="w-100 fs-6">Results for : <span id="dataforperiod"></span></div>
-						<div class="form-group w-100">
+						<div class="form-group col-sm-7 col-xl-4">
 							<input type="hidden" name="start" id="created_at_start" value="<?php echo $request->getVar('start'); ?>">
 							<input type="hidden" name="end" id="created_at_end" value="<?php echo $request->getVar('end'); ?>">
 							<input type="hidden" name="user_id_admin" id="user_id_admin" value="<?php echo !empty($id) ? $id : ""; ?>">
@@ -173,7 +178,7 @@
                     <div class="card-body">				
 						<div class="d-flex justify-content-between align-items-center">
 							<h2 class="fw-bolder"><?php echo $view_count; ?></h2>
-							<img src="<?php echo base_url('assets/frontend/images/eye.png'); ?>" width="35px" />
+							<img src="<?php echo base_url('assets/frontend/images/ceye.png'); ?>" width="35px" />
 						</div>
 						<h6 class="ls-1">Total Views</h6>
 						

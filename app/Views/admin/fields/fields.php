@@ -45,11 +45,11 @@ td:hover {
                                             
                                             <thead>
                                                 <tr>
-                                                    <th><?php echo trans('Field Name'); ?></th>
-                                                    <th><?php echo trans('Field Type'); ?></th>
+                                                    <th><?php echo trans('Name'); ?></th>
+                                                    <th><?php echo trans('Type'); ?></th>
                                                     <th><?php echo trans('Category'); ?></th>
-                                                    <th><?php echo trans('Sub Category'); ?></th>
-                                                    <th><?php echo trans('Field Group(Title)'); ?></th>
+                                                    <th width="40%"><?php echo trans('Sub Category'); ?></th>
+                                                    <th><?php echo trans('Field Group'); ?></th>
                                                     <th><?php echo trans('Order'); ?></th>
                                                     <th><?php echo trans('Position'); ?></th>
                                                     <th class="text-center"><?php echo trans('status'); ?></th>
@@ -122,7 +122,7 @@ td:hover {
 </div>
 <!-- Modal -->
 <div id="modal-fields" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal-modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header justify-content-center p-2 pb-0">
                 <h4 class="modal-title mb-0 fw-bolder" id="modal-modalLabel"><?php echo trans('add'); ?></h4>

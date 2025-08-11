@@ -381,13 +381,13 @@ video{
 							</fieldset>
 
 							<fieldset class="form-input">
-								<h3 class="title-xl black mt-3 mb-4"><?php echo trans('Photos and Videos') ?></h3>
 								<div class="form-section">
 									<div class="form-group">
 								<div class='row'>
 						
 						
 							<div class='col-12 <?php if(!empty($user_photos)){ ?>col-sm-6<?php }else{ ?>col-sm-6<?php } ?>'>
+								<h3 class="title-xl black mt-3 mb-4"><?php echo trans('Photos and Videos') ?></h3>
 								<h5 class="mb-3">Add Photo or Video <span style="font-weight: 100;font-size: 0.7rem;vertical-align: middle;">(.jpg, .jpeg, .png, .mp4, .mov)</span></h5>
 								
 									<div class="mt-4 file-upload">
@@ -488,12 +488,13 @@ video{
 								<input type="hidden" id="g-recaptcha-response"  class="form-control required" name="check_bot" value="" >
 								
 								<input type="hidden" name="register_plan" value="<?php echo !empty($_GET["plan_id"]) ? $_GET["plan_id"] : 1; ?>" >
-							
+							<div class="position-sticky bottom-0 py-2 bg-gray-100">
 							<?php if(!empty($_GET['id'])){ ?>
 							<input type="submit" value="UPDATE LISTING" class="btn py-3 col-12 col-sm-6 col-lg-5 col-xl-4 mx-auto d-block" />
 							<?php }else{ ?>
 							<input type="submit" value="Submit" class="btn py-3 col-12 col-sm-6 col-lg-5 col-xl-4 mx-auto d-block" />
 							<?php } ?>
+							</div>
 						</form> 
                             </div>
                         </div>

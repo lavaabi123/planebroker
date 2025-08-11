@@ -51,11 +51,11 @@
 						<table class="table table-bordered table-striped">
 							<thead>
 								<tr role="row">
-									<th><?php echo trans('Listing Name'); ?></th>
+									<th><?php echo trans('Name'); ?></th>
 									<th><?php echo trans('Package'); ?></th>
 									<th><?php echo trans('Category'); ?></th>
 									<th><?php echo trans('User'); ?></th>
-									<th><?php echo trans('Listing Status'); ?></th>
+									<th><?php echo trans('Status'); ?></th>
 									<th><?php echo trans('Subscription Status'); ?></th>
 									<th><?php echo trans('Created at'); ?></th>
 									<th><?php echo trans('Added By'); ?></th>

@@ -61,7 +61,7 @@ class Providers extends BaseController
 		$this->UsersModel = new UsersModel();
 		$data['user_detail']    = $this->UsersModel->get_user($data['userId']);
 		$this->UsersModel = new UsersModel();
-		$data['user_photos'] = $this->UsersModel->get_user_photos($data['userId'],'',$productId);
+		$data['user_photos'] = $this->UsersModel->get_user_photos($data['userId'],'',$productId,1,1);
 		$this->ProductModel = new ProductModel();
 		$data['product_dynamic_fields'] = $this->ProductModel->get_product_dynamic_fields($category_name,$productId);
 		//get fields to show				
@@ -186,7 +186,7 @@ class Providers extends BaseController
 		}
 		$data['userId'] = $userId;
 		$data['user_detail'] = $this->UsersModel->get_user($userId);
-		$data['user_photos'] = $this->UsersModel->get_user_photos($userId,$data['user_detail']->plan_id);
+		$data['user_photos'] = $this->UsersModel->get_user_photos($userId,$data['user_detail']->plan_id,0,1);
 		$name = !empty($data['user_detail']->business_name) ? $data['user_detail']->business_name : $data['user_detail']->fullname ;
 		$data['title'] = trans('Photos of '.$name);
 		$data['meta_title'] = !empty(get_seo('Gallery')) ? get_seo('Gallery')->meta_title : 'Gallery | Plane Broker';

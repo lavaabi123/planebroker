@@ -573,7 +573,7 @@ class UsersModel extends Model
 		if (!is_dir($upload_path)) {
 			//mkdir($upload_path, 0777, true);
 		}
-		//echo "<pre>";print_r($_POST['dynamic_fields']);print_r($_FILES['dynamic_fields']);exit;
+		//echo "<pre>";print_r($_POST);exit;
 		/*
 		if (isset($_FILES['dynamic_fields']['name']) && is_array($_FILES['dynamic_fields']['name'])) {
 			foreach ($_FILES['dynamic_fields']['name'] as $key => $filename) {
@@ -753,10 +753,11 @@ class UsersModel extends Model
 						$this->db->table('products_dynamic_fields')->insert($data_df);
 					}
 				}
-			}			
+			}	
+			$this->db->table('user_images')->where('product_id',$save_id)->where('is_delete',1)->delete();		
 			if(!empty($this->request->getVar('image_ids'))){
 				$this->db->table('user_images')->where('product_id',$save_id)->whereNotIn('id', explode(',',$this->request->getVar('image_ids')))->delete();
-				return $this->db->query("UPDATE user_images SET product_id='".$save_id."' WHERE id IN (".$this->request->getVar('image_ids').")");
+				return $this->db->query("UPDATE user_images SET product_id='".$save_id."',is_saved=0 WHERE id IN (".$this->request->getVar('image_ids').")");
 			}
             return $save_id;
         } else {
@@ -948,9 +949,20 @@ class UsersModel extends Model
         return $query->getResultArray();
 	}
 	
-	public function get_user_photos($id,$plan_id='',$product_id=0){		
-		$sql = "SELECT *,(SELECT GROUP_CONCAT(id ORDER BY user_images.order ASC) FROM user_images WHERE user_id = ? AND product_id = ?) AS all_ids FROM user_images WHERE user_images.user_id = ? AND product_id=? order by file_type,user_images.order asc";				
-        $query = $this->db->query($sql, array($id,$product_id,$id,$product_id));
+	public function get_user_photos($id,$plan_id='',$product_id=0,$is_saved=0,$is_delete=0){
+		$sql = "SELECT *,(SELECT GROUP_CONCAT(id ORDER BY user_images.order ASC) FROM user_images WHERE user_id = ? AND product_id = ?) AS all_ids FROM user_images WHERE user_images.user_id = ? AND product_id=? ";			
+		if($is_saved == 0){
+		}else{
+			$sql .= " AND is_saved=0 ";
+		}	
+		
+		if($is_delete == 0){			
+			$sql .= " AND is_delete=0 ";
+			$query = $this->db->query($sql, array($id,$product_id,$id,$product_id));
+		}
+		
+		$sql .= "  order by file_type,user_images.order asc";
+		$query = $this->db->query($sql, array($id,$product_id,$id,$product_id));
         return $query->getResultArray();
 	}
 	public function get_user_photos_isimage($id,$plan_id='',$product_id=0){
@@ -980,8 +992,8 @@ class UsersModel extends Model
         return $query->getRow();
 	}
 	
-	public function insert_user_photos($image,$user_id,$image_tag,$product_id,$file_type=''){
-		return $this->db->query("INSERT INTO user_images SET user_id='" . $user_id . "',product_id='" . $product_id . "', file_name='".$image."', image_tag = '".$image_tag."', file_type = '".$file_type."'");
+	public function insert_user_photos($image,$user_id,$image_tag,$product_id,$file_type='',$is_saved=1){
+		return $this->db->query("INSERT INTO user_images SET user_id='" . $user_id . "',product_id='" . $product_id . "', file_name='".$image."', image_tag = '".$image_tag."', file_type = '".$file_type."', is_saved = '".$is_saved."'");
 	}
 	
 	public function update_user_photos($p_id,$user_id,$image_tag,$image,$file_type=''){
@@ -1019,7 +1031,8 @@ class UsersModel extends Model
 	}
 	
 	public function delete_user_photos($photo_id){
-		return $this->db->query("DELETE FROM user_images WHERE user_images.id='" . $photo_id . "'");
+		return $this->db->query("UPDATE user_images SET user_images.is_delete=1 WHERE user_images.id = '".$photo_id."'");
+		//return $this->db->query("DELETE FROM user_images WHERE user_images.id='" . $photo_id . "'");
 	}
 	
 	public function delete_user_photos_id($user_id){
@@ -1061,7 +1074,7 @@ class UsersModel extends Model
 		}
 		
 		
-		return $this->db->query("DELETE FROM user_images WHERE product_id = 0 AND user_id='" . $user_id . "'");
+		return $this->db->query("DELETE FROM user_images WHERE (product_id = 0 OR is_saved =1) AND user_id='" . $user_id . "'");
 	}
     //reset password
     public function reset_password($token)

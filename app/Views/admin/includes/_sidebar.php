@@ -28,7 +28,7 @@
               <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                   <?php foreach ($MenuCategory as $mCategory) : ?>
 						<hr/>
-                      <li class="nav-header"> <?php echo $mCategory['menu_category']; ?></li>
+                      <li class="nav-header"> <?php //echo $mCategory['menu_category']; ?></li>
                       <?php
                         $Menu = getMenu($mCategory['menuCategoryID'], user()->role);
 						//echo "<pre>";print_r($Menu);

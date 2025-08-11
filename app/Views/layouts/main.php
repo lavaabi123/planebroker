@@ -855,110 +855,154 @@ document.addEventListener("DOMContentLoaded", function () {
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-
 <script>
-$(document).ready(function () {
-	
-    var table = $('.substable, .billingtable').DataTable({
-        "order": [],
-        "pageLength": 5,
-        "lengthChange": true,
-        "lengthMenu": [5, 10, 25, 50, 100],
-        "dom":
-        '<"d-flex justify-content-between align-items-center mb-3"l<"date-filter">f<"reset-filter ms-4">>t<"d-flex justify-content-center align-items-center mt-3"ip>',
-        "language": {
-            "paginate": {
-                "previous": "<i class='fas fa-caret-left'></i>",
-                "next": "<i class='fas fa-caret-right'></i>"
-            }
-        },
-        "columnDefs": ($(this).find('thead th').length > 5) ? [{ "orderable": false, "targets": [5, 6] }] : [],
-        "drawCallback": function () {
-            var info = this.api().page.info();
-            var wrapper = $(this).closest('.dataTables_wrapper');
-            // Hide pagination, length selector, info & search when only 1 page
-            wrapper.find('.dataTables_paginate')
-                   .toggle(info.pages > 1);
+$(function () {
+  // Global custom filter that respects each table's own range + column index
+  $.fn.dataTable.ext.search.push(function (settings, data) {
+    const api = new $.fn.dataTable.Api(settings);
+    const $wrap = $(api.table().container());
+
+    const range = $wrap.data('range') || {};
+    const dateIndex = $wrap.data('dateIndex');
+    if (!dateIndex && dateIndex !== 0) return true;            // no date column configured
+
+    if (!range.start || !range.end) return true;               // no active range
+
+    const raw = (data[dateIndex] || '').trim();
+    if (!raw) return true;
+
+    // Parse common formats; adjust if needed
+    const m = moment(raw, ['MM/DD/YYYY','YYYY-MM-DD','DD/MM/YYYY','MMM D, YYYY'], true);
+    if (!m.isValid()) return true;
+
+    const v = m.startOf('day');                                // compare in days
+    return v.isSameOrAfter(range.start) && v.isSameOrBefore(range.end);
+  });
+
+  $('.substable, .billingtable, .msgtable').each(function () {
+    const $table = $(this);
+    const thCount = $table.find('thead th').length;
+
+    const dt = $table.DataTable({
+      order: [[0, 'asc']],
+      pageLength: 5,
+      lengthChange: true,
+      lengthMenu: [5, 10, 25, 50, 100],
+      dom: '<"d-flex justify-content-between align-items-center mb-3"l<"date-filter">f<"reset-filter ms-4">>t<"d-flex justify-content-center align-items-center mt-3"ip>',
+      language: {
+        paginate: {
+          previous: "<i class='fas fa-caret-left'></i>",
+          next: "<i class='fas fa-caret-right'></i>"
         }
+      },
+      columnDefs: (thCount == 5) ? [{ orderable: false, targets: [4] }] : (thCount > 5) ? [{ orderable: false, targets: [5, 6] }] : [],
+      drawCallback: function () {
+        const api = this.api();
+        const info = api.page.info();
+        const $wrapper = $(api.table().container());
+        $wrapper
+          .find('.dataTables_paginate, .dataTables_length, .dataTables_info')
+          .toggle(info.pages > 1);
+      },
+      initComplete: function () {
+        const api = this.api();
+        const $thead = $(api.table().header());
+        const $wrap  = $(api.table().container());
+
+        // Decide which column holds the date for THIS table
+        // (change logic as needed)
+        const dateIndex = $table.hasClass('substable') ? 2 : 0;
+        $wrap.data('dateIndex', dateIndex);
+
+        // Add sort icons to sortable headers once
+        api.columns().every(function (idx) {
+          const sortable = api.settings()[0].aoColumns[idx].bSortable !== false;
+          const $th = $thead.find('th').eq(idx);
+          if (sortable && !$th.find('.sort-icons').length) {
+            $th.append(
+              '<span class="sort-icons ms-1">' +
+                '<i class="fas fa-sort-up sort-icon-up"></i>' +
+                '<i class="fas fa-sort-down sort-icon-down"></i>' +
+              '</span>'
+            );
+          }
+        });
+
+        // Initial paint + on every order/draw
+        updateSortIcons(api);
+        $(api.table().node()).on('order.dt draw.dt', function () {
+          updateSortIcons(api);
+        });
+
+        // Inject date input + reset (NO duplicate IDs; scoped to this wrapper)
+        $wrap.find('.date-filter').html(`
+          <div class="d-flex align-items-center gap-2">
+            <input type="text" class="form-control form-control-sm date-range" placeholder="Start Date - End Date">
+          </div>
+        `);
+        $wrap.find('.reset-filter').html(`
+          <button type="button" class="btn btn-sm min-w-auto px-5 resetFilters">Reset</button>
+        `);
+
+        // Init daterangepicker for this table's input
+        const $input = $wrap.find('.date-range');
+        $input.daterangepicker({
+          autoUpdateInput: false,
+          locale: { cancelLabel: 'Clear' }
+        });
+
+        $input.on('apply.daterangepicker', function (ev, picker) {
+          $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+          $wrap.data('range', {
+            start: picker.startDate.clone().startOf('day'),
+            end:   picker.endDate.clone().endOf('day')
+          });
+          dt.draw();
+        });
+
+        $input.on('cancel.daterangepicker', function () {
+          $(this).val('');
+          $wrap.removeData('range');
+          dt.draw();
+        });
+
+        // Reset button handler for THIS table
+        $wrap.on('click', '.resetFilters', function () {
+          $wrap.removeData('range');
+          $wrap.find('.date-range').val('');
+          $wrap.find('.dataTables_filter input').val('');
+          dt.search('');
+          dt.columns().search('');
+          dt.order([[0, 'asc']]).draw();
+        });
+
+        // Clean the default "Search:" label & set placeholder (scoped)
+        const $label = $wrap.find('.dataTables_filter label');
+        $label.contents().filter(function () { return this.nodeType === 3; }).remove();
+        $wrap.find('.dataTables_filter input').attr('placeholder', 'Search');
+
+        // Optional: style the length select for THIS table
+        const sel = $wrap.find('.dataTables_length select')[0];
+        if (sel) new SlimSelect({ select: sel });
+      }
     });
+  });
 
-// Inject date input and reset button
-$('.date-filter').html(`
-    <div class="daterange-container">
-        <input type="text" id="dateRange" class="form-control mb-0" placeholder="Start Date - End Date">
-    </div>
-`);
+  function updateSortIcons(api) {
+    const $thead = $(api.table().header());
+    $thead.find('.sort-icon-up, .sort-icon-down').removeClass('active');
 
-$('.reset-filter').html(`
-    <button type="button" id="resetFilters" class="btn btn-sm min-w-auto px-5">Reset</button>
-`);
-
-let startDate = null;
-let endDate = null;
-
-$('#dateRange').daterangepicker({
-    autoUpdateInput: false,
-    locale: { cancelLabel: 'Clear' }
-});
-
-$('#dateRange').on('apply.daterangepicker', function (ev, picker) {
-    startDate = picker.startDate;
-    endDate = picker.endDate;
-    $(this).val(startDate.format('MM/DD/YYYY') + ' - ' + endDate.format('MM/DD/YYYY'));
-    table.draw();
-});
-
-$('#dateRange').on('cancel.daterangepicker', function (ev, picker) {
-    $(this).val('');
-    startDate = null;
-    endDate = null;
-    table.draw();
-});
-
-// Date range filter
-$.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-    if (!startDate || !endDate) return true;
-
-    // Detect correct column index for date based on table class
-    var tableClass = settings.nTable.className;
-    var dateIndex = (tableClass.includes('substable')) ? 2 : 0;
-
-    var date = moment(data[dateIndex], 'MM/DD/YYYY');
-    if (!date.isValid()) return true;
-
-    return date.isSameOrAfter(startDate, 'day') && date.isSameOrBefore(endDate, 'day');
-});
-
-
-// Reset button handler
-$(document).on('click', '#resetFilters', function () {
-    // Clear global vars
-    startDate = null;
-    endDate = null;
-
-    // Clear date input and reset DateRangePicker
-    $('#dateRange').val('');
-    $('#dateRange').data('daterangepicker').setStartDate(moment().startOf('day'));
-    $('#dateRange').data('daterangepicker').setEndDate(moment().endOf('day'));
-
-    // Clear search input
-    $('.dataTables_filter input').val('');
-    table.search('');
-
-    // Redraw table
-    table.draw();
-});
-$('#DataTables_Table_0_filter label').contents().filter(function () {
-        return this.nodeType === 3; // Node.TEXT_NODE
-    }).remove();
-
-    $('#DataTables_Table_0_filter input').attr('placeholder', 'Search');
-	
-	new SlimSelect({
-        select: '.dataTables_length select'
-    });
+    const ord = api.order();
+    if (ord.length) {
+      const colIdx = ord[0][0];
+      const dir = ord[0][1];
+      const $th = $thead.find('th').eq(colIdx);
+      (dir === 'asc' ? $th.find('.sort-icon-up') : $th.find('.sort-icon-down')).addClass('active');
+    }
+  }
 });
 </script>
+
 <style>
 /* Container styling */
 .dataTables_wrapper {
@@ -1030,6 +1074,42 @@ table.dataTable thead>tr>th.sorting_asc:before, table.dataTable thead>tr>th.sort
     margin-left: auto;
     width: 20rem;
 }
+</style>
+
+<style>
+.dataTables_filter,.dataTables_length{
+	display:flex;
+	flex-direction:column;
+}
+/* Remove built-in DataTables arrows */
+table.dataTable thead > tr > th.sorting:before,
+table.dataTable thead > tr > th.sorting:after,
+table.dataTable thead > tr > th.sorting_asc:before,
+table.dataTable thead > tr > th.sorting_asc:after,
+table.dataTable thead > tr > th.sorting_desc:before,
+table.dataTable thead > tr > th.sorting_desc:after {
+    display: none !important;
+}
+/* Default gray arrows */
+.sort-icon-up,
+.sort-icon-down {
+    margin-left: 4px;
+    font-size: 0.7rem;
+    color: #aaa;
+    position: relative;
+}
+
+/* Active arrow white */
+.sort-icon-up.active,
+.sort-icon-down.active {
+    color: #fff;
+}
+
+th .sort-icons { display: inline-flex; flex-direction: column; line-height: 1; }
+th .sort-icons i { opacity: 0.35; font-size: 0.8rem;    line-height: 0.2; }
+th .sort-icons i.active { opacity: 1; }
+
+
 </style>
 
 

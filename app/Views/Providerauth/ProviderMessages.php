@@ -14,12 +14,9 @@
 				</div>
 				<div class="dbContent">
 					<div class="container">
-					<div class="filter_Sec">
-						<?php echo $this->include('Providerauth/_filter_provider_messages') ?>
-					</div>
 					<div class="table-responsive proMsg dbMsg">
 
-						<table class="table table-bordered table-striped mb-0">
+						<table class="table msgtable table-bordered table-striped mb-0">
 							<thead>
 								<tr role="row">
 									<th><?php echo trans('Name'); ?></th>
@@ -43,9 +40,6 @@
 								<?php endforeach; ?>
 							</tbody>
 						</table>
-						<?php if (empty($provider_messages)) : ?>
-							<p class="text-center text-muted"><?= trans("no_records_found"); ?></p>
-						<?php endif; ?>
 					</div>
 					<div class="col-sm-12 float-right mt-5">
 						<?php echo (count($provider_messages) > 10) ? $paginations : ''; ?>

@@ -66,6 +66,9 @@
                                                     },
                                                 })
                                                 .then(editor => {
+													 editor.editing.view.change(writer => {
+    writer.setStyle('min-height', '200px', editor.editing.view.document.getRoot());
+  });
                                                     console.log('CKEditor 5 initialized:', editor);
                                                 })
                                                 .catch(error => {

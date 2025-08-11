@@ -63,7 +63,9 @@
                                             },
                                         })
                                         .then(editor => {
-                                            console.log('CKEditor 5 initialized:', editor);
+                                             editor.editing.view.change(writer => {
+    writer.setStyle('min-height', '200px', editor.editing.view.document.getRoot());
+  });
                                         })
                                         .catch(error => {
                                             console.error('Error initializing CKEditor 5:', error);

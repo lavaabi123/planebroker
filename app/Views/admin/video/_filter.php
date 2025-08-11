@@ -1,5 +1,5 @@
 <div class="row table-filter-container align-items-end">
-    <div class="col-sm-10">
+    <div class="col-sm-9">
         <?php $uri = service('uri'); ?>
         <?php $RolesPermissionsModel = model('RolesPermissionsModel'); ?>
         <?php $request = \Config\Services::request(); ?>
@@ -38,7 +38,8 @@
         <?php echo form_close(); ?>
 		
     </div>
-	<div class="col-sm-2 text-right" style="margin-bottom:10px;">
+	<div class="col-sm-3 text-right" style="margin-bottom:10px;">
+		 <label style="display: block">&nbsp;</label>
 		<a href="<?php echo admin_url() . 'video/add-video/'; ?>"><button type="button" class="btn small btn-primary">Add Video</button></a>
 	</div>
 </div>

@@ -236,7 +236,89 @@ table.dataTable thead > tr > th.sorting_desc:after {
     color: #fff;
 }
 
-</style>
+</style><script>
+$(function () {
+  // Find the nearest scrollable ancestor for an element
+  function getScrollable($el) {
+    let $p = $el.parent();
+    while ($p.length) {
+      const el = $p[0];
+      const cs = window.getComputedStyle(el);
+      const oy = cs.overflowY;
+      const scrollable = (oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight;
+      if (scrollable) return $p;
+      $p = $p.parent();
+    }
+    // Fallbacks commonly used by AdminLTE
+    const $fallback = $('.main-sidebar .sidebar .os-content, .main-sidebar .sidebar').first();
+    return $fallback.length ? $fallback : $('html, body');
+  }
+
+  // Scroll so $target is fully visible inside $container
+  function scrollIntoViewWithin($container, $target) {
+    if (!$container.length || !$target.length) return;
+
+    const c = $container[0];
+    // If native works, use it
+    if ($target[0].scrollIntoView) {
+      // Use nearest so it doesn't jump unnecessarily
+      $target[0].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+      return;
+    }
+
+    const cRect = c.getBoundingClientRect();
+    const tRect = $target[0].getBoundingClientRect();
+    const needDown = tRect.bottom - cRect.bottom;
+    const needUp   = cRect.top - tRect.top;
+
+    if (needDown > 0) {
+      $container.animate({ scrollTop: $container.scrollTop() + needDown }, 250);
+    } else if (needUp > 0) {
+      $container.animate({ scrollTop: $container.scrollTop() - needUp }, 250);
+    }
+  }
+
+  function whenOpenedScroll($submenu) {
+    if (!$submenu.length) return;
+
+    // If already visible, just scroll
+    const doScroll = () => scrollIntoViewWithin(getScrollable($submenu), $submenu);
+
+    if ($submenu.is(':visible') && $submenu.height() > 0) {
+      doScroll();
+      return;
+    }
+
+    // Observe the submenu until it opens
+    const el = $submenu.get(0);
+    const obs = new MutationObserver(() => {
+      if ($submenu.is(':visible') && $submenu.height() > 0) {
+        obs.disconnect();
+        doScroll();
+      }
+    });
+    obs.observe(el, { attributes: true, attributeFilter: ['style', 'class'] });
+
+    // Safety fallback (covers slideDown animation)
+    setTimeout(() => {
+      if ($submenu.is(':visible')) doScroll();
+    }, 400);
+  }
+
+  // Works whether AdminLTE events fire or not
+  $('.nav-sidebar').on('click', 'li.nav-item > a.nav-link', function () {
+    const $li = $(this).closest('li');
+    const $submenu = $li.children('ul.nav-treeview');
+    if ($submenu.length) whenOpenedScroll($submenu);
+  });
+
+  // If AdminLTE Treeview events are available, use them too
+  $(document).on('expanded.lte.treeview', function (e) {
+    const $submenu = $(e.target).children('ul.nav-treeview');
+    if ($submenu.length) whenOpenedScroll($submenu);
+  });
+});
+</script>
 
 </body>
 

@@ -206,7 +206,7 @@ video{
   fill:currentColor;
 }
 	</style>
-<div class="content-wrapper">
+<div class="content-wrapper bg-grey">
     <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
@@ -261,7 +261,6 @@ video{
 						<input type="hidden" name="payment_type" value="<?php echo !empty($selected_payment) ? $selected_payment : (!empty($product_detail['payment_type']) ? $product_detail['payment_type'] : 'stripe'); ?>">
 						<input type="hidden" name="plan_id" value="<?php echo !empty($_GET['plan_id']) ? $_GET['plan_id'] : (!empty($product_detail['plan_id']) ? $product_detail['plan_id'] : ''); ?>">
 						
-							<h3></h3>
 							<fieldset class="form-input">
 							
 								<div class="form-section">
@@ -290,20 +289,20 @@ video{
 											
 											echo '<div class="row  mt-3">
 											<div class="col-12">
-												<div class="form-group mb-3">
+												<div class="form-group">
 												<div class="form-section row row-cols-1 row-cols-md-2">';
 											foreach($dynamic_field as $field){
 												
 												$req_op = !empty($field->field_condition) ? '*' : (!empty($field->field_optional_show) ? '(optional)' : '');
 												$req_op_text = ($field->field_condition) ? 'required' : '';
-												echo '<div class="services-group form-group pr-2 d_fields '.(($field->show_cat_based == 0) ? "" : "catbasedfield" ).'" style="'.(($field->show_cat_based == 0) ? "" : "none" ).'" data-category="'.$field->category_ids.'" data-subcategory="'.$field->subcategory_ids.'">
+												echo '<div class="form-group mb-0 '.(($field->show_cat_based == 0) ? "" : "catbasedfield" ).'" style="'.(($field->show_cat_based == 0) ? "" : "none" ).'" data-category="'.$field->category_ids.'" data-subcategory="'.$field->subcategory_ids.'">
 														<label class="mb-0">'.$field->name.' '.$req_op.'</label>';
 														if($field->field_type == 'Text'){
 															echo '<input type="text" name="dynamic_fields['.$field->id.']" class="form-control" placeholder="'.$field->name.' '.$req_op.'" value="'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '').'" '.$req_op_text.'>';
 														}else if($field->field_type == 'Number'){
 															echo '<input type="number" name="dynamic_fields['.$field->id.']" class="form-control" placeholder="'.$field->name.' '.$req_op.'" value="'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '').'" '.$req_op_text.'>';
 														}else if($field->field_type == 'Textarea'){
-															$rowsnumber = ($field->name == 'About this Aircraft' || $field->id == 14) ? 'rows="10"' :'';
+															$rowsnumber = ($field->name == 'About this Aircraft' || $field->id == 14) ? 'rows="4"' :'';
 															echo '<textarea name="dynamic_fields['.$field->id.']" class="form-control" placeholder="'.$field->name.' '.$req_op.'" '.$req_op_text.' '.$rowsnumber.'>'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '').'</textarea>';
 														}else if($field->field_type == 'Checkbox'){
 															$decoded_option = !empty($field->field_options) ? json_decode($field->field_options) : array();
@@ -381,7 +380,6 @@ video{
 								</div>
 							</fieldset>
 
-							<h3></h3>
 							<fieldset class="form-input">
 								<h3 class="title-xl black mt-3 mb-4"><?php echo trans('Photos and Videos') ?></h3>
 								<div class="form-section">
@@ -455,22 +453,21 @@ video{
 						</div>
 							</fieldset>
 
-							<h3></h3>
 							<fieldset class="form-input">
-								<h3 class="title-xl black my-3"><?php echo trans('Seller Information') ?></h3>
+								<h3 class="title-xl my-3"><?php echo trans('Seller Information') ?></h3>
 								<div class="form-section row row-cols-1 row-cols-md-2">
-								<div class="form-group pr-2">
-									<input class="form-control required" type="text" id="business_name" name="business_name" placeholder="<?php echo trans('Name') ?>" value="<?php echo !empty($product_detail['business_name']) ? $product_detail['business_name'] : (!empty(old('business_name'))?old('business_name'):$user_detail->fullname); ?>" required>
+								<div class="form-group mb-0">
+									<input class="form-control required" type="text" id="business_name" name="business_name" placeholder="<?php echo trans('Name') ?> *" value="<?php echo !empty($product_detail['business_name']) ? $product_detail['business_name'] : (!empty(old('business_name'))?old('business_name'):$user_detail->fullname); ?>" required>
 								</div>													
-								<div class="form-group pr-2">
-									<input class="form-control required" type="text" id="phone" name="phone" placeholder="<?php echo trans('Phone Number') ?>" autocomplete="off" value="<?php echo !empty($product_detail['phone']) ? $product_detail['phone'] : (!empty(old('phone'))?old('phone'):$user_detail->mobile_no); ?>" required>
+								<div class="form-group mb-0">
+									<input class="form-control required" type="text" id="phone" name="phone" placeholder="<?php echo trans('Phone Number') ?> *" autocomplete="off" value="<?php echo !empty($product_detail['phone']) ? $product_detail['phone'] : (!empty(old('phone'))?old('phone'):$user_detail->mobile_no); ?>" required>
 								</div>													
-								<div class="form-group pr-2">
-									<input class="form-control required" type="text" id="address" name="address" placeholder="<?php echo trans('Location (City or State)') ?>" autocomplete="off" value="<?php echo !empty($product_detail['address']) ? $product_detail['address'] : old('address'); ?>" required>
+								<div class="form-group mb-0">
+									<input class="form-control required" type="text" id="address" name="address" placeholder="<?php echo trans('Location (City or State)') ?> *" autocomplete="off" value="<?php echo !empty($product_detail['address']) ? $product_detail['address'] : old('address'); ?>" required>
 								</div>	  
 																				
-								<div class="form-group pr-2">
-									<input class="form-control required" type="email" id="email" name="email" placeholder="<?php echo trans('Email') ?>" autocomplete="off" value="<?php echo !empty($product_detail['email']) ? $product_detail['email'] : (!empty(old('email'))?old('email'):$user_detail->email); ?>" required>
+								<div class="form-group mb-0">
+									<input class="form-control required" type="email" id="email" name="email" placeholder="<?php echo trans('Email') ?> *" autocomplete="off" value="<?php echo !empty($product_detail['email']) ? $product_detail['email'] : (!empty(old('email'))?old('email'):$user_detail->email); ?>" required>
 								</div>	
 								<!--<div class="form-group">
 									<input class="form-control" type="text" id="address2" name="suite" placeholder="<?php echo trans('Suite, Apartment, etc') ?>" value="<?php echo old('suite') ?>" >
@@ -493,14 +490,14 @@ video{
 								<input type="hidden" name="register_plan" value="<?php echo !empty($_GET["plan_id"]) ? $_GET["plan_id"] : 1; ?>" >
 							
 							<?php if(!empty($_GET['id'])){ ?>
-							<input type="submit" value="UPDATE LISTING" class="btn py-3 col-12 col-sm-6 col-lg-5 col-xl-4 mx-auto d-block mt-4" />
+							<input type="submit" value="UPDATE LISTING" class="btn py-3 col-12 col-sm-6 col-lg-5 col-xl-4 mx-auto d-block" />
 							<?php }else{ ?>
 							<input type="submit" value="Submit" class="btn py-3 col-12 col-sm-6 col-lg-5 col-xl-4 mx-auto d-block" />
 							<?php } ?>
 						</form> 
                             </div>
                         </div>
-                        <div class="card-footer clearfix">
+                        <div class="card-footer p-0 pt-3 clearfix">
                             <small><strong><span class="required"> *</span> Must be filled</strong></small>
                         </div>
                         <!-- /.card -->

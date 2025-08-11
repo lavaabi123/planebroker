@@ -395,7 +395,7 @@ $count = !empty($images) ? count($images) : 0;
 							<div id="pd-<?php echo $pg; ?>" class="accordion-collapse collapse show<?php //echo ($pg == 2) ? 'show' : ''; ?>" data-bs-parent="#productDes">
 							  <div class="accordion-body">
 						<?php foreach($pd as $pds){ ?>
-								<div class="item-list logBook">
+								<div class="item-list logBook border-0 pb-0 mb-0">
 								<?php 
 								if($pds['field_type'] == 'File'){
 									if(!empty($pds['items'])){ ?>
@@ -403,18 +403,20 @@ $count = !empty($images) ? count($images) : 0;
 											$gty = 0;
 											foreach($pds['items'] as $rgi => $pdssv){
 												if(!empty($pdssv)){	 ?>
-									<div class="row">
-										 <div class="col-auto col-md-4">
-										 <?= '<h6>'.$rgi.'</h6>'; ?>
+									<div class="row mb-3">
+										 <div class="col-12 col-md-4">
+										 <?= '<h6 class="my-3 title-md">'.$rgi.'</h6>'; ?>
 										 </div>
-										 <div class="col-auto col-md-8 py-4">
+										 <div class="col-12 col-md-8">
 										 <?php
-										 													foreach($pdssv as $pdss){
-										 echo '<a class="" download href="'.base_url().'/uploads/userimages/'.$userId.'/'.$pdss['name'].'" ><i class="fa '.getFileIconClass($pdss['name']).'"></i> '.(!empty($pdss['file_field_title']) ? $pdss['file_field_title'] : $pdss['field_name']).'</a>';
-																							}
-										 ?>
+											foreach($pdssv as $pdss){
+												echo '<div class="d-flex align-items-center justify-content-between"><p class="mb-0 d-flex align-items-center gap-2"><i class="fa '.getFileIconClass($pdss['name']).'"></i> '.(!empty($pdss['file_field_title']) ? $pdss['file_field_title'] : $pdss['field_name']).'</p>';
+												echo '<div><a class="log-dl ms-3" download href="'.base_url().'/uploads/userimages/'.$userId.'/'.$pdss['name'].'" >Download</a>';
+												echo '<a class="log-view ms-3" target="_blank" href="'.base_url().'/uploads/userimages/'.$userId.'/'.$pdss['name'].'" >View</a></div></div>';
+											} ?>
 										 </div>
 									</div>
+									<hr>
 									<?php
 												}
 												$gty++;

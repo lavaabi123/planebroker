@@ -519,7 +519,7 @@ button#gdpr-cookie-advanced {
 	<script src="<?php echo base_url();?>/assets/cc/javascripts/skeuocard.js"></script>
 	<script src='<?php echo base_url();?>/assets/cc/javascripts/vendor/cssua.min.js'></script>
 	<?php } ?>
-	<script src="<?php echo base_url(); ?>/assets/frontend/js/provider.js?version=1.11"></script>
+	<script src="<?php echo base_url(); ?>/assets/frontend/js/provider.js?version=1.12"></script>
 	<script src="<?php echo base_url(); ?>/assets/frontend/js/lightbox.js"></script>
 	
 	

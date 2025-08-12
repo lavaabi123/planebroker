@@ -46,9 +46,6 @@
 						}?>
 					</tbody>
 				</table>
-				<?php if (count($payments)+count($paypal_payments) == 0) : ?>
-					<p class="text-center text-muted"><?= trans("no_records_found"); ?></p>
-				<?php endif; ?>
 			</div>
 			<div class="col-sm-12 float-right mb-5">
                                     <?php //echo $paginations; ?>
@@ -56,6 +53,7 @@
             
 					<?php echo $this->include('Providerauth/_modal_provider_messages') ?>
 
+				<?php if(!empty($payments_all)){ ?>
 				<ul class="nav nav-tabs gap-0 col-sm-9 col-lg-6 row row-cols-3" id="myTab1" role="tablist">
 					<li class="nav-item" role="presentation">
 					  <button class="nav-link active btn w-100 min-w-auto activelist" id="filter-active" data-bs-toggle="tab" data-bs-target="#catactive" type="button" role="tab">ACTIVE<i class="fa fa-info-circle px-2" data-bs-toggle="tooltip" data-bs-placement="top" title="This subscription is currently active. Your listing is live and visible to buyers."></i></button>
@@ -69,7 +67,6 @@
 				</ul>
 				
 				<div class="row mt-3 mt-3 row-gap-3 row-gap-sm-4">
-				<?php if(!empty($payments_all)){ ?>
 				<?php foreach($payments_all as $payment){ 
 					$db = \Config\Database::connect();
 					$pic = base_url().'/assets/frontend/images/user.png';
@@ -137,8 +134,9 @@
 							</div>
 						</div>
 					</div>
-				<?php  } }else{ echo '<p class="text-center py-4">No Records Found.</p>'; } ?>
+				<?php  } ?>
 				</div>
+				<?php } ?>
 <style>
 .dbContent ul.nav-tabs .nav-link.active.activelist, .dbContent ul.nav-tabs .nav-link.activelist:hover{
 	background: rgb(var(--bs-success-rgb)) !important;

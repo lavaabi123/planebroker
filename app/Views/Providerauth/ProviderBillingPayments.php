@@ -121,9 +121,6 @@
 						}?>
 					</tbody>
 				</table>
-				<?php if (count($payments)+count($paypal_payments) == 0) : ?>
-					<p class="text-center text-muted"><?= trans("no_records_found"); ?></p>
-				<?php endif; ?>
 			</div>
 			<div class="col-sm-12 mt-4">
                                     <?php //echo ($total_count > 6 || (!empty($_GET['page']) && $_GET['page'] > 1)) ? $paginations : ''; ?>

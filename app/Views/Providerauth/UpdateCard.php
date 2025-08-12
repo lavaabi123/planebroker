@@ -20,8 +20,8 @@
 </style>
 				
 				
-			<h6 class="border-bottom pb-2 mb-2">PAYMENT METHOD</h6>		
 					<?php if(!empty($cards)){ ?>
+			<h6 class="border-bottom pb-2 mb-2">PAYMENT METHOD</h6>		
 				<div class='row'>
 				<div class="col-sm-8 col-lg-5">
 					<div class="carddetail">
@@ -103,7 +103,7 @@
 				</div>
 				</div>
 				<?php }else{
-					echo '<p class="text-center py-4">No Added Cards Found.</p>';
+					//echo '<p class="text-center py-4">No Added Cards Found.</p>';
 				} if(!empty($customerId)){ ?>
 				<div class='row'>
 				<div class='col-sm-8 col-lg-5'>

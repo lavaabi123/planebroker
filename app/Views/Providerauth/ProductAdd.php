@@ -315,7 +315,7 @@ video{
 															}
 														}else if($field->field_type == 'File'){
 															if($groupName == 'Log Book'){
-																echo '<label class="m-0 d-flex">'.$field->name.'</label>';
+																echo '<label class="me-3 d-flex fw-bold">'.$field->name.'</label>';
 															}
 															echo '<label class="dz-wrap mb-3" style="display:block !important;margin-left:0 !important;">
 										<span>Drag and drop or click to upload (pdf,.doc,.docx,.png,.jpeg,.jpg)</span><input type="file" name="dynamic_fields['.$field->id.'][]" class="form-control dynamic-file-input" placeholder="'.$field->name.'" value="" data-field-id="' . $field->id . '" accept=".pdf,.doc,.docx,.png,.jpeg,.jpg"  multiple>
@@ -357,16 +357,17 @@ video{
 
 							<h3></h3>
 							<fieldset class="form-input">
-								<h3 class="title-xl black mt-3 mb-5"><?php echo trans('Photos and Videos') ?></h3>
+								
 								<div class="form-section">
 									<div class="form-group">
 								<div class='row'>
 						
 						
 							<div class='col-12 <?php if(!empty($user_photos)){ ?>col-sm-6<?php }else{ ?>col-sm-6<?php } ?>'>
+								<h3 class="title-xl black mt-0 mb-2"><?php echo trans('Photos and Videos') ?></h3>
 								<h5 class="mb-3">Add Photo or Video <span style="font-weight: 100;font-size: 0.7rem;vertical-align: middle;"></span></h5>
 								
-									<div class="mt-4 file-upload">
+									<div class="file-upload">
 									<label class="dz-wrap" style="display:block !important;margin-left:0 !important;">
 										<span>Drag and drop or click to upload (.jpg,.jpeg,.png,.mp4,.mov)</span>
 										<input type='file' id="userphoto" name='uploads[]' data-type="add" multiple class="cropimage w-100" accept=".jpg,.jpeg,.png,.mp4,.mov">
@@ -590,7 +591,7 @@ video{
     padding: 2rem;
     text-align: center;
     position: relative;
-    border-radius: 10px;
+    border-radius: 20px;
     cursor: pointer;
   }
 
@@ -785,7 +786,7 @@ function renderPreviews(fieldId){
           <!--<span class="text-truncates" style="max-width:100%;display:inline-block" title="${f.name}">
             ${titleSafe || f.name}
           </span>-->
-          <span class="w-100 text-center">
+          <span class="d-flex justify-content-between w-100">
             <span class="btn-icon me-3 preview-edit" title="Edit title"><i class="fa fa-pen"></i></span>
             <span class="btn-icon preview-remove" title="Remove"><i class="fa fa-trash"></i></span>
           </span>
@@ -1078,15 +1079,13 @@ $('#titlesForm').on('submit', function(e){
 </script>
 
 <style>
-.file-previews-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:16px;margin-top:.25rem
-}
-.file-card{border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.08)}
-.file-thumb{width:100%;height:85px;object-fit:cover;display:block;background:#f3f4f6}
+.file-previews-grid{ display:grid;grid-template-columns:repeat(auto-fill,minmax(75px,1fr));gap:10px;margin-top:.25rem }
+.file-card{border-radius:10px;overflow:hidden;}
+.file-thumb{width:100%;height:70px;object-fit:cover;display:block;background:#f3f4f6}
 .file-actions{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f59e0b;color:#fff}
 .file-actions .btn-icon{cursor:pointer;display:inline-flex;align-items:center;gap:6px}
-.file-actions i{font-size:16px}
-.file-type-icon{width:100%;height:85px;display:flex;align-items:center;justify-content:center;font-size:42px;color:#9ca3af;background:#f3f4f6}
+.file-actions i{font-size:12px}
+.file-type-icon{width:100%;height:70px;display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--white);background:var(--b-blue);}
 </style>
 
 <script>

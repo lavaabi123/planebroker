@@ -105,7 +105,7 @@ input:focus, textarea:focus, select:focus, button:focus {
     outline: none;
 }
 .form-input textarea.form-control {
-    border-radius: 25px !important;
+    border-radius: 20px !important;
 }
 input[type="file"]::file-selector-button {
 	background: var(--d-blue) !important;
@@ -2980,7 +2980,8 @@ footer li {
 .lmsg {
 	text-align: center;
 }
-
+}
+/** Data Table **/
 .dataTables_length .ss-main {
     margin-bottom: 0 !important;
 	    max-width: 100px;
@@ -2988,17 +2989,17 @@ footer li {
 .dataTables_wrapper input.form-control {
     margin-bottom: 0 !important;
 }
-.daterange-container {
+.date-filter {
     position: relative;
 }
-.daterange-container::before {
+.date-filter::before {
     content: "\f073";
     font-family: 'FontAwesome';
     position: absolute;
     top: calc(50% - 12px);
     left: 15px;
 }
-.daterange-container::after {
+.date-filter::after {
         content: "\f078";
     font-family: 'FontAwesome';
     position: absolute;
@@ -3006,7 +3007,7 @@ footer li {
     right: 15px;
     font-size: 14px;
 }
-.dataTables_wrapper input#dateRange {
+.dataTables_wrapper input.date-range {
     padding-left: 40px !important;
     padding-right: 32px !important;
 	font-family: 'TwCenMT' !important;
@@ -3035,13 +3036,19 @@ span.sort-icons i.sort-icon-up {
 span.sort-icons i.sort-icon-down {
     top:-4px;
 }
+.resetFilters {
+    min-width: 140px;
+}
+#imageListId img {
+    object-fit: cover;
+}
 @media (max-width:767px) {
 .dataTables_wrapper > div {
 	flex-wrap: wrap;
 	gap:10px;
 }
 .dataTables_wrapper > div > div {
-	width:48%;
+	width:100%;
 }
 .dataTables_wrapper > div .dataTables_length {
 	width:100%;
@@ -3061,4 +3068,9 @@ div.dataTables_wrapper div.dataTables_length label {
     width: 100% !important;
     margin-left: 0 !important;
 }
+}
+@media (max-width:567px) {
+	.mob-w-100 {
+		width:100%;
+	}
 }

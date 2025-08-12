@@ -104,48 +104,63 @@ $(document).ready(function() {
         }
     });
 
-		
-	/* --------------------------------------------------------------
-   1.  Grab the form and start jQuery‑Validate
--------------------------------------------------------------- */
 const $form = $('#aircraft-add-form-1');
+let skipValidation = false; // Used to track Save Listing intent
 
+// SAVE LISTING button logic
+$('.save-listing').on('click', function (e) {
+    e.preventDefault();
+    skipValidation = true;
+
+    // Set status to 0 (inactive)
+    $form.find('input[name="status"]').val(0);
+
+    // Submit the form bypassing validation
+    $form.off('submit').submit();
+});
+
+/* --------------------------------------------------------------
+   1. Start jQuery Validate
+-------------------------------------------------------------- */
 $form.validate({
-    /* keep your existing options ---------------------------- */
-    ignore         : ':hidden:not([class~=selectized]),:hidden > .selectized, .selectize-control .selectize-input input',
-    errorElement   : 'label',
-    errorClass     : 'error text-danger',
-    errorPlacement : placeDynamicError,
-    highlight      : highlightDynamicGroup,
-    unhighlight    : unhighlightDynamicGroup,
+    ignore: ':hidden:not([class~=selectized]),:hidden > .selectized, .selectize-control .selectize-input input',
+    errorElement: 'label',
+    errorClass: 'error text-danger',
+    errorPlacement: placeDynamicError,
+    highlight: highlightDynamicGroup,
+    unhighlight: unhighlightDynamicGroup,
 
-    rules:  {
-        /* keep your old rules */
-        password : { minlength: 4 },
-        mobile_no: { phoneUS:true, minlength:10, maxlength:10 }
-        /* we will inject the dynamic “checkbox‑group” rules below */
+    rules: {
+        password: { minlength: 4 },
+        mobile_no: { phoneUS: true, minlength: 10, maxlength: 10 }
     },
     messages: {}
 });
 
+// Override form submit for "Publish"
+$form.on('submit', function (e) {
+    if (skipValidation) return; // Skip validation if SAVE LISTING triggered
+
+    if (!$form.valid()) {
+        e.preventDefault(); // Prevent submission if invalid
+        return false;
+    }
+
+    // Ensure status is set to 1 (active) on publish
+    $form.find('input[name="status"]').val(1);
+});
+
 /* --------------------------------------------------------------
-   2.  Loop over every checkbox array called dynamic_fields[ID][]
-       ‑ If any one of the checkboxes in that array has the
-         HTML5  required  attribute, we treat the whole array
-         as “at least one required”.
+   2. Handle checkbox array groups like dynamic_fields[61][]
 -------------------------------------------------------------- */
-const added = new Set();                     // avoid duplicates
+const added = new Set();
 
 $('input[type="checkbox"][name^="dynamic_fields["]').each(function () {
+    const name = this.name;
+    if (added.has(name)) return;
 
-    const name = this.name;                  //  e.g.  dynamic_fields[61][]
-    if (added.has(name)) return;             // already processed
-
-    if ($(this).prop('required')) {          // server decided it's required
-        /* 2a) Tell jQuery‑Validate this *group* is required */
+    if ($(this).prop('required')) {
         $form.validate().settings.rules[name] = { required: true };
-
-        /* 2b) Provide a message */
         $form.validate().settings.messages[name] = {
             required: 'Please choose at least one option.'
         };
@@ -155,24 +170,19 @@ $('input[type="checkbox"][name^="dynamic_fields["]').each(function () {
 });
 
 /* --------------------------------------------------------------
-   3.  Helper functions
+   3. Helper functions
 -------------------------------------------------------------- */
-
-/* Put the error under the legend that sits in the same .services-group
-   (works for every dynamic group, so long as you follow the markup below)
------------------------------------------------------------------*/
 function placeDynamicError(error, element) {
     if (element.attr('name').startsWith('dynamic_fields[')) {
         const $group = element.closest('.services-group');
         $group.find('.dyn-error-holder').first()
-              .html(error)                   // replace old error if any
-              .removeClass('d-none');
+            .html(error)
+            .removeClass('d-none');
     } else {
-        element.before(error);               // your original behaviour
+        element.before(error);
     }
 }
 
-/* Add red border to the whole group */
 function highlightDynamicGroup(element) {
     if (element.name.startsWith('dynamic_fields[')) {
         $(element).closest('.services-group').addClass('error-border');
@@ -181,14 +191,13 @@ function highlightDynamicGroup(element) {
     }
 }
 
-/* Remove border/message once *any* box is checked */
 function unhighlightDynamicGroup(element) {
     if (element.name.startsWith('dynamic_fields[')) {
-        const $group   = $(element).closest('.services-group');
+        const $group = $(element).closest('.services-group');
         const groupName = element.name;
-        if ($group.find('input[name="'+groupName+'"]:checked').length) {
+        if ($group.find('input[name="' + groupName + '"]:checked').length) {
             $group.removeClass('error-border')
-                  .find('.dyn-error-holder').addClass('d-none');
+                .find('.dyn-error-holder').addClass('d-none');
         }
     } else {
         $(element).removeClass('error');

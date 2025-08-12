@@ -495,7 +495,22 @@ class ProductModel extends Model
 	}
 	
 	public function check_fields($id){
-		$product_detail = $this->db->query("SELECT COUNT(*) = 0 AS all_required_fields_filled FROM fields f JOIN field_categories fc ON fc.field_id = f.id JOIN products p ON p.category_id = fc.category_id LEFT JOIN products_dynamic_fields pdf ON f.id = pdf.field_id AND pdf.product_id = p.id WHERE f.status = 1 AND f.field_condition = 1 AND p.id = ".$id." AND (pdf.field_value IS NULL OR TRIM(pdf.field_value) = '')")->getRow();
+		$product_detail = $this->db->query("SELECT (COUNT(*) = 0) AS all_required_fields_filled
+		FROM (
+		  SELECT DISTINCT f.id
+		  FROM products p
+		  JOIN fields f
+			ON f.status = 1 AND f.field_condition = 1
+		  LEFT JOIN field_categories fc
+			ON fc.field_id = f.id AND fc.category_id = p.category_id
+		  LEFT JOIN field_sub_categories fsc
+			ON fsc.field_id = f.id AND fsc.sub_category_id = p.sub_category_id
+		  LEFT JOIN products_dynamic_fields pdf
+			ON pdf.field_id = f.id AND pdf.product_id = p.id
+		  WHERE p.id = ".$id."
+			AND (fc.field_id IS NOT NULL OR fsc.field_id IS NOT NULL)
+			AND (pdf.field_value IS NULL OR TRIM(pdf.field_value) = '') AND fsc.sub_category_id != NULL
+		) missing;")->getRow();
 		return $product_detail->all_required_fields_filled;
 	}
 }

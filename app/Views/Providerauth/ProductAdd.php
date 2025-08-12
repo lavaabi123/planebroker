@@ -318,9 +318,10 @@ video{
 																echo '<label class="m-0 d-flex">'.$field->name.'</label>';
 															}
 															echo '<label class="dz-wrap mb-3" style="display:block !important;margin-left:0 !important;">
-										<span>Drag and drop or click to upload</span><input type="file" name="dynamic_fields['.$field->id.'][]" class="form-control dynamic-file-input" placeholder="'.$field->name.'" value="" data-field-id="' . $field->id . '" accept=".pdf,.doc,.docx,.png,.jpeg,.jpg"  multiple>
+										<span>Drag and drop or click to upload (pdf,.doc,.docx,.png,.jpeg,.jpg)</span><input type="file" name="dynamic_fields['.$field->id.'][]" class="form-control dynamic-file-input" placeholder="'.$field->name.'" value="" data-field-id="' . $field->id . '" accept=".pdf,.doc,.docx,.png,.jpeg,.jpg"  multiple>
 									</label>';
-															echo '<button type="button" class="btn btn-sm px-5 mb-3 edit-titles-btn min-w-auto d-none" data-field-id="'.$field->id.'">Edit File Details</button>';
+									echo '<div id="file-previews-'.$field->id.'" class="file-previews-grid" data-field-id="'.$field->id.'"></div>';
+															//echo '<button type="button" class="btn btn-sm px-5 mb-3 edit-titles-btn min-w-auto d-none" data-field-id="'.$field->id.'">Edit File Details</button>';
 															if(!empty($dynamic_fields_values[$field->id]) && is_array($dynamic_fields_values[$field->id])){
 																foreach($dynamic_fields_values[$field->id] as $df => $dfv){
 																	
@@ -363,11 +364,11 @@ video{
 						
 						
 							<div class='col-12 <?php if(!empty($user_photos)){ ?>col-sm-6<?php }else{ ?>col-sm-6<?php } ?>'>
-								<h5 class="mb-3">Add Photo or Video <span style="font-weight: 100;font-size: 0.7rem;vertical-align: middle;">(.jpg, .jpeg, .png, .mp4, .mov)</span></h5>
+								<h5 class="mb-3">Add Photo or Video <span style="font-weight: 100;font-size: 0.7rem;vertical-align: middle;"></span></h5>
 								
 									<div class="mt-4 file-upload">
 									<label class="dz-wrap" style="display:block !important;margin-left:0 !important;">
-										<span>Drag and drop or click to upload</span>
+										<span>Drag and drop or click to upload (.jpg,.jpeg,.png,.mp4,.mov)</span>
 										<input type='file' id="userphoto" name='uploads[]' data-type="add" multiple class="cropimage w-100" accept=".jpg,.jpeg,.png,.mp4,.mov">
 									</label>
 									</div>
@@ -570,9 +571,9 @@ video{
           <!-- JS-generated file list will appear here -->
 		  <div id="logBook-edit" class="pb-3"></div>
 			<div class="modal-footer bg-white px-0 justify-content-between position-sticky bottom-0 rounded-0 z-3">
-				<div class="m-0">
+				<!--<div class="m-0">
 				  <a href="javascript:void(0);" class="m-0" data-field-id="" id="triggerModalFileInput"><i class="fa fa-plus-circle me-2"></i>Add File</a>
-				</div>
+				</div>-->
 				  <button type="submit" class="btn min-w-auto m-0 btn-success px-5">Save</button>
 			</div>
 		  </form>
@@ -581,7 +582,9 @@ video{
       </div>
     
   </div>
-</div><style>
+</div>
+
+<style>
   .dz-wrap {
     border: 2px dashed #ccc;
     padding: 2rem;
@@ -602,50 +605,113 @@ video{
     cursor: pointer;
   }
 </style>
-
-
 <script>
 $(function () {
 
-  // Helper: make one drop‑zone work
+  function buildAcceptTester(input) {
+    // Parse accept like ".jpg,.jpeg,.png,.mp4,.mov" OR "image/*" OR "video/mp4"
+    const accepts = (input.getAttribute('accept') || '')
+      .split(',')
+      .map(s => s.trim().toLowerCase())
+      .filter(Boolean);
+
+    return function isAllowed(file) {
+      if (!accepts.length) return true; // no accept -> allow all
+      const name = (file.name || '').toLowerCase();
+      const type = (file.type || '').toLowerCase();
+
+      return accepts.some(a => {
+        if (a.startsWith('.'))           return name.endsWith(a);                // extension
+        if (a.endsWith('/*'))            return type.startsWith(a.slice(0, -1)); // image/*, video/*
+        return type === a;                                                        // exact mime
+      });
+    };
+  }
+
+  // Helper: make one drop-zone work
   function wireDropZone(dz) {
     const input = dz.querySelector('input[type="file"]');
-    if (!input) return;                      // safety
+    if (!input) return;
 
-    // Highlight on drag‑over
+    const isAllowed = buildAcceptTester(input);
+
+    // Highlight on drag-over
     dz.addEventListener('dragenter', e => { e.preventDefault(); dz.classList.add('over'); });
     dz.addEventListener('dragover',  e => { e.preventDefault(); });
 
     // Remove highlight
-    dz.addEventListener('dragleave', e => dz.classList.remove('over'));
-    dz.addEventListener('drop',      e => {
-      e.preventDefault();
-      dz.classList.remove('over');
+    dz.addEventListener('dragleave', () => dz.classList.remove('over'));
 
-      if (!e.dataTransfer.files.length) return;
+    dz.addEventListener('drop', e => {
+  e.preventDefault();
+  dz.classList.remove('over');
 
-      // Put dropped files into the correct <input>
-      const dt = new DataTransfer();               // Safari 15.4+ OK
-      [...e.dataTransfer.files].forEach(f => dt.items.add(f));
-      input.files = dt.files;
+  const files = [...(e.dataTransfer?.files || [])];
+  if (!files.length) return;
 
-      // Fire YOUR existing .on('change') handlers (cropimage *or* any other)
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-    });
+  // Separate valid & invalid
+  let valid = [];
+  let rejected = [];
+
+  files.forEach(file => {
+    if (isAllowed(file)) {
+      valid.push(file);
+    } else {
+      rejected.push(file.name);
+    }
+  });
+
+  // If single file input, keep only the first
+  if (!input.hasAttribute('multiple') && valid.length > 1) {
+    valid = [valid[0]];
   }
 
-  // ➤ 1.  Wire every drop‑zone present on first load
+  if (!valid.length) {
+    input.value = '';
+    if (rejected.length) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid file(s)',
+        html: rejected.join('<br>'),
+        confirmButtonColor: '#d33'
+      });
+    }
+    return;
+  }
+
+  // Replace previous selection
+  const dt = new DataTransfer();
+  valid.forEach(f => dt.items.add(f));
+  input.value = '';
+  input.files = dt.files;
+
+  // Fire change event
+  input.dispatchEvent(new Event('change', { bubbles: true }));
+
+  // Show warning if some were rejected
+  if (rejected.length) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Some files were skipped',
+      html: rejected.join('<br>'),
+      confirmButtonColor: '#f0ad4e'
+    });
+  }
+});
+
+
+  }
+
+  // 1) Wire all existing
   document.querySelectorAll('.dz-wrap').forEach(wireDropZone);
 
-  // ➤ 2.  If you add fields dynamically (AJAX, “Add more” button, etc.)
-  //        watch the DOM and wire those, too.
+  // 2) Wire dynamically added ones
   const observer = new MutationObserver(muts => {
     muts.forEach(m => {
       m.addedNodes.forEach(node => {
-        if (node.nodeType !== 1) return;           // 1 = element
+        if (node.nodeType !== 1) return;
         if (node.matches('.dz-wrap')) wireDropZone(node);
-        node.querySelectorAll?.('.dz-wrap')        // nested drop‑zones
-            .forEach(wireDropZone);
+        node.querySelectorAll?.('.dz-wrap').forEach(wireDropZone);
       });
     });
   });
@@ -655,60 +721,170 @@ $(function () {
 </script>
 
 <script>
-// Assumes Bootstrap 5 and jQuery are loaded
-// You must include the following HTML elements somewhere in your form:
-// - <div id="modalBody"></div> inside a modal with id="titlesModal"
-// - <form id="titlesForm"></form> with submit button inside modal
-
+// ========================
+// GLOBAL STATE
+// ========================
 let currentFieldId = '';
-let filesStore = {}; // fieldId => [{ name, title, file, existing, url, tempInput }]
+let filesStore = {};
+let filesDeleted = {};
+let lastBatchIndices = null;
+// ========================
+// UTIL: file type helpers
+// ========================
+function fileTypeIcon(name){
+  const ext = (name.split('.').pop() || '').toLowerCase();
+  if (['pdf'].includes(ext)) return '<i class="far fa-file-pdf"></i>';
+  if (['doc','docx'].includes(ext)) return '<i class="far fa-file-word"></i>';
+  return '<i class="far fa-file"></i>';
+}
+function isImageName(name){
+  const ext = (name.split('.').pop() || '').toLowerCase();
+  return ['png','jpg','jpeg','webp','gif'].includes(ext);
+}
+function previewURL(fileObj){
+  if (fileObj.existing) return fileObj.url || '';
+  if (fileObj.file && isImageName(fileObj.name)) {
+    try { return URL.createObjectURL(fileObj.file); } catch(e){ return ''; }
+  }
+  return '';
+}
 
+// ========================
+// PREVIEW RENDERER
+// ========================
+function ensurePreviewsContainer(fieldId){
+  let $wrap = $('#file-previews-'+fieldId);
+  if (!$wrap.length) {
+    // Insert right after the file input for this field
+    const $input = $(`.dynamic-file-input[data-field-id="${fieldId}"]`);
+    if ($input.length){
+      $wrap = $(`<div id="file-previews-${fieldId}" class="file-previews-grid" data-field-id="${fieldId}"></div>`);
+      $input.closest('label.dz-wrap').after($wrap);
+    }
+  }
+  return $wrap;
+}
+function renderPreviews(fieldId){
+  const list = filesStore[fieldId] || [];
+  const $wrap = ensurePreviewsContainer(fieldId);
+  if (!$wrap || !$wrap.length) return;
+
+  $wrap.empty();
+
+  list.forEach((f, idx) => {
+    const isImg = isImageName(f.name);
+    const thumb = isImg
+      ? `<img class="file-thumb" src="${previewURL(f)}" alt="">`
+      : `<div class="file-type-icon">${fileTypeIcon(f.name)}</div>`;
+    const titleSafe = $('<div>').text(f.title || '').html();
+
+    $wrap.append(`
+      <div class="file-card" data-field-id="${fieldId}" data-index="${idx}" title="${f.name}">
+        ${thumb}
+        <div class="file-actions flex-column">
+          <!--<span class="text-truncates" style="max-width:100%;display:inline-block" title="${f.name}">
+            ${titleSafe || f.name}
+          </span>-->
+          <span class="w-100 text-center">
+            <span class="btn-icon me-3 preview-edit" title="Edit title"><i class="fa fa-pen"></i></span>
+            <span class="btn-icon preview-remove" title="Remove"><i class="fa fa-trash"></i></span>
+          </span>
+        </div>
+      </div>
+    `);
+  });
+}
+
+// ========================
+// YOUR EXISTING MODAL FLOW
+// (kept intact, only minor tweaks to call renderPreviews)
+// ========================
 $(document).on('click', '.edit-titles-btn', function () {
   currentFieldId = $(this).data('field-id');
   $('#triggerModalFileInput').attr('data-field-id', currentFieldId);
   showTitlesModal(currentFieldId);
 });
+function showTitlesModal(fieldId, onlyIndex = null, onlyIndices = null) {
+  $('#logBook-edit').empty();
+  $('#titlesModal').modal('hide'); // ensure clean re-open
+  const list = filesStore[fieldId] || [];
 
-function showTitlesModal(fieldId) {
-  const modalBody = $('#logBook-edit').empty();
-  const fileList = filesStore[fieldId] || [];
+  // Decide which items to render
+  let indices;
+  if (Array.isArray(onlyIndices) && onlyIndices.length) {
+    indices = onlyIndices.slice();
+  } else if (onlyIndex !== null) {
+    indices = [onlyIndex];
+  } else {
+    indices = list.map((_, i) => i); // fallback: all
+  }
 
-  fileList.forEach((fileObj, i) => {
-    const viewBtn = fileObj.existing && fileObj.url ? `<a href="${fileObj.url}" target="_blank" class="ms-2">View</a>` : '';
-
-    modalBody.append(`
-      <div class="modal-file-row mb-3" data-index="${i}" data-filename="${fileObj.name}">
+  indices.forEach(i => {
+    const fileObj = list[i];
+    if (!fileObj) return;
+    const viewBtn = fileObj.existing && fileObj.url
+      ? `<a href="${fileObj.url}" target="_blank" class="ms-2">View</a>` : '';
+    $('#logBook-edit').append(`
+      <div class="modal-file-row mb-3" data-index="${i}">
         <label><strong>${fileObj.name}</strong>${viewBtn}</label>
         <div class="input-group gap-3 align-items-center">
-          <input type="text" class="form-control file-title mb-0" data-index="${i}" value="${$('<div>').text(fileObj.title || '').html()}" placeholder="Enter title">
-          <div class="remove-file-btn"><i class="fa fa-trash"></i></div>
+          <input type="text" class="form-control file-title mb-0"
+                 data-index="${i}"
+                 value="${$('<div>').text(fileObj.title || '').html()}"
+                 placeholder="Enter title">
         </div>
       </div>
     `);
   });
 
+  // store for potential reuse (optional)
+  lastBatchIndices = indices;
+
   $('#titlesModal').modal('show');
 }
 
+/*
 function updateTitleStoreFromModal() {
   const fieldId = currentFieldId;
-  const titleInputs = $('#modalBody .file-title');
-  const list = filesStore[fieldId];
+  // NOTE: your titles live inside #logBook-edit (not #modalBody)
+  const titleInputs = $('#logBook-edit .file-title');
+  const list = filesStore[fieldId] || [];
 
   titleInputs.each(function () {
     const idx = $(this).data('index');
-    if (list[idx]) {
-      list[idx].title = $(this).val();
-    }
+    if (list[idx]) list[idx].title = $(this).val();
+  });
+} */
+function updateTitleStoreFromModal() {
+  const fieldId = currentFieldId;
+  const list = filesStore[fieldId] || [];
+  $('#logBook-edit .file-title').each(function () {
+    const idx = $(this).data('index');
+    if (list[idx]) list[idx].title = $(this).val();
   });
 }
 
+const allowedExtensions = ['pdf','doc','docx','png','jpeg','jpg'];
+
+function isAllowedFile(file) {
+  const ext = (file.name.split('.').pop() || '').toLowerCase();
+  return allowedExtensions.includes(ext);
+}
+
+// Handle direct file input (under the dz-wrap)
 $(document).on('change', '.dynamic-file-input', function () {
   const fieldId = $(this).data('field-id');
   const files = Array.from(this.files);
   filesStore[fieldId] = filesStore[fieldId] || [];
 
+  const beforeLen = filesStore[fieldId].length;
+  let addedCount = 0;
+
   files.forEach(file => {
+    if (!isAllowedFile(file)) {
+      $.alert(`"${file.name}" is not an allowed file type.`); // or your own alert
+      return; // skip
+    }
     if (!filesStore[fieldId].some(f => f.name === file.name && !f.existing)) {
       const tempInput = $('<input type="file" name="dynamic_fields[' + fieldId + '][]" style="display:none;">');
       const dt = new DataTransfer();
@@ -723,61 +899,34 @@ $(document).on('change', '.dynamic-file-input', function () {
         existing: false,
         tempInput: tempInput[0]
       });
+      addedCount++;
     }
   });
 
-  currentFieldId = fieldId;
-  updateTitleStoreFromModal();
-  showTitlesModal(fieldId);
-
-  // ✅ Reveal the Edit button
-  $(`.edit-titles-btn[data-field-id="${fieldId}"]`).removeClass('d-none');
-
-  // ✅ Update file count visually
-  updateCustomFileLabel(fieldId);
+  const newIndices = Array.from({length: addedCount}, (_, k) => beforeLen + k);
+  if (newIndices.length) {
+    currentFieldId = fieldId;
+    showTitlesModal(fieldId, null, newIndices);
+  } else {
+    renderPreviews(fieldId);
+  }
 });
-
 $(document).on('click', '.remove-file-btn', function () {
   const index = $(this).closest('.modal-file-row').data('index');
-  const fileList = filesStore[currentFieldId];
+  const fileList = filesStore[currentFieldId] || [];
   const removed = fileList.splice(index, 1)[0];
-  if (removed.tempInput) {
-    $(removed.tempInput).remove();
-  }
+  if (removed && removed.tempInput) $(removed.tempInput).remove();
   showTitlesModal(currentFieldId);
+  renderPreviews(currentFieldId);    // ⬅️ sync grid
 });
 
-$('#titlesForm').on('submit', function (e) {
-  e.preventDefault();
-  updateTitleStoreFromModal();
 
-  const fieldId = currentFieldId;
-  const updatedList = filesStore[fieldId];
-
-  $(`input[name="dynamic_fields_titles[${fieldId}][]"]`).remove();
-  $(`input[name="dynamic_fields_old[${fieldId}][]"]`).remove();
-  $(`input[name="dynamic_fields_titles_old[${fieldId}][]"]`).remove();
-
-  const form = $(`.dynamic-file-input[data-field-id="${fieldId}"]`).closest('form');
-
-  updatedList.forEach(fileObj => {
-    if (fileObj.existing) {
-      form.append(`<input type="hidden" name="dynamic_fields_old[${fieldId}][]" value="${fileObj.name}" data-url="${fileObj.url}">`);
-      form.append(`<input type="hidden" name="dynamic_fields_titles_old[${fieldId}][]" value="${fileObj.title}">`);
-    } else {
-      form.append(`<input type="hidden" name="dynamic_fields_titles[${fieldId}][]" value="${fileObj.title}" data-filename="${fileObj.name}">`);
-    }
-  });
-
-  $('#titlesModal').modal('hide');
-});
-
+// Add files via "Add more" trigger inside modal (kept)
 $(document).on('click', '#triggerModalFileInput', function (e) {
   e.preventDefault();
   updateTitleStoreFromModal();
 
   const fieldId = $(this).attr('data-field-id');
-
   const tempInput = $('<input type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" multiple style="display:none;">');
   $('body').append(tempInput);
   tempInput.trigger('click');
@@ -805,14 +954,14 @@ $(document).on('click', '#triggerModalFileInput', function (e) {
     });
 
     showTitlesModal(fieldId);
+    renderPreviews(fieldId);         // ⬅️ live update
   });
 });
 
+// Initial load: read existing hidden inputs and render tiles
 $(document).ready(function () {
   $('.dynamic-file-input').each(function () {
     const fieldId = $(this).data('field-id');
-    const editBtn = $(`.edit-titles-btn[data-field-id="${fieldId}"]`);
-
     const existingFileInputs = $(`input[name="dynamic_fields_old[${fieldId}][]"]`);
     const existingTitleInputs = $(`input[name="dynamic_fields_titles_old[${fieldId}][]"]`);
 
@@ -832,13 +981,114 @@ $(document).ready(function () {
           existing: true
         });
       });
+    }
+    renderPreviews(fieldId);         // ⬅️ draw grid on load
+  });
+});
 
-      editBtn.removeClass('d-none');
+// ========================
+// TILE ACTIONS
+// ========================
+/*$(document).on('click', '.preview-edit', function(){
+  const $card = $(this).closest('.file-card');
+  const fieldId = $card.data('field-id');
+  currentFieldId = fieldId;
+
+  $('#triggerModalFileInput').attr('data-field-id', fieldId);   // <— add this line
+
+  showTitlesModal(fieldId);
+}); */
+$(document).on('click', '.preview-edit', function(){
+  const $card = $(this).closest('.file-card');
+  const fieldId = $card.data('field-id');
+  const index   = $card.data('index');
+  currentFieldId = fieldId;
+  showTitlesModal(fieldId, index, null); // single file
+});// trash click on a tile
+$(document).on('click', '.preview-remove', function(){
+  const $card   = $(this).closest('.file-card');
+  const fieldId = $card.data('field-id');
+  const index   = $card.data('index');
+
+  $.confirm({
+    title: "Confirm Deletion",
+    content: "Are you sure you want to delete this file?",
+    type: 'red', // optional styling
+    buttons: {
+      confirm: {
+        text: 'Yes, delete',
+        btnClass: 'btn-red',
+        action: function(){
+          const arr     = filesStore[fieldId] || [];
+          const removed = arr.splice(index, 1)[0];
+
+          if (removed?.tempInput) {
+            $(removed.tempInput).remove(); // new file → remove its temp input
+          }
+
+          if (removed?.existing) {
+            filesDeleted[fieldId] = filesDeleted[fieldId] || [];
+            filesDeleted[fieldId].push(removed);
+
+            const form = $(`.dynamic-file-input[data-field-id="${fieldId}"]`).closest('form');
+            form.append(`<input type="hidden" name="dynamic_fields_old_deleted[${fieldId}][]" value="${removed.name}">`);
+          }
+
+          renderPreviews(fieldId);
+        }
+      },
+      cancel: {
+        text: 'Cancel',
+        btnClass: 'btn-default'
+      }
     }
   });
 });
 
+
+// when saving titles (your existing handler)
+// IMPORTANT: exclude deleted old files when rebuilding hidden inputs
+$('#titlesForm').on('submit', function(e){
+  e.preventDefault();
+  updateTitleStoreFromModal();
+
+  const fieldId = currentFieldId;
+  const updatedList = filesStore[fieldId] || [];
+  const deletedList = filesDeleted[fieldId] || [];
+
+  $(`input[name="dynamic_fields_titles[${fieldId}][]"]`).remove();
+  $(`input[name="dynamic_fields_old[${fieldId}][]"]`).remove();
+  $(`input[name="dynamic_fields_titles_old[${fieldId}][]"]`).remove();
+
+  const form = $(`.dynamic-file-input[data-field-id="${fieldId}"]`).closest('form');
+
+  updatedList.forEach(f => {
+    if (f.existing) {
+      if (deletedList.some(d => d.name === f.name)) return; // skip deleted
+      form.append(`<input type="hidden" name="dynamic_fields_old[${fieldId}][]" value="${f.name}" data-url="${f.url||''}">`);
+      form.append(`<input type="hidden" name="dynamic_fields_titles_old[${fieldId}][]" value="${$('<div>').text(f.title||'').html()}">`);
+    } else {
+      form.append(`<input type="hidden" name="dynamic_fields_titles[${fieldId}][]" value="${$('<div>').text(f.title||'').html()}" data-filename="${f.name}">`);
+    }
+  });
+
+  $('#titlesModal').modal('hide');
+  renderPreviews(fieldId);
+});
 </script>
+
+<style>
+.file-previews-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:16px;margin-top:.25rem
+}
+.file-card{border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.file-thumb{width:100%;height:85px;object-fit:cover;display:block;background:#f3f4f6}
+.file-actions{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f59e0b;color:#fff}
+.file-actions .btn-icon{cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.file-actions i{font-size:16px}
+.file-type-icon{width:100%;height:85px;display:flex;align-items:center;justify-content:center;font-size:42px;color:#9ca3af;background:#f3f4f6}
+</style>
+
 <script>
 /* ========= Shared progress helpers ========= */
 function updateProgress(percent, label, err = 1) {

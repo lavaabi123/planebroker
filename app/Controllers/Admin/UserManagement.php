@@ -346,7 +346,7 @@ class UserManagement extends AdminController
 			
 			//get dynamic fields
 			$this->FieldsModel = new FieldsModel();
-			$data['dynamic_fields'] = $this->FieldsModel->get_fields();
+			$data['dynamic_fields'] = $this->FieldsModel->get_fields($_GET['category']);
 			
 			//delete old uploaded photos
 			$this->UsersModel->delete_user_photos_id($_GET['user_id']);

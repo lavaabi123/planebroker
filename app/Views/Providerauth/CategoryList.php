@@ -24,7 +24,7 @@
 									$qu = (!empty($sale_id) ? '&sale_id='.$sale_id : (!empty($_GET['sale_id']) ? '&sale_id='.$_GET['sale_id']:''));
 									?>
 									<div class="col-6 col-md-3 text-center">
-										<a href="<?php echo ($cat->id == 1 || $cat->id == 2) ? (base_url().'/add-listing?category='.$cat->id.''.$qu.'&payment_type='.(!empty($payment_type) ? $payment_type : $_GET['payment_type'])) : 'javascript:void(0);';?>">
+										<a href="<?php echo ($cat->id == 1 || $cat->id == 2 || $cat->id == 3) ? (base_url().'/add-listing?category='.$cat->id.''.$qu.'&payment_type='.(!empty($payment_type) ? $payment_type : $_GET['payment_type'])) : 'javascript:void(0);';?>">
 											<div class="list-item">
 											
 												<?php if(!empty($cat->category_icon)){ ?>

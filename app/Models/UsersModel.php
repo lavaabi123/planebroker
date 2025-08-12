@@ -597,67 +597,93 @@ class UsersModel extends Model
 			}
 		}
 		*/
-		$uploadedFiles = [];
-		$filesForDB = []; // To store comma-separated values for DB insert
-		$dynamic_titles = $this->request->getVar('dynamic_fields_titles') ?? [];
-		if (isset($_FILES['dynamic_fields']['name']) && is_array($_FILES['dynamic_fields']['name'])) {
-			foreach ($_FILES['dynamic_fields']['name'] as $groupKey => $fileGroup) {
-				foreach ($fileGroup as $fileIndex => $filename) {
-					$title = $dynamic_titles[$groupKey][$fileIndex] ?? ''; // Get title for this file
-					if (!empty($filename) && $_FILES['dynamic_fields']['error'][$groupKey][$fileIndex] === 0) {
-						$tmp_name = $_FILES['dynamic_fields']['tmp_name'][$groupKey][$fileIndex];
-						$safeFilename = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', $filename);
-						$destination = $upload_path . basename($safeFilename);
+		// Collect new uploads + titles (unchanged, just keep your block)
+$uploadedFiles   = [];
+$filesForDB      = [];
+$dynamic_titles  = $this->request->getVar('dynamic_fields_titles') ?? [];
 
-						if (move_uploaded_file($tmp_name, $destination)) {
-							$uploadedFiles[$groupKey][$fileIndex]['field_value'] = $safeFilename;
-							$uploadedFiles[$groupKey][$fileIndex]['file_field_title'] = $title;
-						}
-					}
-					
-				}
-			}
-		}
-		$uploadedFiles_old = [];
-		if (!empty($_POST['dynamic_fields_old'])) {
-			foreach ($_POST['dynamic_fields_old'] as $groupKey => $fileGroup) {
-				if(!empty($_POST['dynamic_fields_old'][$groupKey]) && is_array($_POST['dynamic_fields_old'][$groupKey])){
-					foreach ($_POST['dynamic_fields_old'][$groupKey] as $fileIndexs => $filenames) {
-						$uploadedFiles_old[$groupKey][$fileIndexs]['field_value'] = $_POST['dynamic_fields_old'][$groupKey][$fileIndexs];
-						$uploadedFiles_old[$groupKey][$fileIndexs]['file_field_title'] = $_POST['dynamic_fields_titles_old'][$groupKey][$fileIndexs];
-					}
-				}else{						
-					if (!empty($_POST['dynamic_fields_old'][$groupKey][$fileIndex])) {
-						$uploadedFiles_old[$groupKey][$fileIndex]['field_value'] = $_POST['dynamic_fields_old'][$groupKey][$fileIndex];
-						$uploadedFiles_old[$groupKey][$fileIndex]['file_field_title'] = $_POST['dynamic_fields_titles_old'][$groupKey][$fileIndex];
-					}
-				}
-			}
-		}
-		
-		//echo "<pre>";
-		//print_r($uploadedFiles);
-		//print_r($uploadedFiles_old);
-		$mergedFiles = $uploadedFiles_old; // Start with old files
+if (isset($_FILES['dynamic_fields']['name']) && is_array($_FILES['dynamic_fields']['name'])) {
+    foreach ($_FILES['dynamic_fields']['name'] as $groupKey => $fileGroup) {
+        foreach ($fileGroup as $fileIndex => $filename) {
+            $title = $dynamic_titles[$groupKey][$fileIndex] ?? ''; // title for this file
+            if (!empty($filename) && ($_FILES['dynamic_fields']['error'][$groupKey][$fileIndex] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
+                $tmp_name     = $_FILES['dynamic_fields']['tmp_name'][$groupKey][$fileIndex];
+                $safeFilename = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', $filename);
+                $destination  = rtrim($upload_path, '/').'/'.basename($safeFilename);
 
-		foreach ($uploadedFiles as $groupKey => $fileGroup) {
-			foreach ($fileGroup as $newFile) {
-				$alreadyExists = false;
-				if (!empty($mergedFiles[$groupKey])) {
-					foreach ($mergedFiles[$groupKey] as $existingFile) {
-						if ($existingFile['field_value'] === $newFile['field_value']) {
-							$alreadyExists = true;
-							break;
-						}
-					}
-				}
+                if (@move_uploaded_file($tmp_name, $destination)) {
+                    $uploadedFiles[$groupKey][$fileIndex] = [
+                        'field_value'      => $safeFilename,
+                        'file_field_title' => $title
+                    ];
+                }
+            }
+        }
+    }
+}
 
-				if (!$alreadyExists) {
-					$mergedFiles[$groupKey][] = $newFile;
-				}
-			}
-		}
+// Read kept old + titles
+$uploadedFiles_old = [];
+$oldNamesByGroup   = $this->request->getVar('dynamic_fields_old') ?? [];          // [groupKey][] = filename
+$oldTitlesByGroup  = $this->request->getVar('dynamic_fields_titles_old') ?? [];   // [groupKey][] = title
 
+// NEW: read deletions coming from UI
+$deletedByGroup    = $this->request->getVar('dynamic_fields_old_deleted') ?? [];  // [groupKey][] = filename
+
+// Optional: build a fast lookup set for deleted files per group
+$deletedLookup = [];
+foreach ($deletedByGroup as $gk => $names) {
+    if (!is_array($names)) continue;
+    $deletedLookup[$gk] = array_fill_keys($names, true);
+}
+
+// Build $uploadedFiles_old, excluding deleted
+foreach ($oldNamesByGroup as $groupKey => $fileGroup) {
+    if (!is_array($fileGroup)) continue;
+
+    $uploadedFiles_old[$groupKey] = [];
+    $titles = $oldTitlesByGroup[$groupKey] ?? [];
+
+    foreach ($fileGroup as $idx => $fname) {
+        if ($fname === '' || $fname === null) continue;
+
+        // Skip if user deleted this file
+        if (!empty($deletedLookup[$groupKey][$fname])) {
+            // Optional: also unlink from disk here (and delete DB row)
+            // $path = rtrim($upload_path, '/').'/'.$fname;
+            // if (is_file($path)) @unlink($path);
+            continue;
+        }
+
+        $uploadedFiles_old[$groupKey][] = [
+            'field_value'      => $fname,
+            'file_field_title' => $titles[$idx] ?? ''
+        ];
+    }
+}
+
+// Merge kept old + new (avoid duplicates by filename)
+$mergedFiles = $uploadedFiles_old; // start with old-kept (already filtered)
+
+foreach ($uploadedFiles as $groupKey => $fileGroup) {
+    foreach ($fileGroup as $newFile) {
+        if (empty($newFile['field_value'])) continue;
+
+        $alreadyExists = false;
+        if (!empty($mergedFiles[$groupKey])) {
+            foreach ($mergedFiles[$groupKey] as $existingFile) {
+                if (($existingFile['field_value'] ?? null) === $newFile['field_value']) {
+                    $alreadyExists = true;
+                    break;
+                }
+            }
+        }
+
+        if (!$alreadyExists) {
+            $mergedFiles[$groupKey][] = $newFile;
+        }
+    }
+}
 		//print_r($mergedFiles);
 		
 		$d_fields_array = ($this->request->getVar('dynamic_fields') != null && count($this->request->getVar('dynamic_fields')) > 0) ? $this->request->getVar('dynamic_fields') : array();
@@ -993,10 +1019,12 @@ class UsersModel extends Model
 	}
 	
 	public function insert_user_photos($image,$user_id,$image_tag,$product_id,$file_type='',$is_saved=1){
+		$file_type= !empty($file_type) ? $file_type : 'image';
 		return $this->db->query("INSERT INTO user_images SET user_id='" . $user_id . "',product_id='" . $product_id . "', file_name='".$image."', image_tag = '".$image_tag."', file_type = '".$file_type."', is_saved = '".$is_saved."'");
 	}
 	
 	public function update_user_photos($p_id,$user_id,$image_tag,$image,$file_type=''){
+		$file_type= !empty($file_type) ? $file_type : 'image';
 		if(!empty($image)){
 			return $this->db->query("UPDATE user_images SET file_name='".$image."', image_tag = '".$image_tag."', file_type = '".$file_type."' WHERE id = '".$p_id."'");
 		}else{

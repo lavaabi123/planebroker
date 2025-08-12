@@ -1105,11 +1105,6 @@ table.dataTable thead > tr > th.sorting_desc:after {
     color: #fff;
 }
 
-th .sort-icons { display: inline-flex; flex-direction: column; line-height: 1; }
-th .sort-icons i { opacity: 0.35; font-size: 0.8rem;    line-height: 0.2; }
-th .sort-icons i.active { opacity: 1; }
-
-
 </style>
 
 

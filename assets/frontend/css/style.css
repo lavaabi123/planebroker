@@ -196,6 +196,9 @@ img {
 .d-blue {
 	color: var(--d-blue) !important;
 }
+.red {
+	color: var(--red);
+}
 .bg-blue {
 	background: var(--b-blue);
 }
@@ -2213,7 +2216,7 @@ header .navbar .btn {
 	letter-spacing: 0.5px;
 }
 #navbarCollapse li.nav-item a.nav-link {
-    padding-bottom: 0;
+    /*padding-bottom: 0;*/
 }
 .searchSec {
     max-height: 480px;
@@ -2290,9 +2293,15 @@ img.ads-verticals {
 .btn {
     min-width: 200px;
 }
+.proList .btn {
+    min-width: 100%;
+}
 .load-images-final > div {
     width: calc(33.3% - (5px * 3));
     flex: 0 0 calc(33.3% - (5px * 3));
+}
+.dbContent .proList.grid-col-4 {
+	grid-template-columns: repeat(2, 1fr);
 }
 }
 @media (max-width:991px) {
@@ -2968,6 +2977,8 @@ footer li {
     height: 30px;
     flex: 0 0 34px;
 }
+.lmsg {
+	text-align: center;
 }
 
 .dataTables_length .ss-main {
@@ -3004,6 +3015,25 @@ div.dataTables_wrapper div.dataTables_info {
     padding-top: 0;
     font-size: 12px;
 	    display: none;
+}
+.max-width-120 {
+	max-width: 120px;
+}
+span.sort-icons {
+        display: inline-flex;
+    flex-direction: column;
+    margin-top: 6px;
+    position: absolute;
+    margin-left: 2px;
+}
+span.sort-icons i {
+    height: 7px;
+}
+span.sort-icons i.sort-icon-up {
+    top: 0px;
+}
+span.sort-icons i.sort-icon-down {
+    top:-4px;
 }
 @media (max-width:767px) {
 .dataTables_wrapper > div {

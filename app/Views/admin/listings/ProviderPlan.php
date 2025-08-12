@@ -40,9 +40,9 @@
 					$query .= !empty($_GET['user_id']) ? '&user_id='.$_GET['user_id'] : '' ;
 				?>	
 			  <div class="col <?php echo !empty($plan->is_recommended) ? 'plan-2' : '';  ?>">
-				<div class="card p-3 border rounded-5 shadow-sm h-100">
-				  <div class="card-header pb-3 pb-xl-4">
-					<h5 class="my-0"><?= $plan->name ?></h5>
+				<div class="card card-primary card-outline h-100 p-0 overflow-hidden">
+				  <div class="card-header bg-blue py-3 py-xl-4">
+					<h5 class="my-0 text-white"><?= $plan->name ?></h5>
 				  </div>
 				  <div class="card-body p-3 pb-xl-4">
 					<!--<h3 class="fs-3 text-black py-2">$<?= $plan->price ?></h3>-->
@@ -77,8 +77,8 @@
 					
 					
 			  <div class="col">
-				<div class="card p-3 border rounded-5 shadow-sm h-100">
-				  <div class="card-header pb-3 pb-xl-4">
+				<div class="card card-primary card-outline h-100 p-0 overflow-hidden">
+				  <div class="card-header py-3 py-xl-4 bg-primary">
 					<h5 class="my-0">Captain’s Club</h5>
 				  </div>
 				  <div class="card-body px-3 pb-xl-4">

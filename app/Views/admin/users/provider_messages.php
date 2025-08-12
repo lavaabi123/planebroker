@@ -45,7 +45,7 @@
 										<th><?php echo trans('Email'); ?></th>
 										<th><?php echo trans('Phone'); ?></th>
 										<th><?php echo trans('Date / Time'); ?></th>
-										<th class="text-center max-width-120"><?php echo trans('Actions'); ?></th>
+										<th class="text-center"><?php echo trans('Actions'); ?></th>
 									</tr>
 								</thead>
 								<tbody>

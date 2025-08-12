@@ -184,10 +184,10 @@ Dashboard content
 
             <div class="row">
                 <div class="col-12">
-                    <div class="card">
-                        <div class="card-header border-0">
+                    <div class="card card-primary card-outline p-0 overflow-hidden">
+                        <div class="card-header border-0 py-3">
                             <div class="d-flex justify-content-between">
-                                <h3 class="card-title">Users Registered</h3>
+                                <h3 class="card-title mb-0 fw-bolder">Users Registered</h3>
                             </div>
                         </div>
                         <div class="card-body">
@@ -229,9 +229,9 @@ Dashboard content
 			<hr>
 			<div class="row">
 				<div class="col-xl-4 mt-3">
-					<div class="card custom-card" style="padding: 1rem 1.25rem">
-						<div class="card-header  justify-content-between">
-							<div class="card-title">
+					<div class="card card-primary card-outline p-0 overflow-hidden custom--card">
+						<div class="card-header justify-content-between py-3">
+							<div class="card-title mb-0 fw-bolder">
 								Top Broker Locations
 							</div>
 						</div>
@@ -253,15 +253,15 @@ Dashboard content
 					</div>
 				</div>
 				<div class="col-xl-8 mt-3">
-					<div class="card custom-card" style="padding: 1rem 1.25rem">
-						<div class="card-header  justify-content-between">
-							<div class="card-title">
+					<div class="card card-primary card-outline p-0 overflow-hidden custom--card">
+						<div class="card-header justify-content-between py-3">
+							<div class="card-title mb-0 fw-bolder">
 								Recent Subscription Payments
 							</div>
 						</div>
-						<div class="card-body px-0">
+						<div class="card-body p-0">
 							<div class="table-responsive">
-							<table class="table text-nowrap table-hover border table-bordered">
+							<table class="table text-nowrap table-hover border table-bordered mb-0">
 								<thead>
 									<tr>
 										<th scope="col">Provider</th>

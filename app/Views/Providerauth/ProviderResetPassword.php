@@ -29,7 +29,7 @@
                     </div>
 
                     <div class="d-grid mb-0 text-center">
-                        <button class="btn btn-lg btn-primary" type="submit"><i class="mdi mdi-login"></i> <?php echo trans("reset_password"); ?> </button>
+                        <button class="btn btn-lg btn-primary m-auto" type="submit"><i class="mdi mdi-login"></i> <?php echo trans("reset_password"); ?> </button>
                     </div>
                 <?php endif; ?>
                 <?php echo form_close(); ?>

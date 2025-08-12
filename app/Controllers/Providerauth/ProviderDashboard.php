@@ -1190,7 +1190,7 @@ else if($this->request->getVar('check') == '3'){
 				if(!empty($user_detail->email)){
 					$emailModel = new EmailModel();	
 					if(empty($data['user_detail']->stripe_subscription_id)){
-						$emailModel->send_email_activation_confirmed($data['user_detail']->id);
+						//$emailModel->send_email_activation_confirmed($data['user_detail']->id);
 					}
 					$data = array(	
 						'subject' => "Payment Confirmation",

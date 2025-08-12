@@ -220,6 +220,7 @@ class Providers extends BaseController
 		$raw_filters = $this->ProductModel->get_filters($category,$where);
 		//echo "<pre>";print_r($data['filters']);exit;
 		
+		$wherecat = '';
 		if(!empty($_GET)){
 			$realFilters = $_GET;
 			unset($realFilters['sort_by']);          // ignore the sort radio
@@ -237,7 +238,8 @@ class Providers extends BaseController
 			// --------------------------------------------------
 			$data['is_get'] = empty($realFilters) ? 0 : 1;
 			if(!empty($_GET['category']) && !empty($_GET['category'][0])){
-				$where .= ' AND p.sub_category_id IN ('.implode(',',explode('|',$_GET['category'])).')';
+				$where .= ' AND p.sub_category_id IN ('.implode(',',explode('|',$_GET['category'])).')';				
+				$wherecat .= ' AND p.sub_category_id IN ('.implode(',',explode('|',$_GET['category'])).')';				
 				$filter_texts['category'] = explode(', ',getSubcategoryName(explode('|',$_GET['category'])));
 				$filter_ids['category_ids'] = explode('|',$_GET['category']);
 			}
@@ -374,7 +376,7 @@ class Providers extends BaseController
 				break;
 		}
 		
-		$data['filters'] = $this->ProductModel->get_filters($category,$where);
+		$data['filters'] = $this->ProductModel->get_filters($category,$wherecat);
 		//echo "<pre>";print_r($data['filters']);exit;
 		//get products list
 		$this->ProductModel = new ProductModel();
@@ -386,7 +388,7 @@ class Providers extends BaseController
 		
 		//get subcategory list
 		$this->categoriessubModel = new CategoriesSubModel();
-        $data['categories_list'] = $this->categoriessubModel->get_categories_by_link($category,' AND categories_sub.id IN (SELECT DISTINCT sub_category_id FROM products)');
+        $data['categories_list'] = $this->categoriessubModel->get_categories_by_link($category,' AND categories_sub.id IN (SELECT DISTINCT sub_category_id FROM products where status=1)');
 		//get manufacturers List
 		$this->ProductModel = new ProductModel();
 		$data['manufacturers'] = $this->ProductModel->get_manufacturers($category, $where, $all=0);

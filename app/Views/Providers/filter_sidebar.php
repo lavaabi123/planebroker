@@ -57,7 +57,7 @@
         Category
       </button>
     </h2>
-    <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#searchFilter">
+    <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne">
       <div class="accordion-body">
 	  <?php if(!empty($categories_list)){
 		foreach($categories_list as $row){ ?>
@@ -77,7 +77,7 @@
 					<?php echo $filter['name']; ?>
 				  </button>
 				</h2>
-				<div id="flush-collapse<?php echo $f; ?>" class="accordion-collapse collapse" aria-labelledby="flush-heading<?php echo $f; ?>" data-bs-parent="#searchFilter">
+				<div id="flush-collapse<?php echo $f; ?>" class="accordion-collapse collapse" aria-labelledby="flush-heading<?php echo $f; ?>" >
 				  <div class="accordion-body">
 				  <?php 
 				  if($filter['filter_type'] == 'checkbox'){ 
@@ -119,7 +119,7 @@
 					Search Results by Date
 				  </button>
 				</h2>
-				<div id="flush-collapseFive" class="accordion-collapse collapse" aria-labelledby="flush-headingFive" data-bs-parent="#searchFilter">
+				<div id="flush-collapseFive" class="accordion-collapse collapse" aria-labelledby="flush-headingFive">
 				  <div class="accordion-body">
 					<div class="sFields">
 						<input class="range-input" type="date" name="created_at[]" class="range-input" value="<?php echo (!empty($filter_ids['created_at']) && !empty($filter_ids['created_at'][0])) ? $filter_ids['created_at'][0] : ''; ?>">
@@ -134,7 +134,7 @@
 					Show Featured
 				  </button>
 				</h2>
-				<div id="flush-collapseSix" class="accordion-collapse collapse" aria-labelledby="flush-headingSix" data-bs-parent="#searchFilter">
+				<div id="flush-collapseSix" class="accordion-collapse collapse" aria-labelledby="flush-headingSix">
 				  <div class="accordion-body">
 					<div class="sFields"><label for="featured_0"><input type="checkbox" <?php echo (!empty($filter_ids['featured']) && ('yes'==$filter_ids['featured'])) ? 'checked' : ''; ?> name="featured" value="yes" id="featured_0"> <span>Yes</span></label></div>
 				  </div>

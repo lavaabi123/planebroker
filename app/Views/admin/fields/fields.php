@@ -411,8 +411,8 @@ $(function() {
             data: data,
             success: function (response) {
 				$("#fields_table tbody tr").each(function(index) {
-				  $(this).find("td").eq(0).text(index + 1);
-				  $(this).find("td").eq(6).text(index + 1);
+				  //$(this).find("td").eq(0).text(index + 1);
+				  $(this).find("td").eq(5).text(index + 1);
 				});
 				Swal.fire({
 				  icon: 'success',
@@ -443,16 +443,11 @@ $(function(){
   let startDate = null;
   let endDate = null;
 
-  // Custom date range filter
   $.fn.dataTable.ext.search.push(function (settings, data) {
     if (!startDate || !endDate) return true;
-
-    // "Registered at" column index (0-based index)
     let dateStr = data[3];
     let date = moment(dateStr, 'MM/DD/YYYY hh:mm a');
-
     if (!date.isValid()) return true;
-
     return date.isSameOrAfter(startDate, 'day') && date.isSameOrBefore(endDate, 'day');
   });
 
@@ -462,189 +457,146 @@ $(function(){
     lengthChange: true,
     paging: true,
     ordering: true,
-    order: [[0, 'asc']],
+    order: [[2, 'asc']],
     pageLength: 10,
     lengthMenu: [10, 25, 50, 100],
-    dom: 
-	'<"d-flex align-items-center gap-2 mb-3"lf<"dropdown-filter"><"reset-filter">>t<"d-flex justify-content-center align-items-center my-3"ip>',
-    language: {
+    dom: '<"d-flex align-items-center gap-2 mb-3"l<"dropdown-filter"><"user-filter"><"reset-filter">>t<"d-flex justify-content-center align-items-center my-3"ip>',
+	language: {
       paginate: {
         previous: "<i class='fas fa-caret-left'></i>",
         next: "<i class='fas fa-caret-right'></i>"
       }
     },
-    columnDefs: [
-      { orderable: false, targets: -1 }
-    ],
-    drawCallback: function () {
-      const info = this.api().page.info();
-      const wrapper = $(this).closest('.dataTables_wrapper');
-      wrapper.find('.dataTables_paginate').toggle(info.pages > 1);
-    },
     initComplete: function () {
       const api = this.api();
-      const $thead = $(api.table().header());
-
-      // Add sort icons
-      $thead.find('th').each(function(i){
-        const isSortable = api.settings()[0].aoColumns[i].bSortable;
-        if (isSortable && !$(this).find('.sort-icons').length) {
-          $(this).append(
-            '<span class="sort-icons">' +
-              '<i class="fas fa-sort-up sort-icon-up"></i>' +
-              '<i class="fas fa-sort-down sort-icon-down"></i>' +
-            '</span>'
-          );
-        }
-      });
-
-      // Reset button
-      $('.reset-filter').html(`<label class="d-block">&nbsp;</label>
-        <button type="button" id="resetFilters" class="btn small bg-primary">Reset</button>
-      `);
-
-      // Dropdown filter
+$('.reset-filter').html(
+    '<label class="d-block">&nbsp;</label>' +
+    '<button type="button" id="resetFilters" class="btn small bg-primary">RESET</button>'
+  );
+      // Build dropdowns
       $('.dropdown-filter').html(`
         <label>Category</label>
         <select id="filterDropdown" class="form-control form-select-sm">
-          <option value=""><?php echo trans('All') ?></option>
-				<?php
-				if(!empty($categories_list)){
-					foreach($categories_list as $category){ ?>
-						<option value="<?php echo $category->name; ?>"><?php echo $category->name; ?></option>
-				<?php }
-				}
-				?>
+          <?php foreach($categories_list as $cat){ ?>
+            <option value="<?= $cat->id ?>" data-name="<?= esc($cat->name) ?>">
+              <?= esc($cat->name) ?>
+            </option>
+          <?php } ?>
         </select>
       `);
-	  
-	  $('.user-filter').html(`
+      $('.user-filter').html(`
         <label>Field Group</label>
-        <select id="userDropdown" class="form-control form-select-sm">
-          <option value=""><?php echo trans('All') ?></option>
-				<?php
-				if(!empty($field_group)){
-					foreach($field_group as $fieldgroup){ ?>
-						<option value="<?php echo $fieldgroup->name; ?>"><?php echo $fieldgroup->name; ?></option>
-				<?php }
-				}
-				?>
+        <select id="userDropdown" class="form-control form-select-sm" disabled>
+          <option value="">Loading...</option>
         </select>
       `);
 
-      // Date range filter
-      $('.date-filter').html(`
-        <label for="dateRangeFilter">Date Range</label>
-        <input type="text" id="dateRangeFilter" class="form-control form-select-sm" />
-      `);
+     // helper: load FG for a category, with optional auto-select+filter
+  // Build FG options (no "All"); optionally auto-select first & filter
+function loadFieldGroupsByCategory(catId, { autoSelect = false, applyFilter = false } = {}) {
+  const $fg = $('#userDropdown');
+  $fg.prop('disabled', true).html('<option>Loading...</option>');
 
-      $('#dateRangeFilter').daterangepicker({
-        autoUpdateInput: false,
-        locale: { cancelLabel: 'Clear' }
-      });
-
-      $('#dateRangeFilter').on('apply.daterangepicker', function(ev, picker) {
-        startDate = picker.startDate;
-        endDate = picker.endDate;
-        $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
-        dt.draw();
-      });
-
-      $('#dateRangeFilter').on('cancel.daterangepicker', function() {
-        startDate = null;
-        endDate = null;
-        $(this).val('');
-        dt.draw();
-      });
-
-      updateSortIcons(api);
+  $.getJSON('<?= base_url('admin/fields/field-groups'); ?>/' + catId, function (res) {
+    const rows = (res && res.data) ? res.data : [];
+    if (!rows.length) {
+      $fg.html('<option value="">No field groups</option>').prop('disabled', true);
+      // clear FG filter if nothing available
+      api.column(4).search('').draw();
+      return;
     }
+
+    // No "All" — build options
+    let html = '';
+    rows.forEach(r => { html += `<option value="${r.name}">${r.name}</option>`; });
+    $fg.html(html).prop('disabled', false);
+
+    if (autoSelect) {
+      const firstFG = $fg.find('option:first').val();
+      if (firstFG) {
+        $fg.val(firstFG);
+        if (applyFilter) {
+          api.column(4).search('^' + $.fn.dataTable.util.escapeRegex(firstFG) + '$', true, false).draw();
+        }
+      }
+    }
+  }).fail(function(){
+    $fg.html('<option value="">Error loading</option>').prop('disabled', true);
+    api.column(4).search('').draw();
   });
+}
 
-  // Ordering icons
-  $('.table').on('order.dt', function(){
-    updateSortIcons(dt);
-  });
 
-  // Reset button click
-  $(document).on('click', '#resetFilters', function () {
-    const $wrapper = $(dt.table().container());
+      // 1) Auto-select & filter by FIRST CATEGORY
+  const $cat = $('#filterDropdown');
+const firstCatId = $cat.find('option:first').val();
+const firstCatName = $cat.find('option:first').data('name');
 
-    // Clear search box
-    $wrapper.find('.dataTables_filter input[type="search"]').val('');
-    dt.search('');
+if (typeof firstCatId !== 'undefined') {
+  $cat.val(firstCatId);
+  api.column(2).search('^' + $.fn.dataTable.util.escapeRegex(firstCatName) + '$', true, false).draw();
+  // → also select & filter by FIRST FG of that category
+  loadFieldGroupsByCategory(firstCatId, { autoSelect: true, applyFilter: true });
+}
 
-    // Clear per-column searches
-    dt.columns().every(function () { this.search(''); });
-
-    // Reset dropdown
-    $('#filterDropdown').val('');
-    $('#userDropdown').val('');
-
-    // Reset date filter
-    startDate = null;
-    endDate = null;
-    $('#dateRangeFilter').val('');
-
-    // Reset ordering & page
-    dt.order([[0, 'asc']]);
-    dt.page('first');
-
-    dt.draw();
-  });
-
-  // Dropdown filter change
+  // Category change => refilter category, clear FG, reload FGs (no auto-select here)
   $('#filterDropdown').on('change', function () {
-    const selectedValue = $(this).val();
-    if (selectedValue) {
-      dt.column(2).search(selectedValue).draw();
-    } else {
-      dt.column(2).search('').draw();
-    }
-  });
+  const catId = $(this).val();
+  const catName = $(this).find(':selected').data('name') || '';
+
+  // Filter by category (col 2)
+  api.column(2).search(catName ? '^' + $.fn.dataTable.util.escapeRegex(catName) + '$' : '', true, false).draw();
+
+  // Load FGs for this category, auto-select FIRST FG, and filter by it (col 4)
+  if (catId) {
+    loadFieldGroupsByCategory(catId, { autoSelect: true, applyFilter: true });
+  } else {
+    // unlikely since you removed "All" from Category, but safe:
+    $('#userDropdown').prop('disabled', true).html('');
+    api.column(4).search('').draw();
+  }
+});
+
+  // Field Group change => filter FG column
   $('#userDropdown').on('change', function () {
-    const selectedValue = $(this).val();
-    if (selectedValue) {
-      dt.column(4).search(selectedValue).draw();
-    } else {
-      dt.column(4).search('').draw();
-    }
+    const v = $(this).val();
+    api.column(4).search(v ? '^' + $.fn.dataTable.util.escapeRegex(v) + '$' : '', true, false).draw();
   });
 
-  function updateSortIcons(api){
-    const $thead = $(api.table().header());
-    $thead.find('.sort-icon-up, .sort-icon-down').removeClass('active');
+  // Reset => back to first category AND first FG of that category
+  $(document).on('click', '#resetFilters', function () {
+  // ...clear global/per-column, date, etc...
 
-    const ord = api.order();
-    if (ord.length){
-      const colIdx = ord[0][0];
-      const dir = ord[0][1];
-      const $th = $thead.find('th').eq(colIdx);
-      if (dir === 'asc') $th.find('.sort-icon-up').addClass('active');
-      else $th.find('.sort-icon-down').addClass('active');
-    }
+  const $cat = $('#filterDropdown');
+  const firstCatId = $cat.find('option:first').val();
+  const firstCatName = $cat.find('option:first').data('name');
+
+  if (typeof firstCatId !== 'undefined') {
+    $cat.val(firstCatId);
+    api.column(2).search('^' + $.fn.dataTable.util.escapeRegex(firstCatName) + '$', true, false);
+    // auto-select FIRST FG for that category and filter by it
+    loadFieldGroupsByCategory(firstCatId, { autoSelect: true, applyFilter: true });
+  } else {
+    api.column(2).search('');
+    api.column(4).search('');
   }
 
-  // UI tweaks
-  	$('.dataTables_filter label').contents().filter(function () {
-        return this.nodeType === 3; // Node.TEXT_NODE
-    }).remove();
-	$('.dataTables_filter label').each(function() {
-		$(this).contents().unwrap(); // This removes the <label> but keeps the input
-	});
-	$('.dataTables_length label').contents().filter(function () {
+  api.order([[2, 'asc']]).page('first').draw();
+});
+
+
+  $('.dataTables_length select').removeClass('custom-select-sm');
+  $('.dataTables_length label').contents().filter(function () {
         return this.nodeType === 3; // Node.TEXT_NODE
     }).remove();
 	$('.dataTables_length label').each(function() {
 		$(this).contents().unwrap(); // This removes the <label> but keeps the input
 	});
-  $('.dataTables_filter input').removeClass('form-control-sm').attr('placeholder', 'Search').addClass('m-0');
-  $('.date-filter input').removeClass('form-control-sm').attr('placeholder', 'Start Date - End Date').addClass('m-0');
-  $('.dataTables_length select').removeClass('form-control-sm custom-select-sm');
-  $('.dataTables_filter label, .dataTables_length label').contents().unwrap();
-  $('.dataTables_filter').prepend('<label>Search</label>');
-  $('.dataTables_length').prepend('<label>Show</label>');
+	$('.dataTables_length').prepend('<label>Show</label>');
+    }
+  });
 });
+
 </script>
 
 

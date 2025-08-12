@@ -51,11 +51,23 @@ class Fields extends AdminController
 		
         $data['categories_list'] = $this->CategoriesModel->get_categories();
         $data['sub_categories_list'] = $this->categoriessubModel->get_categories();
-		
-        $data['field_group'] = $this->FieldGroupModel->get_fields_group();
+		$firstCategory = !empty($data['categories_list']) ? $data['categories_list'][0] : null;
+		$data['field_group'] = $firstCategory
+			? $this->FieldGroupModel->getByCategory((int) $firstCategory->id)
+			: [];
+        //$data['field_group'] = $this->FieldGroupModel->get_fields_group();
 
         return view('admin/fields/fields', $data);
     }
+	public function fieldGroupsByCategory(int $categoryId)
+	{
+		$groups = $this->FieldGroupModel->getByCategory($categoryId);
+
+		return $this->response->setJSON([
+			'status' => true,
+			'data'   => $groups,   // e.g. [ ['id'=>3,'name'=>'Avionics'], ... ]
+		]);
+	}
 
     public function filter_fields()
     {

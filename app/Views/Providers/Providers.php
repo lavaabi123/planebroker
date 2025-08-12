@@ -229,35 +229,107 @@ if(!empty($query1)){
 <input name="urlload" type="hidden" id="urlload" value="<?php echo substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], "?")); ?>" />	
 <input name="urlfinal" type="hidden" id="urlfinal" value="<?php echo substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], "?")).''.$query; ?>" />	
 <script>
-    function fetchProducts() {
-		const query = buildQuery($('#searchFilter'));
-		const url   = '<?php echo base_url(); ?>/listings/<?php echo $category; ?>' + (query ? '?' + query : '');
-		
-		let hasRealFilters = false;
-		if (query) {
-			const p = new URLSearchParams(query);
-			p.delete('sort_by');                 // throw away the sort param
-			hasRealFilters = [...p.keys()].length > 0;
-		}
-		$('.clearSelected').toggle(hasRealFilters);
+function fetchProducts() {
+  // 1) Build URL from current form values
+  const query = buildQuery($('#searchFilter'));
+  const url   = '<?php echo base_url(); ?>/listings/<?php echo $category; ?>' + (query ? '?' + query : '');
 
-		
-		$.getJSON(url, function (payload) {
-			$('#productGrid').html(payload.grid);
-			$('#appliedFilters').html(payload.filters);
-			$('#filterSidebarContent').html(payload.sidebar);
-			$('#applyCount').text(payload.count);
+  // Show/Hide “Clear All” (ignore sort_by for this)
+  let hasRealFilters = false;
+  if (query) {
+    const p = new URLSearchParams(query);
+    p.delete('sort_by');
+    hasRealFilters = [...p.keys()].length > 0;
+  }
+  $('.clearSelected').toggle(hasRealFilters);
 
-			/* recompute after DOM update (for safety) */
-			const pills = $('#appliedFilters .applied-filter')
-							.not('[data-name="sort_by"]')
-							.length > 0;
-			$('.clearSelected').toggle(pills);
+  /* ====== CAPTURE CURRENT UI STATE (before replacing HTML) ====== */
+  const $box = $('#filterSidebar');                 // scroll container
+  const prevScroll = $box.scrollTop();
 
-			history.replaceState(null, '', url);
-		});
-	}
-    function buildQuery($form) {
+  // which accordion panels are open?
+  const openPanels = $('#searchFilter .accordion-collapse.show')
+    .map((i, el) => el.id)
+    .get();
+
+  // which sort option is selected?
+  const selectedSort = $('#searchFilter input[name="sort_by"]:checked').val() || null;
+
+  // snapshot any text/number/date inputs (for rare cases where server doesn't echo back)
+  const stickyInputs = {};
+  $('#searchFilter input[type="text"], #searchFilter input[type="number"], #searchFilter input[type="date"]').each(function () {
+    const n = this.name;
+    if (n && this.value) stickyInputs[n.replace(/\[\]$/, '')] = this.value;
+  });
+
+  // 2) Fetch and swap HTML
+  $.getJSON(url, function (payload) {
+    if (payload.grid)    $('#productGrid').html(payload.grid);
+    if (payload.filters) $('#appliedFilters').html(payload.filters);
+    if (payload.sidebar) $('#filterSidebarContent').html(payload.sidebar);
+    if (typeof payload.count !== 'undefined') $('#applyCount').text(payload.count);
+
+    /* ====== RESTORE UI STATE ====== */
+
+    // re-check previously chosen sort_by (also ensure server renders this ideally)
+    if (selectedSort) {
+      $('#searchFilter input[name="sort_by"][value="' + selectedSort + '"]').prop('checked', true);
+    }
+
+    // re-open panels that were open before
+    openPanels.forEach(function (id) {
+      const $panel = $('#' + id);
+      if ($panel.length) {
+        $panel.addClass('show');
+        $('[data-bs-target="#' + id + '"]').attr('aria-expanded', 'true');
+      }
+    });
+
+    // 🔧 Auto-open any panel that currently has an active value
+    $('#searchFilter .accordion-collapse').each(function () {
+      const $panel = $(this);
+
+      const hasActive =
+        $panel.find('input:checked').length > 0 ||
+        $panel.find('select').filter(function () {
+          const v = $(this).val();
+          return (Array.isArray(v) ? v.length : !!v) && v !== '';
+        }).length > 0 ||
+        $panel.find('input[type="text"],input[type="number"],input[type="date"]').filter(function () {
+          return $(this).val().trim() !== '';
+        }).length > 0;
+
+      if (hasActive) {
+        $panel.addClass('show');
+        const id = $panel.attr('id');
+        if (id) $('[data-bs-target="#' + id + '"]').attr('aria-expanded', 'true');
+      }
+    });
+
+    // restore sticky inputs if server didn’t echo them back
+    Object.entries(stickyInputs).forEach(([k, v]) => {
+      $('#searchFilter [name="' + k + '"], #searchFilter [name="' + k + '[]"]').each(function () {
+        if ((this.type === 'text' || this.type === 'number' || this.type === 'date') && !this.value) {
+          this.value = v;
+        }
+      });
+    });
+
+    // restore scroll position so the panel doesn’t jump
+    $box.scrollTop(prevScroll);
+
+    // recompute pill visibility (ignore sort_by tag if present)
+    const pills = $('#appliedFilters .applied-filter')
+      .not('[data-name="sort_by"]')
+      .length > 0;
+    $('.clearSelected').toggle(pills);
+
+    // update URL without full reload
+    history.replaceState(null, '', url);
+  });
+}
+
+	function buildQuery($form) {
         const params = new URLSearchParams();
 
         /* 📦 1) check‑boxes & radios (may be array‑style names) */

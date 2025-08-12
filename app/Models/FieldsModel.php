@@ -36,7 +36,7 @@ class FieldsModel extends Model
 			GROUP_CONCAT(DISTINCT categories.name) AS category_names,
 			GROUP_CONCAT(DISTINCT field_sub_categories.sub_category_id) AS subcategory_ids,
 			GROUP_CONCAT(DISTINCT categories_sub.name) AS subcategory_names');
-			$this->builder->select("GROUP_CONCAT(DISTINCT CONCAT(fields_group.name, ' (', c.name, ')')) AS group_names", false);
+			$this->builder->select("GROUP_CONCAT(DISTINCT CONCAT(fields_group.name, '')) AS group_names", false);
 
 		$this->builder->join('field_categories', 'field_categories.field_id = fields.id', 'left');
 		$this->builder->join('categories', 'categories.id = field_categories.category_id', 'left');
@@ -90,7 +90,7 @@ class FieldsModel extends Model
 			GROUP_CONCAT(DISTINCT categories.name) AS category_names,
 			GROUP_CONCAT(DISTINCT field_sub_categories.sub_category_id) AS subcategory_ids,
 			GROUP_CONCAT(DISTINCT categories_sub.name) AS subcategory_names');
-			$this->builder->select("GROUP_CONCAT(DISTINCT CONCAT(fields_group.name, ' (', c.name, ')')) AS group_names", false);
+			$this->builder->select("GROUP_CONCAT(DISTINCT CONCAT(fields_group.name, '')) AS group_names", false);
 
 		$this->builder->join('field_categories', 'field_categories.field_id = fields.id', 'left');
 		$this->builder->join('categories', 'categories.id = field_categories.category_id', 'left');

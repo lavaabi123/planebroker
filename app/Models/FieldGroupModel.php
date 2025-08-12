@@ -68,6 +68,14 @@ class FieldGroupModel extends Model
 		 //echo $this->db->getLastQuery(); die;
         
     }
+	public function getByCategory(int $categoryId)
+	{
+		return $this->asObject()
+			->where('category_id', $categoryId)
+			->orderBy('sort_order', 'asc')
+			->select('id, name')   // keep payload small
+			->findAll();
+	}
 	public function get_fields_group_by_ids($ids)
     {
 		$ids = is_array($ids) ? $ids : explode(',',$ids) ;

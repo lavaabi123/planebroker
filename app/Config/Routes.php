@@ -165,6 +165,7 @@ $routes->group("providerauth", ["namespace" => "App\Controllers\Providerauth"], 
 });
 
 $routes->group("admin", ["namespace" => "App\Controllers\Admin"], function ($routes) {
+	$routes->get('fields/field-groups/(:num)', 'Fields::fieldGroupsByCategory/$1');
     $routes->get('blocked', 'Dashboard::Blocked');
     $routes->get('/', 'Dashboard::index');
     $routes->get('dashboard', 'Dashboard::index');

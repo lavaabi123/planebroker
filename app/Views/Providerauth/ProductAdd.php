@@ -215,7 +215,7 @@ video{
 				<div class="dbContent">
 				<div class="container">
 					<div class="titleSec text-center ps-0">
-						<h3 class="title-lg fw-bolder my-4 position-relative">Create your <?php echo !empty(getCategoryName($_GET['category'])) ? getCategoryName($_GET['category']) : 'Aircraft Listing'; ?>
+						<h3 class="title-lg fw-bolder my-4 position-relative"><?php echo !empty($_GET['id']) ? 'Edit your ' : 'Create your '; ?> <?php echo !empty(getCategoryName($_GET['category'])) ? getCategoryName($_GET['category']) : 'Aircraft Listing'; ?>
 						<?php if(empty($product_detail['status'])){ ?>
 						<span class="btn save-listing px-5">Save</span>
 						<?php } ?>
@@ -1091,7 +1091,6 @@ $('#titlesForm').on('submit', function(e){
 .dz-wrap { padding: 1rem; }
 }
 </style>
-
 <script>
 /* ========= Shared progress helpers ========= */
 function updateProgress(percent, label, err = 1) {
@@ -1198,28 +1197,19 @@ function hardResetEditProgress(hide = true) {
 /* ========= Chunked upload helpers ========= */
 const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB
 const LARGE_VIDEO_THRESHOLD = 8 * 1024 * 1024; // chunk videos > 8MB
-
 function isLargeVideo(file){
   return file && file.type && file.type.startsWith('video/') && file.size > LARGE_VIDEO_THRESHOLD;
 }
-
-/**
- * Upload a File in chunks to fileupload.php
- * Returns a Promise that resolves with the final JSON {uploaded, fileName, fileType, url, tag}
- * onProgress(bytesSentSoFar) is called as bytes stream.
- */
 function uploadFileInChunks(file, tag, onProgress){
   return new Promise(async (resolve, reject) => {
     try{
       const total = Math.ceil(file.size / CHUNK_SIZE);
       const uploadId = Date.now() + '-' + Math.random().toString(16).slice(2);
       let sent = 0;
-
       for (let i = 0; i < total; i++){
         const start = i * CHUNK_SIZE;
         const end   = Math.min(file.size, start + CHUNK_SIZE);
         const blob  = file.slice(start, end);
-
         const fd = new FormData();
         fd.append('upload', blob, file.name);
         fd.append('filename', file.name);
@@ -1227,7 +1217,6 @@ function uploadFileInChunks(file, tag, onProgress){
         fd.append('chunkIndex', i);
         fd.append('chunkTotal', total);
         fd.append('tag', tag || '');
-
         await $.ajax({
           url: "<?php echo base_url(); ?>/fileupload.php?uploadpath=userimages/"+"<?php echo session()->get('vr_sess_user_id'); ?>",
           type: "POST",
@@ -1264,24 +1253,42 @@ function uploadFileInChunks(file, tag, onProgress){
           error: function(err){ reject(err); }
         });
       }
-    }catch(err){
-      reject(err);
-    }
+    }catch(err){ reject(err); }
   });
 }
 
-/* ========= FAST preview with blob URLs ========= */
+/* ========= FAST preview with blob URLs + pre-upload delete ========= */
 let previewURLs = [];
 function revokePreviewURLs(){
   previewURLs.forEach(u => { try { URL.revokeObjectURL(u); } catch(e){} });
   previewURLs = [];
 }
+
+/* NEW: queue + delete-before-upload */
+let queuedFiles = []; // [{uid, file, url}]
+function makeUID(){ return 'q_' + Date.now().toString(36) + Math.random().toString(36).slice(2); }
+function deleteQueued(btn){
+  const $card = $(btn).closest('.up-ca');
+  const uid   = $card.data('uid');
+  const url   = $card.data('url');
+  queuedFiles = queuedFiles.filter(x => x.uid !== uid);
+  if (url) { try { URL.revokeObjectURL(url); } catch(e){} }
+  $card.remove();
+  // if none left, close modal safely
+  if ($('#upload-file-modal .up-ca:visible').length === 0) {
+    $("#userphoto").val(null);
+    $("#upload-file-modal").modal('hide');
+  }
+}
+
+/* include a trash icon in the skeleton */
 function previewSkeleton(){
   return `
     <div class="up-ca" style="padding:2px !important;">
       <div class="skeleton-box" style="height:200px;border:1px solid #eee;border-radius:25px;display:flex;align-items:center;justify-content:center;background:#f7f7f7;">
         <div class="spinner-border" role="status" style="width:1.4rem;height:1.4rem;"><span class="visually-hidden">Loading...</span></div>
       </div>
+      <div class="trash" onclick="deleteQueued(this)" style="cursor:pointer"><i class="fa fa-trash-o"></i></div>
       <label>Tags (Optional)</label>
       <textarea name="image_tag[]" placeholder="Ex: Control Panel, Left Wing, Tail, etc."></textarea>
     </div>`;
@@ -1289,10 +1296,7 @@ function previewSkeleton(){
 
 /* ========= Init ========= */
 $(document).ready(function () {
-  try {
-    GLightbox({ selector: ".glightbox-video", touchNavigation: true, autoplayVideos: true });
-  } catch (e) {}
-
+  try { GLightbox({ selector: ".glightbox-video", touchNavigation: true, autoplayVideos: true }); } catch (e) {}
   $("#image_tag").on("itemAdded", function () {/* no-op */});
 });
 
@@ -1304,7 +1308,6 @@ function deletephotosdiv(_this){
     $("#upload-file-modal").modal("hide");
   }
 }
-
 function deletephotos(photo_id){
   $.confirm({
     title: "Confirm Deletion",
@@ -1315,21 +1318,11 @@ function deletephotos(photo_id){
           url: "<?php echo base_url(); ?>/providerauth/photos_delete",
           type: "POST",
           dataType: "html",
-          data: {
-            photo_id,
-            product_id: "<?php echo !empty($_GET['id']) ? $_GET['id'] :''; ?>",
-          },
+          data: { photo_id, product_id: "<?php echo !empty($_GET['id']) ? $_GET['id'] :''; ?>" },
           success: function (response) {
             const trimmed = (response || "").toString().trim();
-            if (/^\d+$/.test(trimmed)) {
-              $("#imageNo" + photo_id).remove();
-              refreshAfterImageChange();
-              return;
-            }
-            if (trimmed !== "") {
-              $(".load-images").html(trimmed);
-              refreshAfterImageChange();
-            }
+            if (/^\d+$/.test(trimmed)) { $("#imageNo" + photo_id).remove(); refreshAfterImageChange(); return; }
+            if (trimmed !== "") { $(".load-images").html(trimmed); refreshAfterImageChange(); }
           }
         });
       },
@@ -1337,16 +1330,13 @@ function deletephotos(photo_id){
     }
   });
 }
-
 function refreshAfterImageChange(){
   $("#imageListId").sortable({ update: function(){ getIdsOfImages(); } });
   const ids = [];
   $("#imageListId .listitemClass").each(function(){ ids.push($(this).attr("id").replace("imageNo","")); });
   $('input[name="image_ids"]').val(ids.join(","));
   if ($("#imageListId .listitemClass").length === 0) $(".load-images").html("please upload.");
-  try {
-    GLightbox({ selector: ".glightbox-video", touchNavigation: true, autoplayVideos: true });
-  } catch(e){}
+  try { GLightbox({ selector: ".glightbox-video", touchNavigation: true, autoplayVideos: true }); } catch(e){}
 }
 
 /* ========= Edit flow ========= */
@@ -1355,7 +1345,6 @@ function editphotos(photo_id,_this){
   $("#userphoto_edit").val(null);
   $("#image_tag").val($(_this).attr("data-tags"));
   $(".photouploadupdate").attr("data-id", photo_id);
-
   if ($(_this).attr("data-file-type") === "image") {
     $(".editablemedia").html(
       `<img width="100%" class="load-edit-image" style="object-fit:cover;border-radius:25px;border:1px solid #eee;height:200px;"
@@ -1372,9 +1361,8 @@ function editphotos(photo_id,_this){
   $("#edit-file-modal").modal("show");
   $("#userphoto_edit").prop("disabled", false).prop("readonly", false);
   ensureEditProgressUI();
-  hardResetEditProgress(); // reset bar each time modal opens
+  hardResetEditProgress();
 }
-
 function cancel_edit(){
   $("#image_tag").val("");
   $(".photouploadupdate").attr("data-id", "");
@@ -1382,15 +1370,12 @@ function cancel_edit(){
   $(".csimage").addClass("cropped_image_save").removeClass("cropped_image_save_edit");
   $("#userphoto_edit").val(null);
   $("#edit-file-modal").modal("hide");
-  hardResetEditProgress(); // reset on cancel
+  hardResetEditProgress();
 }
-
 function editphotospost(btn){
   const p_id = $(btn).attr("data-id");
   ensureEditProgressUI();
   hardResetEditProgress(false);
-
-  // Only tags changed (no new file)
   if ($("#userphoto_edit").get(0).files.length === 0) {
     updateEditProgress(25, "Uploading...");
     const req = $.ajax({
@@ -1419,12 +1404,10 @@ function editphotospost(btn){
     activeUploads.push(req); req.always(()=>{ activeUploads = activeUploads.filter(r=>r!==req); });
     return;
   }
-
-  // Replace with new file (chunk large videos)
   const replaceFile = $("#userphoto_edit")[0].files[0];
   const tag = $("#image_tag").val();
   const doSingleShotEdit = !isLargeVideo(replaceFile);
-	updateEditProgress(10, "Uploading...");
+  updateEditProgress(10, "Uploading...");
   const sendEdit = doSingleShotEdit
     ? () => $.ajax({
         url: "<?php echo base_url(); ?>/fileupload.php?uploadpath=userimages/"+"<?php echo session()->get('vr_sess_user_id'); ?>",
@@ -1442,11 +1425,7 @@ function editphotospost(btn){
         enctype: "multipart/form-data",
         xhr: function(){
           const x = new window.XMLHttpRequest();
-          x.upload.addEventListener("progress", (e)=>{
-            if (e.lengthComputable && !cancelUpload) {
-              //updateEditProgress(Math.round((e.loaded/e.total)*100), "Uploading...");
-            }
-          });
+          x.upload.addEventListener("progress", (e)=>{ /* optional live edit progress */ });
           return x;
         }
       })
@@ -1458,7 +1437,6 @@ function editphotospost(btn){
           updateEditProgress(pct, "Uploading...");
         }
       );
-
   sendEdit().then(function(resp){
     if (cancelUpload) return;
     if (resp.uploaded == 1) {
@@ -1506,7 +1484,6 @@ function editphotospost(btn){
 $(function () {
   $("#imageListId").sortable({ update: function(){ getIdsOfImages(); } });
 });
-
 function getIdsOfImages() {
   var values = [];
   $(".listitemClass").each(function(){ values.push($(this).attr("id").replace("imageNo","")); });
@@ -1538,7 +1515,6 @@ $(document).ready(function () {
     viewport: { width: 200, height: 150, type: "rectangle", enableResize: true, enableOrientation: true },
     boundary: { width: 400, height: 300 },
   });
-
   $("#crop-image").on("shown.bs.modal", function () {
     myCroppie.croppie("bind", { url: $(".test" + $("#upload-image").attr("data-id")).find("img").attr("src") });
   }).on("hide.bs.modal", function () {
@@ -1555,10 +1531,9 @@ $(document).ready(function () {
     $(".load-images-final").empty();
     $(".final-result-container").hide();
   });
-
   $(".cropimageedit").on("click", function(){ fileListedit = []; });
 
-  /* ===== FAST preview using blob URLs (no FileReader) ===== */
+  /* ===== FAST preview using blob URLs (no FileReader) + queue ===== */
   $(".cropimage").on("change", function (event) {
     $(".load-images-final").empty();
     const files = event.target.files;
@@ -1571,22 +1546,24 @@ $(document).ready(function () {
     $(".final-result-container").show();
     $("#upload-file-modal").modal("show");
 
-    fileList = [];
-    revokePreviewURLs(); // clear old object URLs
-    let i = 0;
+    fileList = [];          // keep if you still need it elsewhere
+    queuedFiles = [];       // <- new queue for upload order
+    revokePreviewURLs();    // clear old object URLs
 
-    function formatDur(s){ s=Math.floor(s||0); const m=Math.floor(s/60), r=s%60; return `${m}:${r.toString().padStart(2,"0")}`; }
+    let i = 0;
+    const formatDur = s => { s=Math.floor(s||0); const m=Math.floor(s/60), r=s%60; return `${m}:${r.toString().padStart(2,"0")}`; };
 
     for (let singleFile of files) {
-      fileList.push(singleFile);
-
-      // skeleton card first
-      const $wrap = $(previewSkeleton()).appendTo(".load-images-final");
-      const $box  = $wrap.find(".skeleton-box");
-
+      fileList.push(singleFile); // legacy
+      const uid = makeUID();
       const url = URL.createObjectURL(singleFile);
       previewURLs.push(url);
 
+      // skeleton card
+      const $wrap = $(previewSkeleton()).appendTo(".load-images-final");
+      $wrap.attr('data-uid', uid).attr('data-url', url);
+
+      const $box = $wrap.find(".skeleton-box");
       if (singleFile.type.startsWith("image/")) {
         const img = new Image();
         img.onload = () => { $box.replaceWith(img); };
@@ -1602,7 +1579,7 @@ $(document).ready(function () {
           const dur = formatDur(v.duration);
           const pill = document.createElement("span");
           pill.textContent = dur;
-          pill.style.cssText = "position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:2px 6px;border-radius:4px;";
+          pill.style.cssText = "position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.6);color:#fff;font-size:12px;padding:2px 6px;border-radius:4px;";
           const holder = document.createElement("div");
           holder.style.cssText = "position:relative;border:1px solid #eee;border-radius:25px;overflow:hidden;";
           holder.appendChild(v);
@@ -1613,6 +1590,9 @@ $(document).ready(function () {
       } else {
         $box.html(`<div class="p-3 text-muted small">Selected: ${singleFile.name}</div>`);
       }
+
+      // queue entry
+      queuedFiles.push({ uid, file: singleFile, url });
       i++;
     }
   });
@@ -1626,7 +1606,6 @@ $(document).ready(function () {
       for (let singleFile of files) {
         const url = URL.createObjectURL(singleFile);
         previewURLs.push(url);
-
         if (singleFile.type.startsWith("image/")) {
           $(".editablemedia").html(
             `<img width="100%" class="load-edit-image" style="object-fit:cover;border-radius:25px;border:1px solid #eee;height:200px;" data-id="${i}" src="${url}" />`
@@ -1658,7 +1637,6 @@ $(document).ready(function () {
   });
 
   $(".cropped_image_save, .cropped_image").on("click", function(){ $("#crop-image").modal("hide"); });
-
   $(".open-image-modal").on("click", function(){ $("#crop-image").modal("show"); });
 
   $(".photouploaddone").on("click", function(){
@@ -1667,22 +1645,16 @@ $(document).ready(function () {
   });
 
   let shouldForceClose = false;
-
   $("#upload-file-modal").on("hide.bs.modal", function (e) {
     if (
       !$("#upload-file-modal").find(".modal-footer .photoupload").is(":visible") ||
       shouldForceClose ||
       $("#upload-file-modal .up-ca:visible").length === 0
-    ) {
-      shouldForceClose = false;
-      return;
-    }
+    ) { shouldForceClose = false; return; }
     e.preventDefault();
     $("#confirmCloseModal").modal("show");
   });
-
   $("#continueUpload").on("click", function(){ $("#confirmCloseModal").modal("hide"); });
-
   $("#discardUpload").on("click", function () {
     $("#confirmCloseModal").modal("hide");
     shouldForceClose = true;
@@ -1690,14 +1662,15 @@ $(document).ready(function () {
     resetUploadState();
     hardResetProgress();
     revokePreviewURLs();
+    queuedFiles = [];
     $("#upload-file-modal").modal("hide");
   });
-
   $("#upload-file-modal").on("hidden.bs.modal", function () {
     revokePreviewURLs();
     if (shouldForceClose) {
       abortAllUploads();
       resetUploadState();
+      queuedFiles = [];
       shouldForceClose = false;
     }
   });
@@ -1705,6 +1678,7 @@ $(document).ready(function () {
   function resetUploadState() {
     if (typeof fileList !== "undefined") fileList.length = 0;
     if (typeof fileListedit !== "undefined") fileListedit.length = 0;
+    queuedFiles = [];
     $("#userphoto").val(null);
     $("#userphoto_edit").val(null);
     $(".load-images-final").empty();
@@ -1718,10 +1692,9 @@ $(document).ready(function () {
     $("#upload-file-modal").find(".trash").show();
     $("#upload-file-modal").find(".header-message").html('<h5 class="mb-0 fw-bolder">Add Tags and Upload</h5>');
   }
-
   $("#upload-file-modal").on("show.bs.modal", function(){ hardResetProgress(); });
 
-  /* ===== MAIN UPLOAD CLICK (with precheck progress + chunking) ===== */
+  /* ===== MAIN UPLOAD CLICK (with precheck progress + chunking + queue) ===== */
   $(".photoupload").on("click", function () {
     hardResetProgress(false);
     $(".upload-loading").show();
@@ -1729,16 +1702,16 @@ $(document).ready(function () {
     activeUploads = activeUploads || [];
     resetProgressUI();
 
-    if ((fileList?.length || 0) === 0) {
+    const $cards = $('#upload-file-modal .up-ca');
+    if ($cards.length === 0) {
       updateProgress(0, "Select Image/Video to Upload", 0);
       $(".progress-bar-wrapper").hide();
       return;
     }
 
     if ($(".csimage").hasClass("cropped_image_save")) {
-      // Use first picked file's metadata for precheck (no file bytes)
-      const filesMeta = Array.from(fileList).map(f => ({ type: f.type, size: f.size }));
-
+      // precheck using queued metadata
+      const filesMeta = queuedFiles.map(q => ({ type: q.file.type, size: q.file.size }));
       const preReq = $.ajax({
         url: "<?php echo base_url(); ?>/providerauth/photos_post",
         type: "POST",
@@ -1749,21 +1722,10 @@ $(document).ready(function () {
           plan_id: $('input[name="plan_id"]').val(),
           files: JSON.stringify(filesMeta)
         },
-        xhr: function(){
-          const x = new window.XMLHttpRequest();
-          // For JSON, browser may not report upload progress; we still keep the hook.
-          x.upload.addEventListener("progress", (e)=>{
-            if (e.lengthComputable && !cancelUpload) {
-              updateWeightedPhase(0, PRECHECK_WEIGHT * 100, e.loaded, e.total);
-              $(".progress-bar-wrapper").show();
-            }
-          });
-          return x;
-        },
+        xhr: function(){ return new window.XMLHttpRequest(); },
         beforeSend: function(){ $(".loader").show(); },
         success: function (response) {
           if (cancelUpload) return;
-
           if (response == "2" || response.status == "error") {
             updateProgress(0, response.message || "Validation failed", 0);
             $(".progress-bar-wrapper").hide();
@@ -1780,21 +1742,21 @@ $(document).ready(function () {
           const preEnd = Math.floor(PRECHECK_WEIGHT * 100);
           if (lastPct < preEnd) updateProgress(preEnd, "Uploading...");
 
-          // Compute totals for the batch
-          totalBytes = 0;
+          // totals from queue
+          totalBytes = queuedFiles.reduce((s,q)=> s + (q.file?.size||0), 0);
           uploadedBytes = 0;
-          for (let f of fileList) totalBytes += (f && f.size) ? f.size : 0;
 
-          // Upload each file (chunk large videos)
-          const totalfiles = fileList.length;
           let filesDone = 0;
-
-          for (let index = 0; index < totalfiles; index++) {
-            const fileForThisReq  = fileList[index];
-            const sizeForThisReq  = (fileForThisReq && fileForThisReq.size) ? fileForThisReq.size : 0;
-            const tagForThisReq   = $('textarea[name="image_tag[]"]').eq(index).val();
-
-            const doSingleShot = !isLargeVideo(fileForThisReq);
+          // iterate current DOM order so tags match cards
+          $cards.each(function(idx, el){
+            const $card = $(el);
+            const uid   = $card.data('uid');
+            const entry = queuedFiles.find(q => q.uid === uid);
+            if (!entry) { filesDone++; return; }
+            const file  = entry.file;
+            const tag   = $card.find('textarea').val();
+            const sizeForThisReq = file?.size || 0;
+            const doSingleShot = !isLargeVideo(file);
 
             const sendOne = doSingleShot
               ? () => $.ajax({
@@ -1803,8 +1765,8 @@ $(document).ready(function () {
                   dataType: "JSON",
                   data: (()=>{
                     const fd = new FormData();
-                    fd.append("upload", fileForThisReq);
-                    fd.append("tag", tagForThisReq);
+                    fd.append("upload", file);
+                    fd.append("tag", tag);
                     return fd;
                   })(),
                   processData: false,
@@ -1823,8 +1785,8 @@ $(document).ready(function () {
                   }
                 })
               : () => uploadFileInChunks(
-                  fileForThisReq,
-                  tagForThisReq,
+                  file,
+                  tag,
                   (bytesSoFar)=>{
                     if (!cancelUpload){
                       const tempLoaded = uploadedBytes + bytesSoFar;
@@ -1835,8 +1797,6 @@ $(document).ready(function () {
 
             sendOne().then(function(resp){
               if (cancelUpload) return;
-
-              // mark this file done
               uploadedBytes += sizeForThisReq;
               updateOverallProgressFromBase(uploadedBytes, PRECHECK_WEIGHT * 100, 100 - PRECHECK_WEIGHT * 100);
 
@@ -1868,7 +1828,7 @@ $(document).ready(function () {
               }
 
               filesDone++;
-              if (filesDone === totalfiles) {
+              if (filesDone === $cards.length) {
                 updateOverallProgressFromBase(totalBytes, PRECHECK_WEIGHT * 100, 100 - PRECHECK_WEIGHT * 100);
                 setTimeout(()=>{
                   if (cancelUpload) return;
@@ -1883,37 +1843,40 @@ $(document).ready(function () {
                       </div>`);
                     $("#upload-file-modal").modal("hide");
                     hardResetProgress();
+                    queuedFiles = [];
                   });
                 }, 600);
               }
               $(".loader").hide();
             }).catch(function(){
               updateProgress(lastPct, "Upload failed", 0);
+              filesDone++;
             });
-          }
+          });
 
           $("#crop-image").modal("hide");
           $("#upload-file-modal .up-ca").find("input, textarea").prop("readonly", true).prop("disabled", true);
-          fileList = [];
         }
       });
       activeUploads.push(preReq); preReq.always(()=>{ activeUploads = activeUploads.filter(r=>r!==preReq); });
 
     } else {
-      // EDIT multi-file path (if ever used)
-      const p_id = $(".photouploadupdate").attr("data-id");
-      totalBytes = 0; uploadedBytes = 0;
-      for (let f of fileList) totalBytes += (f && f.size) ? f.size : 0;
-
-      const totalfiles = fileList.length;
+      // EDIT multi-file path (rare)
+      totalBytes = queuedFiles.reduce((s,q)=> s + (q.file?.size||0), 0);
+      uploadedBytes = 0;
+      const $cards2 = $('#upload-file-modal .up-ca');
       let filesDone = 0;
 
-      for (let index = 0; index < totalfiles; index++) {
-        const fileForThisReq = fileList[index];
-        const sizeForThisReq = (fileForThisReq && fileForThisReq.size) ? fileForThisReq.size : 0;
-        const imtg = $('textarea[name="image_tag[]"]').eq(index).val();
+      $cards2.each(function(idx, el){
+        const $card = $(el);
+        const uid   = $card.data('uid');
+        const entry = queuedFiles.find(q => q.uid === uid);
+        if (!entry) { filesDone++; return; }
 
-        const doSingleShot = !isLargeVideo(fileForThisReq);
+        const file = entry.file;
+        const sizeForThisReq = file?.size || 0;
+        const imtg = $card.find('textarea').val();
+        const doSingleShot = !isLargeVideo(file);
 
         const sendOneEdit = doSingleShot
           ? () => $.ajax({
@@ -1922,7 +1885,7 @@ $(document).ready(function () {
               dataType: "JSON",
               data: (()=>{
                 const fd = new FormData();
-                fd.append("upload", fileForThisReq);
+                fd.append("upload", file);
                 fd.append("tag", imtg);
                 return fd;
               })(),
@@ -1935,14 +1898,14 @@ $(document).ready(function () {
                 x.upload.addEventListener("progress", (e)=>{
                   if (e.lengthComputable && !cancelUpload) {
                     const tempLoaded = uploadedBytes + e.loaded;
-                    updateOverallProgress(tempLoaded); // full-range for edit-batch
+                    updateOverallProgress(tempLoaded);
                   }
                 });
                 return x;
               }
             })
           : () => uploadFileInChunks(
-              fileForThisReq,
+              file,
               imtg,
               (bytesSoFar)=>{
                 if (!cancelUpload){
@@ -1954,7 +1917,6 @@ $(document).ready(function () {
 
         sendOneEdit().then(function (response) {
           if (cancelUpload) return;
-
           uploadedBytes += sizeForThisReq;
           updateOverallProgress(uploadedBytes);
 
@@ -1965,7 +1927,7 @@ $(document).ready(function () {
               type: "POST",
               dataType: "HTML",
               data: {
-                p_id,
+                p_id: $(".photouploadupdate").attr("data-id"),
                 image: response.fileName,
                 image_tag: imtg,
                 product_id: "<?php echo !empty($_GET['id']) ? $_GET['id'] :''; ?>",
@@ -1982,23 +1944,17 @@ $(document).ready(function () {
           }
 
           filesDone++;
-          if (filesDone === totalfiles) {
+          if (filesDone === $cards2.length) {
             updateOverallProgress(totalBytes);
             $("#crop-image").modal("hide");
             $(".final-result-container").hide();
             setTimeout(()=>{ if (!cancelUpload) $(".upload-loading").fadeOut(); }, 600);
+            queuedFiles = [];
           }
         }).catch(function(){
-          // optional per-file error
+          filesDone++;
         });
-
-        $(".photoupload").show();
-        $(".photouploadupdate").attr("data-id", "");
-        $(".load-edit-image").attr("src", "");
-        $(".csimage").addClass("cropped_image_save").removeClass("cropped_image_save_edit");
-        fileList = [];
-        if ($("#userphoto").hasClass("cmul")) $("#userphoto").attr("multiple", true);
-      }
+      });
     }
   });
 });
@@ -2009,14 +1965,12 @@ $(document).ready(function () {
 $(function () {
   const $subSelect = $('select[name="sub_category_id"]');
   const $allCatBoxes = $(".catbasedfield");
-
   function toggleBoxes() {
     const id = $subSelect.val();
     if (id != "") $(".catbasedtitle").show(); else $(".catbasedtitle").hide();
     $allCatBoxes.hide();
     if (id) $allCatBoxes.filter('[data-subcategory="' + id + '"]').show();
   }
-
   toggleBoxes();
   $subSelect.on("change", toggleBoxes);
 });

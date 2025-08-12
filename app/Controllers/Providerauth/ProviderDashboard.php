@@ -628,8 +628,7 @@ else if($this->request->getVar('check') == '3'){
 				$where = ' AND p.user_id = '.$data['user_detail']->id;
 				$data['product_count'] = count($this->ProductModel->get_products($category_name='all',$where));
 				
-				if(!empty($_GET) && !empty($_GET['category'])){
-					$data['title'] = trans('Create New Listing');			
+				if(!empty($_GET) && !empty($_GET['category'])){			
 					$this->CategoriesSubModel = new CategoriesSubModel();
 					$data['sub_categories'] = $this->CategoriesSubModel->get_categories_by_ids($_GET['category']);
 					
@@ -640,11 +639,13 @@ else if($this->request->getVar('check') == '3'){
 					//delete old uploaded photos
 					$this->UsersModel->delete_user_photos_id($this->session->get('vr_sess_user_id'));
 					$data['product_detail'] = array();
+					$data['title'] = trans('Create New Listing');
 					if(!empty($_GET) && !empty($_GET['category']) && !empty($_GET['id'])){
+					$data['title'] = trans('Edit Listing');
 						//get product detail
 						$where = ' AND p.id = '.$_GET['id'];
 						$data['product_detail'] = $this->ProductModel->get_product_detail($where);
-						$data['user_photos'] = $this->UsersModel->get_user_photos($this->session->get('vr_sess_user_id'),'',$_GET['id']);
+						$data['user_photos'] = $this->UsersModel->get_user_photos($this->session->get('vr_sess_user_id'),'',$_GET['id'],0,1);
 					}
 						
 					$sale_id = !empty($_GET['sale_id']) ? $_GET['sale_id'] : '';	

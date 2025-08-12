@@ -992,20 +992,13 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
         return $query->getResultArray();
 	}
 	public function get_user_photos_isimage($id,$plan_id='',$product_id=0){
-		if($plan_id == 1 || $plan_id == 2){
-			$sql = "SELECT *,(SELECT GROUP_CONCAT(id ORDER BY user_images.order ASC) FROM user_images WHERE user_id = ? AND product_id = ?) AS all_ids FROM user_images WHERE user_images.user_id = ? AND product_id=? AND file_type='image' order by user_images.order asc LIMIT 10";
-		}else{
-			$sql = "SELECT *,(SELECT GROUP_CONCAT(id ORDER BY user_images.order ASC) FROM user_images WHERE user_id = ? AND product_id = ?) AS all_ids FROM user_images WHERE user_images.user_id = ? AND product_id=? AND file_type='image' order by user_images.order asc";
-		}		
+		$sql = "SELECT *,(SELECT GROUP_CONCAT(id ORDER BY user_images.order ASC) FROM user_images WHERE user_id = ? AND product_id = ?) AS all_ids FROM user_images WHERE user_images.user_id = ? AND product_id=? AND file_type='image' AND is_delete = 0 order by user_images.order asc";
+				
         $query = $this->db->query($sql, array($id,$product_id,$id,$product_id));
         return $query->getResultArray();
 	}
-	public function get_user_photos_isvideo($id,$plan_id='',$product_id=0){
-		if($plan_id == 1 || $plan_id == 2){
-			$sql = "SELECT *,(SELECT GROUP_CONCAT(id ORDER BY user_images.order ASC) FROM user_images WHERE user_id = ? AND product_id = ?) AS all_ids FROM user_images WHERE user_images.user_id = ? AND product_id=? AND file_type='video' order by user_images.order asc LIMIT 10";
-		}else{
-			$sql = "SELECT *,(SELECT GROUP_CONCAT(id ORDER BY user_images.order ASC) FROM user_images WHERE user_id = ? AND product_id = ?) AS all_ids FROM user_images WHERE user_images.user_id = ? AND product_id=? AND file_type='video' order by user_images.order asc";
-		}		
+	public function get_user_photos_isvideo($id,$plan_id='',$product_id=0){		
+		$sql = "SELECT *,(SELECT GROUP_CONCAT(id ORDER BY user_images.order ASC) FROM user_images WHERE user_id = ? AND product_id = ?) AS all_ids FROM user_images WHERE user_images.user_id = ? AND product_id=? AND file_type='video' AND is_delete = 0 order by user_images.order asc";
         $query = $this->db->query($sql, array($id,$product_id,$id,$product_id));
         return $query->getResultArray();
 	}
@@ -1065,7 +1058,7 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
 	
 	public function delete_user_photos_id($user_id){
 		
-		$sql = "SELECT * FROM user_images WHERE user_images.user_id = ? AND product_id=0 order by user_images.order asc";$query =$this->db->query($sql, array($user_id));
+		$sql = "SELECT * FROM user_images WHERE user_images.user_id = ? AND (product_id=0 OR is_saved=1) order by user_images.order asc";$query =$this->db->query($sql, array($user_id));
         $arr = $query->getResultArray();
 		
 		// Deleting file
@@ -1101,8 +1094,8 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
 			];
 		}
 		
-		
-		return $this->db->query("DELETE FROM user_images WHERE (product_id = 0 OR is_saved =1) AND user_id='" . $user_id . "'");
+		return $this->db->query("DELETE FROM user_images WHERE (product_id=0 OR is_saved=1) AND user_id='" . $user_id . "'");
+		//return $this->db->query("DELETE FROM user_images WHERE (product_id = 0 OR is_saved =1) AND user_id='" . $user_id . "'");
 	}
     //reset password
     public function reset_password($token)

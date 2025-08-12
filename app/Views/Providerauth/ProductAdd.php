@@ -571,11 +571,11 @@ video{
 			<form id="titlesForm" class="w-100">
           <!-- JS-generated file list will appear here -->
 		  <div id="logBook-edit" class="pb-3"></div>
-			<div class="modal-footer bg-white px-0 justify-content-between position-sticky bottom-0 rounded-0 z-3">
+			<div class="modal-footer bg-white px-0 justify-content-center position-sticky bottom-0 rounded-0 z-3">
 				<!--<div class="m-0">
 				  <a href="javascript:void(0);" class="m-0" data-field-id="" id="triggerModalFileInput"><i class="fa fa-plus-circle me-2"></i>Add File</a>
 				</div>-->
-				  <button type="submit" class="btn min-w-auto m-0 btn-success px-5">Save</button>
+				  <button type="submit" class="btn m-0 btn-success px-5">Save</button>
 			</div>
 		  </form>
         </div>
@@ -1080,12 +1080,16 @@ $('#titlesForm').on('submit', function(e){
 
 <style>
 .file-previews-grid{ display:grid;grid-template-columns:repeat(auto-fill,minmax(75px,1fr));gap:10px;margin-top:.25rem }
-.file-card{border-radius:10px;overflow:hidden;}
+.file-card{border-radius:10px;overflow:hidden; margin-bottom:10px;}
 .file-thumb{width:100%;height:70px;object-fit:cover;display:block;background:#f3f4f6}
 .file-actions{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f59e0b;color:#fff}
 .file-actions .btn-icon{cursor:pointer;display:inline-flex;align-items:center;gap:6px}
 .file-actions i{font-size:12px}
 .file-type-icon{width:100%;height:70px;display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--white);background:var(--b-blue);}
+@media (max-width:767px) {
+.file-previews-grid {grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));}
+.dz-wrap { padding: 1rem; }
+}
 </style>
 
 <script>

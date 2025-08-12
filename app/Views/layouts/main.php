@@ -498,6 +498,7 @@ button#gdpr-cookie-advanced {
 }
 .dbContent.subspage label,.dbContent.billingpage label{
 	display:block;
+	margin-left:0;
 }
 </style>
 	<!-- jquery latest version -->
@@ -888,7 +889,7 @@ $(function () {
       pageLength: 5,
       lengthChange: true,
       lengthMenu: [5, 10, 25, 50, 100],
-      dom: '<"d-flex justify-content-between align-items-center mb-3"l<"date-filter">f<"reset-filter ms-4">>t<"d-flex justify-content-center align-items-center mt-3"ip>',
+      dom: '<"d-flex justify-content-between align-items-center mb-3"l<"date-filter">f<"reset-filter ms-2">>t<"d-flex justify-content-center align-items-center mt-3"ip>',
       language: {
         paginate: {
           previous: "<i class='fas fa-caret-left'></i>",
@@ -941,7 +942,7 @@ $(function () {
           </div>
         `);
         $wrap.find('.reset-filter').html(`
-          <button type="button" class="btn btn-sm min-w-auto px-5 resetFilters">Reset</button>
+          <button type="button" class="btn btn-sm resetFilters">Reset</button>
         `);
 
         // Init daterangepicker for this table's input
@@ -1072,7 +1073,7 @@ table.dataTable thead>tr>th.sorting_asc:before, table.dataTable thead>tr>th.sort
 }
 .date-filter{
     margin-left: auto;
-    width: 20rem;
+    max-width: 20rem;
 }
 </style>
 

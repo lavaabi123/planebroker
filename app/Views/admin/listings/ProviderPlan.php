@@ -49,7 +49,7 @@
 					
 					<ul class="list-unstyled my-4">
 					  <li><?= $plan->no_of_weeks ?> week listing on PlaneBroker.com</li>
-					  <li><?= $plan->no_of_photos ?> photos / docs</li>
+					  <li><?= $plan->no_of_photos ?> photos</li>
 					  <li class="<?php echo !empty($plan->no_of_videos) ? '' : 'd-close';  ?>"><?php echo !empty($plan->no_of_videos) ? $plan->no_of_videos.' Videos' : 'No Video';  ?></li>
 					  <li class="<?php echo !empty($plan->is_featured_listing) ? '' : 'd-close';  ?>"><?php echo !empty($plan->is_featured_listing) ? 'Featured Listing on Homepage' : 'Not a featured listing';  ?></li>
 					  <li class="<?php echo !empty($plan->is_premium_listing) ? '' : 'd-close';  ?>"><?php echo !empty($plan->is_premium_listing) ? 'Premium listing' : 'Not a Premium listing';  ?></li>

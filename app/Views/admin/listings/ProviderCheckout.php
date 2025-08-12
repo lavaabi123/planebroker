@@ -212,7 +212,7 @@
 						</thead>
 						<tbody>
 							<tr style="display :<?php echo ($plan_detail[0]->id == 2) ? 'none' : ''; ?>"><td><div><?= $plan_detail[0]->no_of_weeks ?> week listing on PlaneBroker.com</div></td><td class="text-center"><i class="fa fa-check"></i></td></tr>
-							<tr><td><div><?= $plan_detail[0]->no_of_photos ?> photos / docs</div></td><td class="text-center"><i class="fa fa-check"></i></td></tr>
+							<tr><td><div><?= $plan_detail[0]->no_of_photos ?> photos</div></td><td class="text-center"><i class="fa fa-check"></i></td></tr>
 							<tr><td><div><?php echo !empty($plan_detail[0]->no_of_videos) ? $plan_detail[0]->no_of_videos.' Videos' : 'No Video';  ?></div></td><td class="text-center"><i class="fa fa-<?php echo !empty($plan_detail[0]->no_of_videos) ? 'check' : 'close';  ?>"></i></td></tr>
 							<tr><td><div><?php echo !empty($plan_detail[0]->is_featured_listing) ? 'Featured Listing on Homepage' : 'Not a featured listing';  ?></div></td><td class="text-center"><i class="fa fa-<?php echo !empty($plan_detail[0]->is_featured_listing) ? 'check' : 'close';  ?>"></i></td></tr>
 							<tr><td><div><?php echo !empty($plan_detail[0]->is_premium_listing) ? 'Premium listing' : 'Not a premium listing';  ?></div></td><td class="text-center"><i class="fa fa-<?php echo !empty($plan_detail[0]->is_premium_listing) ? 'check' : 'close';  ?>"></i></td></tr>

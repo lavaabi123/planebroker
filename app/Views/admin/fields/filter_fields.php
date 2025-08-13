@@ -227,8 +227,8 @@ $(function() {
             data: data,
             success: function (response) {
 				$("#fields_table tbody tr").each(function(index) {
-				  $(this).find("td").eq(0).text(index + 1);
-				  $(this).find("td").eq(4).text(index + 1);
+				  //$(this).find("td").eq(0).text(index + 1);
+				  $(this).find("td").eq(3).text(index + 1);
 				});
 				Swal.fire({
 				  icon: 'success',
@@ -264,7 +264,7 @@ $(function(){
     lengthChange: true,
     paging: true,
     ordering: true,
-    order: [[0, 'asc']],   // first column asc
+    order: [[3, 'asc']],   // first column asc
     pageLength: 10,
     lengthMenu: [10, 25, 50, 100],
     dom: '<"d-flex align-items-center gap-2 mb-3"lf<"dropdown-filter"><"reset-filter">>t<"d-flex justify-content-center align-items-center my-3"ip>',
@@ -346,7 +346,7 @@ $(function(){
     $('#filterDropdown').val('');  // Reset dropdown filter
 
     // 4) Reset ordering & page
-    dt.order([[0, 'asc']]);     // back to first column ASC
+    dt.order([[3, 'asc']]);     // back to first column ASC
     dt.page('first');
 
     // 5) Redraw once

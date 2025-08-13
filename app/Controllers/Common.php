@@ -521,7 +521,8 @@ class Common extends BaseController
 				'selectedSubcategories' => array_column($selectedSubcategories, 'sub_category_id'),	
 				'selectedGroups' => array_column($selectedGroups, 'fields_group_id'),	
                 'status' => $field->status,
-                'is_filter' => $field->is_filter,			
+                'is_filter' => $field->is_filter,	
+                'filter_type' => $field->filter_type, 		
             );
         }
         echo json_encode($data);

@@ -889,7 +889,7 @@ $(function () {
       pageLength: 5,
       lengthChange: true,
       lengthMenu: [5, 10, 25, 50, 100],
-      dom: '<"d-flex justify-content-between align-items-center mb-3"l<"date-filter">f<"reset-filter ms-2">>t<"d-flex justify-content-center align-items-center mt-3"ip>',
+      dom: '<"d-flex justify-content-between align-items-center mb-3"l<"date-filter">f<"reset-filter ms-2">>t<"d-flex justify-content-center align-items-center mt-3"p>',
       language: {
         paginate: {
           previous: "<i class='fas fa-caret-left'></i>",

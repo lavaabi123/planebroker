@@ -332,6 +332,7 @@ class Providers extends BaseController
 			}
 		}
 		$where .= ' AND p.status=1 AND (p.is_cancel = 0 || s.stripe_subscription_end_date >= NOW()) and p.sale_id > 0';
+		$wherecat .= ' AND p.status=1 AND (p.is_cancel = 0 || s.stripe_subscription_end_date >= NOW()) and p.sale_id > 0';
 		
 				
 		$sort_by = $this->request->getGet('sort_by') ?? '';   // '' when not present

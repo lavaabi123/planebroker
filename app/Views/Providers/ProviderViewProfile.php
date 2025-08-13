@@ -252,7 +252,7 @@ $count = !empty($images) ? count($images) : 0;
 						if(!empty($product_dynamic_fields)){
 							foreach($product_dynamic_fields as $pd){
 								if(!empty($pd)){
-									foreach($pd as $pds){ if(!empty($pds['frontend_show']) && $pds['group_name'] == 'General Information'){ ?>
+									foreach($pd as $pds){ if(!empty($pds['frontend_show']) && ($pds['group_name'] == 'General Information' || $pds['group_name'] == 'Basic Property Details')){ ?>
 									<div class="d-flex justify-content-between border-bottom py-3">
 										<span class="left fw-medium"><?php echo str_replace(' ex. OBO, FIRM, MAKE AN OFFER, etc.','',$pds['field_name']); ?></span>
 										<span class="right"><?php echo $pds['name']; ?></span>
@@ -385,7 +385,7 @@ $count = !empty($images) ? count($images) : 0;
 			if(!empty($product_dynamic_fields)){
 				foreach($product_dynamic_fields as $p => $pd){
 					$pg++;
-					if(!empty($pd) && $p != 'General Information' && $p != 'Aircraft Status'){ ?>					
+					if(!empty($pd) && $p != 'General Information' && $p != 'Basic Property Details' && $p != 'Aircraft Status'){ ?>					
 						<div class="accordion-item">
 							<h2 class="accordion-header">
 							  <button class="accordion-button <?php //echo ($pg == 2) ? '' : 'collapsed'; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#pd-<?php echo $pg; ?>" aria-expanded="<?php echo ($pg == 2) ? 'true' : 'false'; ?>" aria-controls="pd-<?php echo $pg; ?>">

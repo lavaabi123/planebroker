@@ -388,11 +388,11 @@ $count = !empty($images) ? count($images) : 0;
 					if(!empty($pd) && $p != 'General Information' && $p != 'Basic Property Details' && $p != 'Aircraft Status'){ ?>					
 						<div class="accordion-item">
 							<h2 class="accordion-header">
-							  <button class="accordion-button <?php //echo ($pg == 2) ? '' : 'collapsed'; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#pd-<?php echo $pg; ?>" aria-expanded="<?php echo ($pg == 2) ? 'true' : 'false'; ?>" aria-controls="pd-<?php echo $pg; ?>">
+							  <button class="accordion-button <?php echo ($p != 'Log Book') ? '' : 'collapsed'; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#pd-<?php echo $pg; ?>" aria-expanded="<?php echo ($pg == 2) ? 'true' : 'false'; ?>" aria-controls="pd-<?php echo $pg; ?>">
 								<?php echo $p; ?>
 							  </button>
 							</h2>
-							<div id="pd-<?php echo $pg; ?>" class="accordion-collapse collapse show<?php //echo ($pg == 2) ? 'show' : ''; ?>" data-bs-parent="#productDes">
+							<div id="pd-<?php echo $pg; ?>" class="accordion-collapse collapse <?php echo ($p != 'Log Book') ? 'show' : ''; ?>" >
 							  <div class="accordion-body">
 						<?php foreach($pd as $pds){ ?>
 								<div class="item-list logBook border-0 pb-0 mb-0">

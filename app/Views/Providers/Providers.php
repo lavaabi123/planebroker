@@ -230,14 +230,27 @@ if(!empty($query1)){
 <input name="urlfinal" type="hidden" id="urlfinal" value="<?php echo substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], "?")).''.$query; ?>" />	
 <script>
 function fetchProducts() {
-  // 1) Build URL from current form values
-  const query = buildQuery($('#searchFilter'));
-  const url   = '<?php echo base_url(); ?>/listings/<?php echo $category; ?>' + (query ? '?' + query : '');
+   // A) Build params from #searchFilter (as you already do)
+  const filterQS = buildQuery($('#searchFilter'));
 
-  // Show/Hide “Clear All” (ignore sort_by for this)
+  // B) Start with existing params in the address bar (keeps keywords)
+  const existing = new URLSearchParams(window.location.search);
+
+  // C) Merge filter params over existing (filters override; keywords persist)
+  const merged = new URLSearchParams(existing.toString());
+  if (filterQS) {
+    const p = new URLSearchParams(filterQS);
+    p.forEach((v, k) => merged.set(k, v));
+  }
+
+  // D) Build final URL with merged params
+  const base = '<?php echo base_url(); ?>/listings/<?php echo $category; ?>';
+  const url  = base + (merged.toString() ? ('?' + merged.toString()) : '');
+
+  // Show/Hide “Clear All” (ignore sort_by)
   let hasRealFilters = false;
-  if (query) {
-    const p = new URLSearchParams(query);
+  {
+    const p = new URLSearchParams(merged.toString());
     p.delete('sort_by');
     hasRealFilters = [...p.keys()].length > 0;
   }
@@ -318,14 +331,18 @@ function fetchProducts() {
     // restore scroll position so the panel doesn’t jump
     $box.scrollTop(prevScroll);
 
-    // recompute pill visibility (ignore sort_by tag if present)
+    
+	
+	// Recompute pills against merged params (ignore sort_by)
     const pills = $('#appliedFilters .applied-filter')
-      .not('[data-name="sort_by"]')
-      .length > 0;
+      .not('[data-name="sort_by"]').length > 0;
     $('.clearSelected').toggle(pills);
 
-    // update URL without full reload
-    history.replaceState(null, '', url);
+    // Only update the URL if it actually changed
+    if (url !== window.location.pathname + window.location.search) {
+      history.replaceState(null, '', url);
+    }
+	
   });
 }
 

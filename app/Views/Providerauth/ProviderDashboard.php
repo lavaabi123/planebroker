@@ -86,7 +86,7 @@
 					<?php } ?>
 					<?php if(!empty($inactive_subs_count)){ ?>
 						<div class="col-md-12 px-md-0 text-center align-self-center">
-							<a href="<?php echo base_url('subscriptions'); ?>"><h6 class="mt-1 red">! You have <?= $inactive_subs_count; ?> inactive subscriptions</h6></a>
+							<a href="<?php echo base_url('subscriptions'); ?>"><h6 class="mt-1 red">You have <?= $inactive_subs_count; ?> inactive subscriptions!</h6></a>
 						</div>
 					<?php } ?>
 					</div>

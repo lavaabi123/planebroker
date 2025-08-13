@@ -247,7 +247,7 @@ class Providers extends BaseController
 				//get fields to show				
 				$this->ProductModel = new ProductModel();
 				//$data['title_fields'] = $this->ProductModel->title_fields($category,'title');
-				$where .= ' AND ((SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` where name = "manufacturer")) like "%'.$_GET['keywords'].'%" OR (SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` where name = "Make/Model")) like "%'.$_GET['keywords'].'%" OR (SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` where name = "year")) like "%'.$_GET['keywords'].'%")';
+				$where .= ' AND ((SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` where name = "manufacturer" limit 1)) like "%'.$_GET['keywords'].'%" OR (SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` where name = "Make/Model")) like "%'.$_GET['keywords'].'%" OR (SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` where name = "year")) like "%'.$_GET['keywords'].'%")';
 				$filter_texts['keywords'] = 'Keywords';
 			}
 			if(!empty($_GET['created_at'])){

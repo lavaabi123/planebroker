@@ -510,6 +510,7 @@ class Common extends BaseController
                 'name' => $field->name,
                 'field_type' => $field->field_type, 
                 'field_position' => $field->field_position, 
+                'field_condition' => $field->field_condition, 
                 'field_order' => $field->field_order,
                 'field_options' => $field->field_options,
 				'option_html' => $option_html,

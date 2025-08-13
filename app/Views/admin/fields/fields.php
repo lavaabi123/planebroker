@@ -51,7 +51,7 @@ td:hover {
                                                     <th width="40%"><?php echo trans('Sub Category'); ?></th>
                                                     <th><?php echo trans('Field Group'); ?></th>
                                                     <th><?php echo trans('Order'); ?></th>
-                                                    <th><?php echo trans('Position'); ?></th>
+                                                    <th><?php echo trans('Condition'); ?></th>
                                                     <th class="text-center"><?php echo trans('status'); ?></th>
                                                     <th class="text-center"><?php echo trans('options'); ?></th>
                                                 </tr>
@@ -65,7 +65,7 @@ td:hover {
                                                         <td><?php echo html_escape($item->subcategory_names); ?></td>
                                                         <td><?php echo html_escape($item->group_names); ?></td>
                                                         <td><?php echo html_escape($item->field_order); ?></td>
-                                                        <td><?php echo html_escape($item->field_position); ?></td>
+                                                        <td><?php echo !empty($item->field_condition) ? 'Required' : 'Optional'; ?></td>
 														<td class="text-center">
                                                             <?php if ($item->status == 1) : ?>
                                                                 <button class="btn btn-sm bg-success"><?php echo trans("active"); ?></button>
@@ -179,24 +179,24 @@ td:hover {
                             </div>
                         </div>
                     </div>  
+                    <div class="form-group">
+						<div class="row align-items-center">
+                            <div class="col-auto">
+                                <label class="ms-0"><?php echo trans('Field Condition'); ?></label>
+                            </div>					
+							<div class="col-auto d-flex align-items-center">
+								<input type="radio" name="field_condition" value="1" id="field_condition_1" class="square-purple" checked="checked">
+								<label for="field_condition_1" class="option-label ms-0">Required</label>
+							</div>
+							<div class="col-auto d-flex align-items-center">
+								<input type="radio" name="field_condition" value="0" id="field_condition_2" class="square-purple">
+								<label for="field_condition_2" class="option-label ms-0">Optional</label>
+							</div>
+						</div> 
+                    </div> 
 					
 				</div>	
 				<div class="col-md-6">	
-                   <!-- <div class="form-group">
-						<div class="row align-items-center">
-                            <div class="col-auto">
-                                <label class="ms-0"><?php echo trans('Field Position'); ?></label>
-                            </div>					
-							<div class="col-auto d-flex align-items-center">
-								<input type="radio" name="field_position" value="Right" id="field_position_1" class="square-purple" checked="checked">
-								<label for="field_position_1" class="option-label ms-0">Right</label>
-							</div>
-							<div class="col-auto d-flex align-items-center">
-								<input type="radio" name="field_position" value="Left" id="field_position_2" class="square-purple">
-								<label for="field_position_2" class="option-label ms-0">Left</label>
-							</div>
-						</div> 
-                    </div>   -->     
 
                     <div class="form-group">
                         <label><?php echo trans("Field Order"); ?></label>
@@ -321,7 +321,7 @@ function manage_fields(fieldId) {
             success: function (response) {
                 var obj = JSON.parse(response);                
                 $('#modal_name').val(obj.name);
-                $('#modal_field_position').val(obj.field_position);
+                $('#modal_field_condition').val(obj.field_condition);
                 $('#modal_field_order').val(obj.field_order);
 				$("#modal_field_type").val(obj.field_type).change();
 				if(obj.field_type == 'Checkbox' || obj.field_type == 'Radio' || obj.field_type == 'Dropdown'){
@@ -330,7 +330,7 @@ function manage_fields(fieldId) {
 				}else{
 					$('.fieldoptiondiv').hide();
 				}
-				$("input[name=field_position][value="+obj.field_position+"]").prop("checked",true);
+				$("input[name=field_condition][value="+obj.field_condition+"]").prop("checked",true);
 				$("input[name=status][value="+obj.status+"]").prop("checked",true);
 				
 				$('#category_id').attr('data-field-id',obj.id);

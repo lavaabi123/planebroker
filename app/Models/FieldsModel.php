@@ -145,7 +145,7 @@ class FieldsModel extends Model
 
 		// ORDER BY group name and field name
 		//$builder->orderBy('fields_group.name');
-		$builder->orderBy('fields.field_order');
+		$builder->orderBy('fields_group.sort_order,fields.field_order');
 
 		$query = $builder->get();
 		$results = $query->getResult();

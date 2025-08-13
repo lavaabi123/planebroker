@@ -365,7 +365,7 @@ $(function(){
     lengthChange: true,
     paging: true,
     ordering: true,
-    order: [[0, 'asc']],
+    order: [[6, 'desc']],
     pageLength: 10,
     lengthMenu: [10, 25, 50, 100],
     dom: 
@@ -490,7 +490,7 @@ $(function(){
     $('#dateRangeFilter').val('');
 
     // Reset ordering & page
-    dt.order([[0, 'asc']]);
+    dt.order([[6, 'desc']]);
     dt.page('first');
 
     dt.draw();

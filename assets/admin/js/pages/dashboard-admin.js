@@ -124,7 +124,7 @@ $(function () {
 		let totalPremium = typeof(cData.totalPremium != 'undefined') ? cData.totalPremium : '&nbsp';
         $('#totalPremium').html(totalPremium);
 
-        $('#dataforperiod').html(cData.dataforperiod)
+        $('#dataforperiod').val(cData.dataforperiod)
 
         const sessionsData = {
             type: 'line',

@@ -564,7 +564,7 @@ button#gdpr-cookie-advanced {
 	<?php if($uri->getSegment(env('urlsegment')-1) == 'analytics') { ?>
     <script src="<?php echo base_url(); ?>/assets/frontend/js/analytics.js?version=1.6"></script>
 	<?php }else{ ?>
-		<script src="<?php echo base_url(); ?>/assets/frontend/js/dashboard.js?version=1.3"></script>
+		<script src="<?php echo base_url(); ?>/assets/frontend/js/dashboard.js?version=1.4"></script>
 	<?php } ?>
 	<script src="<?php echo base_url(); ?>/assets/frontend/js/slimselect.js" defer></script>
 <link

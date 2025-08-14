@@ -81,13 +81,11 @@ Dashboard content
                     <div>
                         <h1 class="m-0" style="float: left;">Dashboard</h1>
 						<div class="card-tools d-flex align-items-center" style="float: right;">
-							<p style="margin-bottom:0" id="dataforperiod">&nbsp;</p>
-							<button type="button" class="btn btn-primary btn-sm daterange ml-2" data-input-url="<?php echo base_url() ?>/common/getUsersRegister" title="Date range">
-								<i class="far fa-calendar-alt"></i>
+							<input class="form-control daterange ml-2" id="dataforperiod" data-input-url="<?php echo base_url() ?>/common/getUsersRegister" title="Date range">
 							</button>
-							<button type="button" class="btn btn-primary btn-sm ml-2" data-card-widget="collapse" title="Collapse">
+							<!--<button type="button" class="btn btn-primary btn-sm ml-2" data-card-widget="collapse" title="Collapse">
 								<i class="fas fa-minus"></i>
-							</button>
+							</button>-->
 						</div>
                     </div>
                 </div><!-- /.col -->
@@ -208,7 +206,7 @@ Dashboard content
                                 </div>
                                 <div class="col-md-4">
                                     <p class="text-center">
-                                        <strong>Broker Plan</strong>
+                                        <strong>Active Subscriptions</strong>
                                     </p>
                                     <div class="chart">
                                         <canvas id="donutChart" height="300"></canvas>
@@ -232,7 +230,7 @@ Dashboard content
 					<div class="card card-primary card-outline p-0 overflow-hidden custom--card">
 						<div class="card-header justify-content-between py-3">
 							<div class="card-title mb-0 fw-bolder">
-								Top Broker Locations
+								Top Listings based on Views
 							</div>
 						</div>
 						<div class="card-body" style="font-size: 14px;">
@@ -242,9 +240,9 @@ Dashboard content
 								<li class="mt-3">
 									<div class="d-flex align-items-top flex-wrap">
 										<div class="flex-fill">
-											<p class="fw-semibold mb-0" style="font-weight: 600!important;"><?php echo $top_location->city.', '.$top_location->state_code; ?></p>
+											<p class="fw-semibold mb-0" style="font-weight: 600!important;"><?php echo $top_location->display_name; ?></p>
 										</div>
-										<div class="fw-semibold fs-15"><?php echo $top_location->user_count.' Brokers'; ?></div>
+										<div class="fw-semibold fs-15"><?php echo $top_location->total_views; ?></div>
 									</div>
 								</li>
 							<?php } } ?>
@@ -280,6 +278,66 @@ Dashboard content
 									<td><?php echo ($recent_payment->stripe_subscription_end_date != NULL) ? formatted_date($recent_payment->stripe_subscription_end_date,'m/d/Y') : '-'; ?></td>
 									<td><?php echo '$ '.$recent_payment->stripe_subscription_amount_paid; ?></td>
 									<td><?php echo formatted_date($recent_payment->created_at,'m/d/Y'); ?></td>
+								</tr>
+								<?php } } } ?>
+								</tbody>
+							</table>	
+							</div>
+						</div>
+					</div>
+				</diV>
+				<div class="col-xl-4 mt-3">
+					<div class="card card-primary card-outline p-0 overflow-hidden custom--card">
+						<div class="card-header justify-content-between py-3">
+							<div class="card-title mb-0 fw-bolder">
+								Top Listings based on Favorites
+							</div>
+						</div>
+						<div class="card-body" style="font-size: 14px;">
+							<ul class="list-unstyled crm-top-deals mb-0">
+							<?php if(!empty($top_favs)){
+								foreach($top_favs as $top_fav){	?>
+								<li class="mt-3">
+									<div class="d-flex align-items-top flex-wrap">
+										<div class="flex-fill">
+											<p class="fw-semibold mb-0" style="font-weight: 600!important;"><?php echo $top_fav->display_name; ?></p>
+										</div>
+										<div class="fw-semibold fs-15"><?php echo $top_fav->total_views; ?></div>
+									</div>
+								</li>
+							<?php } } ?>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="col-xl-8 mt-3">
+					<div class="card card-primary card-outline p-0 overflow-hidden custom--card">
+						<div class="card-header justify-content-between py-3">
+							<div class="card-title mb-0 fw-bolder">
+								Recent Listings
+							</div>
+						</div>
+						<div class="card-body p-0">
+							<div class="table-responsive">
+							<table class="table text-nowrap table-hover border table-bordered mb-0">
+								<thead>
+									<tr>
+										<th scope="col">Name</th>
+										<th>Price</th>
+										<th>Package</th>
+										<th scope="col">Category</th>
+										<th scope="col">Created On</th>
+									</tr>
+								</thead>
+								<tbody>
+								<?php if(!empty($recent_listings)){
+								foreach($recent_listings as $recent_listing){ if(!empty(trim($recent_listing->display_name))){	?>
+								<tr>
+									<td><?php echo $recent_listing->display_name; ?></td>
+									<td><?php echo ($recent_listing->price != NULL) ? 'USD $'.number_format($recent_listing->price, 2, '.', ',') : 'Call for Price'; ?></td>
+									<td><?php echo $recent_listing->package_names; ?></td>
+									<td><?php echo $recent_listing->category_name; ?></td>
+									<td><?php echo formatted_date($recent_listing->created_at,'m/d/Y'); ?></td>
 								</tr>
 								<?php } } } ?>
 								</tbody>

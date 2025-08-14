@@ -303,55 +303,26 @@ class Common extends BaseController
 
     }
     private function getUsersAuth($startDate, $endDate)
-    {
-        /*$this->userModel->builder('users')
-            ->select('count(id) as users, user_type')
-            ->groupBy('user_type');
-
-
-        $query =  $this->userModel->builder('users')->get();
-
+    {    //$db = \Config\Database::connect();    
+		$query =  $this->userModel->builder('plans')->select('id,name')->get();
+		$data['type'] = array();
         if (!empty($query->getResult())) {
             $data = array();
-            foreach ($query->getResult() as $row) {
-
-                $data['type'][] = ucfirst($row->user_type);
-                $data['user'][] = (int) $row->users;
+            foreach ($query->getResult() as $r => $row) {
+                $data['type'][$r] = $row->name;				
+				$query = $this->userModel->builder('sales AS s')
+				->select('s.*, u.fullname AS provider,u.user_level,p.name as plan_name,p.price as plan_price,pr.id as product_id,c.permalink,pr.category_id,(SELECT GROUP_CONCAT(pd.field_value ORDER BY t.sort_order SEPARATOR " ") AS field_values FROM products_dynamic_fields pd JOIN ( SELECT t.field_id, t.sort_order FROM title_fields t LEFT JOIN fields f ON f.id = t.field_id WHERE t.title_type = "title") t ON t.field_id = pd.field_id WHERE pd.product_id = pr.id) as display_name')
+				->join('users AS u', 'u.id = s.user_id', 'left')
+				->join('plans AS p', 'p.id = s.plan_id', 'left')
+				->join('products AS pr', 'pr.id = s.product_id', 'left')
+				->join('categories AS c', 'c.id = pr.category_id', 'left')
+				->where('s.plan_id',$row->id)->where('s.is_cancel', 0)->where('u.fullname IS NOT NULL')
+				->get()->getResult();
+			//echo $db->getLastQuery();exit;	
+				$data['user'][$r] = !empty($query) ? (int) count($query) : 0;
             }
-        } else {
-            $data['type'][] =  0;
-            $data['user'][] = 0;
-        }*/
-		$data['type'] = array('Free Trial','Standard','Premium','Cancelled','No Plan');
-        $query1 =  $this->userModel->builder('users')->select('count(id) as users, plan_id,is_trial,is_cancel')
-            ->where('DATE(created_at) <=', $endDate)->where('DATE(created_at) >=', $startDate)
-			->where('plan_id >',1)->where('is_trial', 1)->where('is_cancel', 0)
-            ->get()->getRow();
-		$data['user'][0] = !empty($query1) ? (int) $query1->users : 0;
-		$query2 =  $this->userModel->builder('users')->select('count(id) as users, plan_id,is_trial,is_cancel')
-            ->where('DATE(created_at) <=', $endDate)->where('DATE(created_at) >=', $startDate)
-			->where('plan_id',2)->where('is_trial', 0)->where('is_cancel', 0)
-            ->groupBy('plan_id')->get()->getRow();
-		$data['user'][1] = !empty($query2) ? (int) $query2->users : 0;
+        }
 		
-		$query3 =  $this->userModel->builder('users')->select('count(id) as users, plan_id,is_trial,is_cancel')
-            ->where('DATE(created_at) <=', $endDate)->where('DATE(created_at) >=', $startDate)
-			->where('plan_id',3)->where('is_trial', 0)->where('is_cancel', 0)
-            ->groupBy('plan_id')->get()->getRow();
-		$data['user'][2] = !empty($query3) ? (int) $query3->users : 0;
-		
-		$query4 =  $this->userModel->builder('users')->select('count(id) as users, plan_id,is_trial,is_cancel')
-            ->where('DATE(created_at) <=', $endDate)->where('DATE(created_at) >=', $startDate)
-			->where('is_cancel', 1)
-            ->groupBy('plan_id')->get()->getRow();
-		$data['user'][3] = !empty($query4) ? (int) $query4->users : 0;
-		
-		$query5 =  $this->userModel->builder('users')->select('count(id) as users, plan_id,is_trial,is_cancel')
-            ->where('DATE(created_at) <=', $endDate)->where('DATE(created_at) >=', $startDate)
-			->where('plan_id', 1)
-            ->groupBy('plan_id')->get()->getRow();
-		$data['user'][4] = !empty($query5) ? (int) $query5->users : 0;
-
 
         return $data;
     }
@@ -835,6 +806,7 @@ class Common extends BaseController
             ->get();
         
         $row = $query->getRow();
+		return $row->totalAmountPaid;
 		
 		$query1 = $this->db->table('paypal_sales')
             ->selectSum('transaction_amount', 'totalAmountPaid')

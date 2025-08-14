@@ -153,7 +153,7 @@
     </script>
 
     <?php if ($segment === 'dashboard' || empty($segment)) : ?>
-        <script src="<?php echo base_url(); ?>/assets/admin/js/pages/dashboard-admin.js"></script>
+        <script src="<?php echo base_url(); ?>/assets/admin/js/pages/dashboard-admin.js?v=1"></script>
     <?php endif; ?>
 
     <script>

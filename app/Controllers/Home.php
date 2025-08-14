@@ -390,6 +390,13 @@ class Home extends BaseController
 		}
 		echo "success";exit;
 	}
+	public function update_ad_click_count($ad_id)
+    {		
+		if(!empty($ad_id)){
+		$query2 =  $this->userModel->db->query("UPDATE ads SET click_count = click_count + 1 WHERE id = ".$ad_id);
+		}
+		echo "success";exit;
+	}
 	public function update_share_count($user_id,$product_id)
     {		
 		if(!empty($user_id)){

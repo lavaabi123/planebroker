@@ -51,6 +51,7 @@ $routes->get('/providers', 'Providers::providers_list');
 $routes->get('/listings/(:any)/(:num)/(:any)', 'Providers::view_profile/$1/$2');
 $routes->get('/listings/(:any)', 'Providers::providers_list/$1');
 $routes->get('/update_call_count/(:num)/(:any)', 'Home::update_call_count/$1/$2');
+$routes->get('/update_ad_click_count/(:any)', 'Home::update_ad_click_count/$1');
 $routes->get('/update_share_count/(:num)/(:any)', 'Home::update_share_count/$1/$2');
 $routes->get('/update_direction_count/(:num)', 'Home::update_direction_count/$1');
 $routes->get('/providers/(:any)(/(:num))?', 'Providers::providers_list/$1/$3');
@@ -312,6 +313,15 @@ $routes->group("admin", ["namespace" => "App\Controllers\Admin"], function ($rou
         $routes->post('add_blog_post', 'Blog::add_blog_post');
         $routes->post('edit_blog_post', 'Blog::edit_blog_post');
         $routes->post('delete_blog_post', 'Blog::delete_blog_post');
+    });
+	
+    $routes->group('ad', function ($routes) {
+        $routes->get('ad', 'Ad::index');
+        $routes->get('add-ad', 'Ad::add_ad');
+        $routes->get('edit-ad/(:num)', 'Ad::edit_ad/$1');
+        $routes->post('add_ad_post', 'Ad::add_ad_post');
+        $routes->post('edit_ad_post', 'Ad::edit_ad_post');
+        $routes->post('delete_ad_post', 'Ad::delete_ad_post');
     });
 	
     $routes->group('support', function ($routes) {

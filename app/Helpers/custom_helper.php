@@ -1133,3 +1133,13 @@ function getFileIconClass($filename) {
     }
 }
 
+function get_ad($page_name, $page_position){
+	$db = \Config\Database::connect();
+	$result = $db->query("SELECT * FROM ads WHERE page_name='".$page_name."' AND page_position='".$page_position."' AND start_date <= NOW() AND end_date >= NOW() AND status = 1 AND deleted_at IS NULL")->getRowArray();
+	if(!empty($result) && !empty($result['image']) && !empty($result['ad_link'])){
+		return $result;
+	}else{
+		return array();
+	}
+}
+

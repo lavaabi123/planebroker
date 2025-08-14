@@ -156,7 +156,14 @@ function radio($name, $val){
 		</div>
 		
 		<div class="container py-5 text-center">
-			<a href="https://parkrapidsavionics.com/" target="_blank"><img src="<?= base_url('assets/frontend/images/ad/Park-Rapids-Web-Banner.jpg') ?>"></a>
+		<?php
+		$get_image = get_ad('Listings','Bottom');
+		if(!empty($get_image)){
+			echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+		}else{
+			echo '<img src="'.base_url('assets/frontend/images/ads-hoz.jpg').'">';
+		}
+		?>			
 		</div>
 		<div class="advSearch mb-5">
 			<h5 class="mb-1">Quick Search</h5>

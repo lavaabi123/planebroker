@@ -310,9 +310,27 @@ if( base_url() == str_replace('/index.php/','',$uri) || ($currentsegment == 'lis
 $blogs = get_all_blog(0); ?>		
 <div class="blog text-center py-5 px-3 px-xl-5 bg-gray">
 <?php if($currentsegment == 'listings'){ ?>
-	<a href="https://approachfaststack.com/" target="_blank"><img class="d-none d-md-block" src="<?= base_url('assets/frontend/images/ad/Approach-Web-Banner.jpg') ?>"></a>
+	<?php
+	$get_image = get_ad('Listings','Left');
+	if(!empty($get_image)){
+		echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+	}else{
+		echo '<img class="d-none d-md-block" src="'. base_url('assets/frontend/images/ads-vertical.jpg').'">';
+	}
+	?>
+	
 <?php }else{ ?>
-	<a href="https://barefootaviation.com/" target="_blank"><img class="d-none d-md-block" src="<?= base_url('assets/frontend/images/ad/Barefoot-Aviation-Web-Banner.jpg') ?>"></a>
+
+	<?php
+	$get_image = get_ad('Home','Left');
+	if(!empty($get_image)){
+		echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+	}else{
+		echo '<img class="d-none d-md-block" src="'. base_url('assets/frontend/images/ads-vertical.jpg').'">';
+	}
+	?>
+	
+	
 <?php } ?>
 	<div class="container blogs px-3 px-xl-5">
 
@@ -334,10 +352,23 @@ $blogs = get_all_blog(0); ?>
 		</div>
 		<a href="<?php echo base_url('/blog'); ?>" class="btn py-xl-3 px-xxl-5">View All Articles</a>
 	</div>
-<a href="https://hilleraviation.com/" target="_blank"><img class="d-none d-md-block" src="<?= base_url('assets/frontend/images/ad/Hiller-Aviation-Web-Banner.jpg') ?>"></a>
-</div>
-	<div class="bg-gray pb-5 text-center">
-		<a href="https://bwifly.com/" target="_blank"><img src="<?= base_url('assets/frontend/images/ad/BWI-Fly-Web-Banners.jpg') ?>"></a>
+	<?php
+	$get_image = get_ad('Home','Right');
+	if(!empty($get_image)){
+		echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+	}else{
+		echo '<img class="d-none d-md-block" src="'. base_url('assets/frontend/images/ads-vertical.jpg').'">';
+	}
+	?>	
+	
+	</div>
+	<div class="bg-gray pb-5 text-center">		
+	<?php
+	$get_image = get_ad('Home','Bottom');
+	if(!empty($get_image)){
+		echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+	}
+	?>	
 	</div>
 <?php } ?>
 		<div class="container py-5 py-sm-5 text-center">
@@ -1002,6 +1033,15 @@ $(function () {
     }
   }
 });
+
+function update_ad_click_count(ad_id){
+	$.ajax({
+		type: "GET",
+		url: '<?php echo base_url(); ?>' + "/update_ad_click_count/"+ad_id,
+		success: function (data) {
+		}
+	});
+}
 </script>
 
 <style>

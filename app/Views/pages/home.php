@@ -42,7 +42,7 @@
 						
 						<div class="form-group">
 
-							<select name='manufacturer' class='form-control slim-select slim-grey-blue' >
+							<select name='manufacturer' class='form-control slim-select slim-grey-blue sshome' >
 
 								<option value=''>All Manufacturers</option>
 

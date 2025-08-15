@@ -43,6 +43,7 @@
     <script src="<?php echo base_url(); ?>/assets/admin/plugins/parsley/parsley.min.js"></script>
 	<link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/croppie.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+	<link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/slimselect.css">
     <script>
         csrfName = '<?php echo csrf_token() ?>';
         csrfCookie = '<?php echo config('cookie')->prefix . config('security')->cookieName ?>';
@@ -117,6 +118,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
 <script src="<?php echo base_url(); ?>/assets/frontend/js/croppie.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+	<script src="<?php echo base_url(); ?>/assets/frontend/js/slimselect.js" defer></script>
 
     <script>
         <?php if (check_cron_time_minutes(1)) : ?>
@@ -236,8 +238,47 @@ table.dataTable thead > tr > th.sorting_desc:after {
     color: #fff;
 }
 
+.sshome.ss-main .ss-content .ss-search {
+    display: block !important; 
+}
+.ss-main .ss-content .ss-search input{
+	height:auto !important;
+	padding:8px 20px !important;
+}
 </style>
 <script>
+$(document).ready(function () {
+    $('select').each(function () {
+      const selectElement = this;
+
+      // Create SlimSelect instance
+      const slim = new SlimSelect({
+        select: selectElement,
+		showSearch: true, 
+        onChange: function (info) {
+          updateSlimColor(selectElement, info.value);
+        }
+      });
+
+      // Initial color based on current value
+      updateSlimColor(selectElement, selectElement.value);
+    });
+
+    // Function to color selected SlimSelect text
+    function updateSlimColor(originalSelect, value) {
+      const mainDiv = $(originalSelect).next('.ss-main').find('.ss-single-selected');
+
+      if (value === '') {
+        mainDiv.css('color', '#9b9b9b'); // grey for placeholder
+		mainDiv.find('.placeholder').css('opacity', '0.5');
+		mainDiv.find('.placeholder').css('font-weight', '300');
+      } else {
+        mainDiv.css('color', '#1b2e5b'); // blue for selected value
+		mainDiv.find('.placeholder').css('opacity', '1');
+		mainDiv.find('.placeholder').css('font-weight', '600');
+      }
+    }
+  });
 $(function () {
   // Find the nearest scrollable ancestor for an element
   function getScrollable($el) {

@@ -759,6 +759,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Create SlimSelect instance
       const slim = new SlimSelect({
         select: selectElement,
+		showSearch: true, 
         onChange: function (info) {
           updateSlimColor(selectElement, info.value);
         }
@@ -1145,7 +1146,13 @@ table.dataTable thead > tr > th.sorting_desc:after {
 .sort-icon-down.active {
     color: #fff;
 }
-
+.sshome.ss-main .ss-content .ss-search {
+    display: block !important; 
+}
+.ss-main .ss-content .ss-search input{
+	height:auto !important;
+	padding:8px 20px !important;
+}
 </style>
 
 

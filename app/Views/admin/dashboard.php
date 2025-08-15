@@ -334,7 +334,7 @@ Dashboard content
 								foreach($recent_listings as $recent_listing){ if(!empty(trim($recent_listing->display_name))){	?>
 								<tr>
 									<td><?php echo $recent_listing->display_name; ?></td>
-									<td><?php echo ($recent_listing->price != NULL) ? 'USD $'.number_format($recent_listing->price, 2, '.', ',') : 'Call for Price'; ?></td>
+									<td><?php echo ($recent_listing->price != NULL) ? 'USD $'.number_format((float)preg_replace('/[^\d.]/', '', $recent_listing->price), 2, '.', ',') : 'Call for Price'; ?></td>
 									<td><?php echo $recent_listing->package_names; ?></td>
 									<td><?php echo $recent_listing->category_name; ?></td>
 									<td><?php echo formatted_date($recent_listing->created_at,'m/d/Y'); ?></td>

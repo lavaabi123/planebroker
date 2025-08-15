@@ -235,24 +235,32 @@ if(!empty($query1)){
 <input name="urlget" type="hidden" id="urlget" value="<?php echo $query; ?>" />	
 <input name="urlload" type="hidden" id="urlload" value="<?php echo substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], "?")); ?>" />	
 <input name="urlfinal" type="hidden" id="urlfinal" value="<?php echo substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], "?")).''.$query; ?>" />	
+
 <script>
-function fetchProducts() {
-   // A) Build params from #searchFilter (as you already do)
+const BASE_URL = <?= json_encode(base_url()); ?>;    // example: "https://yoursite.com"
+const CATEGORY = <?= json_encode($category); ?>;    // example: "aircraft-for-sale"
+</script>
+<script>
+function fetchProducts(opts = {}) {
+  const { preserveExisting = true } = opts;  // <— add this
+
   const filterQS = buildQuery($('#searchFilter'));
 
-  // B) Start with existing params in the address bar (keeps keywords)
-  const existing = new URLSearchParams(window.location.search);
+  // Start with NO params unless we explicitly want to preserve the current URL
+  const merged = new URLSearchParams();
 
-  // C) Merge filter params over existing (filters override; keywords persist)
-  const merged = new URLSearchParams(existing.toString());
+  if (preserveExisting) {                     // <— wrap with the option
+    const existing = new URLSearchParams(window.location.search);
+    existing.forEach((v, k) => merged.set(k, v));
+  }
+
   if (filterQS) {
     const p = new URLSearchParams(filterQS);
     p.forEach((v, k) => merged.set(k, v));
   }
 
-  // D) Build final URL with merged params
-  const base = '<?php echo base_url(); ?>/listings/<?php echo $category; ?>';
-  const url  = base + (merged.toString() ? ('?' + merged.toString()) : '');
+  const base = `${BASE_URL}/listings/${CATEGORY}`;
+  const url  = merged.toString() ? `${base}?${merged.toString()}` : base;
 
   // Show/Hide “Clear All” (ignore sort_by)
   let hasRealFilters = false;
@@ -433,53 +441,37 @@ $(function () {
 
 
 
-$('#appliedFilters').on('click', '.remove-filter', function () {
-	const $tag   = $(this).closest('.applied-filter');
-	const name   = $tag.data('name');            // e.g. "total_time"
-	const value  = $tag.data('value');           // e.g. "23"
-console.log(name);
-	/* Un‑check / clear the corresponding input(s) */
-	// 1) checkboxes / radios
-	if(name === 'price'){
-	    $(`#searchFilter input[name="price_static[]"]`).prop('checked', false);
-        $(`#searchFilter input[name="price_static"]`).prop('checked', false);
-    }else{
-        $(`#searchFilter input[name="${name}[]"][value="${value}"]`).prop('checked', false);
-        $(`#searchFilter input[name="${name}"][value="${value}"]`).prop('checked', false);
-    }
+// Remove a single pill
+$(document).on('click', '#appliedFilters .remove-filter', function () {
+  const $tag  = $(this).closest('.applied-filter');
+  const name  = String($tag.data('name'));
+  const value = String($tag.data('value'));
 
-	// 2) range boxes
-	if (name === 'total_time' || name === 'price') {
-	    $(`#searchFilter input[name="${name}[]"]`).val('');
-		$(`#searchFilter input[name="${name}[]"]`).each(function () {
-			if ($(this).val() === String(value)) $(this).val('');
-		});
-	}
+  // clear matching inputs in #searchFilter (your existing logic)
+  $(`#searchFilter input[name="${name}[]"][value="${value}"]`).prop('checked', false);
+  $(`#searchFilter input[name="${name}"][value="${value}"]`).prop('checked', false);
+  $(`#searchFilter input[name="${name}"]`).filter(function(){ return $(this).val() === value; }).val('');
+  if (['price','total_time','created_at'].includes(name)) {
+    $(`#searchFilter input[name="${name}[]"], #searchFilter input[name="${name}"]`).val('');
+    $('#searchFilter input[name="price_static[]"], #searchFilter input[name="price_static"]').prop('checked', false);
+  }
 
-	// 3) single text field
-	$(`#searchFilter input[name="${name}"]`).filter(function () {
-		return $(this).val() === String(value);
-	}).val('');
-
-	fetchProducts();                             // run the filter again
+  // IMPORTANT: do NOT re-merge the old URL
+  fetchProducts({ preserveExisting: false });
 });
-$('.clearSelected').on('click', function (e) {
-	e.preventDefault();
+$(document).on('click', '.clearSelected', function (e) {
+  e.preventDefault();
 
-    const $form = $('#searchFilter');         // or $('#mySearchForm1')
-    if ($form.length && $form[0].reset) {
-        $form[0].reset();                     // native HTML reset
-    }
-	$form.find(':input').each(function () {
-		const $el = $(this);
+  const $form = $('#searchFilter');
+  if ($form[0] && $form[0].reset) $form[0].reset();
+  $form.find(':input').each(function () {
+    const $el = $(this);
+    $el.is(':checkbox,:radio') ? $el.prop('checked', false) : $el.val('');
+  });
+  $form.find('input[name="price_static[]"], input[name="price_static"]').prop('checked', false);
 
-		if ($el.is(':checkbox,:radio')) {
-			$el.prop('checked', false);
-		} else {
-			$el.val('');
-		}
-	});
-	fetchProducts();
+  // IMPORTANT: rebuild URL from the cleared form only → becomes the base URL
+  fetchProducts({ preserveExisting: false });
 });
 
 $(document).ready(function () {
@@ -733,6 +725,7 @@ $(document).ready(function () {
     });
 });
 </script>
+
 <style>
 .hidden-filter {
     display: none;

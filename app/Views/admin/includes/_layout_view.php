@@ -248,17 +248,25 @@ table.dataTable thead > tr > th.sorting_desc:after {
 </style>
 <script>
 $(document).ready(function () {
+	
     $('select').each(function () {
-      const selectElement = this;
+    if ($(this).is('[multiple]')) {
+      return; // do nothing, keep native
+    }
 
-      // Create SlimSelect instance
-      const slim = new SlimSelect({
-        select: selectElement,
-		showSearch: true, 
-        onChange: function (info) {
-          updateSlimColor(selectElement, info.value);
-        }
-      });
+    const selectElement = this;
+
+    // Create SlimSelect only for single selects
+    const slim = new SlimSelect({
+      select: selectElement,
+      showSearch: true,
+      searchPlaceholder: 'Search...',
+      searchHighlight: true,
+      searchFocus: true,
+      onChange: function (info) {
+        updateSlimColor(selectElement, info.value);
+      }
+    });
 
       // Initial color based on current value
       updateSlimColor(selectElement, selectElement.value);

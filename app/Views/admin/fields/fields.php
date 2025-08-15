@@ -490,6 +490,12 @@ $('.reset-filter').html(
           <option value="">Loading...</option>
         </select>
       `);
+const slimCat = new SlimSelect({
+    select: '#filterDropdown',
+    showSearch: true,
+    addToBody: true,         // avoids clipping in overflow/scroll containers
+    openPosition: 'down'
+  });
 
      // helper: load FG for a category, with optional auto-select+filter
   // Build FG options (no "All"); optionally auto-select first & filter
@@ -520,6 +526,13 @@ function loadFieldGroupsByCategory(catId, { autoSelect = false, applyFilter = fa
         }
       }
     }
+	
+  const slimFG = new SlimSelect({
+    select: '#userDropdown',
+    showSearch: true,
+    addToBody: true,
+    openPosition: 'down'
+  });
   }).fail(function(){
     $fg.html('<option value="">Error loading</option>').prop('disabled', true);
     api.column(4).search('').draw();

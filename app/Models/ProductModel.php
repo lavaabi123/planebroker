@@ -502,7 +502,7 @@ class ProductModel extends Model
     ON f.status = 1 AND f.field_condition = 1
   LEFT JOIN field_categories fc
     ON fc.field_id = f.id AND fc.category_id = p.category_id
-  LEFT JOIN field_sub_categories fsc
+  JOIN field_sub_categories fsc
     ON fsc.field_id = f.id AND fsc.sub_category_id = p.sub_category_id
   LEFT JOIN products_dynamic_fields pdf
     ON pdf.field_id = f.id AND pdf.product_id = p.id

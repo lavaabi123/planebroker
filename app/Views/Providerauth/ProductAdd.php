@@ -277,7 +277,7 @@ video{
 															$rowsnumber = ($field->name == 'About this Aircraft' || $field->id == 14) ? 'rows="5"' :'';
 															echo '<textarea name="dynamic_fields['.$field->id.']" class="form-control" placeholder="'.$field->name.' '.$req_op.'" '.$req_op_text.' '.$rowsnumber.'>'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '').'</textarea>';
 														}else if($field->field_type == 'Checkbox'){
-															echo '<label class="mb-0 d-block mx-0">'.$field->name.' '.$req_op.'</label>';
+															echo empty($field->show_cat_based) ? '<label class="mb-0 d-block mx-0">'.$field->name.' '.$req_op.'</label>':'';
 															$decoded_option = !empty($field->field_options) ? json_decode($field->field_options) : array();
 															if (!empty($decoded_option) && count($decoded_option) > 0) {
 																echo '
@@ -1968,7 +1968,7 @@ $(function () {
   const $allCatBoxes = $(".catbasedfield");
   function toggleBoxes() {
     const id = $subSelect.val();
-    if (id != "") $(".catbasedtitle").show(); else $(".catbasedtitle").hide();
+    if (id != "" && $allCatBoxes.filter('[data-subcategory="' + id + '"]').length > 0) $(".catbasedtitle").show(); else $(".catbasedtitle").hide();
     $allCatBoxes.hide();
     if (id) $allCatBoxes.filter('[data-subcategory="' + id + '"]').show();
   }

@@ -267,30 +267,59 @@ video{
 												
 												$req_op = !empty($field->field_condition) ? '*' : (!empty($field->field_optional_show) ? '(optional)' : '');
 												$req_op_text = ($field->field_condition) ? 'required' : '';
+												if($field->field_type == 'Checkbox'){
+													$decoded_option1 = !empty($field->field_options) ? json_decode($field->field_options) : array();
+													if (!empty($decoded_option1) && count($decoded_option1) > 0) {
+														echo '</div><div class="form-section row">'; 
+													}
+												}
 												echo '<div class="services-group form-group pr-2 d_fields '.(($field->show_cat_based == 0) ? "" : "catbasedfield" ).'" style="'.(($field->show_cat_based == 0) ? "" : "none" ).'" data-category="'.$field->category_ids.'" data-subcategory="'.$field->subcategory_ids.'">
 														';
 														if($field->field_type == 'Text'){
-															echo '<input type="text" name="dynamic_fields['.$field->id.']" class="form-control" placeholder="'.$field->name.' '.$req_op.'" value="'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '').'" '.$req_op_text.'>';
+															$placeholder = $field->name . ' ' . $req_op;
+
+															// Check if placeholder contains Location / City / State
+															$extra_class = '';
+															if (preg_match('/location|city|state/i', $placeholder)) {
+																$extra_class = ' city-state';
+															}
+															echo '<input type="text" name="dynamic_fields['.$field->id.']" class="form-control ' . $extra_class . '" placeholder="'.$field->name.' '.$req_op.'" value="'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '').'" '.$req_op_text.'>';
 														}else if($field->field_type == 'Number'){
 															echo '<input type="number" name="dynamic_fields['.$field->id.']" class="form-control" placeholder="'.$field->name.' '.$req_op.'" value="'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '0').'" '.$req_op_text.'>';
 														}else if($field->field_type == 'Textarea'){
 															$rowsnumber = ($field->name == 'About this Aircraft' || $field->id == 14) ? 'rows="5"' :'';
 															echo '<textarea name="dynamic_fields['.$field->id.']" class="form-control" placeholder="'.$field->name.' '.$req_op.'" '.$req_op_text.' '.$rowsnumber.'>'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '').'</textarea>';
 														}else if($field->field_type == 'Checkbox'){
-															echo empty($field->show_cat_based) ? '<label class="mb-0 d-block mx-0">'.$field->name.' '.$req_op.'</label>':'';
+															echo empty($field->show_cat_based) ? '<label class="mb-1 mt-4 d-block mx-0 fw-bold text-black">'.$field->name.' '.$req_op.'</label>':'';
 															$decoded_option = !empty($field->field_options) ? json_decode($field->field_options) : array();
-															if (!empty($decoded_option) && count($decoded_option) > 0) {
+															if (!empty($decoded_option) && count($decoded_option) > 0 && is_array($decoded_option)) {
+																 $selectedValues = !empty($dynamic_fields_values[$field->id])
+        ? (is_array($dynamic_fields_values[$field->id])
+            ? $dynamic_fields_values[$field->id]
+            : [$dynamic_fields_values[$field->id]])
+        : [];
 																echo '
 												<div class="dyn-error-holder d-none"></div><div class="row">';
 																foreach($decoded_option as $oi => $option){
-																	echo '<div class="col-sm-12 col-xs-12 col-option d-flex my-2 align-items-center"><input type="checkbox" name="dynamic_fields['.$field->id.'][]" id="status_'.$oi.'" class="" placeholder="" value="'.$option.'" '. ((!empty($dynamic_fields_values[$field->id]) && in_array($option, $dynamic_fields_values[$field->id]) ) ? 'checked' : '').'  '.$req_op_text.'><label for="status_'.$oi.'" class="option-label d-block">'.$option.'</label></div>';
+																	if (!empty($decoded_option1) && count($decoded_option1) > 0) {
+																		echo '<div class="col-12 col-sm-12 col-md-4 col-lg-4 col-option d-flex my-2 align-items-center">';
+																	}else{
+																		echo '<div class="col-sm-12 col-xs-12 col-option d-flex my-2 align-items-center">';
+																	}
+        echo '<input type="checkbox" 
+                name="dynamic_fields['.$field->id.'][]" 
+                id="status_'.$oi.'" 
+                value="'.$option.'" 
+                '. (in_array($option, $selectedValues) ? 'checked' : '') .' '.$req_op_text.'>
+              <label for="status_'.$oi.'" class="option-label d-block">'.$option.'</label>';
+        echo '</div>';
 																}	
 																echo '</div>';															
 															}else{
 																echo 'Options not available';
 															}
 														}else if($field->field_type == 'Radio'){
-															echo '<label class="mb-0 d-block mx-0">'.$field->name.' '.$req_op.'</label>';
+															echo '<label class="mb-1 d-block mx-0 mt-4 fw-bold text-black">'.$field->name.' '.$req_op.'</label>';
 															$decoded_option = !empty($field->field_options) ? json_decode($field->field_options) : array();
 															if (!empty($decoded_option) && count($decoded_option) > 0) {
 																echo '<div class="row">';
@@ -440,8 +469,9 @@ video{
 								<div class="form-group">
 									<input class="form-control required" type="text" id="phone" name="phone" placeholder="<?php echo trans('Phone Number') ?>" autocomplete="off" value="<?php echo !empty($product_detail['phone']) ? $product_detail['phone'] : (!empty(old('phone'))?old('phone'):$user_detail->mobile_no); ?>" required>
 								</div>													
-								<div class="form-group">
-									<input class="form-control required" type="text" id="address" name="address" placeholder="<?php echo trans('Location (City or State)') ?>" autocomplete="off" value="<?php echo !empty($product_detail['address']) ? $product_detail['address'] : old('address'); ?>" required>
+								<div class="form-group" style="position: relative;">
+									<input class="form-control city-state required" type="text" id="cityState" name="address" placeholder="<?php echo trans('Location (City, State)') ?>" value="<?php echo !empty($product_detail['address']) ? $product_detail['address'] : old('address'); ?>" required>
+
 								</div>	  
 																				
 								<div class="form-group">
@@ -1090,6 +1120,53 @@ $('#titlesForm').on('submit', function(e){
 @media (max-width:767px) {
 .file-previews-grid {grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));}
 .dz-wrap { padding: 1rem; }
+}
+
+/* Make sure autocomplete appears on top */
+.ui-autocomplete {
+  position: absolute !important;
+  z-index: 9999 !important;
+  background: #fff;
+  border: 1px solid #ccc;
+  max-height: 250px;
+  overflow-y: auto;   /* scroll if too many items */
+  overflow-x: hidden;
+  font-size: 14px;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Style each item */
+.ui-menu-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+/* Hover effect */
+.ui-menu-item:hover {
+  background: #f5f5f5;
+}
+.ui-autocomplete {
+  position: absolute !important;
+  top: 100% !important;   /* directly below input */
+  left: 0 !important;
+  z-index: 9999 !important;
+  background: #fff;
+  border: 1px solid #ccc;
+  max-height: 250px;
+  overflow-y: auto;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  width: 100% !important; /* match input width */
+}
+
+.ui-menu-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.ui-menu-item:hover {
+  background: #f5f5f5;
 }
 </style>
 <script>
@@ -1976,5 +2053,4 @@ $(function () {
   $subSelect.on("change", toggleBoxes);
 });
 </script>
-
 <?= $this->endSection() ?>

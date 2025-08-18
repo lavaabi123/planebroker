@@ -167,7 +167,7 @@ td:hover {
                     <div class="form-group">
                         <div class="row align-items-center">
                             <div class="col-auto">
-                                <label><?php echo trans('status'); ?></label>
+                                <label class="ms-0"><?php echo trans('status'); ?></label>
                             </div>
                             <div class="col-auto d-flex align-items-center">
                                 <input type="radio" name="status" value="1" id="status_1" class="square-purple" checked="checked">

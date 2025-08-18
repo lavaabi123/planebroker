@@ -647,7 +647,8 @@ class Common extends BaseController
 		$data_email = array(
 			'subject' => $get_email_content['name'],
 			'content' => $emailContent,
-			'from' => $email,
+			'from_email' => $email,
+			'from_name' => $name,
 			'to' => !empty($product_detail['email']) ? $product_detail['email'] : $user_detail->email,
 			'template_path' => "email/email_content",
 		);
@@ -669,7 +670,8 @@ class Common extends BaseController
 			'subject' => $get_email_content['name'],
 			'content' => $emailContent,
 			'to' => $email,
-			'from' => !empty($product_detail['email']) ? $product_detail['email'] : $user_detail->email,
+			'from_email' => !empty($product_detail['email']) ? $product_detail['email'] : $user_detail->email,
+			'from_name' => !empty($user_detail->fullname) ? $user_detail->fullname : '',
 			'template_path' => "email/email_content",
 		);
         $emailModel->send_email($data_customer);

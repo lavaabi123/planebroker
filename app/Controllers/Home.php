@@ -254,6 +254,7 @@ class Home extends BaseController
 				'subject'           => $subject,
 				'message_text'      => $message,
 				'from_email' 		=> $this->request->getVar('email'),
+				'from_name' 		=> $this->request->getVar('name'),
 				'to'                => get_general_settings()->admin_email,
 				'template_path'     => "email/email_to_provider",
 			);
@@ -340,6 +341,7 @@ class Home extends BaseController
 				'subject'           => $subject,
 				'message_text'      => $message,
 				'from_email' 		=> $this->request->getVar('email'),
+				'from_name' 		=> $this->request->getVar('name'),
 				'to'                => get_general_settings()->admin_email,
 				'template_path'     => "email/email_to_provider",
 			);

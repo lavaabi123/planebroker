@@ -564,7 +564,7 @@ button#gdpr-cookie-advanced {
 	<?php if($uri->getSegment(env('urlsegment')-1) == 'analytics') { ?>
     <script src="<?php echo base_url(); ?>/assets/frontend/js/analytics.js?version=1.6"></script>
 	<?php }else{ ?>
-		<script src="<?php echo base_url(); ?>/assets/frontend/js/dashboard.js?version=1.4"></script>
+		<script src="<?php echo base_url(); ?>/assets/frontend/js/dashboard.js?version=1.3"></script>
 	<?php } ?>
 	<script src="<?php echo base_url(); ?>/assets/frontend/js/slimselect.js" defer></script>
 <link
@@ -760,6 +760,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const slim = new SlimSelect({
         select: selectElement,
 		showSearch: true, 
+		searchFocus: true,              
+        searchHighlight: true,
         onChange: function (info) {
           updateSlimColor(selectElement, info.value);
         }
@@ -1146,6 +1148,7 @@ table.dataTable thead > tr > th.sorting_desc:after {
 .sort-icon-down.active {
     color: #fff;
 }
+
 .sshome.ss-main .ss-content .ss-search {
     display: block !important; 
 }

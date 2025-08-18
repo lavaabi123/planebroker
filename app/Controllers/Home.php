@@ -253,8 +253,8 @@ class Home extends BaseController
 			$data = array(
 				'subject'           => $subject,
 				'message_text'      => $message,
-				'from_email' => get_general_settings()->admin_email,
-				'to'                => get_general_settings()->mail_reply_to,
+				'from_email' 		=> $this->request->getVar('email'),
+				'to'                => get_general_settings()->admin_email,
 				'template_path'     => "email/email_to_provider",
 			);
 			
@@ -263,7 +263,7 @@ class Home extends BaseController
 			$data1 = array(
 				'subject'           => "Thank you for contacting ".$siteName,
 				'message_text'      => $message1,
-				'to'                => get_general_settings()->mail_reply_to,
+				'to'                => $this->request->getVar('email'),
 				'template_path'     => "email/email_to_provider",
 			);
 			
@@ -339,8 +339,8 @@ class Home extends BaseController
 			$data = array(
 				'subject'           => $subject,
 				'message_text'      => $message,
-				'from_email' => get_general_settings()->admin_email,
-				'to'                => get_general_settings()->mail_reply_to,
+				'from_email' 		=> $this->request->getVar('email'),
+				'to'                => get_general_settings()->admin_email,
 				'template_path'     => "email/email_to_provider",
 			);
 			
@@ -349,7 +349,7 @@ class Home extends BaseController
 			$data1 = array(
 				'subject'           => "Thank you for contacting ".$siteName,
 				'message_text'      => $message1,
-				'to'                => get_general_settings()->mail_reply_to,
+				'to'                => $this->request->getVar('email'),
 				'template_path'     => "email/email_to_provider",
 			);
 			

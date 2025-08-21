@@ -928,6 +928,14 @@ if (!function_exists('get_seo')) {
     }
 }
 
+if (!function_exists('get_listing_seo')) {
+    function get_listing_seo($permalink)
+    {
+        $db = \Config\Database::connect();
+        return  $db->table('categories')->getWhere(['permalink' => $permalink])->getRow();
+    }
+}
+
 function getSubcategoryName($id)
 {
     $db       = \Config\Database::connect();

@@ -139,7 +139,7 @@
 
                     <div class="form-group">
                         <label><?php echo trans("Category Icon"); ?></label>
-                        <input type="file" id="svgFile" class="form-control auth-form-input" name="category_icon" required>
+                        <input type="file" id="svgFile" class="form-control auth-form-input" name="category_icon">
 						<input type="hidden" id="modal_cat_icon" name="category_icon_name" value="" />
 						<div class="modal_cat_icon" style="display:none;">
 							<img width="100px" height="100px" src="" />

@@ -197,9 +197,9 @@ class Providers extends BaseController
 	}
 	public function providers_list($category = null, $location = null)
     {
-		$data['meta_title'] = !empty(get_seo('Plane Broker')) ? get_seo('Plane Broker')->meta_title : 'Plane Broker las vegas | Plane Broker in las vegas';
-		$data['meta_desc'] = !empty(get_seo('Plane Broker')) ? get_seo('Plane Broker')->meta_description : "Find the perfect planes in Las Vegas with Plane Broker's extensive listings. From mobile to the best in town, we've got you covered!";
-		$data['meta_keywords'] = !empty(get_seo('Plane Broker')) ? get_seo('Plane Broker')->meta_keywords : '';
+		$data['meta_title'] = !empty(get_listing_seo($category)) ? get_listing_seo($category)->seo_title : 'Plane Broker las vegas | Plane Broker in las vegas';
+		$data['meta_desc'] = !empty(get_listing_seo($category)) ? get_listing_seo($category)->seo_description : "Find the perfect planes in Las Vegas with Plane Broker's extensive listings. From mobile to the best in town, we've got you covered!";
+		$data['meta_keywords'] = !empty(get_listing_seo($category)) ? get_listing_seo($category)->seo_keywords : '';
 		
 		//echo "<pre>";print_r($_GET);exit;
 		$where = '';

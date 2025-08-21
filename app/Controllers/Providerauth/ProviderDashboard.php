@@ -146,6 +146,10 @@ $data['inactive_subs_count']       = (int)($row['total_count'] ?? 0);
 		
 		$data['provider_message'] = $this->UsersModel->get_recent_provider_messages($this->session->get('vr_sess_user_id'));
 		//print_r($data['provider_message']);exit;
+		$data['meta_title'] = !empty(get_seo('Dashboard')) ? get_seo('Dashboard')->meta_title : 'Dashboard | Plane Broker';
+		$data['meta_desc'] = !empty(get_seo('Dashboard')) ? get_seo('Dashboard')->meta_description : '';
+		$data['meta_keywords'] = !empty(get_seo('Dashboard')) ? get_seo('Dashboard')->meta_keywords : '';
+		
         return view('Providerauth/ProviderDashboard', $data);
     }
     public function index1()
@@ -622,7 +626,10 @@ else if($this->request->getVar('check') == '3'){
 				$this->CategoriesModel = new CategoriesModel();
 				$data['categories'] = $this->CategoriesModel->get_categories();
 				$data['title'] = trans('What do you want to sell?');
-				$data['meta_title'] = 'Sell | Plane Broker';
+				
+				$data['meta_title'] = !empty(get_seo('Create Listing')) ? get_seo('Create Listing')->meta_title : 'Sell | Plane Broker';
+				$data['meta_desc'] = !empty(get_seo('Create Listing')) ? get_seo('Create Listing')->meta_description : '';
+				$data['meta_keywords'] = !empty(get_seo('Create Listing')) ? get_seo('Create Listing')->meta_keywords : '';
 				
 				$this->ProductModel = new ProductModel();
 				$where = ' AND p.user_id = '.$data['user_detail']->id;
@@ -682,7 +689,10 @@ else if($this->request->getVar('check') == '3'){
 			$this->CategoriesModel = new CategoriesModel();
 			$data['categories'] = $this->CategoriesModel->get_categories();
 			$data['title'] = trans('My Listing');
-			$data['meta_title'] = 'My Listing | Plane Broker';
+			
+			$data['meta_title'] = !empty(get_seo('My Listings')) ? get_seo('My Listings')->meta_title : 'My Listing | Plane Broker';
+			$data['meta_desc'] = !empty(get_seo('My Listings')) ? get_seo('My Listings')->meta_description : '';
+			$data['meta_keywords'] = !empty(get_seo('My Listings')) ? get_seo('My Listings')->meta_keywords : '';
 			
 			$this->ProductModel = new ProductModel();
 			$where = ' AND p.user_id = '.$data['user_detail']->id;
@@ -736,7 +746,11 @@ else if($this->request->getVar('check') == '3'){
 	
 	public function favorites(){
 		$data['title'] = trans('Favorites');
-		$data['meta_title'] = 'Favorites | Plane Broker';
+		
+		$data['meta_title'] = !empty(get_seo('Favorites')) ? get_seo('Favorites')->meta_title : 'Favorites | Plane Broker';
+		$data['meta_desc'] = !empty(get_seo('Favorites')) ? get_seo('Favorites')->meta_description : '';
+		$data['meta_keywords'] = !empty(get_seo('Favorites')) ? get_seo('Favorites')->meta_keywords : '';
+		
 		$this->UsersModel = new UsersModel();
 		$data['user_detail'] = $this->UsersModel->get_user($this->session->get('vr_sess_user_id'));
 		
@@ -760,10 +774,13 @@ else if($this->request->getVar('check') == '3'){
 		$data['user_detail'] = $this->UsersModel->get_user($this->session->get('vr_sess_user_id'));
 		if ($this->session->get('vr_sess_logged_in') == TRUE) {
 				
+		$data['meta_title'] = !empty(get_seo('Analytics')) ? get_seo('Analytics')->meta_title : 'Analytics | Plane Broker';
+		$data['meta_desc'] = !empty(get_seo('Analytics')) ? get_seo('Analytics')->meta_description : '';
+		$data['meta_keywords'] = !empty(get_seo('Analytics')) ? get_seo('Analytics')->meta_keywords : '';
+		
 			$this->CategoriesModel = new CategoriesModel();
 			$data['categories'] = $this->CategoriesModel->get_categories();
 			$data['title'] = trans('Analytics');
-			$data['meta_title'] = 'Analytics | Plane Broker';
 			
 			$this->ProductModel = new ProductModel();
 			
@@ -835,7 +852,9 @@ else if($this->request->getVar('check') == '3'){
 	}
 	public function help(){
 		$data['title'] = trans('Help/Support');
-		$data['meta_title'] = 'Help | Plane Broker';
+		$data['meta_title'] = !empty(get_seo('Help')) ? get_seo('Help')->meta_title : 'Help | Plane Broker';
+		$data['meta_desc'] = !empty(get_seo('Help')) ? get_seo('Help')->meta_description : '';
+		$data['meta_keywords'] = !empty(get_seo('Help')) ? get_seo('Help')->meta_keywords : '';
 		$this->UsersModel = new UsersModel();
 		$data['user_detail'] = $this->UsersModel->get_user($this->session->get('vr_sess_user_id'));
 		$this->SupportModel = new SupportModel();
@@ -851,7 +870,9 @@ else if($this->request->getVar('check') == '3'){
 		$this->UsersModel = new UsersModel();
 		$data['user_detail'] = $this->UsersModel->get_user($this->session->get('vr_sess_user_id'));
 		$data['title'] = trans('Account Settings');
-		$data['meta_title'] = 'Account Settings | Plane Broker';
+		$data['meta_title'] = !empty(get_seo('Profile')) ? get_seo('Profile')->meta_title : 'Account Settings | Plane Broker';
+		$data['meta_desc'] = !empty(get_seo('Profile')) ? get_seo('Profile')->meta_description : '';
+		$data['meta_keywords'] = !empty(get_seo('Profile')) ? get_seo('Profile')->meta_keywords : '';
         return view('Providerauth/ProviderAccountSettings', $data);
 	}
 	
@@ -1354,7 +1375,10 @@ else if($this->request->getVar('check') == '3'){
 		$data['results'] = $this->ProductModel->get_products($category_name='all',$where);
 		
 		$data['title'] = trans('Subscriptions');
-		$data['meta_title'] = 'Subscriptions | Plane Broker';
+		$data['meta_title'] = !empty(get_seo('Subscriptions')) ? get_seo('Subscriptions')->meta_title : 'Subscriptions | Plane Broker';
+		$data['meta_desc'] = !empty(get_seo('Subscriptions')) ? get_seo('Subscriptions')->meta_description : '';
+		$data['meta_keywords'] = !empty(get_seo('Subscriptions')) ? get_seo('Subscriptions')->meta_keywords : '';
+		
         return view('Providerauth/ProviderSubscriptions', $data);
 	}
 	
@@ -1450,7 +1474,9 @@ else if($this->request->getVar('check') == '3'){
 		$data['payment_methods']         = $this->update_card();
 		
 		$data['title'] = trans('Billing');
-		$data['meta_title'] = 'Billing | Plane Broker';
+		$data['meta_title'] = !empty(get_seo('Billing')) ? get_seo('Billing')->meta_title : 'Billing | Plane Broker';
+		$data['meta_desc'] = !empty(get_seo('Billing')) ? get_seo('Billing')->meta_description : '';
+		$data['meta_keywords'] = !empty(get_seo('Billing')) ? get_seo('Billing')->meta_keywords : '';
         return view('Providerauth/ProviderBilling', $data);
 	}
 	
@@ -2237,7 +2263,11 @@ else if($this->request->getVar('check') == '3'){
         $data['provider_messages'] =   $this->UsersModel->get_paginated_provider_messages($pagination['per_page'], $pagination['offset'],$this->session->get('vr_sess_user_id'));
 
         $data['paginations'] = $pagination['pagination'];
-		$data['meta_title'] = 'Messages | Plane Broker';
+		
+		$data['meta_title'] = !empty(get_seo('My Messages')) ? get_seo('My Messages')->meta_title : 'Messages | Plane Broker';
+		$data['meta_desc'] = !empty(get_seo('My Messages')) ? get_seo('My Messages')->meta_description : '';
+		$data['meta_keywords'] = !empty(get_seo('My Messages')) ? get_seo('My Messages')->meta_keywords : '';
+
         $data['providers'] = $this->UsersModel->get_users();
 		
         return view('Providerauth/ProviderMessages', $data);

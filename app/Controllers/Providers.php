@@ -67,16 +67,20 @@ class Providers extends BaseController
 		//get fields to show				
 		$this->ProductModel = new ProductModel();
 		$data['product_description'] = $this->ProductModel->title_fields($category_name,'description',$productId);
-		//echo "<pre>";print_r($data['product_dynamic_fields']);exit;
+		//echo "<pre>";print_r($data['product_detail']);exit;
 		
 		$user_latitude = !empty($this->session->get('user_latitude')) ? $this->session->get('user_latitude') : '';
 		$user_longitude = !empty($this->session->get('user_longitude')) ? $this->session->get('user_longitude') : '';
 		$user_zipcode = !empty($this->session->get('user_zipcode')) ? $this->session->get('user_zipcode') : '';
 		$query2 =  $this->UsersModel->db->query("INSERT INTO website_stats (user_id,product_id,view_count,customer_lat,customer_long,customer_zipcode) VALUES (".$data['userId'].",".$productId.",1,'".$user_latitude."','".$user_longitude."','".$user_zipcode."')");
 		
-		$data['wishlist_added'] = !empty($this->session->get('vr_sess_user_id')) ? $this->ProductModel->wishlist_check($this->session->get('vr_sess_user_id'),$productId) : 0;
+		$data['wishlist_added'] = !empty($this->session->get('vr_sess_user_id')) ? $this->ProductModel->wishlist_check($this->session->get('vr_sess_user_id'),$productId) : 0;		
 		
+		$data['meta_title'] = ''.(!empty($data['product_detail']['name']) ? $data['product_detail']['name'] : '').' '.(!empty($data['product_detail']['sub_cat_name']) ? $data['product_detail']['sub_cat_name'] : '').' For Sale';
+		$data['meta_desc'] = ''.(!empty($data['product_detail']['name']) ? $data['product_detail']['name'] : '').' '.(!empty($data['product_detail']['sub_cat_name']) ? $data['product_detail']['sub_cat_name'] : '').' For Sale '.(!empty($data['product_detail']['address']) ? $data['product_detail']['address'] : '').' Search 1000\'s of Aircraft listings updated daily from 100\'s of dealers & private sellers';
+		$data['meta_keywords'] = ''.(!empty($data['product_detail']['name']) ? $data['product_detail']['name'].','.$data['product_detail']['name'].' For Sale'.',Used'.$data['product_detail']['name'].','.$data['product_detail']['name'].' for sale' : '').'';
 		
+
 		return view('Providers/ProviderViewProfile', $data);
 	}
 	

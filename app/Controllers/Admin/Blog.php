@@ -33,7 +33,6 @@ class Blog extends AdminController
         $data = array_merge($this->data, [
             'title' => trans('Blog'),
         ]);
-
         //paginate
         $data['blogs'] = $this->blogModel->blogs_list();
 

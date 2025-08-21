@@ -257,7 +257,9 @@ class ProviderRegister extends ProviderauthController
 		$this->CategoriesModel = new CategoriesModel();
 		$data['categories'] = $this->CategoriesModel->get_categories();
 		$data['title'] = trans('What do you want to sell?');
-		$data['meta_title'] = 'Sell | Plane Broker';
+		$data['meta_title'] = !empty(get_seo('Create Listing')) ? get_seo('Create Listing')->meta_title : 'Sell | Plane Broker';
+		$data['meta_desc'] = !empty(get_seo('Create Listing')) ? get_seo('Create Listing')->meta_description : '';
+		$data['meta_keywords'] = !empty(get_seo('Create Listing')) ? get_seo('Create Listing')->meta_keywords : '';
 		
 		return view('Providerauth/CategoryListALL', $data);	
 		

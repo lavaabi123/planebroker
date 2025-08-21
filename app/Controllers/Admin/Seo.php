@@ -63,7 +63,7 @@ class Seo extends AdminController
         $rules = [
             'meta_title' => [
                 'label'  => trans('Title'),
-                'rules'  => 'required|min_length[4]|max_length[255]',
+                'rules'  => 'required|min_length[3]|max_length[255]',
                 'errors' => [
                     'required' => trans('form_validation_required'),
                     'min_length' => trans('form_validation_min_length'),

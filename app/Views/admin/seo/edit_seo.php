@@ -47,28 +47,37 @@
 											<div class="form-group mb-3">
 												<label class=""><?php echo trans("Page"); ?><span class="required"> *</span></label>
 												<select name="page_name" class="form-control" required>
-												<option value="Home" <?php echo ($seo->page_name == "Home") ? 'selected':''; ?>>Home</option>
-												<option value="About Us" <?php echo ($seo->page_name == "About Us") ? 'selected':''; ?>>About Us</option>	
 												
-										<option value="Find a Broker" <?php echo ($seo->page_name == "Find a Broker") ? 'selected':''; ?>>Find a Broker</option>
+												
+												
+												
+										<option value="Home" <?php echo ($seo->page_name == "Home") ? 'selected':''; ?>>Home</option>
+										<option value="About Us" <?php echo ($seo->page_name == "About Us") ? 'selected':''; ?>>About Us</option>	
+										<option value="Login" <?php echo ($seo->page_name == "Login") ? 'selected':''; ?>>Login</option>	
+										<option value="Register" <?php echo ($seo->page_name == "Register") ? 'selected':''; ?>>Register</option>	
+										<option value="Forgot Password" <?php echo ($seo->page_name == "Forgot Password") ? 'selected':''; ?>>Forgot Password</option>	
+										<option value="Reset Password" <?php echo ($seo->page_name == "Reset Password") ? 'selected':''; ?>>Reset Password</option>				
+										<option value="Videos" <?php echo ($seo->page_name == "Videos") ? 'selected':''; ?>>Videos</option>
 										<option value="FAQ" <?php echo ($seo->page_name == "FAQ") ? 'selected':''; ?>>FAQ</option>
-										<option value="How It Works" <?php echo ($seo->page_name == "How It Works") ? 'selected':''; ?>>How It Works</option>
-										<option value="Blog" <?php echo ($seo->page_name == "Blog") ? 'selected':''; ?>>Blog</option>										
-										<option value="BECOME  A BROKER" <?php echo ($seo->page_name == "BECOME  A BROKER") ? 'selected':''; ?>>BECOME  A BROKER</option>
-										<option value="Terms and Conditions" <?php echo ($seo->page_name == "Terms and Conditions") ? 'selected':''; ?>>Terms and Conditions</option>
-										<option value="Privacy Policy" <?php echo ($seo->page_name == "Privacy Policy") ? 'selected':''; ?>>Privacy Policy</option>
-										<option value="How it Works" <?php echo ($seo->page_name == "How it Works") ? 'selected':''; ?>>How it Works</option>
+										<option value="News" <?php echo ($seo->page_name == "News") ? 'selected':''; ?>>News & Trends</option>
 										<option value="Contact Us" <?php echo ($seo->page_name == "Contact Us") ? 'selected':''; ?>>Contact Us</option>
-										<option value="Pricing" <?php echo ($seo->page_name == "Pricing") ? 'selected':''; ?>>Pricing</option>
-										<option value="Testimonials" <?php echo ($seo->page_name == "Testimonials") ? 'selected':''; ?>>Testimonials</option>
-										<option value="Checkout" <?php echo ($seo->page_name == "Checkout") ? 'selected':''; ?>>Checkout</option>
-										<option value="Thank You" <?php echo ($seo->page_name == "Thank You") ? 'selected':''; ?>>Thank You</option>	
-										<option value="Forgot Password" <?php echo ($seo->page_name == "Forgot Password") ? 'selected':''; ?>>Forgot Password</option>
-										<option value="Login" <?php echo ($seo->page_name == "Login") ? 'selected':''; ?>>Login</option>
-										<option value="Register" <?php echo ($seo->page_name == "Register") ? 'selected':''; ?>>Register</option>
-										<option value="Reset Password" <?php echo ($seo->page_name == "Reset Password") ? 'selected':''; ?>>Reset Password</option>
-										<option value="Profile" <?php echo ($seo->page_name == "Profile") ? 'selected':''; ?>>Profile</option>
-										<option value="Gallery" <?php echo ($seo->page_name == "Gallery") ? 'selected':''; ?>>Gallery</option>	
+										<option value="Pricing" <?php echo ($seo->page_name == "Pricing") ? 'selected':''; ?>>Pricing</option>	
+										<option value="Checkout" <?php echo ($seo->page_name == "Checkout") ? 'selected':''; ?>>Checkout</option>	
+										<option value="Terms and Conditions" <?php echo ($seo->page_name == "Terms and Conditions") ? 'selected':''; ?>>Terms and Conditions</option>
+										<option value="Privacy Policy" <?php echo ($seo->page_name == "Privacy Policy") ? 'selected':''; ?>>Privacy Policy</option>										
+										<option value="Blog" <?php echo ($seo->page_name == "Blog") ? 'selected':''; ?>>Blog</option>
+										<option value="Dashboard" <?php echo ($seo->page_name == "Dashboard") ? 'selected':''; ?>>User Dashboard</option>
+										<option value="My Listings" <?php echo ($seo->page_name == "My Listings") ? 'selected':''; ?>>My Listings</option>
+										<option value="My Messages" <?php echo ($seo->page_name == "My Messages") ? 'selected':''; ?>>My Messages</option>
+										<option value="Subscriptions" <?php echo ($seo->page_name == "Subscriptions") ? 'selected':''; ?>>Subscriptions</option>	
+										<option value="Billing" <?php echo ($seo->page_name == "Billing") ? 'selected':''; ?>>Billing</option>
+										<option value="Favorites" <?php echo ($seo->page_name == "Favorites") ? 'selected':''; ?>>Favorites</option>
+										<option value="Analytics" <?php echo ($seo->page_name == "Analytics") ? 'selected':''; ?>>Analytics</option>
+										<option value="Help" <?php echo ($seo->page_name == "Help") ? 'selected':''; ?>>Help/Support</option>
+										<option value="Profile" <?php echo ($seo->page_name == "Profile") ? 'selected':''; ?>>Profile - Account Settings</option>										
+										<option value="Testimonials" <?php echo ($seo->page_name == "Testimonials") ? 'selected':''; ?>>Testimonials</option>																				
+										<option value="Create Listing" <?php echo ($seo->page_name == "Create Listing") ? 'selected':''; ?>>Create Listing</option>
+										
 												</select>
 											</div>
 										</div>
@@ -89,15 +98,14 @@
                                             </div>
                                         </div>
                                     </div>
-									<input type="hidden" name="meta_keywords" value="<?php echo html_escape($seo->meta_keywords); ?>">
-                                    <!--<div class="row">
+                                    <div class="row">
                                         <div class="col-6">
                                             <div class="form-group mb-3">
                                                 <label><?php echo trans("Keywords"); ?><span class="required"> *</span></label>
 												 <textarea name="meta_keywords" class="form-control auth-form-input" placeholder="<?php echo trans("Meta Keywords"); ?>" required><?php echo html_escape($seo->meta_keywords); ?></textarea>
                                             </div>
                                         </div>
-                                    </div>-->
+                                    </div>
 
                         <div class="form-group mb-3 text-center">
                             <button type="submit" id="single_submit" name="validate" class="btn btn-primary"><?php echo trans('save_changes'); ?></button>

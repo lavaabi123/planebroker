@@ -126,10 +126,10 @@ class Home extends BaseController
 
     public function blog()
     {
-        $data['title'] = trans('Articles');
+        $data['title'] = trans('Blog');
         $this->BlogModel = new BlogModel();
 		$data['blogs'] = $this->BlogModel->get_all_blog(0);
-		$data['meta_title'] = 'Articles | Plane Broker';
+		$data['meta_title'] = !empty(get_seo('Blog')) ? get_seo('Blog')->meta_title : 'Blog | Plane Broker';
 		$data['meta_desc'] = !empty(get_seo('Blog')) ? get_seo('Blog')->meta_description : '';
 		$data['meta_keywords'] = !empty(get_seo('Blog')) ? get_seo('Blog')->meta_keywords : '';
         return view('pages/blog', $data);
@@ -140,9 +140,9 @@ class Home extends BaseController
         $data['title'] = trans('News & Trends');
         $this->BlogModel = new BlogModel();
 		$data['blogs'] = $this->BlogModel->get_all_blog(1);
-		$data['meta_title'] = 'News | Plane Broker';
-		$data['meta_desc'] = !empty(get_seo('Blog')) ? get_seo('Blog')->meta_description : '';
-		$data['meta_keywords'] = !empty(get_seo('Blog')) ? get_seo('Blog')->meta_keywords : '';
+		$data['meta_title'] = !empty(get_seo('News')) ? get_seo('News')->meta_title : 'News | Plane Broker';
+		$data['meta_desc'] = !empty(get_seo('News')) ? get_seo('News')->meta_description : '';
+		$data['meta_keywords'] = !empty(get_seo('News')) ? get_seo('News')->meta_keywords : '';
         return view('pages/blog', $data);
     }
     

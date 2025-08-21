@@ -46,26 +46,31 @@
 										<select name="page_name" class="form-control" required>
 										<option value="">Select</option>
 										<option value="Home" <?php echo (old("page_name") == "Home") ? 'selected':''; ?>>Home</option>
-										<option value="About Us" <?php echo (old("page_name") == "About Us") ? 'selected':''; ?>>About Us</option>										
-										<option value="Find a Broker" <?php echo (old("page_name") == "Find a Broker") ? 'selected':''; ?>>Find a Broker</option>
-										<option value="FAQ" <?php echo (old("page_name") == "FAQ") ? 'selected':''; ?>>FAQ</option>
-										<option value="How It Works" <?php echo (old("page_name") == "How It Works") ? 'selected':''; ?>>How It Works</option>
-										<option value="Blog" <?php echo (old("page_name") == "Blog") ? 'selected':''; ?>>Blog</option>										
-										<option value="BECOME  A BROKER" <?php echo (old("page_name") == "BECOME  A BROKER") ? 'selected':''; ?>>BECOME  A BROKER</option>
-										<option value="Terms and Conditions" <?php echo (old("page_name") == "Terms and Conditions") ? 'selected':''; ?>>Terms and Conditions</option>
-										<option value="Privacy Policy" <?php echo (old("page_name") == "Privacy Policy") ? 'selected':''; ?>>Privacy Policy</option>
-										<option value="How it Works" <?php echo (old("page_name") == "How it Works") ? 'selected':''; ?>>How it Works</option>
-										<option value="Contact Us" <?php echo (old("page_name") == "Contact Us") ? 'selected':''; ?>>Contact Us</option>
-										<option value="Pricing" <?php echo (old("page_name") == "Pricing") ? 'selected':''; ?>>Pricing</option>	
-										<option value="Testimonials" <?php echo (old("page_name") == "Testimonials") ? 'selected':''; ?>>Testimonials</option>	
-										<option value="Checkout" <?php echo (old("page_name") == "Checkout") ? 'selected':''; ?>>Checkout</option>	
-										<option value="Thank You" <?php echo (old("page_name") == "Thank You") ? 'selected':''; ?>>Thank You</option>	
-										<option value="Forgot Password" <?php echo (old("page_name") == "Forgot Password") ? 'selected':''; ?>>Forgot Password</option>
+										<option value="About Us" <?php echo (old("page_name") == "About Us") ? 'selected':''; ?>>About Us</option>	
 										<option value="Login" <?php echo (old("page_name") == "Login") ? 'selected':''; ?>>Login</option>	
 										<option value="Register" <?php echo (old("page_name") == "Register") ? 'selected':''; ?>>Register</option>	
-										<option value="Reset Password" <?php echo (old("page_name") == "Reset Password") ? 'selected':''; ?>>Reset Password</option>
-										<option value="Profile" <?php echo (old("page_name") == "Profile") ? 'selected':''; ?>>Profile</option>
-										<option value="Gallery" <?php echo (old("page_name") == "Gallery") ? 'selected':''; ?>>Gallery</option>							
+										<option value="Forgot Password" <?php echo (old("page_name") == "Forgot Password") ? 'selected':''; ?>>Forgot Password</option>	
+										<option value="Reset Password" <?php echo (old("page_name") == "Reset Password") ? 'selected':''; ?>>Reset Password</option>				
+										<option value="Videos" <?php echo (old("page_name") == "Videos") ? 'selected':''; ?>>Videos</option>
+										<option value="FAQ" <?php echo (old("page_name") == "FAQ") ? 'selected':''; ?>>FAQ</option>
+										<option value="News" <?php echo (old("page_name") == "News") ? 'selected':''; ?>>News & Trends</option>
+										<option value="Contact Us" <?php echo (old("page_name") == "Contact Us") ? 'selected':''; ?>>Contact Us</option>
+										<option value="Pricing" <?php echo (old("page_name") == "Pricing") ? 'selected':''; ?>>Pricing</option>	
+										<option value="Checkout" <?php echo (old("page_name") == "Checkout") ? 'selected':''; ?>>Checkout</option>	
+										<option value="Terms and Conditions" <?php echo (old("page_name") == "Terms and Conditions") ? 'selected':''; ?>>Terms and Conditions</option>
+										<option value="Privacy Policy" <?php echo (old("page_name") == "Privacy Policy") ? 'selected':''; ?>>Privacy Policy</option>										
+										<option value="Blog" <?php echo (old("page_name") == "Blog") ? 'selected':''; ?>>Blog</option>
+										<option value="Dashboard" <?php echo (old("page_name") == "Dashboard") ? 'selected':''; ?>>User Dashboard</option>
+										<option value="My Listings" <?php echo (old("page_name") == "My Listings") ? 'selected':''; ?>>My Listings</option>
+										<option value="My Messages" <?php echo (old("page_name") == "My Messages") ? 'selected':''; ?>>My Messages</option>
+										<option value="Subscriptions" <?php echo (old("page_name") == "Subscriptions") ? 'selected':''; ?>>Subscriptions</option>	
+										<option value="Billing" <?php echo (old("page_name") == "Billing") ? 'selected':''; ?>>Billing</option>
+										<option value="Favorites" <?php echo (old("page_name") == "Favorites") ? 'selected':''; ?>>Favorites</option>
+										<option value="Analytics" <?php echo (old("page_name") == "Analytics") ? 'selected':''; ?>>Analytics</option>
+										<option value="Help" <?php echo (old("page_name") == "Help") ? 'selected':''; ?>>Help/Support</option>
+										<option value="Profile" <?php echo (old("page_name") == "Profile") ? 'selected':''; ?>>Profile - Account Settings</option>										
+										<option value="Testimonials" <?php echo (old("page_name") == "Testimonials") ? 'selected':''; ?>>Testimonials</option>										
+										<option value="Create Listing" <?php echo (old("page_name") == "Create Listing") ? 'selected':''; ?>>Create Listing</option>							
 										</select>
                                     </div>
                                 </div>
@@ -87,14 +92,14 @@
                                 </div>
                             </div>
 							<input type="hidden" name="meta_keywords" value="<?php echo old("meta_keywords"); ?>">
-                            <!--<div class="row">
+                            <div class="row">
                                 <div class="col-6">
                                     <div class="form-group mb-3">
-                                        <label class=" ml-0"><?php echo trans("Meta Keywords"); ?><span class="required"> *</span></label>
+                                        <label class=""><?php echo trans("Meta Keywords"); ?><span class="required"> *</span></label>
                                         <input type="text" name="meta_keywords" class="form-control auth-form-input" placeholder="<?php echo trans("Meta Keywords"); ?>" value="<?php echo old("meta_keywords"); ?>" required>
                                     </div>
                                 </div>
-                            </div>-->
+                            </div>
 
                         <div class="form-group mb-3 text-center">
                             <button type="submit" id="single_submit" name="validate" class="btn btn-primary"><?php echo trans('save_changes'); ?></button>

@@ -943,9 +943,17 @@ function getCategoryName($id)
     $user_detail = $db->table('categories')->select("in_house")
         ->where('id', $id)
         ->get()->getRow();
-    return str_replace('Listings','Listing',$user_detail->in_house);
+    return !empty($user_detail->in_house) ? str_replace('Listings','Listing',$user_detail->in_house) : '';
 }
 
+function getCategory_Name($id)
+{
+    $db       = \Config\Database::connect();
+    $user_detail = $db->table('categories')->select("name")
+        ->where('id', $id)
+        ->get()->getRow();
+    return !empty($user_detail->name) ? $user_detail->name : '';
+}
 function getAllCategories()
 {
     $db       = \Config\Database::connect();

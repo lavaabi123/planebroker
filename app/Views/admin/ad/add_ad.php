@@ -63,7 +63,13 @@
 							  <select name="page_name" id="page_name" class="form-control" required>
 								<option value="" <?php echo (old("page_name") == '') ? 'selected':''; ?>>Select</option>
 								<option value="Home" <?php echo (old("page_name") == 'Home') ? 'selected':''; ?>>Home</option>
-								<option value="Listings" <?php echo (old("page_name") == "Listings") ? 'selected':''; ?>>Listings</option>
+								<?php
+								if(!empty($categories_list)){
+									foreach($categories_list as $category_row){ ?>
+										<option value="<?php echo $category_row->id; ?>"><?php echo $category_row->name; ?></option>
+								<?php }
+								}
+								?>
 								<!-- add more pages here as needed -->
 							  </select>
 							</div>
@@ -78,14 +84,21 @@
 								<option value="" <?php echo (old("page_position") == '') ? 'selected':''; ?>>Select</option>
 
 								<!-- Link each position to one or more pages via data-pages -->
-								<option value="Top"    data-pages="Home">Header Banner (Top of Page)</option>
-								<option value="Left"   data-pages="Home">Side Banner (Left of Page)</option>
-								<option value="Right"  data-pages="Home">Side Banner (Right of Page)</option>
-								<option value="Bottom"  data-pages="Home">Footer Banner (Bottom of Page)</option>
-
-								<option value="Left"   data-pages="Listings">Side Banner (Left of Page)</option>
-								<option value="Right"  data-pages="Listings">Side Banner (Right of Page)</option>
-								<option value="Bottom"  data-pages="Listings">Footer Banner (Bottom of Page)</option>
+								<option value="Top" data-pages="Home">Header Banner (Top of Page)</option>
+								<option value="Left" data-pages="Home">Side Banner (Left of Page)</option>
+								<option value="Right" data-pages="Home">Side Banner (Right of Page)</option>
+								<option value="Bottom" data-pages="Home">Footer Banner (Bottom of Page)</option>
+								<?php
+								if(!empty($categories_list)){
+									foreach($categories_list as $category_row){ ?>
+										<option value="Top" data-pages="<?php echo $category_row->id; ?>">Top Banner (Top of Page)</option>
+										<option value="Left" data-pages="<?php echo $category_row->id; ?>">Side Banner (Left of Page)</option>
+										<option value="Right" data-pages="<?php echo $category_row->id; ?>">Side Banner (Right of Page)</option>
+										<option value="Bottom" data-pages="<?php echo $category_row->id; ?>">Footer Banner (Bottom of Page)</option>
+								<?php }
+								}
+								?>
+								
 
 								<!-- Example: make an option available to multiple pages
 								<option value="Middle" data-pages="Home,About Us,Contact">Middle Banner</option> -->

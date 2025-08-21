@@ -189,7 +189,8 @@ class CronController extends BaseController
 
             if($moveToFreePlan == 1 || (isset($subscription->status) && $subscription->status != 'active')){
 				$db = db_connect();
-				$db->table('sales')->where('id', $user->id)->delete();   
+				//$db->table('sales')->where('id', $user->id)->delete();
+				$db->table('sales')->where('id', $user->id)->update(['stripe_subscription_status'=>$subscription->status]);				
             }
 
             if(!isset($subscription->latest_invoice)){

@@ -309,13 +309,18 @@ $currentsegment = ($uri->getTotalSegments() >= (env('urlsegment')-1) && !empty($
 if( base_url() == str_replace('/index.php/','',$uri) || ($currentsegment == 'listings' && empty($uri->getSegment(env('urlsegment')+1))) || ($currentsegment == 'videos') || ($currentsegment == 'faq') || ($currentsegment == 'news')){ 
 $blogs = get_all_blog(0); ?>		
 <div class="blog text-center py-5 px-3 px-xl-5 bg-gray">
-<?php if($currentsegment == 'listings'){ ?>
+<?php if($currentsegment == 'listings' && !empty($category_detail) && !empty($category_detail->id)){ ?>
 	<?php
-	$get_image = get_ad('Listings','Left');
+	$get_image = get_ad($category_detail->id,'Left');
 	if(!empty($get_image)){
 		echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
 	}else{
-		echo '<img class="d-none d-md-block" src="'. base_url('assets/frontend/images/ads-vertical.jpg').'">';
+		$get_image = get_ad('Home','Left');
+		if(!empty($get_image)){
+			echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+		}else{
+			echo '<img class="d-none d-md-block" src="'. base_url('assets/frontend/images/ads-vertical.jpg').'">';
+		}
 	}
 	?>
 	
@@ -352,6 +357,22 @@ $blogs = get_all_blog(0); ?>
 		</div>
 		<a href="<?php echo base_url('/blog'); ?>" class="btn py-xl-3 px-xxl-5">View All Articles</a>
 	</div>
+	<?php if($currentsegment == 'listings' && !empty($category_detail) && !empty($category_detail->id)){ ?>
+	<?php
+	$get_image = get_ad($category_detail->id,'Right');
+	if(!empty($get_image)){
+		echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+	}else {
+		$get_image = get_ad('Home','Right');
+		if(!empty($get_image)){
+			echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+		}else{
+			echo '<img class="d-none d-md-block" src="'. base_url('assets/frontend/images/ads-vertical.jpg').'">';
+		}
+	}
+	?>
+	
+	<?php }else{ ?>
 	<?php
 	$get_image = get_ad('Home','Right');
 	if(!empty($get_image)){
@@ -359,14 +380,25 @@ $blogs = get_all_blog(0); ?>
 	}else{
 		echo '<img class="d-none d-md-block" src="'. base_url('assets/frontend/images/ads-vertical.jpg').'">';
 	}
+	}
 	?>	
 	
 	</div>
-	<div class="bg-gray pb-5 text-center">		
+	<div class="bg-gray pb-5 text-center">	
+	<?php if($currentsegment == 'listings' && !empty($category_detail) && !empty($category_detail->id)){ ?>
+	<?php
+	$get_image = get_ad($category_detail->id,'Bottom');
+	if(!empty($get_image)){
+		echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+	}
+	?>
+	
+	<?php }else{ ?>	
 	<?php
 	$get_image = get_ad('Home','Bottom');
 	if(!empty($get_image)){
 		echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+	}
 	}
 	?>	
 	</div>
@@ -760,8 +792,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const slim = new SlimSelect({
         select: selectElement,
 		showSearch: true, 
-		searchFocus: true,              
-        searchHighlight: true,
+		searchFocus: true,    
         onChange: function (info) {
           updateSlimColor(selectElement, info.value);
         }
@@ -1158,5 +1189,39 @@ table.dataTable thead > tr > th.sorting_desc:after {
 }
 </style>
 
+<script>
+    let allCityStates = [];
+
+    // Load JSON file
+    fetch('us_states_and_cities.json')
+      .then(response => response.json())
+      .then(data => {
+        for (let state in data) {
+          data[state].forEach(city => {
+            allCityStates.push(city + ", " + state);
+          });
+        }
+
+        // Enable autocomplete
+        $(".city-state").each(function () {
+		  $(this).autocomplete({
+			source: allCityStates,
+			minLength: 2,
+			autoFocus: true,
+			appendTo: $(this).parent(), // keeps dropdown under each input
+			messages: {
+			  noResults: "",    // disable "No search results."
+			  results: function () {}
+			}
+		  });
+		});
+      });
+	  $(document).ready(function() {
+		// Find all .city-state inputs and add relative positioning to their parent
+		$('.city-state').each(function() {
+			$(this).parent().css('position', 'relative');
+		});
+	});
+  </script>
 
 </html>

@@ -58,7 +58,13 @@
 									  <select name="page_name" id="page_name" class="form-control" required>
 										<option value="" <?php echo ($ad->page_name == '') ? 'selected':''; ?>>Select</option>
 										<option value="Home" <?php echo ($ad->page_name == 'Home') ? 'selected':''; ?>>Home</option>
-										<option value="Listings" <?php echo ($ad->page_name == "Listings") ? 'selected':''; ?>>Listings</option>
+										<?php
+										if(!empty($categories_list)){
+											foreach($categories_list as $category_row){ ?>
+												<option <?php echo ($ad->page_name == $category_row->id) ? 'selected':''; ?> value="<?php echo $category_row->id; ?>"><?php echo $category_row->name; ?></option>
+										<?php }
+										}
+										?>
 										<!-- add more pages here as needed -->
 									  </select>
 									</div>
@@ -72,9 +78,16 @@
 										<option value="Left"  <?php echo ($ad->page_position == 'Left') ? 'selected':''; ?> data-pages="Home">Side Banner (Left of Page)</option>
 										<option value="Right" <?php echo ($ad->page_position == 'Right') ? 'selected':''; ?> data-pages="Home">Side Banner (Right of Page)</option>
 
-										<option value="Left"  <?php echo ($ad->page_position == 'Left') ? 'selected':''; ?>  data-pages="Listings">Side Banner (Left of Page)</option>
-										<option value="Right" <?php echo ($ad->page_position == 'Right') ? 'selected':''; ?>  data-pages="Listings">Side Banner (Right of Page)</option>
-										<option value="Bottom" <?php echo ($ad->page_position == 'Bottom') ? 'selected':''; ?> data-pages="Listings">Footer Banner (Bottom of Page)</option>
+										<?php
+										if(!empty($categories_list)){
+											foreach($categories_list as $category_row){ ?>
+												<option value="Top" <?php echo ($ad->page_name == $category_row->id && $ad->page_position == $category_row->id) ? 'selected':''; ?> data-pages="<?php echo $category_row->id; ?>">Top Banner (Top of Page)</option>
+												<option value="Left" <?php echo ($ad->page_name == $category_row->id && $ad->page_position == $category_row->id) ? 'selected':''; ?> data-pages="<?php echo $category_row->id; ?>">Side Banner (Left of Page)</option>
+												<option value="Right" <?php echo ($ad->page_name == $category_row->id && $ad->page_position == $category_row->id) ? 'selected':''; ?> data-pages="<?php echo $category_row->id; ?>">Side Banner (Right of Page)</option>
+												<option value="Bottom" <?php echo ($ad->page_name == $category_row->id && $ad->page_position == $category_row->id) ? 'selected':''; ?> data-pages="<?php echo $category_row->id; ?>">Footer Banner (Bottom of Page)</option>
+										<?php }
+										}
+										?>
 
 										<!-- Example: make an option available to multiple pages
 										<option value="Middle" data-pages="Home,About Us,Contact">Middle Banner</option> -->
@@ -134,4 +147,86 @@
 </section>
 <!-- /.content -->
 </div>
+<script>
+$(function () {
+  const $range = $('#ad_date_range');
+  const $start = $('#start_date');
+  const $end   = $('#end_date');
+
+  $range.daterangepicker({
+    autoUpdateInput: false,          // we’ll format the text ourselves
+    alwaysShowCalendars: true,
+    showDropdowns: true,
+    locale: {
+      format: 'YYYY-MM-DD',
+      applyLabel: 'Apply',
+      cancelLabel: 'Clear'
+    }
+    // Optional: limit dates
+    // minDate: moment().startOf('day'),
+    // maxDate: moment().add(1, 'year')
+  });
+
+  $range.on('apply.daterangepicker', function (ev, picker) {
+    const s = picker.startDate.format('YYYY-MM-DD');
+    const e = picker.endDate.format('YYYY-MM-DD');
+    $(this).val(s + ' → ' + e);  // visible text
+    $start.val(s);               // hidden fields for backend
+    $end.val(e);
+  });
+
+  $range.on('cancel.daterangepicker', function () {
+    $(this).val('');
+    $start.val('');
+    $end.val('');
+  });
+
+  // Optional safety check on submit (in case of manual edits)
+  $('form').on('submit', function (e) {
+    const s = moment($start.val(), 'YYYY-MM-DD', true);
+    const eD = moment($end.val(), 'YYYY-MM-DD', true);
+    if (!s.isValid() || !eD.isValid() || eD.isBefore(s)) {
+      e.preventDefault();
+      alert('Please choose a valid date range (End must be on/after Start).');
+    }
+  });
+});
+</script>
+<script>
+(function () {
+  const $page = document.getElementById('page_name');
+  const $pos  = document.getElementById('page_position');
+
+  // Keep an original copy of all options
+  const allOptions = Array.from($pos.options).map(o => o.cloneNode(true));
+
+  function filterPositions() {
+    const page = $page.value.trim();
+
+    // rebuild the select each time from the master list
+    $pos.innerHTML = '';
+    allOptions.forEach(opt => {
+      const pagesAttr = opt.getAttribute('data-pages');
+
+      // Always keep the placeholder "Select" option (no data-pages)
+      if (!pagesAttr) {
+        $pos.appendChild(opt.cloneNode(true));
+        return;
+      }
+
+      // Check if this option is allowed for the chosen page
+      const pages = pagesAttr.split(',').map(s => s.trim());
+      if (page && pages.includes(page)) {
+        $pos.appendChild(opt.cloneNode(true));
+      }
+    });
+
+    // If nothing selected after filtering, set to placeholder
+    if (!$pos.value) $pos.value = '';
+  }
+
+  $page.addEventListener('change', filterPositions);
+  filterPositions(); // run once on load (respects preselected "old" values server-side)
+})();
+</script>
 <?php echo $this->endSection() ?>

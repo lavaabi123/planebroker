@@ -157,11 +157,10 @@ function radio($name, $val){
 		
 		<div class="container py-5 text-center">
 		<?php
-		$get_image = get_ad('Listings','Bottom');
+		
+		$get_image = !empty($category_detail->id) ? get_ad($category_detail->id,'Top') : '';
 		if(!empty($get_image)){
 			echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
-		}else{
-			echo '<img src="'.base_url('assets/frontend/images/ads-hoz.jpg').'">';
 		}
 		?>			
 		</div>
@@ -245,6 +244,7 @@ function fetchProducts(opts = {}) {
   const { preserveExisting = true } = opts;  // <— add this
 
   const filterQS = buildQuery($('#searchFilter'));
+  console.log("buildQuery ->", filterQS);
 
   // Start with NO params unless we explicitly want to preserve the current URL
   const merged = new URLSearchParams();
@@ -256,7 +256,13 @@ function fetchProducts(opts = {}) {
 
   if (filterQS) {
     const p = new URLSearchParams(filterQS);
-    p.forEach((v, k) => merged.set(k, v));
+    p.forEach((v, k) => {
+      if (v === '' || v == null) {
+        merged.delete(k);   // 🧹 clear if empty
+      } else {
+        merged.set(k, v);
+      }
+    });
   }
 
   const base = `${BASE_URL}/listings/${CATEGORY}`;
@@ -394,7 +400,10 @@ function fetchProducts(opts = {}) {
 		$form.find('input[type="number"],input[type="date"],input[type="text"]').each(function () {
 			const name = this.name.replace(/\[\]$/, '');      // remove []
 			const val  = this.value.trim();
-			if (val === '') return;
+			if (val === '') {
+			  params.delete(name);
+			  return;
+			}
 
 			if (!groupedValues[name]) groupedValues[name] = [];
 			groupedValues[name].push(val);
@@ -409,12 +418,14 @@ function fetchProducts(opts = {}) {
     }
 $(function () {
 
-    fetchProducts();                                     // first load
+    fetchProducts({ preserveExisting: false });                                 // first load
 
     // run on *any* change inside the filter panel
-    $('#searchFilter').on('input change', 'input,select', debounce(fetchProducts, 350));
+    $('#searchFilter').on('input change', 'input,select', debounce(function () {
+  fetchProducts({ preserveExisting: false });  // always rebuild from form only
+}, 350));
 	$('#searchFilter').on('change', 'input[type="radio"][name="sort_by"]', function () {
-		fetchProducts();                      // run immediately on click
+		fetchProducts({ preserveExisting: false });                   // run immediately on click
 	});
 
 

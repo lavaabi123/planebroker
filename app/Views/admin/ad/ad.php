@@ -54,7 +54,7 @@
                                                     <tr>
                                                         <td><?php echo !empty($ad['image']) ? '<img width="50px" height="50px" src="'.base_url().'/uploads/ad/'.$ad['image'].'" />' : ''; ?> </td>
                                                         <td><a href="<?php echo $ad['ad_link']; ?>" target="_blank"><?php echo $ad['ad_link']; ?></a></td>
-                                                        <td><?php echo $ad['page_name']; ?> </td>
+                                                        <td><?php echo getCategory_Name($ad['page_name']) ? getCategory_Name($ad['page_name']) : $ad['page_name'] ; ?> </td>
                                                         <td><?php echo $ad['page_position']; ?> </td>
                                                         <td><?php echo date("m-d-Y", strtotime($ad['start_date'])).'-'.date("m-d-Y", strtotime($ad['end_date'])); ?>
                                                         <td><?php echo $ad['click_count']; ?> </td>

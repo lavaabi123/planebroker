@@ -261,7 +261,6 @@ $(document).ready(function () {
       select: selectElement,
       showSearch: true,
       searchPlaceholder: 'Search...',
-      searchHighlight: true,
       searchFocus: true,
       onChange: function (info) {
         updateSlimColor(selectElement, info.value);
@@ -369,6 +368,41 @@ $(function () {
   });
 });
 </script>
+
+<script>
+    let allCityStates = [];
+
+    // Load JSON file
+    fetch('<?php echo base_url(); ?>/us_states_and_cities.json')
+      .then(response => response.json())
+      .then(data => {
+        for (let state in data) {
+          data[state].forEach(city => {
+            allCityStates.push(city + ", " + state);
+          });
+        }
+
+        // Enable autocomplete
+        $(".city-state").each(function () {
+		  $(this).autocomplete({
+			source: allCityStates,
+			minLength: 2,
+			autoFocus: true,
+			appendTo: $(this).parent(), // keeps dropdown under each input
+			messages: {
+			  noResults: "",    // disable "No search results."
+			  results: function () {}
+			}
+		  });
+		});
+      });
+	  $(document).ready(function() {
+		// Find all .city-state inputs and add relative positioning to their parent
+		$('.city-state').each(function() {
+			$(this).parent().css('position', 'relative');
+		});
+	});
+  </script>
 
 </body>
 

@@ -295,18 +295,29 @@ $(document).ready(function(){
 					status: status,
 					csrf_token:'1e78598ff0fc7c5d22b2b579edcdc3db'
 				  },
-				  success: function(response) {
-					var status_text = (status == 1) ? '<span class="text-success" title="active">ACTIVE</span>' : '<span class="text-danger" title="banned">INACTIVE</span>';
-					$('#p_id_'+listingId+' .statustext').html(status_text);
-					Swal.fire({
-						icon: 'success',
-						text: 'Status updated successfully',
-						toast: true,
-						position: 'top-end',
-						showConfirmButton: false,
-						timer: 2000,
-						timerProgressBar: true
-					});
+				 success: function(response) {
+					  if(response == 'success'){
+						var status_text = (status == 1) ? '<span class="text-success" title="active">ACTIVE</span>' : '<span class="text-danger" title="banned">INACTIVE</span>';
+						$('#p_id_'+listingId+' span').replaceWith(status_text);
+						Swal.fire({
+							icon: 'success',
+							text: 'Status updated successfully',
+							toast: true,
+							position: 'top-end',
+							showConfirmButton: false,
+							timer: 2000,
+							timerProgressBar: true
+						});
+					  }else{
+						  $('.toggle-status').prop('checked', false);
+							Swal.fire({
+								icon: 'warning',
+								text: 'Oops! It looks like some required fields are missing. Please complete all fields before publishing your listing.',
+							  showConfirmButton: true,
+							  allowOutsideClick: true,
+							  allowEscapeKey: true
+							});
+					  }
 				  },
 				  error: function(xhr) {
 					alert('Error: ' + xhr.responseText);

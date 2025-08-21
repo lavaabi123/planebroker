@@ -4,6 +4,7 @@ namespace App\Controllers\Admin;
 
 use App\Models\RolesPermissionsModel;
 use App\Models\AdModel;
+use App\Models\CategoriesModel;
 
 class Ad extends AdminController
 {
@@ -22,10 +23,12 @@ class Ad extends AdminController
     protected $RolesPermissionsModel;
     public $data;
     protected $adModel;
+	protected $CategoriesModel;
     
     public function __construct()
     {
         $this->adModel = new AdModel();
+		$this->CategoriesModel = new CategoriesModel();
     }
 
     public function index()
@@ -46,6 +49,7 @@ class Ad extends AdminController
         $data = array_merge($this->data, [
             'title' => trans('Add Ad'),
         ]);
+		$data['categories_list'] = $this->CategoriesModel->get_categories();
 
         return view('admin/ad/add_ad', $data);
     }
@@ -83,7 +87,7 @@ class Ad extends AdminController
             'title' => trans('Update Ad'),
             'ad'  => $this->adModel->get_ad_by_id($id),
         ]);
-
+		$data['categories_list'] = $this->CategoriesModel->get_categories();
         if (empty($data['ad']->id)) {
             return redirect()->back();
         }

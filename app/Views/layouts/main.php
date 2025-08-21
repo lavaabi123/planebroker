@@ -560,8 +560,11 @@ button#gdpr-cookie-advanced {
   pointer-events: auto;
 }
 .dbContent.subspage label,.dbContent.billingpage label{
-	display:block;
-	margin-left:0;
+	    display: flex;
+    margin-left: 0;
+	gap:10px;
+    align-items: center;
+	margin-right: 10px;
 }
 </style>
 	<!-- jquery latest version -->
@@ -1084,6 +1087,8 @@ function update_ad_click_count(ad_id){
     padding: 1rem;
     background: #f8f9fa;
     border-radius: 35px;
+	    width: 100%;
+    overflow: hidden;
 }
 
 /* Top controls (Show entries + Search) */

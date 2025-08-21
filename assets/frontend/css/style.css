@@ -409,7 +409,7 @@ transform-origin: top center;
 a.btn.btn-sm {
     min-width: 110px;
     font-size: 12px;
-    padding: 0.6rem 1.2rem;
+    padding: 0.6rem 1.2rem !important;
 }
 .b-blue:hover {
 	background: var(--d-blue) !important;
@@ -1536,6 +1536,9 @@ p.date_time {
 .dbContent.billingpage .table-responsive.proMsg, .dbContent.subpage .table-responsive.proMsg {
     overflow: visible;
 }
+td.status span {
+    min-width: 105px;
+}
 .include-plan tbody tr:nth-child(odd) > td {
 	background: var(--light-grey);
 }
@@ -2195,6 +2198,12 @@ span.save-listing
 	width:67%;
 }
 }
+
+@media (max-width:1399px) {
+	div.dataTables_wrapper div.dataTables_filter input[type="search"] {
+	max-width:150px;
+}
+}
 @media (max-width:1199px) {
 .marquee {
     padding-top: 0.5em !important;
@@ -2303,6 +2312,7 @@ img.ads-verticals {
 .dbContent .proList.grid-col-4 {
 	grid-template-columns: repeat(2, 1fr);
 }
+
 }
 @media (max-width:991px) {
 	input, textarea, select {
@@ -2985,6 +2995,7 @@ footer li {
 .dataTables_length .ss-main {
     margin-bottom: 0 !important;
 	    max-width: 100px;
+		min-width: 100px;
 }
 .dataTables_wrapper input.form-control {
     margin-bottom: 0 !important;
@@ -3041,6 +3052,15 @@ span.sort-icons i.sort-icon-down {
 }
 #imageListId img {
     object-fit: cover;
+}
+.form-group .ui-autocomplete {
+	top: calc(100% - 16px) !important;
+	width: calc(100% - 24px) !important;
+    margin-left: 12px;
+	border-radius: 0 0 20px 20px;
+}
+input.ui-autocomplete-loading {
+    /*border-radius: 25px 25px 0 0 !important;*/
 }
 @media (max-width:767px) {
 .dataTables_wrapper > div {

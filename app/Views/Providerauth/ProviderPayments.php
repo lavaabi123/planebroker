@@ -8,7 +8,7 @@
 							<th><?php echo trans('Listing Name'); ?></th>
 							<th><?php echo trans('Start Date'); ?></th>
 							<th><?php echo trans('End Date'); ?></th>
-							<th><?php echo trans('Status'); ?></th>
+							<th class="status"><?php echo trans('Status'); ?></th>
 							<th><?php echo trans('Action'); ?></th>
 							<th class="max-width-120" style="padding-left: 0;"></th>
 						</tr>
@@ -24,7 +24,7 @@
 								<td><?php echo !empty($payment->display_name) ? (!empty(trim($payment->display_name)) ? $payment->display_name : '-') : (($payment->stripe_subscription_end_date != NULL && strtotime($payment->stripe_subscription_end_date) < time()) ? '':'<a href="'.base_url('/add-listing?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type).'').'" class="btn btn-sm mob-w-100">Add Listing</a>'); ?></td>
 								<td><?php echo ($payment->stripe_subscription_start_date != NULL) ? date("m/d/Y",strtotime($payment->stripe_subscription_start_date)):'-'; ?></td>
 								<td><?php echo ($payment->stripe_subscription_end_date != NULL) ? date("m/d/Y",strtotime($payment->stripe_subscription_end_date)) : '-'; ?></td>
-								<td><?php echo !empty($payment->is_cancel) ? '<span class="text-danger d-inline-block mb-0" title="Canceled">Canceled</span>' :(($payment->stripe_subscription_end_date != NULL && strtotime($payment->stripe_subscription_end_date) < time()) ? '<span class="text-danger d-inline-block mb-0" title="Expired">Expired</span>' : (!empty($payment->product_status) ? '<span class="text-success d-inline-block mb-0" title="Active">Active</span>' :'<span class="text-warning d-inline-block mb-0" title="Inactive">Inactive</span>')); ?></td>     
+								<td class="status"><?php echo !empty($payment->is_cancel) ? '<span class="text-danger d-inline-block mb-0" title="Canceled">Canceled</span>' :(($payment->stripe_subscription_end_date != NULL && strtotime($payment->stripe_subscription_end_date) < time()) ? '<span class="text-danger d-inline-block mb-0" title="Expired">Expired</span>' : (!empty($payment->product_status) ? '<span class="text-success d-inline-block mb-0" title="Active">Active</span>' :'<span class="text-warning d-inline-block mb-0" title="Inactive">Inactive</span>')); ?></td>     
 								<td>
 								<?php echo !empty($payment->display_name) ? '
 								<a target="_blank" href="'.base_url().'/listings/'.$payment->permalink.'/'.$payment->product_id.'/'.(!empty($payment->display_name)?str_replace(' ','-',strtolower($payment->display_name)):'').'" class="me-2"><i class="far fa-eye me-1"></i>View</a>' : ''; ?>

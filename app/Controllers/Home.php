@@ -10,6 +10,7 @@ use App\Models\VideoModel;
 use App\Models\ProductModel;
 use App\Models\CategoriesSubModel;
 use App\Models\SubscriptionModel;
+use CodeIgniter\Events\Events;
 
 class Home extends BaseController
 {
@@ -269,9 +270,9 @@ class Home extends BaseController
 			);
 			
 			$emailModel = new EmailModel();
-			$emailModel->send_email($data1);
+			//$emailModel->send_email($data1);
 			$emailModel = new EmailModel();
-			$emailModel->send_email($data);
+			//$emailModel->send_email($data);
 			
 			$insertData     = array();
 			$insertData['from_name']         = $name;
@@ -283,6 +284,10 @@ class Home extends BaseController
 
 			$id = $this->db->table('contacts')->insert($insertData);
 			
+			Events::trigger('form:contact_submitted', [
+				'id'=>1, 'name'=>$name, 'email'=>$email
+			]);
+
 			$this->session->setFlashData('success_form', 'Successfully Sent!');
 			return redirect()->to(base_url('/contact'));
 		} else {
@@ -371,6 +376,12 @@ class Home extends BaseController
 			$insertData['created_at']        = date('Y-m-d H:i:s');
 
 			$id = $this->db->table('captains_club_request')->insert($insertData);
+			
+			\CodeIgniter\Events\Events::trigger('form:captain_submitted', [
+				'id'    => 1,
+				'name'  => $name,
+				'email' => $email,
+			]);
 			
 			$this->session->setFlashData('success_form', 'Successfully Sent Your Request!');
 			return redirect()->to(base_url('/captains-club-request'));

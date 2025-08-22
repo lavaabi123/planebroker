@@ -3,6 +3,7 @@
 namespace Config;
 
 use CodeIgniter\Config\BaseService;
+use App\Services\NotificationService as Notifier;
 
 /**
  * Services Configuration file.
@@ -29,4 +30,11 @@ class Services extends BaseService
      *     return new \CodeIgniter\Example();
      * }
      */
+	 public static function notificationService(bool $getShared = true): Notifier
+    {
+        if ($getShared) {
+            return static::getSharedInstance('notificationService');
+        }
+        return new Notifier(); // constructor already creates its models
+    }
 }

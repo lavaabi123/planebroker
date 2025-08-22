@@ -21,6 +21,7 @@ use Stripe\Invoice;
 use Stripe\Token;
 use Stripe\PaymentIntent;
 use App\Models\SupportModel;
+use CodeIgniter\Events\Events;
 
 class ProviderDashboard extends ProviderauthController
 {
@@ -1202,13 +1203,19 @@ else if($this->request->getVar('check') == '3'){
 				}
 				$updateUser['payment_type'] = "Stripe";
 				$user = $this->UsersModel->update_user_plan($user_id,$updateUser);
+				
+				$user_detail = $this->UsersModel->get_user($user_id);
+				
+				Events::trigger('subscription:created', [
+					'id'=>1, 'plan'=>$data['plan_detail'][0]->name, 'email'=>$user_detail->email
+				]);
+
 				if(!empty($this->request->getVar('type')) && $this->request->getVar('type') == 'trial'){
 					$this->session->setFlashData('success_form', trans("Your Free Trial plan has been selected, unlocking new features and benefits! payment will be deducted after 30 days."));
 				}else{
 					$this->session->setFlashData('success_form', trans("Your plan has been selected, unlocking new features and benefits!"));
 				}
 				
-				$user_detail = $this->UsersModel->get_user($user_id);
 				if(!empty($user_detail->email)){
 					$emailModel = new EmailModel();	
 					if(empty($data['user_detail']->stripe_subscription_id)){

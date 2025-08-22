@@ -4,6 +4,8 @@ namespace Config;
 
 use CodeIgniter\Events\Events;
 use CodeIgniter\Exceptions\FrameworkException;
+use App\Services\NotificationService;
+use Config\Services;
 
 /*
  * --------------------------------------------------------------------
@@ -47,4 +49,64 @@ Events::on('pre_system', static function () {
         Events::on('DBQuery', 'CodeIgniter\Debug\Toolbar\Collectors\Database::collect');
         Services::toolbar()->respond();
     }
+});
+
+Events::on('form:captain_submitted', static function (array $payload) {
+    Services::notificationService()->create(
+        type: 'form.captain',
+        title: 'Captain form request',
+        message: "{$payload['name']} submitted a captain form.",
+        link: base_url('admin/captains'), // or your route
+        data: $payload,
+        recipients: 'admins',
+        level: 'info'
+    );
+});
+
+Events::on('form:contact_submitted', static function (array $payload) {
+    Services::notificationService()->create(
+        type: 'form.contact',
+        title: 'Contact form request',
+        message: "{$payload['name']} submitted a message.",
+        link: base_url('admin/contacts'), // or your route
+        data: $payload,
+        recipients: 'admins',
+        level: 'info'
+    );
+});
+
+Events::on('user:registered', static function (array $payload) {
+    Services::notificationService()->create(
+        type: 'user.registered',
+        title:'New user registered',
+        message: "User: {$payload['email']}",
+        link: base_url('admin/users'),
+        data: $payload,
+        recipients: 'admins',
+        level: 'success'
+    );
+});
+
+Events::on('listing:created', static function (array $payload) {
+    Services::notificationService()->create(
+        type:'listing.created',
+        title:'New listing added',
+        message:"{$payload['title']} was added.",
+        link: base_url('admin/listings/all'),
+        data: $payload,
+        recipients: 'admins',
+        level: 'info'
+    );
+});
+
+Events::on('subscription:created', static function (array $payload) {
+    Services::notificationService()->create(
+        type:'subscription.created',
+        title:'New subscription',
+        message:"Plan: {$payload['plan']} by {$payload['email']}",
+        link: base_url('admin/listings/sales'),
+        data: $payload,
+        recipients: 'admins',
+        level: 'success'
+    );
 });

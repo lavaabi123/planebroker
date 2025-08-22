@@ -404,6 +404,120 @@ $(function () {
 	});
   </script>
 
+<script>
+(function(){
+  const COUNT_URL = "<?= esc(base_url('admin/notifications/unread-count')) ?>";
+	const LIST_URL  = "<?= esc(base_url('admin/notifications')) ?>?limit=5";
+	const MARK_ALL  = "<?= esc(base_url('admin/notifications/mark-all-read')) ?>";
+	const MARK_URL  = (id) => "<?= esc(base_url('admin/notifications/mark-read')) ?>/"+id;
+	const VIEW_ALL_URL= "<?= esc(site_url('admin/notifications/all')) ?>";
+  const CSRF      = { name: "<?= csrf_token() ?>", value: "<?= csrf_hash() ?>" };
+
+  const $count = document.getElementById('notifCount');
+  const $list  = document.getElementById('notifList');
+  const $markAll = document.getElementById('markAllReadBtn');
+
+  async function fetchJSON(url, opts={}) {
+    const res = await fetch(url, opts);
+    return res.json();
+  }
+
+  function timeAgo(iso) {
+    const d = new Date(iso); const diff = (Date.now() - d.getTime())/1000;
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return Math.floor(diff/60) + 'm';
+    if (diff < 86400) return Math.floor(diff/3600) + 'h';
+    return Math.floor(diff/86400) + 'd';
+  }
+
+  function levelBadge(level){
+    const map = {info:'secondary', success:'success', warning:'warning', error:'danger'};
+    return `<span class="badge bg-${map[level]||'secondary'}">${level}</span>`;
+  }
+
+  async function renderList() {
+  const data  = await fetchJSON(LIST_URL);
+  const items = data.items || [];
+
+  // escape to avoid XSS
+  const h = (s) => String(s ?? '').replace(/[&<>"']/g, m => (
+    {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]
+  ));
+
+  if (!items.length) {
+    $list.innerHTML = `<div class="p-3 text-muted">No notifications</div>`;
+    return;
+  }
+
+  // IMPORTANT: use backticks for the whole template!
+  $list.innerHTML = items.map(it => {
+    const msgHtml  = (it.message && it.message.trim())
+      ? `<div class="small text-muted mt-1">${h(it.message)}</div>`
+      : ''; // no empty block
+
+    const openBtn  = it.link
+      ? `<a href="${h(it.link)}" class="btn btn-sm btn-warning fw-semibold px-3">Open</a>`
+      : '';
+
+    const markBtn  = !it.is_read
+      ? `<button class="btn btn-sm btn-outline-secondary px-3" data-mark="${it.pivot_id}">Mark read</button>`
+      : '';
+
+    return `
+      <div class="list-group-item d-flex gap-2 ${it.is_read ? '' : 'bg-light'}">
+        <div class="flex-grow-1">
+          <div class="d-flex justify-content-between align-items-center">
+            <strong>${h(it.title)}</strong>
+            <small class="text-muted">${timeAgo(it.created_at)}</small>
+          </div>
+          ${msgHtml}
+          <div class="mt-2 d-flex gap-2 align-items-center">
+            ${openBtn}
+            ${markBtn}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // wire up “mark read” buttons
+  $list.querySelectorAll('[data-mark]').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = e.currentTarget.dataset.mark;
+      await fetch(MARK_URL(id), {
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body: `${CSRF.name}=${encodeURIComponent(CSRF.value)}`
+      });
+      refresh();
+    });
+  });
+}
+
+  async function renderCount() {
+    const {count} = await fetchJSON(COUNT_URL);
+    if (count > 0) {
+      $count.textContent = count > 99 ? '99+' : count;
+      $count.classList.remove('d-none');
+    } else {
+      $count.classList.add('d-none');
+    }
+  }
+
+  async function refresh(){
+    renderCount();
+    renderList();
+  }
+
+  $markAll.addEventListener('click', async () => {
+    await fetch(MARK_ALL, {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: `${CSRF.name}=${encodeURIComponent(CSRF.value)}`});
+    refresh();
+  });
+
+  // initial + poll every 20s (or swap for SSE later)
+  refresh();
+  setInterval(refresh, 20000);
+})();
+</script>
 </body>
 
 </html>

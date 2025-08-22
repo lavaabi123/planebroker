@@ -13,6 +13,7 @@ use App\Models\CategoriesSkillsModel;
 use App\Models\ProductModel;
 use App\Models\SubscriptionModel;
 use App\Models\PlansModel;
+use CodeIgniter\Events\Events;
 
 class ProviderRegister extends ProviderauthController
 {
@@ -98,7 +99,9 @@ class ProviderRegister extends ProviderauthController
 
             //register
             $user = $userModel->register();
-
+			Events::trigger('user:registered', [
+				'id'=>1, 'email'=>$email
+			]);
             if ($user) {
 				$login = $userModel->login();
                 if (get_general_settings()->email_verification == 1) {
@@ -176,6 +179,14 @@ class ProviderRegister extends ProviderauthController
 					if(!empty($this->request->getVar('product_id'))){
 						$this->session->setFlashData('success_form', trans("Listing Updated Successfully!"));
 					}else{
+						
+						$this->ProductModel = new ProductModel();
+						$where = ' AND p.id = '.$user;
+						$product_detail = $this->ProductModel->get_product_detail($where);
+						
+						Events::trigger('listing:created', [
+							'id'=>1, 'title'=>$product_detail['display_name']
+						]);
 						$this->session->setFlashData('success_form', trans("Listing Added Successfully!"));
 					}
 					return redirect()->to(base_url('my-listing'));

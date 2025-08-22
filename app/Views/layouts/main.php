@@ -955,7 +955,7 @@ $(function () {
     const dt = $table.DataTable({
       order: [[0, 'asc']],
       pageLength: 5,
-      lengthChange: true,
+      lengthChange: false,
       lengthMenu: [5, 10, 25, 50, 100],
       dom: '<"d-flex justify-content-between align-items-center mb-3"l<"date-filter">f<"reset-filter ms-2">>t<"d-flex justify-content-center align-items-center mt-3"p>',
       language: {

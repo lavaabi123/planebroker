@@ -4,7 +4,6 @@ namespace App\Controllers\Admin;
 
 use App\Models\RolesPermissionsModel;
 use App\Models\BlogModel;
-use App\Models\UserNotificationModel;
 
 class Blog extends AdminController
 {
@@ -23,12 +22,10 @@ class Blog extends AdminController
     protected $RolesPermissionsModel;
     public $data;
     protected $blogModel;
-    protected UserNotificationModel $userNotis;
     
     public function __construct()
     {
         $this->blogModel = new BlogModel();
-		$this->userNotis = new UserNotificationModel();
     }
 
     public function index()

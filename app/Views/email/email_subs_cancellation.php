@@ -12,7 +12,7 @@
 						
 						<p>Dear <?php echo $to_name; ?>,</p>
 
-<p>We hope this email finds you well. We regret to inform you that your subscription to Planebroker.com has been canceled as per your recent request.</p>
+<p>We hope this email finds you well. We regret to inform you that your subscription to Planebroker.com has been cancelled as per your recent request.</p>
 
 <p>Here are some important details regarding the cancellation:<br />
 <strong>1. Profile Visibility:</strong> Your profile will no longer be visible on Planebroker.com. Customers and potential clients will not be able to access your information on our platform.<br />

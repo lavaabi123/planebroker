@@ -85,7 +85,7 @@
 											<?php if ($user['is_cancel'] == 0){ ?>
 												<span class="text-success" title="<?php echo trans('active'); ?>">ACTIVE</span>
 											<?php }else{ ?>
-												<span class="text-danger" title="<?php echo trans('banned'); ?>">CANCELED</span>
+												<span class="text-danger" title="<?php echo trans('banned'); ?>">CANCELLED</span>
 											<?php } ?>   
 										</td>														
 										<td><?php echo date("m-d-Y",strtotime($user['created_at'])); ?></td>

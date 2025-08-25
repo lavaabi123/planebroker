@@ -83,7 +83,7 @@
             <select name="is_cancel" class="form-control">
                 <option value=""><?php echo trans("all"); ?></option>
                 <option value="0" <?php echo $request->getVar('is_cancel') != null && $request->getVar('is_cancel') != 1 ? 'selected' : ''; ?>><?php echo trans("Active"); ?></option>
-                <option value="1" <?php echo ($request->getVar('is_cancel') == 1) ? 'selected' : ''; ?>><?php echo trans("Canceled"); ?></option>
+                <option value="1" <?php echo ($request->getVar('is_cancel') == 1) ? 'selected' : ''; ?>><?php echo trans("Cancelled"); ?></option>
             </select>
         </div>
         <div class="item-table-filter">

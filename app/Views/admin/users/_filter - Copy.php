@@ -85,7 +85,7 @@
                 <option value="11" <?php echo ($request->getVar('plan_id') == 11) ? 'selected' : ''; ?>><?php echo trans("Free Trial"); ?></option>
                 <option value="2" <?php echo ($request->getVar('plan_id') == 2) ? 'selected' : ''; ?>><?php echo trans("Standard"); ?></option>
                 <option value="3" <?php echo ($request->getVar('plan_id')  == 3) ? 'selected' : ''; ?>><?php echo trans("Premium"); ?></option>
-                <option value="44" <?php echo ($request->getVar('plan_id') == 44) ? 'selected' : ''; ?>><?php echo trans("Canceled"); ?></option>
+                <option value="44" <?php echo ($request->getVar('plan_id') == 44) ? 'selected' : ''; ?>><?php echo trans("Cancelled"); ?></option>
                 <option value="1" <?php echo ($request->getVar('plan_id') == 1) ? 'selected' : ''; ?>><?php echo trans("Without any Plan"); ?></option>
             </select>
         </div>

@@ -1596,13 +1596,13 @@ else if($this->request->getVar('check') == '3'){
 				
 				// Handle the cancellation success
 				if($request_from == 'admin'){
-					$this->session->setFlashData('success', trans("Subscription canceled successfully!"));
+					$this->session->setFlashData('success', trans("Subscription cancelled successfully!"));
 					return redirect()->to(admin_url().'listings/sales');
 				}else{
 					if(strtotime($s_detail->stripe_subscription_end_date) > time()){
-						$this->session->setFlashData('success_form2', "Your subscription has been successfully canceled. You will continue to have access to your account and all subscription features until ". date("m/d/Y", strtotime($s_detail->stripe_subscription_end_date)));
+						$this->session->setFlashData('success_form2', "Your subscription has been successfully cancelled. You will continue to have access to your account and all subscription features until ". date("m/d/Y", strtotime($s_detail->stripe_subscription_end_date)));
 					}else{
-						$this->session->setFlashData('success_form', trans("Subscription canceled successfully!"));
+						$this->session->setFlashData('success_form', trans("Subscription cancelled successfully!"));
 					}					
 					return redirect()->to(base_url('subscriptions'));
 				}
@@ -1630,13 +1630,13 @@ else if($this->request->getVar('check') == '3'){
 				
 				// Handle the cancellation success
 				if($request_from == 'admin'){
-					$this->session->setFlashData('success', trans("Subscription canceled successfully!"));
+					$this->session->setFlashData('success', trans("Subscription cancelled successfully!"));
 					return redirect()->to(admin_url().'listings/sales');
 				}else{
 					if(strtotime($sale_detail->stripe_subscription_end_date) > time()){
-						$this->session->setFlashData('success_form2', "Your subscription has been successfully canceled. You will continue to have access to your account and all subscription features until ". date("m/d/Y", strtotime($sale_detail->stripe_subscription_end_date)));
+						$this->session->setFlashData('success_form2', "Your subscription has been successfully cancelled. You will continue to have access to your account and all subscription features until ". date("m/d/Y", strtotime($sale_detail->stripe_subscription_end_date)));
 					}else{
-						$this->session->setFlashData('success_form', trans("Subscription canceled successfully!"));
+						$this->session->setFlashData('success_form', trans("Subscription cancelled successfully!"));
 					}
 					return redirect()->to(base_url('subscriptions'));
 				}
@@ -1694,10 +1694,10 @@ else if($this->request->getVar('check') == '3'){
 			// Handle the cancellation success
 			
 			if($request_from == 'admin'){
-				$this->session->setFlashData('success', trans("Subscription canceled successfully!"));
+				$this->session->setFlashData('success', trans("Subscription cancelled successfully!"));
 				return redirect()->to(admin_url().'listings/sales');
 			}else{
-				$this->session->setFlashData('success_form', trans("Subscription canceled successfully!"));
+				$this->session->setFlashData('success_form', trans("Subscription cancelled successfully!"));
 				return redirect()->to(base_url('subscriptions'));
 			}
 		}
@@ -1775,10 +1775,10 @@ else if($this->request->getVar('check') == '3'){
 				
 				// Handle the cancellation success
 				if($request_from == 'admin'){
-					$this->session->setFlashData('success', trans("Subscription canceled and refund initiated successfully!"));
+					$this->session->setFlashData('success', trans("Subscription cancelled and refund initiated successfully!"));
 					return redirect()->to(admin_url().'listings/sales');
 				}else{
-					$this->session->setFlashData('success_form', trans("Subscription canceled and refund initiated successfully!"));
+					$this->session->setFlashData('success_form', trans("Subscription cancelled and refund initiated successfully!"));
 					return redirect()->to(base_url('subscriptions'));
 				}
 			} catch (\Stripe\Exception\ApiErrorException $e) {
@@ -1806,10 +1806,10 @@ else if($this->request->getVar('check') == '3'){
 				
 				// Handle the cancellation success
 				if($request_from == 'admin'){
-					$this->session->setFlashData('success', trans("Subscription canceled successfully!"));
+					$this->session->setFlashData('success', trans("Subscription cancelled successfully!"));
 					return redirect()->to(admin_url().'listings/sales');
 				}else{
-					$this->session->setFlashData('success_form', trans("Subscription canceled successfully!"));
+					$this->session->setFlashData('success_form', trans("Subscription cancelled successfully!"));
 					return redirect()->to(base_url('subscriptions'));
 				}
 			}
@@ -1961,10 +1961,10 @@ else if($this->request->getVar('check') == '3'){
 			// Handle the cancellation success
 			
 			if($request_from == 'admin'){
-				$this->session->setFlashData('success', trans("Subscription canceled successfully!"));
+				$this->session->setFlashData('success', trans("Subscription cancelled successfully!"));
 				return redirect()->to(admin_url().'listings/sales');
 			}else{
-				$this->session->setFlashData('success_form', trans("Subscription canceled successfully!"));
+				$this->session->setFlashData('success_form', trans("Subscription cancelled successfully!"));
 				return redirect()->to(base_url('subscriptions'));
 			}
 		}

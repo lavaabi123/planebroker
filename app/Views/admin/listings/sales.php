@@ -69,7 +69,7 @@ if($sale['provider'] != ''){									?>
 											<td><?php echo !empty($sale['stripe_subscription_amount_paid']) ? $sale['stripe_subscription_amount_paid'] : '0.00'; ?></td>
 											<td><?php echo formatted_date($sale['created_at'],'m/d/Y'); ?></td>
 											<td><?php echo !empty($sale['admin_plan_update']) ? 'Admin' : 'User'; ?></td>
-											<td><?php echo !empty($sale['is_cancel']) ? '<div class="text-danger">Canceled</div>' : 'Active'; ?></td>
+											<td><?php echo !empty($sale['is_cancel']) ? '<div class="text-danger">Cancelled</div>' : 'Active'; ?></td>
 											
 											<td class="text-center">
 												<div class="dropdown btn-group">
@@ -281,7 +281,7 @@ $(function(){
           <option value=""><?php echo trans('All') ?></option>
 		  <option value="Active">Active</option>
 		  <option value="Inactive">Inactive</option>
-		  <option value="Canceled">Canceled</option>
+		  <option value="Cancelled">Cancelled</option>
 				
         </select>
       `);

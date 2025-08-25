@@ -20,13 +20,13 @@
 				<div class="col-12 col-sm-6 col-xl-3" id="p_id_<?php echo $row['id']; ?>">
 				<div class="card rounded-5 p-3 h-100">
 					<?php if ($row['status'] == 1 && $row['is_cancel'] == 1){ ?>
-						<span class="text-danger" title="<?php echo trans('active'); ?>">CANCELED</span>
+						<span class="text-danger" title="<?php echo trans('active'); ?>">CANCELLED</span>
 					<?php }else if ($row['status'] == 1 && $row['is_cancel'] == 0){ ?>
 						<span class="text-success" title="<?php echo trans('active'); ?>">ACTIVE</span>
 					<?php }else if ($row['status'] == 0 && $row['is_cancel'] == 0){ ?>
 						<span class="text-danger" title="<?php echo trans('active'); ?>">INACTIVE</span>
 					<?php }else{ ?>
-						<span class="text-danger" title="<?php echo trans('banned'); ?>">CANCELED</span>
+						<span class="text-danger" title="<?php echo trans('banned'); ?>">CANCELLED</span>
 					<?php } ?>
 					<div class="providerImg mb-3">
 						<img class="d-block w-100" alt="..." src="<?php echo $row['image']; ?>">

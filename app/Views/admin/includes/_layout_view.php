@@ -54,7 +54,7 @@
         sweetalert_cancel = "<?php echo trans("cancel"); ?>";
         var sys_lang_id = "<?php echo get_langguage_id(get_general_settings()->site_lang)->id; ?>";
     </script>    
-    <script src="<?php echo base_url(); ?>/assets/admin/js/custom.js?v=2"></script>
+    <script src="<?php echo base_url(); ?>/assets/admin/js/custom.js?v=1.1"></script>
 </head>
 
 <body class="hold-transition sidebar-mini <?php echo check_dark_mode_enabled() ? 'dark-mode' : '' ?> layout-fixed layout-footer-fixed layout-navbar-fixed">

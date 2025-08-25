@@ -28,21 +28,21 @@
      data-auto-close="outside"
      aria-expanded="false"
      role="button">
-     <i class="fa fa-bell text-white fs-5"></i>
+     <img src="<?php echo base_url(); ?>/assets/admin/img/alert.png" alt="Notifications"/>
      <span id="notifCount" class="position-absolute top-10 start-60 translate-middle badge rounded-pill bg-danger d-none"></span>
   </a>
 
-  <div class="dropdown-menu dropdown-menu-end p-0"
+  <div class="dropdown-menu dropdown-menu-end p-0 rounded-5"
        aria-labelledby="notifToggle"
        style="width: 380px; max-height: 70vh; overflow:auto;">
-    <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+    <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom bg-grey position-sticky top-0 z-1">
       <strong>Notifications</strong>
       <button class="btn btn-sm btn-link" id="markAllReadBtn">Mark all as read</button>
     </div>
     <div id="notifList" class="list-group list-group-flush">
       <div class="p-3 text-muted">Loading…</div>
     </div>
-	<div class="border-top p-2">
+	<div class="border-top p-2 position-sticky bottom-0 bg-grey">
   <a href="<?= esc(site_url('admin/notifications/all')) ?>" class="btn btn-sm btn-primary w-100">View all</a>
 </div>
   </div>

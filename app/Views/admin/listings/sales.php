@@ -208,7 +208,7 @@ $(function(){
     pageLength: 10,
     lengthMenu: [10, 25, 50, 100],
     dom: 
-	'<"d-flex align-items-center gap-2 mb-3"lf<"dropdown-filter"><"user-filter"><"date-filter"><"reset-filter">>t<"d-flex justify-content-center align-items-center my-3"ip>',
+	'<"d-flex align-items-center gap-2 mb-3"lf<"dropdown-filter"><"user-filter"><"status-filter"><"date-filter"><"reset-filter">>t<"d-flex justify-content-center align-items-center my-3"ip>',
     language: {
       paginate: {
         previous: "<i class='fas fa-caret-left'></i>",
@@ -274,6 +274,17 @@ $(function(){
                 ?>
         </select>
       `);
+	  
+	  $('.status-filter').html(`
+        <label>Status</label>
+        <select id="statusDropdown" class="form-control form-select-sm">
+          <option value=""><?php echo trans('All') ?></option>
+		  <option value="Active">Active</option>
+		  <option value="Inactive">Inactive</option>
+		  <option value="Canceled">Canceled</option>
+				
+        </select>
+      `);
 
       // Date range filter
       $('.date-filter').html(`
@@ -323,6 +334,7 @@ $(function(){
     // Reset dropdown
     $('#filterDropdown').val('');
     $('#userDropdown').val('');
+    $('#statusDropdown').val('');
 
     // Reset date filter
     startDate = null;
@@ -351,6 +363,14 @@ $(function(){
       dt.column(2).search(selectedValue).draw();
     } else {
       dt.column(2).search('').draw();
+    }
+  });
+  $('#statusDropdown').on('change', function () {
+    const selectedValue = $(this).val();
+    if (selectedValue) {
+      dt.column(8).search(selectedValue).draw();
+    } else {
+      dt.column(8).search('').draw();
     }
   });
 

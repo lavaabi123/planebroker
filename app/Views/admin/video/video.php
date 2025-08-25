@@ -44,7 +44,7 @@
                                                 <tr role="row">
                                                     <th><?php echo trans('Title'); ?></th>
                                                     <th><?php echo trans('Video URL'); ?></th>
-                                                    <th><?php echo trans('Created at'); ?></th>
+                                                    <th><?php echo trans('Date'); ?></th>
                                                     <th><?php echo trans('Status'); ?></th>
                                                     <th class="text-center max-width-120"><?php echo trans('options'); ?></th>
                                                 </tr>

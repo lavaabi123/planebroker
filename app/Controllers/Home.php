@@ -164,9 +164,9 @@ class Home extends BaseController
         $this->BlogModel = new BlogModel();
 		$data['blogs'] = $this->BlogModel->get_all_blog();
 		$data['blog'] = (array)$this->BlogModel->get_blog($clean_url);
-		$data['meta_title'] = !empty(get_seo('Blog')) ? get_seo('Blog')->meta_title : 'Blog | Plane Broker';
-		$data['meta_desc'] = !empty(get_seo('Blog')) ? get_seo('Blog')->meta_description : '';
-		$data['meta_keywords'] = !empty(get_seo('Blog')) ? get_seo('Blog')->meta_keywords : '';
+		$data['meta_title'] = !empty($data['blog']['seo_title']) ? $data['blog']['seo_title'] : 'Blog | Plane Broker';
+		$data['meta_desc'] = !empty($data['blog']['seo_description']) ? $data['blog']['seo_description'] : '';
+		$data['meta_keywords'] = !empty($data['blog']['seo_keywords']) ? $data['blog']['seo_keywords'] : '';
         return view('pages/blog_detail', $data);
     }
 	

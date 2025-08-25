@@ -110,6 +110,34 @@
 								</div>
 							</div>
 						</div>
+						
+						<div class="row">
+							<div class="col-6">
+								<div class="form-group mb-3">
+							<label class=" ml-0"><?php echo trans("seo_title"); ?></label>
+							<input type="text" id="modal_seo_title" name="seo_title" maxlength="255" class="form-control form-input" value="<?php echo html_escape($blog->seo_title); ?>" placeholder="<?php echo trans("seo_title"); ?>" required>
+						</div>
+							</div>
+						</div>             
+
+						<div class="row">
+							<div class="col-6">
+								<div class="form-group mb-3">
+							<label class=" ml-0"><?php echo trans("seo_keywords"); ?></label>
+							<textarea id="modal_seo_keywords" name="seo_keywords" class="form-control form-input" placeholder="<?php echo trans("seo_keywords"); ?>" required><?php echo html_escape($blog->seo_keywords); ?></textarea>
+						</div>   
+							</div>
+						</div>  
+
+						<div class="row">
+							<div class="col-6">
+								<div class="form-group mb-3">
+							<label class=" ml-0"><?php echo trans("seo_description"); ?></label>
+							<textarea id="modal_seo_description" name="seo_description" class="form-control form-input" placeholder="<?php echo trans("seo_description"); ?>" required><?php echo html_escape($blog->seo_description); ?></textarea>
+						</div> 
+							</div>
+						</div> 
+						
                         <div class="form-group mb-3">
                             <button type="submit" id="single_submit" name="validate" class="btn btn-primary"><?php echo trans('save_changes'); ?></button>
                         </div>

@@ -54,6 +54,9 @@ class BlogModel extends Model
         $data['status'] = $this->request->getVar('status');
 		$data['image'] = $img_name;
         $data['created_at'] = date('Y-m-d H:i:s');
+		$data['seo_title'] = $this->request->getVar('seo_title');
+		$data['seo_keywords'] = $this->request->getVar('seo_keywords'); 
+		$data['seo_description'] = $this->request->getVar('seo_description');
 
         return $this->protect(false)->insert($data);
     }
@@ -69,7 +72,10 @@ class BlogModel extends Model
                 'content' => $this->request->getVar('content'),
                 'category' => $this->request->getVar('category'),
                 'status' => $this->request->getVar('status'),
-                'image' => $img_name
+                'image' => $img_name,
+				'seo_title' => $this->request->getVar('seo_title'), 
+				'seo_keywords' => $this->request->getVar('seo_keywords'), 
+				'seo_description' => $this->request->getVar('seo_description'),
             );
 
             return $this->protect(false)->update($blog->id, $data);

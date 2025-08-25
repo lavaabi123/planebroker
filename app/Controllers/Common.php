@@ -769,7 +769,7 @@ class Common extends BaseController
             echo "<tr><td>Name:</td><td>".$message->from_name."</td></tr>";
             echo "<tr><td>Email:</td><td>".$message->from_email."</td></tr>";
             echo "<tr><td>phone:</td><td>".$message->from_phone."</td></tr>";
-            echo "<tr><td>Date:</td><td>".formatted_date($message->created_at)."</td></tr>";         
+            echo "<tr><td>Date:</td><td>".date('m-d-Y h:i a', strtotime($message->created_at))."</td></tr>";         
             echo "<tr><td>Message:</td><td>".$message->from_message."</td></tr>";        
         }else{
              echo "<tr><td colspan='2'>No data</td></tr>";
@@ -791,7 +791,7 @@ class Common extends BaseController
             echo "<tr><td>Dealer / Company Name:</td><td>".$message->company_name."</td></tr>";
             echo "<tr><td>Dealer / Company Description:</td><td>".$message->company_des."</td></tr>";
             echo "<tr><td>phone:</td><td>".$message->from_phone."</td></tr>";
-            echo "<tr><td>Date:</td><td>".formatted_date($message->created_at)."</td></tr>";         
+            echo "<tr><td>Date:</td><td>".date('m-d-Y h:i a', strtotime($message->created_at))."</td></tr>";         
             echo "<tr><td>Additional Information:</td><td>".$message->from_message."</td></tr>";        
         }else{
              echo "<tr><td colspan='2'>No data</td></tr>";

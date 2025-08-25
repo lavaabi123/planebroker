@@ -257,6 +257,7 @@ $(function(){
                 <?php }
                 }
                 ?>
+				<option value="Captain\'s Club"><?php echo 'Captain\'s Club'; ?></option>
         </select>
       `);
 	  

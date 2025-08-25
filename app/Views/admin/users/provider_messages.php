@@ -50,7 +50,7 @@
 								</thead>
 								<tbody>
 									<?php foreach ($provider_messages as $h => $provider_message) : ?>
-									<tr id="pm<?php echo ($h+1); ?>">
+									<tr id="pm<?php echo $provider_message['id']; ?>">
 											<td><?php echo $provider_message['from_name']; ?> </td>
 											<td><?php echo $provider_message['from_email']; ?></td>
 											<td><?php echo $provider_message['from_phone']; ?></td>

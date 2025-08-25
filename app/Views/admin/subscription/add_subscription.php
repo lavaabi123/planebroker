@@ -110,6 +110,7 @@
 									</div>
 								</div>
 							</div>
+							<!--
 							<div class="row">
 								<div class="col-6">
 									<div class="form-group mb-3">
@@ -125,7 +126,7 @@
 										 <input type="text" name="paypal_plan_id_without_trial" class="form-control auth-form-input" placeholder="<?php echo trans("Paypal Plan ID without Trial"); ?>" value="<?php echo old("paypal_plan_id_without_trial"); ?>" required>
 									</div>
 								</div>
-							</div>
+							</div>-->
 							<div class="row">
 								<div class="col-6">
 									<div class="form-group mb-3">

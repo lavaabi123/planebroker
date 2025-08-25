@@ -1594,6 +1594,7 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
 			$query = $this->db->table('provider_messages AS pm')
             ->select('pm.*, u.fullname AS to_provider')
             ->join('users AS u', 'u.id = pm.to_user_id', 'left')
+            ->where('pm.deleted_at', null)
             ->where('u.deleted_at', null)
             ->orderBy('pm.id', 'DESC');
         return $query->get()->getResultArray();

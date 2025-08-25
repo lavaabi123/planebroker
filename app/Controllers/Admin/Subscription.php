@@ -71,13 +71,6 @@ class Subscription extends AdminController
                     'max_length' => trans('form_validation_max_length'),
                 ],
             ],
-            'content' => [
-                'label'  => trans('content'),
-                'rules'  => 'required',
-                'errors' => [
-                    'required' => trans('form_validation_required'),
-                ],
-            ],
         ];
 
 

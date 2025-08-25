@@ -56,8 +56,8 @@ class SubscriptionModel extends Model
                 'is_premium_listing' => $this->request->getVar('is_premium_listing'),
                 'is_recommended' => $this->request->getVar('is_recommended'),
                 'stripe_price_id' => $this->request->getVar('stripe_price_id'),
-                'paypal_plan_id_with_trial' => $this->request->getVar('paypal_plan_id_with_trial'),
-                'paypal_plan_id_without_trial' => $this->request->getVar('paypal_plan_id_without_trial'),
+                //'paypal_plan_id_with_trial' => $this->request->getVar('paypal_plan_id_with_trial'),
+                //'paypal_plan_id_without_trial' => $this->request->getVar('paypal_plan_id_without_trial'),
                 'status' => $this->request->getVar('status')
             );
 

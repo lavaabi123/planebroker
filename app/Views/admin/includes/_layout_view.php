@@ -54,7 +54,7 @@
         sweetalert_cancel = "<?php echo trans("cancel"); ?>";
         var sys_lang_id = "<?php echo get_langguage_id(get_general_settings()->site_lang)->id; ?>";
     </script>    
-    <script src="<?php echo base_url(); ?>/assets/admin/js/custom.js?v=1"></script>
+    <script src="<?php echo base_url(); ?>/assets/admin/js/custom.js?v=2"></script>
 </head>
 
 <body class="hold-transition sidebar-mini <?php echo check_dark_mode_enabled() ? 'dark-mode' : '' ?> layout-fixed layout-footer-fixed layout-navbar-fixed">
@@ -518,6 +518,49 @@ $(function () {
   setInterval(refresh, 20000);
 })();
 </script>
+<script>
+(function () {
+  // Globals any script can set:
+  window._notif = window._notif || {
+    pollId: null,               // setInterval id
+    xhrs: new Set(),            // jQuery jqXHRs
+    controllers: new Set()      // fetch AbortControllers
+  };
+
+  window.stopNotifAjax = function () {
+    // Abort fetches
+    for (const c of window._notif.controllers) { try { c.abort(); } catch(e){} }
+    window._notif.controllers.clear();
+
+    // Abort jQuery ajax/Datatables requests
+    for (const x of window._notif.xhrs) {
+      try { if (x && x.readyState !== 4) x.abort(); } catch(e){}
+    }
+    window._notif.xhrs.clear();
+
+    // Stop polling
+    if (window._notif.pollId) {
+      clearInterval(window._notif.pollId);
+      window._notif.pollId = null;
+    }
+  };
+
+  // Abort before any real form submit (don’t prevent default!)
+  document.addEventListener('submit', function () { window.stopNotifAjax(); }, true);
+
+  // Also catch submit-button clicks (Enter key may bypass click)
+  document.addEventListener('click', function (e) {
+    const btn = e.target.closest('button, input[type="submit"]');
+    if (!btn) return;
+    const type = (btn.getAttribute('type') || 'submit').toLowerCase();
+    if (type === 'submit') window.stopNotifAjax();
+  }, true);
+
+  // Safety: when navigating away
+  window.addEventListener('beforeunload', function () { window.stopNotifAjax(); });
+})();
+</script>
+
 </body>
 
 </html>

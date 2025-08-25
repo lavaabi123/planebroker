@@ -71,7 +71,7 @@
 			  <?php } 
 					} ?>
 					
-					
+			<?php if(empty($_GET['sale_id']) && empty($_GET['plan_id'])){ ?>	
 			  <div class="col">
 				<div class="card p-3 border rounded-5 shadow-sm h-100">
 				  <div class="card-header pb-3 pb-xl-4">
@@ -95,6 +95,7 @@
 				  </div>
 				</div>
 			  </div>
+			  <?php } ?>
 			</div>
 		</div>
 		</div>

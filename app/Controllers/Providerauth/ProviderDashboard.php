@@ -1551,8 +1551,8 @@ else if($this->request->getVar('check') == '3'){
 			 //return redirect()->to(base_url('/'));
 		}
 		$this->UsersModel = new UsersModel();
-		$data['user_detail'] = $this->UsersModel->get_user($this->session->get('vr_sess_user_id'));
 		$sale_detail = $this->UsersModel->get_sales_by_id($subscriptionId);
+		$data['user_detail'] = $this->UsersModel->get_user($sale_detail->user_id);
 		if($payment_type == 'Stripe'){
 
 			
@@ -1582,7 +1582,7 @@ else if($this->request->getVar('check') == '3'){
 				$updateUser['payment_type'] = "Stripe";
 				$this->UsersModel = new UsersModel();							
 				$s_detail = $this->db->table('sales')->where('stripe_subscription_id',$subscriptionId)->get()->getRow();  
-				$user = $this->UsersModel->update_user_plan($this->session->get('vr_sess_user_id'),$updateUser);
+				$user = $this->UsersModel->update_user_plan($sale_detail->user_id,$updateUser);
 				$this->db->table('sales')->where('stripe_subscription_id',$subscriptionId)->update(['is_cancel' => 1]);
 				$this->db->table('products')->where('id', $s_detail->product_id)->update(['is_cancel' => 1]);
 				$emailModel = new EmailModel();	
@@ -1679,7 +1679,7 @@ else if($this->request->getVar('check') == '3'){
 			$updateUser['payment_type'] = "Paypal";
 			$this->UsersModel = new UsersModel();			
 			$s_detail = $this->db->table('sales')->where('stripe_subscription_id',$subscriptionId)->get()->getRow();				  
-			$user = $this->UsersModel->update_user_plan($this->session->get('vr_sess_user_id'),$updateUser);
+			$user = $this->UsersModel->update_user_plan($sale_detail->user_id,$updateUser);
 			$this->db->table('sales')->where('stripe_subscription_id',$subscriptionId)->update(['is_cancel' => 1]);
 			$this->db->table('products')->where('id', $s_detail->product_id)->update(['is_cancel' => 1]);
 			$emailModel = new EmailModel();	

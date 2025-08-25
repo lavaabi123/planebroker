@@ -1366,6 +1366,8 @@ input[type="file"] {
 #custom-tabs-four-tabContent .btn {
 	    font-size: 16px !important;
     text-transform: uppercase;
+	    min-width: 170px;
+    text-align: center !important;
 }
 .fa.fa-trash {
     font-family: FontAwesome;
@@ -1495,4 +1497,34 @@ table.table-bordered.dataTable th, table.table-bordered.dataTable td {
 }
 .bg-blue {
 	background: var(--d-blue) !important;
+}
+.dataTables_wrapper .ss-main {
+	min-width: 100px;
+    margin-bottom: 0;
+}
+.dataTables_wrapper .ss-main .ss-single-selected {
+	border: 1px solid var(--light-grey);
+	padding: 10px 20px !important;
+	border-radius: 16px;
+}
+.dataTables_wrapper  .ss-main .ss-content {
+	border: 1px solid var(--light-grey);
+}
+.dataTables_wrapper .ss-main .ss-open-below + .ss-content {
+    border-radius: 0 0 15px 15px;
+}
+.dataTables_wrapper .ss-main .ss-open-above + .ss-content {
+    border-radius: 15px 15px 0 0;
+}
+.form-group .ui-autocomplete {
+	top: calc(100% - 16px) !important;
+	width: calc(100% - 24px) !important;
+    margin-left: 12px;
+	border-radius: 0 0 20px 20px;
+}
+input.ui-autocomplete-loading {
+    /*border-radius: 25px 25px 0 0 !important;*/
+}
+.form-group {
+    margin-bottom: 0;
 }

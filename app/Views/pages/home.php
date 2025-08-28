@@ -130,9 +130,13 @@
 	<?php } ?>
 	<div class="container pb-5 text-center">
 		<?php
-		$get_image = get_ad('Home','Top');
-		if(!empty($get_image)){
-			echo '<a href="'.$get_image['ad_link'].'" onclick="update_ad_click_count('.$get_image['id'].')" class="ad_link_click" target="_blank"><img src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+		$get_images = get_ad('Home','Top');
+		if(!empty($get_images)){
+			echo '<div class="owl-carousel ad-carousel" data-fit="image">';
+			foreach($get_images as $get_image){
+				echo '<div class="item"><a href="'.$get_image['ad_link'].'" onclick="update_ad_click_count('.$get_image['id'].')" class="ad_link_click" target="_blank"><img src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a></div>';
+			}
+			echo '</div>';
 		}else{
 			echo '<img class="d-none d-md-block" src="'. base_url('assets/frontend/images/ads-hoz.jpg').'">';
 		}

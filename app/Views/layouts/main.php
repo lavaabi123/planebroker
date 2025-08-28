@@ -311,13 +311,21 @@ $blogs = get_all_blog(0); ?>
 <div class="blog text-center py-5 px-3 px-xl-5 bg-gray">
 <?php if($currentsegment == 'listings' && !empty($category_detail) && !empty($category_detail->id)){ ?>
 	<?php
-	$get_image = get_ad($category_detail->id,'Left');
-	if(!empty($get_image)){
-		echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+	$get_images = get_ad($category_detail->id,'Left');
+	if(!empty($get_images)){
+			echo '<div class="owl-carousel ad-carousel" data-fit="image">';
+		foreach($get_images as $get_image){
+		echo '<div class="item"><a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a></div>';
+		}
+			echo '</div>';
 	}else{
-		$get_image = get_ad('Home','Left');
-		if(!empty($get_image)){
-			echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+		$get_images = get_ad('Home','Left');
+		if(!empty($get_images)){
+			echo '<div class="owl-carousel ad-carousel" data-fit="image">';
+			foreach($get_images as $get_image){
+			echo '<div class="item"><a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a></div>';
+			}
+			echo '</div>';
 		}else{
 			echo '<img class="d-none d-md-block" src="'. base_url('assets/frontend/images/ads-vertical.jpg').'">';
 		}
@@ -327,9 +335,13 @@ $blogs = get_all_blog(0); ?>
 <?php }else{ ?>
 
 	<?php
-	$get_image = get_ad('Home','Left');
-	if(!empty($get_image)){
-		echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+	$get_images = get_ad('Home','Left');
+	if(!empty($get_images)){
+			echo '<div class="owl-carousel ad-carousel" data-fit="image">';
+		foreach($get_images as $get_image){
+		echo '<div class="item"><a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a></div>';
+		}
+			echo '</div>';
 	}else{
 		echo '<img class="d-none d-md-block" src="'. base_url('assets/frontend/images/ads-vertical.jpg').'">';
 	}
@@ -359,13 +371,21 @@ $blogs = get_all_blog(0); ?>
 	</div>
 	<?php if($currentsegment == 'listings' && !empty($category_detail) && !empty($category_detail->id)){ ?>
 	<?php
-	$get_image = get_ad($category_detail->id,'Right');
-	if(!empty($get_image)){
-		echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+	$get_images = get_ad($category_detail->id,'Right');
+	if(!empty($get_images)){
+			echo '<div class="owl-carousel ad-carousel" data-fit="image">';
+		foreach($get_images as $get_image){
+		echo '<div class="item"><a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a></div>';
+		}
+			echo '</div>';
 	}else {
-		$get_image = get_ad('Home','Right');
-		if(!empty($get_image)){
-			echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+		$get_images = get_ad('Home','Right');
+		if(!empty($get_images)){
+			echo '<div class="owl-carousel ad-carousel" data-fit="image">';
+			foreach($get_images as $get_image){
+			echo '<div class="item"><a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a></div>';
+			}
+			echo '</div>';
 		}else{
 			echo '<img class="d-none d-md-block" src="'. base_url('assets/frontend/images/ads-vertical.jpg').'">';
 		}
@@ -374,9 +394,13 @@ $blogs = get_all_blog(0); ?>
 	
 	<?php }else{ ?>
 	<?php
-	$get_image = get_ad('Home','Right');
-	if(!empty($get_image)){
-		echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+	$get_images = get_ad('Home','Right');
+	if(!empty($get_images)){
+			echo '<div class="owl-carousel ad-carousel" data-fit="image">';
+		foreach($get_images as $get_image){
+		echo '<div class="item"><a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="d-none d-md-block" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a></div>';
+		}
+			echo '</div>';
 	}else{
 		echo '<img class="d-none d-md-block" src="'. base_url('assets/frontend/images/ads-vertical.jpg').'">';
 	}
@@ -387,17 +411,25 @@ $blogs = get_all_blog(0); ?>
 	<div class="bg-gray pb-5 text-center">	
 	<?php if($currentsegment == 'listings' && !empty($category_detail) && !empty($category_detail->id)){ ?>
 	<?php
-	$get_image = get_ad($category_detail->id,'Bottom');
-	if(!empty($get_image)){
-		echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+	$get_images = get_ad($category_detail->id,'Bottom');
+	if(!empty($get_images)){
+			echo '<div class="owl-carousel ad-carousel" data-fit="image">';
+		foreach($get_images as $get_image){
+		echo '<div class="item"><a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img class="" src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a></div>';
+		}
+			echo '</div>';
 	}
 	?>
 	
 	<?php }else{ ?>	
 	<?php
-	$get_image = get_ad('Home','Bottom');
-	if(!empty($get_image)){
-		echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+	$get_images = get_ad('Home','Bottom');
+	if(!empty($get_images)){
+			echo '<div class="owl-carousel ad-carousel" data-fit="image">';
+		foreach($get_images as $get_image){
+		echo '<div class="item"><a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a></div>';
+		}
+			echo '</div>';
 	}
 	}
 	?>	
@@ -1194,6 +1226,136 @@ table.dataTable thead > tr > th.sorting_desc:after {
 }
 </style>
 
+<style>
+  /* Clip neighbors & smooth width changes in fit mode */
+  .ad-carousel .owl-stage-outer { overflow: hidden; }
+  .ad-carousel.ad-fit { display:inline-block; margin:0 auto; transition:width 600ms ease; }
+  .ad-carousel .item img { display:block; height:auto; }
+</style>
+
+<script>
+$(function () {
+  const SPEED = 600; // keep in sync with autoplay/smartSpeed
+
+  function destroyIfLoaded($w){
+    if ($w.hasClass('owl-loaded')) {
+      $w.trigger('destroy.owl.carousel');
+      $w.removeClass('owl-loaded owl-hidden');
+      $w.find('.owl-stage-outer').children().unwrap();
+    }
+  }
+
+  function measureAll($w, cb){
+    const $imgs = $w.find('.item img');
+    if (!$imgs.length) return cb([]);
+    let done = 0, widths = Array($imgs.length).fill(0);
+    $imgs.each(function(i){
+      const img = this;
+      function take(){
+        widths[i] = img.naturalWidth || $(img).width() || 0;
+        if (++done === $imgs.length) cb(widths);
+      }
+      img.complete ? take() : $(img).one('load', take);
+    });
+  }
+
+  function capWidth($w, w){
+    const cap = $w.closest('.container, .container-fluid').width() || $(window).width();
+    return Math.min(w || cap, cap);
+  }
+
+  function setWrapWidthToIndex($w, relIndex){
+    const widths = $w.data('ad-widths') || [];
+    const w = widths[relIndex] || 0;
+    $w.css('width', capWidth($w, w) + 'px');
+  }
+
+  function initOne($w){
+    destroyIfLoaded($w);
+
+    measureAll($w, function(widths){
+      $w.data('ad-widths', widths);
+
+      const cap = $w.closest('.container, .container-fluid').width() || $(window).width();
+      const maxW = Math.max.apply(null, widths.concat([0]));
+      const isFit = ($w.data('fit') || '').toString().toLowerCase() === 'image'
+                  || (maxW && maxW < cap * 0.9); // auto-detect narrow creatives
+
+      const slideCount = $w.find('.item').length;
+
+      const base = {
+        items: 1,
+        loop: slideCount > 1,
+        autoHeight: true,
+        autoplay: true,
+        autoplayTimeout: 10000,
+        autoplayHoverPause: true,
+        smartSpeed: SPEED,
+        autoplaySpeed: SPEED,
+        nav: false,
+        dots: false,
+        margin: 0,
+        stagePadding: 0
+      };
+
+      if (isFit) {
+        $w.addClass('ad-fit');
+        $w.find('.item img').css({ width: 'auto', maxWidth: '100%' });
+
+        // Pre-set width to the first (current) slide before init
+        setWrapWidthToIndex($w, 0);
+
+        $w.owlCarousel($.extend({}, base, { autoWidth: true, center: false }));
+
+        // BEFORE slide starts: set target width to next slide
+        $w.on('change.owl.carousel', function(e){
+          if (!e.namespace || !e.property || e.property.name !== 'position') return;
+          const c = e.relatedTarget;
+          const nextAbs = e.property.value;          // absolute index (with clones)
+          const nextRel = c.relative(nextAbs);       // normalize to 0..(items-1)
+          setWrapWidthToIndex($w, nextRel);          // viewport width set BEFORE move
+        });
+
+        // Also ensure correct width after init/resize/refresh
+        $w.on('initialized.owl.carousel resized.owl.carousel refreshed.owl.carousel', function(e){
+          const c = e.relatedTarget || $w.data('owl.carousel');
+          if (!c) return;
+          const rel = c.relative(c.current());
+          setWrapWidthToIndex($w, rel);
+        });
+
+      } else {
+        // Fill container
+        $w.removeClass('ad-fit').css({ width: '', maxWidth: '100%' });
+        $w.find('.item img').css({ width: '100%' });
+        $w.owlCarousel($.extend({}, base, { autoWidth: false, center: false }));
+      }
+
+      // Store mode
+      $w.data('ad-mode', isFit ? 'fit' : 'fill');
+    });
+  }
+
+  // Init all
+  $('.ad-carousel').each(function(){ initOne($(this)); });
+
+  // Keep responsive
+  $(window).on('resize', function(){
+    $('.ad-carousel').each(function(){
+      const $w = $(this);
+      if ($w.data('ad-mode') === 'fit') {
+        // Re-clamp current slide width to new container size
+        const c = $w.data('owl.carousel');
+        if (c) setWrapWidthToIndex($w, c.relative(c.current()));
+      } else {
+        $w.trigger('refresh.owl.carousel');
+      }
+    });
+  });
+});
+</script>
+
+
 <script>
     let allCityStates = [];
 
@@ -1226,7 +1388,9 @@ table.dataTable thead > tr > th.sorting_desc:after {
 		$('.city-state').each(function() {
 			$(this).parent().css('position', 'relative');
 		});
+		
 	});
+	
   </script>
 
 </html>

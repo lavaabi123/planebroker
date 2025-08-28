@@ -77,6 +77,7 @@
 										<option value="Top"  <?php echo ($ad->page_position == 'Top') ? 'selected':''; ?>  data-pages="Home">Header Banner (Top of Page)</option>
 										<option value="Left"  <?php echo ($ad->page_position == 'Left') ? 'selected':''; ?> data-pages="Home">Side Banner (Left of Page)</option>
 										<option value="Right" <?php echo ($ad->page_position == 'Right') ? 'selected':''; ?> data-pages="Home">Side Banner (Right of Page)</option>
+										<option value="Bottom" <?php echo ($ad->page_position == 'Bottom') ? 'selected':''; ?> data-pages="Home">Footer Banner (Bottom of Page)</option>
 
 										<?php
 										if(!empty($categories_list)){

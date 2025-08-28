@@ -158,9 +158,13 @@ function radio($name, $val){
 		<div class="container py-5 text-center">
 		<?php
 		
-		$get_image = !empty($category_detail->id) ? get_ad($category_detail->id,'Top') : '';
-		if(!empty($get_image)){
-			echo '<a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a>';
+		$get_images = !empty($category_detail->id) ? get_ad($category_detail->id,'Top') : '';
+		if(!empty($get_images)){
+			echo '<div class="owl-carousel ad-carousel" data-fit="image">';
+			foreach($get_images as $get_image){
+			echo '<div class="item"><a class="ad_link_click" onclick="update_ad_click_count('.$get_image['id'].')" href="'.$get_image['ad_link'].'" target="_blank"><img src="'. base_url('uploads/ad/'.$get_image['image'].'').'"></a></div>';
+			}
+			echo '</div>';
 		}
 		?>			
 		</div>

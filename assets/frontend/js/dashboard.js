@@ -1,6 +1,12 @@
 $(function () {
     'use strict'
 
+	const $canvas = $('#donutChart');
+	if (!$canvas.length) {
+	// Script is loaded on pages without the chart – just skip.
+	return;
+	}
+
     var donutChartCanvas = $('#donutChart').get(0).getContext('2d')
 
     var donutData = {

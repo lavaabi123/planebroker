@@ -22,7 +22,7 @@
 				<?php if(!empty($blog)){ ?>		
 					<div class="col">
 						<img src="<?php echo !empty($blog['image']) ? base_url().'/uploads/blog/'.$blog['image'] : base_url().'/assets/img/user.png'; ?>" class="d-block w-100" alt="...">
-						<div class="blog_content fs-6 mt-3"><?php echo $blog['content']; ?></div>	
+						<div class="full_content fs-6 mt-3"><?php echo $blog['content']; ?></div>	
 					</div>
 				<?php  } ?>
 				</div>
@@ -37,7 +37,7 @@
 								<div class="w-100">
 									<a href="<?php echo  base_url('blog_detail/'.$blog1['clean_url']); ?>"><img src="<?php echo !empty($blog1['image']) ? base_url().'/uploads/blog/'.$blog1['image'] : base_url().'/assets/img/user.png'; ?>" class="d-block w-100" alt="..."></a>
 								</div>
-								<div class="p-3"><a class="fs-6 fw-bold d-blue" href="<?php echo  base_url('blog_detail/'.$blog1['clean_url']); ?>"><?php echo $blog1['name']; ?></a></div>
+								<div class="p-3"><a class="fs-6 fw-bold d-blue" href="<?php echo  base_url('blog_detail/'.$blog1['clean_url']); ?>"><h6><?php echo $blog1['name']; ?></h6></a></div>
 							</div>
 						</div>
 					<?php } } ?>

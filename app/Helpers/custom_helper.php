@@ -1036,8 +1036,8 @@ imagesavealpha($watermarkImg, true);
 		$wmHeight = imagesy($watermarkImg);
 
 		// Resize watermark if bigger than 30% of main image width or height
-		$maxWmWidth = $mainWidth * 0.15;
-		$maxWmHeight = $mainHeight * 0.15;
+		$maxWmWidth = $mainWidth * 1;
+		$maxWmHeight = $mainHeight * 1;
 		$scale = min($maxWmWidth / $wmWidth, $maxWmHeight / $wmHeight, 1);
 
 		if ($scale < 1) {

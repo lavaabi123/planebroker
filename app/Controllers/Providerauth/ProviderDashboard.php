@@ -487,7 +487,7 @@ else if($this->request->getVar('check') == '3'){
 			$savePath = FCPATH .'uploads/userimages/' . $user_id . '/' . $this->request->getVar('image');
 
 			try {
-				addWatermarkFromUrls($mainImageUrl, $watermarkUrl, $savePath, 20, 0.2);
+				addWatermarkFromUrls($mainImageUrl, $watermarkUrl, $savePath, 40, 0.5);
 				//echo "Watermark applied successfully. Saved to: $savePath";
 			} catch (\Exception $e) {
 				//echo "Error: " . $e->getMessage();
@@ -531,7 +531,7 @@ else if($this->request->getVar('check') == '3'){
 			$savePath = FCPATH .'uploads/userimages/' . $user_id . '/' . $this->request->getVar('image');
 
 			try {
-				addWatermarkFromUrls($mainImageUrl, $watermarkUrl, $savePath, 20, 0.2);
+				addWatermarkFromUrls($mainImageUrl, $watermarkUrl, $savePath, 40, 0.5);
 				//echo "Watermark applied successfully. Saved to: $savePath";
 			} catch (\Exception $e) {
 				//echo "Error: " . $e->getMessage();

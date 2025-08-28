@@ -28,11 +28,11 @@
     <!-- Reset CSS -->
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/reset.css">
     <!-- Style CSS -->
-    <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/style.css?version=1.12">    <!-- Responsive  CSS -->
+    <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/style.css?v=2.4">    <!-- Responsive  CSS -->
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/responsive.css">
     <!-- STYLES -->
 	<link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/lightbox.min.css">
-	<link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/slimselect.css">
+	<link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/slimselect.css?v=1.0">
   
 	<!--<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" defer></script>
@@ -118,7 +118,7 @@
         baseUrl = "<?php echo base_url(); ?>";
         userId = "<?php echo session()->get('vr_sess_user_id'); ?>";
     </script>
-    <script src="<?php echo base_url(); ?>/assets/frontend/js/custom-frontend.js?version=1.0"></script>
+    <script src="<?php echo base_url(); ?>/assets/frontend/js/custom-frontend.js?version=2.0"></script>
     
     <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -345,11 +345,11 @@ $blogs = get_all_blog(0); ?>
 		<div class="owl-carousel blog-carousel owl-theme my-3 my-xxl-5"  id="blog">
 		<?php  foreach($blogs as $blog){ ?>		
 			<div class="col item">
-				<div class="bg-white mb-3" style="position:relative;">
+				<div class="bg-white mb-3 pb-4" style="position:relative;">
 					<div class="mb-1 mb-md-3 w-100">
 						<a href="<?php echo  base_url('blog_detail/'.$blog['clean_url']); ?>"><img src="<?php echo !empty($blog['image']) ? base_url().'/uploads/blog/'.$blog['image'] : base_url().'/assets/img/user.png'; ?>" class="d-block w-100" alt="..."></a>
 					</div>
-					<a href="<?php echo  base_url('blog_detail/'.$blog['clean_url']); ?>"><h6 class="black title-sm px-3 pb-4"><?php echo $blog['name']; ?></h6></a>
+					<a href="<?php echo  base_url('blog_detail/'.$blog['clean_url']); ?>"><h6 class="black title-sm px-3"><?php echo $blog['name']; ?></h6></a>
 				</div>
 			</div>
 		<?php } ?>
@@ -597,11 +597,11 @@ button#gdpr-cookie-advanced {
 	<script src="https://www.amcharts.com/lib/4/core.js"></script>
 	<script src="https://www.amcharts.com/lib/4/charts.js"></script>
 	<?php if($uri->getSegment(env('urlsegment')-1) == 'analytics') { ?>
-    <script src="<?php echo base_url(); ?>/assets/frontend/js/analytics.js?version=1.6"></script>
+    <script src="<?php echo base_url(); ?>/assets/frontend/js/analytics.js?version=1.7"></script>
 	<?php }else{ ?>
-		<script src="<?php echo base_url(); ?>/assets/frontend/js/dashboard.js?version=1.3"></script>
+		<script src="<?php echo base_url(); ?>/assets/frontend/js/dashboard.js?version=1.5"></script>
 	<?php } ?>
-	<script src="<?php echo base_url(); ?>/assets/frontend/js/slimselect.js" defer></script>
+	<script src="<?php echo base_url(); ?>/assets/frontend/js/slimselect.js?v=1.0" defer></script>
 <link
   rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"

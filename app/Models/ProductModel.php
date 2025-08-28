@@ -512,4 +512,229 @@ class ProductModel extends Model
 ) AS all_required_fields_filled")->getRow();
 		return $product_detail->all_required_fields_filled;
 	}
+
+public function get_recommended_products_guaranteed(int $currentProductId): array
+{
+    // ---------- helpers ----------
+    $normPrice = fn($v)=> $v!==null ? (float)preg_replace('/[^\d.]/','',(string)$v) : 0.0;
+    $normYear  = function($v){ $m=[]; return (preg_match('/\b(19|20)\d{2}\b/', (string)$v, $m) ? (int)$m[0] : null); };
+    $extractAddr = function(string $addr){
+        $zip=null;   if (preg_match('/\b\d{5}(?:-\d{4})?\b/',$addr,$m)) $zip=substr($m[0],0,5);
+        $state=null; if (preg_match('/\b[A-Z]{2}\b/', strtoupper($addr), $m)) $state=$m[0];
+        $city=null;  $parts=array_map('trim', explode(',',$addr)); if (!empty($parts[0]) && preg_match('/[A-Za-z]/',$parts[0])) $city=$parts[0];
+        return [$zip,$state,$city];
+    };
+
+    // ---------- anchor ----------
+    $anchor = $this->db->query("
+        SELECT p.id, p.category_id, p.sub_category_id, p.address, p.created_at,
+               (SELECT field_value FROM products_dynamic_fields WHERE product_id=p.id AND field_id=(SELECT id FROM fields WHERE name='price' LIMIT 1) LIMIT 1) AS price_raw,
+               (SELECT field_value FROM products_dynamic_fields WHERE product_id=p.id AND field_id=(SELECT id FROM fields WHERE name='Year'  LIMIT 1) LIMIT 1) AS year_raw,
+               (SELECT field_value FROM products_dynamic_fields WHERE product_id=p.id AND field_id=(SELECT id FROM fields WHERE name='Make'  LIMIT 1) LIMIT 1) AS make_name,
+               (SELECT field_value FROM products_dynamic_fields WHERE product_id=p.id AND field_id=(SELECT id FROM fields WHERE name='Model' LIMIT 1) LIMIT 1) AS model_name,
+               (SELECT field_value FROM products_dynamic_fields WHERE product_id=p.id AND field_id=(SELECT id FROM fields WHERE name='Cabin Class' LIMIT 1) LIMIT 1) AS cabin_class
+        FROM products p
+        WHERE p.id = ? LIMIT 1
+    ", [$currentProductId])->getRowArray();
+    if (!$anchor) return [];
+
+    $anchorPrice = $normPrice($anchor['price_raw'] ?? null);
+    $anchorYear  = $normYear($anchor['year_raw'] ?? null);
+    $priceMin = $anchorPrice ? $anchorPrice*0.75 : null;
+    $priceMax = $anchorPrice ? $anchorPrice*1.25 : null;
+    $yearMin  = $anchorYear ? $anchorYear-5 : null;
+    $yearMax  = $anchorYear ? $anchorYear+5 : null;
+
+    $makeTok  = strtolower((string)($anchor['make_name']  ?? ''));
+    $modelTok = strtolower((string)($anchor['model_name'] ?? ''));
+    $cabinTok = strtolower((string)($anchor['cabin_class']?? ''));
+    $addrTok  = strtolower((string)($anchor['address']    ?? ''));
+    [$aZip,$aState,$aCity] = $extractAddr($anchor['address'] ?? '');
+
+    $avKeys = ['g1000','pro line 21','waas','ads-b','wi-fi','apu'];
+
+    // Light family detection
+    $familyTokens = [];
+    foreach ([['7x','8x','falcon 7','falcon 8'], ['xls','xls+','citation xls'], ['sr22','sr22t']] as $group) {
+        foreach ($group as $t) if ($modelTok && strpos($modelTok, $t)!==false) { $familyTokens = $group; break 2; }
+    }
+    if (!$familyTokens && $modelTok) $familyTokens = [$modelTok];
+
+    // ---------- pool fetcher (STRICT CATEGORY + SALES JOIN) ----------
+    $fetchPool = function(int $minPhotos, bool $excludePendingSold) use ($currentProductId, $anchor){
+        $andPend = $excludePendingSold ? "
+            AND NOT (
+                LOWER(COALESCE(
+                    (SELECT field_value FROM products_dynamic_fields
+                       WHERE product_id = p.id AND field_id = (SELECT id FROM fields WHERE name='Aircraft Status' LIMIT 1)
+                       LIMIT 1
+                    ), ''
+                )) LIKE '%pending%'
+                OR
+                LOWER(COALESCE(
+                    (SELECT field_value FROM products_dynamic_fields
+                       WHERE product_id = p.id AND field_id = (SELECT id FROM fields WHERE name='Aircraft Status' LIMIT 1)
+                       LIMIT 1
+                    ), ''
+                )) LIKE '%sold%'
+            )
+        " : "";
+
+        return $this->db->query("
+            SELECT p.*, s.id AS sale_id,
+                   u.fullname, c.name AS category_name, sc.name AS sub_category_name, c.permalink, p.address, p.created_at,
+                   (SELECT GROUP_CONCAT(pd.field_value ORDER BY t.sort_order SEPARATOR ' ')
+                      FROM products_dynamic_fields pd
+                      JOIN (SELECT t.field_id, t.sort_order FROM title_fields t LEFT JOIN fields f ON f.id=t.field_id WHERE t.title_type='title') t
+                        ON t.field_id=pd.field_id
+                     WHERE pd.product_id=p.id
+                   ) AS display_name,
+                   (SELECT field_value FROM products_dynamic_fields WHERE product_id=p.id AND field_id=(SELECT id FROM fields WHERE name='price' LIMIT 1) LIMIT 1) AS price_raw,
+                   (SELECT field_value FROM products_dynamic_fields WHERE product_id=p.id AND field_id=(SELECT id FROM fields WHERE name='Year'  LIMIT 1) LIMIT 1) AS year_raw,
+                   (SELECT field_value FROM products_dynamic_fields WHERE product_id=p.id AND field_id=(SELECT id FROM fields WHERE name='Make'  LIMIT 1) LIMIT 1) AS make_name,
+                   (SELECT field_value FROM products_dynamic_fields WHERE product_id=p.id AND field_id=(SELECT id FROM fields WHERE name='Model' LIMIT 1) LIMIT 1) AS model_name,
+                   (SELECT field_value FROM products_dynamic_fields WHERE product_id=p.id AND field_id=(SELECT id FROM fields WHERE name='Cabin Class' LIMIT 1) LIMIT 1) AS cabin_class,
+                   (SELECT GROUP_CONCAT(pd2.field_value SEPARATOR ' ')
+                      FROM products_dynamic_fields pd2
+                     WHERE pd2.product_id=p.id
+                       AND pd2.field_id IN (SELECT id FROM fields WHERE name IN ('Avionics','Avionics/Features','Equipment','Options'))
+                   ) AS avionics_blob,
+                   (SELECT COUNT(*) FROM user_images ui WHERE ui.product_id=p.id AND ui.is_saved=0) AS photo_count
+            FROM products p
+            INNER JOIN sales s ON s.id = p.sale_id
+            LEFT JOIN categories c   ON c.id = p.category_id
+            LEFT JOIN categories_sub sc ON sc.id = p.sub_category_id
+            LEFT JOIN users u        ON u.id = p.user_id
+            WHERE p.id <> ?
+              AND p.status = 1
+              AND p.category_id = ?
+              AND (SELECT COUNT(*) FROM user_images ui WHERE ui.product_id=p.id AND ui.is_saved=0) >= ?
+              $andPend
+            ORDER BY p.created_at DESC
+            LIMIT 500
+        ", [$currentProductId, (int)$anchor['category_id'], $minPhotos])->getResultArray();
+    };
+
+    // ---------- scorer ----------
+    $scoreOne = function(array $c) use ($normPrice,$normYear,$priceMin,$priceMax,$yearMin,$yearMax,$makeTok,$familyTokens,$cabinTok,$addrTok,$aZip,$aState,$aCity,$avKeys,$anchor,$extractAddr){
+        $score = 0;
+        $candPrice = $normPrice($c['price_raw'] ?? null);
+        $candYear  = $normYear($c['year_raw'] ?? null);
+        $candMake  = strtolower((string)($c['make_name']  ?? ''));
+        $candModel = strtolower((string)($c['model_name'] ?? ''));
+        $candCabin = strtolower((string)($c['cabin_class']?? ''));
+        $candAddr  = strtolower((string)($c['address']    ?? ''));
+        [$cZip,$cState,$cCity] = $extractAddr($c['address'] ?? '');
+
+        // 1) same class/cabin
+        if ((int)$c['sub_category_id'] === (int)$anchor['sub_category_id']) $score += 10;
+        if ($cabinTok && $candCabin === $cabinTok) $score += 4;
+
+        // 2) make/model family
+        if ($makeTok && strpos($candMake, $makeTok)!==false) $score += 4;
+        if ($familyTokens) { foreach ($familyTokens as $tok) { if ($tok && strpos($candModel, $tok)!==false) { $score += 6; break; } } }
+
+        // 3) price ±25%
+        if ($priceMin && $candPrice >= $priceMin && $candPrice <= $priceMax) $score += 8;
+
+        // 4) year ±5
+        if ($yearMin && $candYear && $candYear >= $yearMin && $candYear <= $yearMax) $score += 8;
+
+        // 5) address proximity (ZIP3 > city > state > substring)
+        if ($aZip && $cZip && substr($aZip,0,3) === substr($cZip,0,3)) $score += 10;
+        else if ($aCity && $cCity && strcasecmp($aCity,$cCity)===0)     $score += 6;
+        else if ($aState && $cState && strcasecmp($aState,$cState)===0) $score += 4;
+        else if ($addrTok && $candAddr && (strpos($candAddr,$addrTok)!==false || strpos($addrTok,$candAddr)!==false)) $score += 3;
+
+        // 6) avionics overlap (max +6)
+        if (!empty($c['avionics_blob'])) {
+            $blob = ' '.strtolower($c['avionics_blob']).' ';
+            $hits = 0; foreach ($avKeys as $k) { if (strpos($blob,$k)!==false) $hits++; }
+            $score += min($hits,6);
+        }
+
+        return $score;
+    };
+
+    // ---------- Phase A: strict (≥10 photos, exclude pending/sold) ----------
+    $picked = [];
+    $poolA = $fetchPool(10, true);
+
+    // score by reference to avoid undefined _score
+    foreach ($poolA as &$c) {
+        $c['_score'] = $scoreOne($c);
+        $picked[$c['id']] = true;
+    }
+    unset($c);
+
+    // safe sort (handles missing keys)
+    usort($poolA, function($x,$y){
+        $sx = $x['_score']    ?? 0;
+        $sy = $y['_score']    ?? 0;
+        $cx = $x['created_at']?? '';
+        $cy = $y['created_at']?? '';
+        return ($sy <=> $sx) ?: strcmp($cy, $cx);
+    });
+
+    $final = array_slice($poolA, 0, 10);
+
+    // ---------- Phase B: relax photos to ≥1 (still exclude pending/sold) ----------
+    if (count($final) < 10) {
+        $poolB = $fetchPool(1, true);
+        foreach ($poolB as $row) {
+            if (isset($picked[$row['id']])) continue;
+            $row['_score'] = $scoreOne($row);
+            $picked[$row['id']] = true;
+            $final[] = $row;
+            if (count($final) === 10) break;
+        }
+    }
+
+    // ---------- Phase C: allow pending/sold in pool (≥1 photo) ----------
+    if (count($final) < 10) {
+        $poolC = $fetchPool(1, false);
+        foreach ($poolC as $row) {
+            if (isset($picked[$row['id']])) continue;
+            $row['_score'] = $scoreOne($row);
+            $picked[$row['id']] = true;
+            $final[] = $row;
+            if (count($final) === 10) break;
+        }
+    }
+
+    // final ordering & trim
+    usort($final, function($x,$y){
+        $sx = $x['_score']    ?? 0;
+        $sy = $y['_score']    ?? 0;
+        $cx = $x['created_at']?? '';
+        $cy = $y['created_at']?? '';
+        return ($sy <=> $sx) ?: strcmp($cy, $cx);
+    });
+    $final = array_slice($final, 0, 10);
+
+    // ---------- Shape for Owl ----------
+    $out = [];
+    foreach ($final as $p) {
+        $pic = $this->db->query("SELECT file_name FROM user_images WHERE product_id=? AND is_saved=0 ORDER BY file_type,`order` ASC LIMIT 1", [$p['id']])->getRowArray();
+        $img = !empty($pic['file_name']) ? base_url('uploads/userimages/'.$p['user_id'].'/'.$pic['file_name']) : base_url('assets/frontend/images/user.png');
+        $priceNum = ($p['price_raw'] ?? null) ? (float)preg_replace('/[^\d.]/','',$p['price_raw']) : 0;
+
+        $out[] = [
+            'id'           => $p['id'],
+            'sale_id'      => $p['sale_id'], // guaranteed due to INNER JOIN
+            'name'         => $p['display_name'],
+            'image'        => $img,
+            'price'        => $priceNum,
+            'cat_name'     => $p['category_name'],
+            'sub_cat_name' => $p['sub_category_name'],
+            'permalink'    => $p['permalink'],
+            'address'      => $p['address'],
+            'match_score'  => $p['_score'] ?? 0,
+            'created_at'   => $p['created_at'],
+        ];
+    }
+    return $out;
+}
+
+
 }

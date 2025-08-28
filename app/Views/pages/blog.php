@@ -14,7 +14,7 @@
 					</div>
 					<div class="blogCol-Btm p-3 d-flex align-items-center flex-column">
 						<h6 class="dblue title-xs px-2"><?php echo $blog['name']; ?></h6>
-						<div class="blog_content text-black py-3 fs-6"><?php echo strip_tags(substr($blog['content'], 0, 160)).'...'; ?></div>
+						<div class="blog_content text-black my-3 fs-6"><?php echo strip_tags(substr($blog['content'], 0, 160)).'...'; ?></div>
 						<p class="btn">Read More</p>
 					</div>
 				</a>

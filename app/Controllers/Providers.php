@@ -67,6 +67,10 @@ class Providers extends BaseController
 		//get fields to show				
 		$this->ProductModel = new ProductModel();
 		$data['product_description'] = $this->ProductModel->title_fields($category_name,'description',$productId);
+		
+		$this->ProductModel = new ProductModel();
+		//$data['featured'] = $this->ProductModel->get_products($category_name='all',$where=' AND pl.is_featured_listing = 1');
+		$data['featured'] = $this->ProductModel->get_recommended_products_guaranteed($productId);
 		//echo "<pre>";print_r($data['product_detail']);exit;
 		
 		$user_latitude = !empty($this->session->get('user_latitude')) ? $this->session->get('user_latitude') : '';

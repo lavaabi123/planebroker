@@ -373,11 +373,12 @@ video{
 																echo 'Options not available';
 															}
 														}else if($field->field_type == 'File'){
-															if($groupName == 'Log Book'){
+															if($groupName == 'Logbook(s)'){
 																echo '<label class="me-3 d-flex fw-bold">'.$field->name.'</label>';
 															}
 															echo '<label class="dz-wrap mb-3" style="display:block !important;margin-left:0 !important;">
-										<span>Drag and drop or click to upload (pdf,.doc,.docx,.png,.jpeg,.jpg)</span><input type="file" name="dynamic_fields['.$field->id.'][]" class="form-control dynamic-file-input" placeholder="'.$field->name.'" value="" data-field-id="' . $field->id . '" accept=".pdf,.doc,.docx,.png,.jpeg,.jpg"  multiple>
+										<span>Upload your files — drag & drop or click to select (multiple files allowed) </span><br />
+										<span>(pdf,.doc,.docx,.png,.jpeg,.jpg)</span><input type="file" name="dynamic_fields['.$field->id.'][]" class="form-control dynamic-file-input" placeholder="'.$field->name.'" value="" data-field-id="' . $field->id . '" accept=".pdf,.doc,.docx,.png,.jpeg,.jpg"  multiple>
 									</label>';
 									echo '<div id="file-previews-'.$field->id.'" class="file-previews-grid" data-field-id="'.$field->id.'"></div>';
 															//echo '<button type="button" class="btn btn-sm px-5 mb-3 edit-titles-btn min-w-auto d-none" data-field-id="'.$field->id.'">Edit File Details</button>';
@@ -422,11 +423,12 @@ video{
 						
 							<div class='col-12 <?php if(!empty($user_photos)){ ?>col-sm-6<?php }else{ ?>col-sm-6<?php } ?>'>
 								<h3 class="title-xl black mt-0 mb-2"><?php echo trans('Photos and Videos') ?></h3>
-								<h5 class="mb-3">Add Photo or Video <span style="font-weight: 100;font-size: 0.7rem;vertical-align: middle;"></span></h5>
+								<h5 class="mb-3">Add Photos or Videos <span style="font-weight: 100;font-size: 0.7rem;vertical-align: middle;"></span></h5>
 								
 									<div class="file-upload">
 									<label class="dz-wrap" style="display:block !important;margin-left:0 !important;">
-										<span>Drag and drop or click to upload (.jpg, .jpeg, .png, .mp4, .mov)</span>
+										<span>Upload your files — drag & drop or click to select (multiple files allowed) </span><br />
+										<span>(pdf,.doc,.docx,.png,.jpeg,.jpg)</span>
 										<input type='file' id="userphoto" name='uploads[]' data-type="add" multiple class="cropimage w-100" accept=".jpg,.jpeg,.png,.mp4,.mov">
 									</label>
 									</div>

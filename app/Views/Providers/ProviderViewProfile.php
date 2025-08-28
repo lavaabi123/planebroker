@@ -388,11 +388,11 @@ $count = !empty($images) ? count($images) : 0;
 					if(!empty($pd) && $p != 'General Information' && $p != 'Basic Property Details' && $p != 'Aircraft Status'){ ?>					
 						<div class="accordion-item">
 							<h2 class="accordion-header">
-							  <button class="accordion-button <?php echo ($p != 'Log Book') ? '' : 'collapsed'; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#pd-<?php echo $pg; ?>" aria-expanded="<?php echo ($pg == 2) ? 'true' : 'false'; ?>" aria-controls="pd-<?php echo $pg; ?>">
+							  <button class="accordion-button <?php echo ($p != 'Logbook(s)') ? '' : 'collapsed'; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#pd-<?php echo $pg; ?>" aria-expanded="<?php echo ($pg == 2) ? 'true' : 'false'; ?>" aria-controls="pd-<?php echo $pg; ?>">
 								<?php echo $p; ?>
 							  </button>
 							</h2>
-							<div id="pd-<?php echo $pg; ?>" class="accordion-collapse collapse <?php echo ($p != 'Log Book') ? 'show' : ''; ?>" >
+							<div id="pd-<?php echo $pg; ?>" class="accordion-collapse collapse <?php echo ($p != 'Logbook(s)') ? 'show' : ''; ?>" >
 							  <div class="accordion-body">
 						<?php foreach($pd as $pds){ ?>
 								<div class="item-list logBook border-0 pb-0 mb-0">
@@ -444,37 +444,33 @@ $count = !empty($images) ? count($images) : 0;
 			</div>
 			
 		</div>
-		<!--<div class="bg-gray py-5">
+		
+		<div class="bg-gray py-5">
 			<div class="container">
-				<?php if(!empty($featured[0]['total_users'])){ ?>
+				<?php if(!empty($featured)){ ?>
 				<div class="wrapper">
-				   <h3 class="title-md dblue text-center mb-3 mb-sm-5">Featured <?php echo $user_detail->category_name; ?> near <?php echo $search_location_name; ?></h3>
-					<div class="owl-carousel owl-theme">
-						<?php foreach($featured[0]['providers'] as $p => $provider ){ 
-						$busin_name = !empty($provider['business_name']) ? str_replace(' ','-',strtolower($provider['business_name'])) : $user_detail->permalink ;
-						?>					
-						<div class="item">
-							<a href="<?php echo base_url('/provider/'.$busin_name.'/'.$provider['id']); ?>">
-								<div class="provider-Details">
-									<div class="proPic">
-									<img src="<?php echo $provider['image']; ?>" class="img-fluid">
-									</div>
-									<div class="pro-content py-3">
-										<p class="text-grey mb-0 fw-bold"><?php echo $provider['name']; ?></p>
-
-							<p class="text-orange mb-0 fw-bold"><?php echo $provider['business_name']; ?></p>
-
-							<h6 class="text-grey"><?php echo $provider['address']; ?></h6>
-									</div>
+				   <h3 class="title-md dblue text-center mb-3 mb-sm-5">Recommended for you</h3>
+					<div class="owl-carousel featured-carousel">
+						<?php foreach($featured as $p => $provider){ 			
+						echo '<div class="item">
+						<a href="'.base_url('/listings/'.$provider['permalink'].'/'.$provider['id'].'/'.(!empty($provider['name'])?str_replace(' ','-',strtolower($provider['name'])):'')).'">					
+						<div class="provider-Details mb-4">
+								<div class="providerImg mb-3">
+									<img class="d-block w-100" alt="..." src="'.$provider['image'].'" >
 								</div>
-							</a>
-						</div>
+								<div class="pro-content">
+									<h5 class="fw-medium title-xs">'.$provider['name'].'</h5>
+									<h6 class="fw-medium text-primary fs-6">'.(($provider['price'] != NULL) ? 'USD $'.number_format($provider['price'], 2, '.', ',') : 'Call for Price').'</h6>
+								</div>
+							</div>
+						</a>
+					</div>'; ?>								
 						<?php } ?>	
 					</div>	
 				</div>
 				<?php } ?>
 			</div>
-		</div>-->
+		</div>
 	</div>
 <!-- Modal -->
 <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModal-modalLabel" aria-hidden="true">
@@ -962,10 +958,10 @@ $('.owl-carousel').owlCarousel({
             items:1
         },
         600:{
-            items:3
+            items:1
         },
         1000:{
-            items:5
+            items:4
         }
     }
 })

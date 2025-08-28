@@ -5,7 +5,7 @@
 					<thead>
 						<tr role="row">
 							<th><?php echo trans('Subscription'); ?></th>
-							<th><?php echo trans('Listing Name'); ?></th>
+							<th class="text-wrap max-width-120"><?php echo trans('Listing Name'); ?></th>
 							<th><?php echo trans('Start Date'); ?></th>
 							<th><?php echo trans('End Date'); ?></th>
 							<th class="status"><?php echo trans('Status'); ?></th>
@@ -21,7 +21,7 @@
 							//if(empty($payment->is_cancel)){							?>
 							<tr>
 								<td><?php echo $payment->plan_name; ?></td>
-								<td><?php echo !empty($payment->display_name) ? (!empty(trim($payment->display_name)) ? $payment->display_name : '-') : (($payment->stripe_subscription_end_date != NULL && strtotime($payment->stripe_subscription_end_date) < time()) ? '':'<a href="'.base_url('/add-listing?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type).'').'" class="btn btn-sm mob-w-100">Add Listing</a>'); ?></td>
+								<td class="text-wrap max-width-120"><?php echo !empty($payment->display_name) ? (!empty(trim($payment->display_name)) ? $payment->display_name : '-') : (($payment->stripe_subscription_end_date != NULL && strtotime($payment->stripe_subscription_end_date) < time()) ? '':'<a href="'.base_url('/add-listing?sale_id='.$payment->id.'&payment_type='.strtolower($payment->payment_type).'').'" class="btn btn-sm mob-w-100">Add Listing</a>'); ?></td>
 								<td><?php echo ($payment->stripe_subscription_start_date != NULL) ? date("m/d/Y",strtotime($payment->stripe_subscription_start_date)):'-'; ?></td>
 								<td><?php echo ($payment->stripe_subscription_end_date != NULL) ? date("m/d/Y",strtotime($payment->stripe_subscription_end_date)) : '-'; ?></td>
 								<td class="status"><?php echo !empty($payment->is_cancel) ? '<span class="text-danger d-inline-block mb-0" title="Cancelled">Cancelled</span>' :(($payment->stripe_subscription_end_date != NULL && strtotime($payment->stripe_subscription_end_date) < time()) ? '<span class="text-danger d-inline-block mb-0" title="Expired">Expired</span>' : (!empty($payment->product_status) ? '<span class="text-success d-inline-block mb-0" title="Active">Active</span>' :'<span class="text-warning d-inline-block mb-0" title="Inactive">Inactive</span>')); ?></td>     

@@ -159,8 +159,8 @@
     <div class="modal-content rounded-5 p-3 px-md-5 text-center position-relative align-items-center">
       
       <!-- Close Icon -->
-      <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close">
-		<img src="<?php echo base_url('assets/frontend/images/close.png'); ?>" />
+      <button type="button" class="close position-absolute top-0 end-0 m-3" data-dismiss="modal" aria-label="Close">
+		<img src="<?php echo base_url('assets/frontend/images/close.png'); ?>" width="40px" />
 	  </button>
 
       <!-- Warning Icon -->
@@ -179,7 +179,7 @@
 
       <!-- Close Text -->
       <div>
-        <a href="#" class="text-decoration-underline text-black fs-6" data-bs-dismiss="modal">
+        <a href="#" class="text-decoration-underline text-black fs-6" data-dismiss="modal">
           Close this window
         </a>
       </div>

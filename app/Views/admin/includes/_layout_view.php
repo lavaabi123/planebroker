@@ -26,7 +26,7 @@
     <!-- Upload -->
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/admin/plugins/file-uploader/css/jquery.dm-uploader.min.css" />
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/admin/plugins/file-uploader/css/styles-1.0.css" />
-    <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/admin/css/custom.css">
+    <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/admin/css/custom.css?v=1.1">
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/admin/plugins/bootstrap-4-tag-input/tagsinput.css">
     <!-- DataTables -->
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
@@ -54,7 +54,7 @@
         sweetalert_cancel = "<?php echo trans("cancel"); ?>";
         var sys_lang_id = "<?php echo get_langguage_id(get_general_settings()->site_lang)->id; ?>";
     </script>    
-    <script src="<?php echo base_url(); ?>/assets/admin/js/custom.js?v=1.1"></script>
+    <script src="<?php echo base_url(); ?>/assets/admin/js/custom.js?v=1.2"></script>
 </head>
 
 <body class="hold-transition sidebar-mini <?php echo check_dark_mode_enabled() ? 'dark-mode' : '' ?> layout-fixed layout-footer-fixed layout-navbar-fixed">
@@ -118,7 +118,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
 <script src="<?php echo base_url(); ?>/assets/frontend/js/croppie.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
-	<script src="<?php echo base_url(); ?>/assets/frontend/js/slimselect.js" defer></script>
+	<script src="<?php echo base_url(); ?>/assets/frontend/js/slimselect.js?v=1.0" defer></script>
 
     <script>
         <?php if (check_cron_time_minutes(1)) : ?>
@@ -155,7 +155,7 @@
     </script>
 
     <?php if ($segment === 'dashboard' || empty($segment)) : ?>
-        <script src="<?php echo base_url(); ?>/assets/admin/js/pages/dashboard-admin.js?v=1"></script>
+        <script src="<?php echo base_url(); ?>/assets/admin/js/pages/dashboard-admin.js?v=2"></script>
     <?php endif; ?>
 
     <script>

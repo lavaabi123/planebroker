@@ -240,7 +240,9 @@ $count = !empty($images) ? count($images) : 0;
 					
 					<div class="abtAircraft bg-gray rounded-5 px-4 py-5">
 						<h4 class="mb-2"><?php echo trans('About this Aircraft'); ?></h4>
+						<div class="rte-output">
 						<p><?php echo $product_description->field_value; ?></p>
+						</div>	
 					</div>			
 					<hr class="my-4">	
 					<?php }  ?>					

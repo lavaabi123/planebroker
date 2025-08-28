@@ -119,6 +119,7 @@
 <script src="<?php echo base_url(); ?>/assets/frontend/js/croppie.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
 	<script src="<?php echo base_url(); ?>/assets/frontend/js/slimselect.js?v=1.0" defer></script>
+<script src="<?php echo base_url(); ?>/assets/tinymce/tinymce.min.js"></script>
 
     <script>
         <?php if (check_cron_time_minutes(1)) : ?>
@@ -560,6 +561,29 @@ $(function () {
   window.addEventListener('beforeunload', function () { window.stopNotifAjax(); });
 })();
 </script>
+<script>
+tinymce.init({
+  selector: '.show_text_editor',
+  // license_key: 'gpl', // keep if you're on the OSS build
+  menubar: false,                 // set true if you want the top menus
+  plugins: 'lists advlist image autolink autoresize codesample emoticons link media pagebreak preview searchreplace table visualblocks wordcount nonbreaking',
+  toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image table | removeformat',
+  toolbar_mode: 'wrap',           // so icons don’t disappear on small widths
+  // optional: extra list styles
+  advlist_bullet_styles: 'default circle disc square',
+  advlist_number_styles: 'default lower-alpha lower-roman upper-alpha upper-roman',
+  statusbar: false,
+  content_css: ['<?php echo base_url(); ?>/assets/rte-content.css'],
+  content_style: `
+    body { line-height: 1.25; }           /* overall line height */
+    p { margin: 0.25em 0; }               /* less space between paragraphs */
+    ul,ol { margin: 0.25em 0 0.25em 1.25em; padding-left: 1.25em; }
+    li { margin: 0.15em 0; }              /* tighter list items */
+    h1,h2,h3,h4,h5,h6 { margin: .6em 0 .3em; }
+  `
+});
+</script>
+<link rel="stylesheet" href="<?php echo base_url(); ?>/assets/rte-content.css">
 
 </body>
 

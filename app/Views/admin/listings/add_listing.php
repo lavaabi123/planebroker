@@ -317,7 +317,7 @@ video{
 															echo '<input type="number" name="dynamic_fields['.$field->id.']" class="form-control" placeholder="'.$field->name.' '.$req_op.'" value="'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '').'" '.$req_op_text.'>';
 														}else if($field->field_type == 'Textarea'){
 															$rowsnumber = ($field->name == 'About this Aircraft' || $field->id == 14) ? 'rows="5"' :'';
-															echo '<textarea name="dynamic_fields['.$field->id.']" class="form-control" placeholder="'.$field->name.' '.$req_op.'" '.$req_op_text.' '.$rowsnumber.'>'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '').'</textarea>';
+															echo '<textarea name="dynamic_fields['.$field->id.']" class="form-control '.(!empty($field->show_text_editor)? 'show_text_editor' : '').'" placeholder="'.$field->name.' '.$req_op.'" '.$req_op_text.' '.$rowsnumber.'>'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '').'</textarea>';
 														}else if($field->field_type == 'Checkbox'){
 															echo empty($field->show_cat_based) ? '<label class="mb-1 mt-4 d-block mx-0 fw-bold text-black">'.$field->name.' '.$req_op.'</label>':'';
 															$decoded_option = !empty($field->field_options) ? json_decode($field->field_options) : array();

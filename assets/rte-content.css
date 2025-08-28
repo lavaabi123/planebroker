@@ -1,0 +1,27 @@
+/* --- isolate from site CSS --- */
+.rte-output, .rte-output * { all: revert; }      /* bring back browser defaults inside */
+.rte-output {    
+  color: inherit;
+}
+
+/* Typography & spacing to match the editor */
+.rte-output p { margin: .25em 0; }
+.rte-output h1 { font-size: 1.8rem; margin: .6em 0 .3em; font-weight: 700; }
+.rte-output h2 { font-size: 1.5rem; margin: .6em 0 .3em; font-weight: 700; }
+.rte-output h3 { font-size: 1.25rem; margin: .6em 0 .3em; font-weight: 700; }
+.rte-output em { font-style: italic; }
+.rte-output strong { font-weight: 700; }
+
+/* Lists (restore bullets/numbers + indent) */
+.rte-output ul  { list-style: disc;    margin: .25em 0 .5em 1.25em; padding-left: 1.25em; }
+.rte-output ol  { list-style: decimal; margin: .25em 0 .5em 1.25em; padding-left: 1.25em; }
+.rte-output li  { margin: .15em 0; }
+
+/* Misc */
+.rte-output img { max-width: 100%; height: auto; }
+.rte-output table { border-collapse: collapse; width: 100%; }
+.rte-output table, .rte-output th, .rte-output td { border: 1px solid #ddd; }
+.rte-output blockquote { margin: .5em 1em; padding-left: .75em; border-left: 3px solid #ddd; }
+
+/* Optional: hide stray empty paragraphs */
+.rte-output p:empty { display:none; }

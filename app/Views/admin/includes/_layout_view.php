@@ -461,7 +461,7 @@ $(function () {
       : '';
 
     const markBtn  = !it.is_read
-      ? `<button class="btn btn-sm btn-outline-secondary px-3" data-mark="${it.pivot_id}">Mark read</button>`
+      ? `<button type="button" class="btn btn-sm btn-outline-secondary px-3" data-mark="${it.pivot_id}">Mark read</button>`
       : '';
 
     return `
@@ -483,6 +483,8 @@ $(function () {
   // wire up “mark read” buttons
   $list.querySelectorAll('[data-mark]').forEach(btn => {
     btn.addEventListener('click', async (e) => {
+		e.preventDefault();          // <- add
+		e.stopPropagation();
       const id = e.currentTarget.dataset.mark;
       await fetch(MARK_URL(id), {
         method:'POST',
@@ -509,14 +511,17 @@ $(function () {
     renderList();
   }
 
-  $markAll.addEventListener('click', async () => {
+  $markAll.addEventListener('click', async (e) => {
+	  e.preventDefault();          // <- add
+    e.stopPropagation();
     await fetch(MARK_ALL, {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: `${CSRF.name}=${encodeURIComponent(CSRF.value)}`});
     refresh();
   });
 
   // initial + poll every 20s (or swap for SSE later)
   refresh();
-  setInterval(refresh, 20000);
+  window._notif = window._notif || {};
+window._notif.pollId = setInterval(refresh, 20000);
 })();
 </script>
 <script>
@@ -561,6 +566,8 @@ $(function () {
   window.addEventListener('beforeunload', function () { window.stopNotifAjax(); });
 })();
 </script>
+
+
 <script>
 tinymce.init({
   selector: '.show_text_editor',

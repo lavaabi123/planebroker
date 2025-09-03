@@ -37,7 +37,7 @@
        style="width: 380px; max-height: 70vh; overflow:auto;">
     <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom bg-grey position-sticky top-0 z-1">
       <strong>Notifications</strong>
-      <button class="btn btn-sm btn-link" id="markAllReadBtn">Mark all as read</button>
+      <button class="btn btn-sm btn-link" type="button" id="markAllReadBtn">Mark all as read</button>
     </div>
     <div id="notifList" class="list-group list-group-flush">
       <div class="p-3 text-muted">Loading…</div>

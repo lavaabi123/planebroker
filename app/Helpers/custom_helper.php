@@ -1001,126 +1001,190 @@ function check_aircraft_status($product_id)
 }
 
 if (!function_exists('addWatermarkFromUrls')) {
-    function addWatermarkFromUrls(string $mainImageUrl, string $watermarkUrl, string $savePath, int $padding = 10, float $opacity = 0.5) {
-         // Load main image from URL
-		$mainImageData = file_get_contents($mainImageUrl);
-		if ($mainImageData === false) {
-			throw new Exception("Failed to download main image");
-		}
+    /**
+     * Add a bottom-right watermark that scales for any image size.
+     *
+     * @param string $mainImageUrl  URL of the base image (jpg/png)
+     * @param string $watermarkUrl  URL of the watermark (prefer PNG with transparency)
+     * @param string $savePath      Local path to save result (.jpg or .png)
+     * @param float  $opacity       0.0–1.0 extra opacity applied to the watermark
+     * @param float  $sizeRatio     Target watermark width as a fraction of the image's shorter side (default 0.22 = 22%)
+     * @param int    $minWmPx       Lower clamp for watermark width in px
+     * @param int    $maxWmPx       Upper clamp for watermark width in px
+     * @param int|null $paddingPx   If null, auto (2% of shorter side, clamped 8–60px). Otherwise fixed px.
+     */
+    function addWatermarkFromUrls(
+        string $mainImageUrl,
+        string $watermarkUrl,
+        string $savePath,
+        float  $opacity   = 0.5,
+        float  $sizeRatio = 0.22,
+        int    $minWmPx   = 120,
+        int    $maxWmPx   = 600,
+        ?int   $paddingPx = null
+    ) {
+        // --- Load images ---
+        $mainData = @file_get_contents($mainImageUrl);
+        if ($mainData === false) throw new Exception("Failed to download main image");
 
-		// Create image resource from main image data (detect mime)
-		$mainImg = imagecreatefromstring($mainImageData);
-		if (!$mainImg) {
-			throw new Exception("Failed to create image from main image data");
-		}
+        $mainImg = @imagecreatefromstring($mainData);
+        if (!$mainImg) throw new Exception("Failed to create main image from data");
 
-		// Load watermark image from URL
-		$watermarkData = file_get_contents($watermarkUrl);
-		if ($watermarkData === false) {
-			imagedestroy($mainImg);
-			throw new Exception("Failed to download watermark image");
-		}
+        $wmData = @file_get_contents($watermarkUrl);
+        if ($wmData === false) { imagedestroy($mainImg); throw new Exception("Failed to download watermark image"); }
 
-		$watermarkImg = imagecreatefromstring($watermarkData);
-imagealphablending($watermarkImg, false);
-imagesavealpha($watermarkImg, true);
-		if (!$watermarkImg) {
-			imagedestroy($mainImg);
-			throw new Exception("Failed to create image from watermark data");
-		}
+        $wmImg = @imagecreatefromstring($wmData);
+        if (!$wmImg) { imagedestroy($mainImg); throw new Exception("Failed to create watermark from data"); }
 
-		// Get dimensions
-		$mainWidth = imagesx($mainImg);
-		$mainHeight = imagesy($mainImg);
-		$wmWidth = imagesx($watermarkImg);
-		$wmHeight = imagesy($watermarkImg);
+        // Ensure alpha on watermark
+        imagealphablending($wmImg, false);
+        imagesavealpha($wmImg, true);
 
-		// Resize watermark if bigger than 30% of main image width or height
-		$maxWmWidth = $mainWidth * 1;
-		$maxWmHeight = $mainHeight * 1;
-		$scale = min($maxWmWidth / $wmWidth, $maxWmHeight / $wmHeight, 1);
+        // --- Dimensions ---
+        $W  = imagesx($mainImg);
+        $H  = imagesy($mainImg);
+        $wW = imagesx($wmImg);
+        $wH = imagesy($wmImg);
 
-		if ($scale < 1) {
-			$newWmWidth = (int)($wmWidth * $scale);
-			$newWmHeight = (int)($wmHeight * $scale);
+        // Auto padding if not provided: 2% of shorter side, clamped 8–60 px
+        $short = $W;
+        if ($paddingPx === null) {
+            $paddingPx = max(2, min(100, (int)round($short * 0.02)));
+        }
 
-			$resizedWm = imagecreatetruecolor($newWmWidth, $newWmHeight);
-			imagesavealpha($resizedWm, true);
-			$trans_colour = imagecolorallocatealpha($resizedWm, 0, 0, 0, 127);
-			imagefill($resizedWm, 0, 0, $trans_colour);
-			imagecopyresampled($resizedWm, $watermarkImg, 0, 0, 0, 0, $newWmWidth, $newWmHeight, $wmWidth, $wmHeight);
+        // Target width: percentage of shorter side, clamped, and never upscale
+        $targetW = (int) round($short * $sizeRatio);
+        $targetW = max($minWmPx, min($maxWmPx, $targetW));
+        $targetW = min($targetW, max(1, $W - 2*$paddingPx)); // don't overflow canvas
 
-			imagedestroy($watermarkImg);
-			$watermarkImg = $resizedWm;
-			$wmWidth = $newWmWidth;
-			$wmHeight = $newWmHeight;
-		}
+        // Preserve aspect ratio
+        $scale   = min($targetW / $wW, 1.0); // never upscale watermark
+        $newW    = (int) max(1, round($wW * $scale));
+        $newH    = (int) max(1, round($wH * $scale));
 
-		// Calculate position for bottom-right with padding
-		$dstX = $mainWidth - $wmWidth - $padding;
-		$dstY = $mainHeight - $wmHeight - $padding;
+        // Resize watermark if needed
+        if ($newW !== $wW || $newH !== $wH) {
+            $resized = imagecreatetruecolor($newW, $newH);
+            imagesavealpha($resized, true);
+            $transparent = imagecolorallocatealpha($resized, 0, 0, 0, 127);
+            imagefill($resized, 0, 0, $transparent);
+            imagealphablending($resized, false);
 
-		// Merge watermark onto main image with opacity
-		imagealphablending($mainImg, true);
+            imagecopyresampled($resized, $wmImg, 0, 0, 0, 0, $newW, $newH, $wW, $wH);
+            imagedestroy($wmImg);
+            $wmImg = $resized;
+            $wW = $newW; $wH = $newH;
+        }
+		
+		// --- Position: bottom-right with padding ---
+		// Right edge stays the same
+		$dstX = $W - $wW - $paddingPx;
 
-		// Apply watermark with opacity
-		imagecopymerge_alpha($mainImg, $watermarkImg, $dstX, $dstY, 0, 0, $wmWidth, $wmHeight, $opacity);
+		// Move UP a little more than padding		
+		$dstY = $H - $wH - $paddingPx;
+		if ($dstY < 0) $dstY = 0; // safety clamp
 
-		// Save result to $savePath (determine output format from extension)
-		$ext = strtolower(pathinfo($savePath, PATHINFO_EXTENSION));
-		switch ($ext) {
-			case 'jpg':
-			case 'jpeg':
-				imagejpeg($mainImg, $savePath, 90);
-				break;
-			case 'png':
-				imagepng($mainImg, $savePath);
-				break;
-			default:
-				imagedestroy($mainImg);
-				imagedestroy($watermarkImg);
-				throw new Exception("Unsupported output image format: $ext");
-		}
+        // --- Blend ---
+        imagealphablending($mainImg, true);
+		// After computing $dstX, $dstY, $wW, $wH …
+		$adaptiveOpacity = autoAdjustOpacity($mainImg, $wW, $wH, $dstX, $dstY, 0.25, 0.85);
 
-		// Cleanup
-		imagedestroy($mainImg);
-		imagedestroy($watermarkImg);
+		// Then call your merge with that value
+		//imagecopymerge_alpha($mainImg, $watermarkImg, $dstX, $dstY, 0, 0, $wW, $wH, $adaptiveOpacity);
+        imagecopymerge_alpha($mainImg, $wmImg, $dstX, $dstY, 0, 0, $wW, $wH, $adaptiveOpacity);
 
-		return true;
-	}
+        // --- Save ---
+        $ext = strtolower(pathinfo($savePath, PATHINFO_EXTENSION));
+        switch ($ext) {
+            case 'jpg':
+            case 'jpeg':
+                // For JPEG, no alpha channel—use quality 90
+                imagejpeg($mainImg, $savePath, 90);
+                break;
+            case 'png':
+                // Keep alpha if base is PNG
+                imagesavealpha($mainImg, true);
+                imagepng($mainImg, $savePath);
+                break;
+            default:
+                imagedestroy($mainImg);
+                imagedestroy($wmImg);
+                throw new Exception("Unsupported output image format: .$ext");
+        }
 
-
-
+        imagedestroy($mainImg);
+        imagedestroy($wmImg);
+        return true;
+    }
 }
 
-function imagecopymerge_alpha($dstImg, $srcImg, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $opacity)
+/**
+ * Alpha-aware merge with extra opacity (0–1).
+ * Preserves the watermark’s per-pixel transparency and applies an overall fade.
+ */
+if (!function_exists('imagecopymerge_alpha')) {
+function imagecopymerge_alpha($dstImg, $srcImg, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $baseOpacity)
 {
-    // Loop through pixels and blend manually
+    $baseOpacity = max(0.0, min(1.0, $baseOpacity));
+
     for ($x = 0; $x < $src_w; $x++) {
         for ($y = 0; $y < $src_h; $y++) {
-            $rgba = imagecolorat($srcImg, $x + $src_x, $y + $src_y);
-            $colors = imagecolorsforindex($srcImg, $rgba);
+            $rgba = imagecolorat($srcImg, $src_x + $x, $src_y + $y);
+            $c = imagecolorsforindex($srcImg, $rgba);
+            if ($c['alpha'] === 127) continue; // fully transparent pixel in watermark
 
-            $srcAlpha = $colors['alpha']; // 0 = opaque, 127 = transparent
+            // Sample destination background pixel
+            $bgRgba = imagecolorat($dstImg, $dst_x + $x, $dst_y + $y);
+            $bg = imagecolorsforindex($dstImg, $bgRgba);
+            $bgBrightness = ($bg['red'] + $bg['green'] + $bg['blue']) / 3;
 
-            // Skip fully transparent pixels
-            if ($srcAlpha == 127) continue;
+            // Adjust opacity based on brightness (threshold ~128 mid-gray)
+            // Dark background → keep base opacity
+            // Light background → increase opacity for contrast
+            $contrastBoost = ($bgBrightness > 200) ? 1.0
+               : (($bgBrightness > 150) ? 0.6 : 0.2);
 
-            // Adjust alpha using desired opacity (0.0 to 1.0)
-            $finalAlpha = $srcAlpha + (127 - $srcAlpha) * (1 - $opacity);
-            $finalAlpha = max(0, min(127, (int)$finalAlpha));
+			// allow up to 1.0, not 0.5
+			$effectiveOpacity = min(1.0, $baseOpacity * (1 + $contrastBoost));
 
-            $color = imagecolorallocatealpha(
-                $dstImg,
-                $colors['red'],
-                $colors['green'],
-                $colors['blue'],
-                $finalAlpha
-            );
+            // Combine watermark alpha and adjusted opacity
+            $finalAlpha = $c['alpha'] + (127 - $c['alpha']) * (1 - $effectiveOpacity);
+            $finalAlpha = (int) max(0, min(127, round($finalAlpha)));
 
-            imagesetpixel($dstImg, $x + $dst_x, $y + $dst_y, $color);
+            $col = imagecolorallocatealpha($dstImg, $c['red'], $c['green'], $c['blue'], $finalAlpha);
+            imagesetpixel($dstImg, $dst_x + $x, $dst_y + $y, $col);
         }
     }
+}
+
+}
+function autoAdjustOpacity($dstImg, $wmWidth, $wmHeight, $dstX, $dstY, float $minOpacity = 0.25, float $maxOpacity = 0.85): float
+{
+    $sampleCount = 0;
+    $totalLum = 0;
+
+    // Sample a grid of pixels under the watermark area
+    for ($x = 0; $x < $wmWidth; $x += max(1, (int)($wmWidth/20))) {
+        for ($y = 0; $y < $wmHeight; $y += max(1, (int)($wmHeight/20))) {
+            $px = $dstX + $x;
+            $py = $dstY + $y;
+
+            $rgba = imagecolorat($dstImg, $px, $py);
+            $c = imagecolorsforindex($dstImg, $rgba);
+            // luminance (perceived brightness)
+            $lum = 0.2126*$c['red'] + 0.7152*$c['green'] + 0.0722*$c['blue'];
+            $totalLum += $lum;
+            $sampleCount++;
+        }
+    }
+
+    $avgLum = $sampleCount > 0 ? $totalLum / $sampleCount : 128;
+
+    // Normalize 0–255 luminance → 0–1
+    $t = $avgLum / 255;
+
+    // Map to opacity range (bright bg → higher opacity)
+    return $minOpacity*(1-$t) + $maxOpacity*$t;
 }
 
 function getFileIconClass($filename) {

@@ -452,7 +452,7 @@ $count = !empty($images) ? count($images) : 0;
 				<?php if(!empty($featured)){ ?>
 				<div class="wrapper">
 				   <h3 class="title-md dblue text-center mb-3 mb-sm-5">Recommended for you</h3>
-					<div class="owl-carousel featured-carousel">
+					<div class="owl-carousel recommended-carousel">
 						<?php foreach($featured as $p => $provider){ 			
 						echo '<div class="item">
 						<a href="'.base_url('/listings/'.$provider['permalink'].'/'.$provider['id'].'/'.(!empty($provider['name'])?str_replace(' ','-',strtolower($provider['name'])):'')).'">					
@@ -821,6 +821,10 @@ $(document).ready(function(){
 	}
 	
 .grecaptcha-badge{visibility:hidden !important;}
+.owl-carousel .owl-nav button.owl-prev, .owl-carousel .owl-nav button.owl-next {
+    width: 25px !important;
+    height: 60px !important;
+}
 </style>
 
 
@@ -1024,6 +1028,26 @@ $(document).ready(function() {
         // Dynamically trigger click on the 6th image (first hidden)
         lightbox.openAt(0);
     });
+	
+	$(".recommended-carousel").owlCarousel({
+		loop:true,
+        autoplay: true,
+        autoplayTimeout: 3000,
+        autoplayHoverPause: true,
+		margin:10,
+		nav:true,
+		responsive:{
+			0:{
+				items:1
+			},
+			600:{
+				items:3
+			},
+			1000:{
+				items:4
+			}
+		}
+	})
 });
 	function openGlightboxAt(index) {
 	let lightbox = GLightbox({

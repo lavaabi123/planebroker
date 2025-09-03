@@ -1227,3 +1227,20 @@ function get_ad($page_name, $page_position){
 	return $new_array;
 }
 
+
+if (! function_exists('removeWatermarkImage')) {
+    /**
+     * Remove a watermarked image copy.
+     *
+     * @param string $path  Full path to the watermarked image file
+     * @return bool         True if removed, false if not found
+     */
+    function removeWatermarkImage(string $path): bool
+    {
+        if (is_file($path)) {
+            return unlink($path);
+        }
+        return false;
+    }
+}
+

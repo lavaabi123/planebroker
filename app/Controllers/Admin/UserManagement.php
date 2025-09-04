@@ -1136,4 +1136,58 @@ class UserManagement extends AdminController
 			echo "2";
 		}
     }
+    public function watermark()
+    {
+        $data = array_merge($this->data, [
+            'title' => trans('Change Watermark'),
+        ]);
+		
+		if ($this->request->getMethod() === 'post') {
+            $file = $this->request->getFile('watermark');
+            if ($file && $file->isValid()) {
+                $dir = FCPATH . 'uploads/';
+                if (! is_dir($dir)) mkdir($dir, 0775, true);
+                $path = $dir . 'sample-watermark.png'; // keep one canonical file
+                $file->move($dir, 'sample-watermark.png', true);
+				if(isset($_POST['apply'])){
+					$wmPath = FCPATH . 'uploads/sample-watermark.png';
+					$userIdFilter = (int) $this->request->getGet('user'); // 0 = all users
+					$limit        = (int) ($this->request->getGet('limit') ?? 500); // batch size per call
+					$offset       = (int) ($this->request->getGet('offset') ?? 0);
+
+					$builder  = $this->db->table('user_images')->where('is_delete', 0);
+					if ($userIdFilter > 0) $builder->where('user_id', $userIdFilter);
+
+					//$rows  = $builder->orderBy('id', 'DESC')->findAll($limit, $offset);
+					$rows  = $builder->orderBy('id', 'DESC')->limit($limit, $offset)->get()->getResultArray();
+					$done  = 0; $ok = 0; $fail = 0;
+
+					foreach ($rows as $r) {
+						$done++;
+						$userId   = (int) $r['user_id'];
+						$fileName = $r['file_name'];
+
+						try {
+							if (wm_rebuild_one($userId, $fileName, $wmPath, [
+								'opacity'   => 0.5,
+								'sizeRatio' => 0.22,
+								'paddingPx' => null,
+							])) {
+								$ok++;
+							} else {
+								$fail++;
+							}
+						} catch (\Throwable $e) {
+							echo "[WM] Failed {$userId}/{$fileName}: ";exit;
+							$fail++;
+						}
+					}
+				}
+                return redirect()->to(base_url('admin/listings/watermark'))->with('success', 'Watermark updated.');
+            }
+            return redirect()->to(base_url('admin/listings/watermark'))->with('error', 'Invalid watermark file.');
+        }
+
+        return view('admin/users/change_watermark', $data);
+    }
 }

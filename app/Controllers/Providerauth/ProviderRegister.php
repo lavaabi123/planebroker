@@ -185,7 +185,7 @@ class ProviderRegister extends ProviderauthController
 						$product_detail = $this->ProductModel->get_product_detail($where);
 						
 						Events::trigger('listing:created', [
-							'id'=>1, 'title'=>$product_detail['display_name']
+							'id'=>1, 'title'=> !empty($product_detail['display_name']) ? $product_detail['display_name'] : ''
 						]);
 						$this->session->setFlashData('success_form', trans("Listing Added Successfully!"));
 					}

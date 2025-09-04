@@ -291,17 +291,16 @@ video{
 											echo '<div class="row  mt-3">
 											<div class="col-12">
 												<div class="form-group mb-3">
-												<div class="form-section row row-cols-1 row-cols-md-2">';
+												<div class="form-section row">';
 											foreach($dynamic_field as $field){
 												
 												$req_op = !empty($field->field_condition) ? '*' : (!empty($field->field_optional_show) ? '(optional)' : '');
 												$req_op_text = ($field->field_condition) ? 'required' : '';
 												if($field->field_type == 'Checkbox'){
 													$decoded_option1 = !empty($field->field_options) ? json_decode($field->field_options) : array();
-													if (!empty($decoded_option1) && count($decoded_option1) > 0) {
-														echo '</div><div class="form-section row">'; 
-													}
 												}
+												$wrapClass = ($field->field_type === 'Checkbox') ? 'col-12' : 'col-12 col-md-6';
+												echo '<div class="'.$wrapClass.'">';
 												echo '<div class="services-group form-group pr-2 d_fields '.(($field->show_cat_based == 0) ? "" : "catbasedfield" ).'" style="'.(($field->show_cat_based == 0) ? "" : "none" ).'" data-category="'.$field->category_ids.'" data-subcategory="'.$field->subcategory_ids.'">
 														';
 														if($field->field_type == 'Text'){
@@ -316,8 +315,9 @@ video{
 														}else if($field->field_type == 'Number'){
 															echo '<input type="number" name="dynamic_fields['.$field->id.']" class="form-control" placeholder="'.$field->name.' '.$req_op.'" value="'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '').'" '.$req_op_text.'>';
 														}else if($field->field_type == 'Textarea'){
+															echo '<label class="mb-1 mt-4 d-block mx-0 fw-bold text-black">'.$field->name.' '.$req_op.'</label>';
 															$rowsnumber = ($field->name == 'About this Aircraft' || $field->id == 14) ? 'rows="5"' :'';
-															echo '<textarea name="dynamic_fields['.$field->id.']" class="form-control '.(!empty($field->show_text_editor)? 'show_text_editor' : '').'" placeholder="'.$field->name.' '.$req_op.'" '.$req_op_text.' '.$rowsnumber.'>'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '').'</textarea>';
+															echo '<textarea name="dynamic_fields['.$field->id.']" class="form-control '.(!empty($field->show_text_editor)? 'show_text_editor' : '').'"  '.$req_op_text.' '.$rowsnumber.'>'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '').'</textarea>';
 														}else if($field->field_type == 'Checkbox'){
 															echo empty($field->show_cat_based) ? '<label class="mb-1 mt-4 d-block mx-0 fw-bold text-black">'.$field->name.' '.$req_op.'</label>':'';
 															$decoded_option = !empty($field->field_options) ? json_decode($field->field_options) : array();
@@ -401,7 +401,7 @@ video{
 															}
 														}
 													echo '</div>';
-											
+											echo '</div>';
 											}
 											echo '</div>						
 												</div>
@@ -524,7 +524,7 @@ video{
 								<input type="hidden" id="g-recaptcha-response"  class="form-control required" name="check_bot" value="" >
 								
 								<input type="hidden" name="register_plan" value="<?php echo !empty($_GET["plan_id"]) ? $_GET["plan_id"] : 1; ?>" >
-							<div class="position-sticky bottom-0 py-2 bg-gray-100 gap-2" style="display: flex;justify-content: center;">
+							<div class="position-sticky bottom-0 py-2 bg-gray-100 gap-2 z-2" style="display: flex;justify-content: center;">
 							<?php if(!empty($_GET['id'])){ ?>
 							<input type="submit" value="PUBLISH" class="btn py-3 blue-btn fw-medium mb-0" />
 

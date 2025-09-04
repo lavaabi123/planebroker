@@ -3,7 +3,7 @@
     <!-- Left navbar links -->
     <ul class="navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+            <a class="nav-link" type="button" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
 		<li>
 		<a href="<?php echo admin_url(); ?>" class="brand-link">
@@ -21,7 +21,7 @@
 	<?php /* Requires Bootstrap or your CSS */ ?>
 	
 	<div class="nav-item dropdown" id="notifDropdown">
-  <a href="#"
+  <a href="#" type="button"
      id="notifToggle"
      class="nav-link position-relative dropdown-toggle"
      data-toggle="dropdown"
@@ -35,6 +35,7 @@
   <div class="dropdown-menu dropdown-menu-end p-0 rounded-5"
        aria-labelledby="notifToggle"
        style="width: 380px; max-height: 70vh; overflow:auto;">
+	   <div id="notifContainer">
     <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom bg-grey position-sticky top-0 z-1">
       <strong>Notifications</strong>
       <button class="btn btn-sm btn-link" type="button" id="markAllReadBtn">Mark all as read</button>
@@ -45,6 +46,7 @@
 	<div class="border-top p-2 position-sticky bottom-0 bg-grey">
   <a href="<?= esc(site_url('admin/notifications/all')) ?>" class="btn btn-sm btn-primary w-100">View all</a>
 </div>
+  </div>
   </div>
 </div>
 

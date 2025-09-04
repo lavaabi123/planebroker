@@ -1070,7 +1070,6 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
 
 				if (file_exists($filePath) && !empty($filename)) {
 					if (unlink($filePath)) {
-						unlink(FCPATH .'uploads/userimages/'.$user_id .'/originals/'.$filename);
 						$response = [
 							'deleted' => 1,
 							'message' => 'File deleted successfully'

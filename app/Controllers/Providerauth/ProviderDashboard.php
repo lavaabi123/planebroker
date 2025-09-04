@@ -485,21 +485,6 @@ else if($this->request->getVar('check') == '3'){
 			$mainImageUrl = FCPATH .'uploads/userimages/' . $user_id . '/' . $this->request->getVar('image');
 			$watermarkUrl = FCPATH .'uploads/sample-watermark.png';
 			$savePath = FCPATH .'uploads/userimages/' . $user_id . '/' . $this->request->getVar('image');
-			
-			
-			// Path to originals folder
-			$originalsDir  = FCPATH .'uploads/userimages/' . $user_id . '/originals/';
-			$originalsPath = $originalsDir . $this->request->getVar('image');
-			// Ensure the originals folder exists
-			if (!is_dir($originalsDir)) {
-				mkdir($originalsDir, 0775, true);
-			}
-			// Copy the main image into originals/ only if it doesn't already exist
-			if (!file_exists($originalsPath)) {
-				if (!copy($mainImageUrl, $originalsPath)) {
-					throw new \RuntimeException("Failed to back up original image.");
-				}
-			}
 
 			try {
 				addWatermarkFromUrls($mainImageUrl, $watermarkUrl, $savePath, 40, 0.5);
@@ -544,22 +529,6 @@ else if($this->request->getVar('check') == '3'){
 			$mainImageUrl = FCPATH .'uploads/userimages/' . $user_id . '/' . $this->request->getVar('image');
 			$watermarkUrl = FCPATH .'uploads/sample-watermark.png';
 			$savePath = FCPATH .'uploads/userimages/' . $user_id . '/' . $this->request->getVar('image');
-			
-			
-			// Path to originals folder
-			$originalsDir  = FCPATH .'uploads/userimages/' . $user_id . '/originals/';
-			$originalsPath = $originalsDir . $this->request->getVar('image');
-			// Ensure the originals folder exists
-			if (!is_dir($originalsDir)) {
-				mkdir($originalsDir, 0775, true);
-			}
-			// Copy the main image into originals/ only if it doesn't already exist
-			if (!file_exists($originalsPath)) {
-				if (!copy($mainImageUrl, $originalsPath)) {
-					throw new \RuntimeException("Failed to back up original image.");
-				}
-			}
-
 
 			try {
 				addWatermarkFromUrls($mainImageUrl, $watermarkUrl, $savePath, 40, 0.5);
@@ -748,15 +717,15 @@ else if($this->request->getVar('check') == '3'){
 		$this->ProductModel = new ProductModel();
 			
 		$where = ' AND p.id = '.$id;
-		$product = $this->ProductModel->get_products($category_name='all',$where);
+		$product = $this->ProductModel->get_product_detail($where);
 		
 		$this->UsersModel = new UsersModel();
-		$user_detail = $this->UsersModel->get_user($product[0]['user_id']);
+		$user_detail = $this->UsersModel->get_user($product['user_id']);
 		if($user_detail->user_level == 1){
 			//delete subs
-			$this->db->table('sales')->where('id', $product[0]['sale_id'])->delete();
+			$this->db->table('sales')->where('id', $product['sale_id'])->delete();
 		}else{
-			$this->db->table('sales')->where('id', $product[0]['sale_id'])->update(['product_id' => 0]);
+			$this->db->table('sales')->where('id', $product['sale_id'])->update(['product_id' => 0]);
 		}	
 		$this->ProductModel->delete_product($id);
 	}

@@ -3,6 +3,183 @@
  * Author: More
  */
 
+/* Requires jQuery already loaded */
+(function () {
+  // Run after DOM is ready (safe even if script is in <head>)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNotif);
+  } else {
+    initNotif();
+  }
+
+  function initNotif () {
+    // --- URLs & CSRF from server ---
+     const COUNT_URL =baseUrl + "/admin/notifications/unread-count";
+    const LIST_URL  = baseUrl + "/admin/notifications?limit=5";
+    const MARK_ALL  = baseUrl + "/admin/notifications/mark-all-read";
+    const MARK_URL  = (id) => baseUrl + "/admin/notifications/mark-read/"+id;
+    const CSRF      = { name: "<?= csrf_token() ?>", value: "<?= csrf_hash() ?>" };
+
+    // --- Elements (bail out silently if not present on this page) ---
+    const $count   = $('#notifCount');
+    const $list    = $('#notifList');
+    const $markAll = $('#markAllReadBtn');
+    if (!$count.length || !$list.length || !$markAll.length) return;
+
+    // --- State for polling & aborts ---
+    window._notif = window._notif || { pollId: null, jqx: new Set() };
+
+    // --- Helpers ---
+    const h = s => String(s ?? '').replace(/[&<>"']/g, m => (
+      ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])
+    ));
+    function timeAgo(iso) {
+      const d = new Date(iso); const diff = (Date.now() - d.getTime())/1000;
+      if (diff < 60) return 'just now';
+      if (diff < 3600) return Math.floor(diff/60) + 'm';
+      if (diff < 86400) return Math.floor(diff/3600) + 'h';
+      return Math.floor(diff/86400) + 'd';
+    }
+    function ajaxJSON(url, opts = {}) {
+      const jq = $.ajax({
+        url: url,
+        type: opts.method || 'GET',
+        data: opts.data || {},
+        dataType: 'json',
+      });
+      window._notif.jqx.add(jq);
+      jq.always(() => window._notif.jqx.delete(jq));
+      return jq;
+    }
+
+    // Detach notif controls from any outer <form> so they can’t hijack submit
+    const NOOP_FORM_ID = '__notif_noop_form__';
+    function ensureNoopForm() {
+      if (!document.getElementById(NOOP_FORM_ID)) {
+        const f = document.createElement('form');
+        f.id = NOOP_FORM_ID; f.style.display = 'none';
+        f.setAttribute('onsubmit', 'return false;');
+        document.body.appendChild(f);
+      }
+    }
+    function neutralizeNotifButtons() {
+      ensureNoopForm();
+      // Static "mark all"
+      if ($markAll.length) {
+        if (!$markAll.attr('type')) $markAll.attr('type', 'button');
+        $markAll.attr({'form': NOOP_FORM_ID, 'formnovalidate': 'true'});
+      }
+      // Dynamic list buttons
+      $list.find('button').each(function () {
+        const $b = $(this);
+        if (!$b.attr('type')) $b.attr('type', 'button');
+        $b.attr({'form': NOOP_FORM_ID, 'formnovalidate': 'true'});
+      });
+    }
+
+    // --- Renderers ---
+    function renderList() {
+      return ajaxJSON(LIST_URL).then((data) => {
+        const items = (data && data.items) || [];
+        if (!items.length) {
+          $list.html('<div class="p-3 text-muted">No notifications</div>');
+          neutralizeNotifButtons();
+          return;
+        }
+        // Use anchors for actions (anchors never submit forms)
+        const html = items.map(it => {
+          const msgHtml = (it.message && it.message.trim())
+            ? `<div class="small text-muted mt-1">${h(it.message)}</div>` : '';
+          const openBtn = it.link
+            ? `<a href="${h(it.link)}" class="btn btn-sm btn-warning fw-semibold px-3" role="button">Open</a>` : '';
+          const markBtn = !it.is_read
+            ? `<a href="#" role="button" class="btn btn-sm btn-outline-secondary px-3" data-mark="${it.pivot_id}">Mark read</a>` : '';
+
+          return `
+            <div class="list-group-item d-flex gap-2 ${it.is_read ? '' : 'bg-light'}">
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong>${h(it.title)}</strong>
+                  <small class="text-muted">${timeAgo(it.created_at)}</small>
+                </div>
+                ${msgHtml}
+                <div class="mt-2 d-flex gap-2 align-items-center">
+                  ${openBtn}
+                  ${markBtn}
+                </div>
+              </div>
+            </div>`;
+        }).join('');
+        $list.html(html);
+        neutralizeNotifButtons(); // VERY IMPORTANT: do this after every render
+      }).catch(err => {
+        // Optional: keep silent or log
+        // console.error('renderList failed', err);
+      });
+    }
+
+    function renderCount() {
+      return ajaxJSON(COUNT_URL).then((data) => {
+        const count = (data && data.count) || 0;
+        if (count > 0) {
+          $count.text(count > 99 ? '99+' : count).removeClass('d-none');
+        } else {
+          $count.addClass('d-none');
+        }
+      }).catch(err => {
+        // console.error('renderCount failed', err);
+      });
+    }
+
+    function refresh() {
+      return $.when(renderCount(), renderList());
+    }
+
+    // --- Events ---
+    // Delegated: mark a single notification read
+    $list.on('click', '[data-mark]', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      const id = $(this).data('mark');
+      $.ajax({
+        url: MARK_URL(id),
+        type: 'POST',
+        data: { [CSRF.name]: CSRF.value }
+      }).always(refresh);
+    });
+
+    // Mark all read
+    $markAll.on('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      $.ajax({
+        url: MARK_ALL,
+        type: 'POST',
+        data: { [CSRF.name]: CSRF.value }
+      }).always(refresh);
+    });
+
+    // --- Start polling ---
+    refresh();
+    window._notif.pollId = setInterval(refresh, 20000);
+
+    // Pause polling & abort in-flight AJAX during real form submits (capture phase)
+    document.addEventListener('submit', function () {
+      if (window._notif.pollId) { clearInterval(window._notif.pollId); window._notif.pollId = null; }
+      for (const jq of Array.from(window._notif.jqx)) {
+        try { if (jq && jq.readyState !== 4) jq.abort(); } catch(e){}
+      }
+      window._notif.jqx.clear();
+    }, true);
+
+    // Clean up on unload
+    window.addEventListener('beforeunload', function () {
+      if (window._notif.pollId) { clearInterval(window._notif.pollId); window._notif.pollId = null; }
+      for (const jq of Array.from(window._notif.jqx)) {
+        try { if (jq && jq.readyState !== 4) jq.abort(); } catch(e){}
+      }
+      window._notif.jqx.clear();
+    });
+  }
+})();
 $(document).ready(function () {
     $('#wait').hide();
     $('#form').parsley();

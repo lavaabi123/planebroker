@@ -21,6 +21,8 @@ $("#g-recaptcha-response1").val(token);
 <script src="<?php echo base_url(); ?>/assets/owlcarousel/owl.carousel.js"></script>
  
 <?php
+
+if(!empty($product_detail)){
 $img = '';
 if(!empty($product_detail['image'])){
 	$img = $product_detail['image'];
@@ -254,10 +256,17 @@ $count = !empty($images) ? count($images) : 0;
 						if(!empty($product_dynamic_fields)){
 							foreach($product_dynamic_fields as $pd){
 								if(!empty($pd)){
-									foreach($pd as $pds){ if(!empty($pds['frontend_show']) && ($pds['group_name'] == 'General Information' || $pds['group_name'] == 'Basic Property Details')){ ?>
-									<div class="d-flex justify-content-between border-bottom py-3">
+									foreach($pd as $pds){  if(!empty($pds['frontend_show']) && ($pds['group_name'] == 'General Information' || $pds['group_name'] == 'Basic Property Details')){ ?>
+									<?php
+									$hasDesc = stripos($pds['field_name'], 'description') !== false;
+									$divClass = 'd-flex justify-content-between border-bottom py-3' . ($hasDesc ? ' flex-column gap-3' : '');
+									?>
+									<div class="<?= $divClass ?>">
 										<span class="left fw-medium"><?php echo str_replace(' ex. OBO, FIRM, MAKE AN OFFER, etc.','',$pds['field_name']); ?></span>
-										<span class="right"><?php echo $pds['name']; ?></span>
+										
+										<?php echo ($pds['field_type'] == 'Textarea') ? '<span class="rte-output">':'<span class="right">';?>
+										<?php echo $pds['name']; ?>
+										</span>
 									</div>	
 									<?php } }									
 								}
@@ -396,7 +405,34 @@ $count = !empty($images) ? count($images) : 0;
 							</h2>
 							<div id="pd-<?php echo $pg; ?>" class="accordion-collapse collapse <?php echo ($p != 'Logbook(s)') ? 'show' : ''; ?>" >
 							  <div class="accordion-body">
-						<?php foreach($pd as $pds){ ?>
+						<?php 
+						
+						$grouped = [];
+						foreach ($pd as $r) {
+							$id = $r['id'];
+
+							if (!isset($grouped[$id])) {
+								// keep the first row as the base; start collecting names
+								$grouped[$id] = $r;
+								$grouped[$id]['name'] = [$r['name']];
+							} else {
+								$grouped[$id]['name'][] = $r['name'];
+							}
+						}
+
+						// finalize: unique + trim + implode
+						foreach ($grouped as &$g) {
+							$names = array_map('trim', $g['name']);
+							$names = array_filter($names, 'strlen');
+							$names = array_values(array_unique($names));
+							$g['name'] = implode(', ', $names);
+						}
+						unset($g);
+
+						// If you want a numerically indexed array (instead of keyed by id):
+						$result = array_values($grouped);
+						
+						foreach($result as $pds){ ?>
 								<div class="item-list logBook border-0 pb-0 mb-0">
 								<?php 
 								if($pds['field_type'] == 'File'){
@@ -427,10 +463,12 @@ $count = !empty($images) ? count($images) : 0;
 										echo '<h6>'.$pds['field_name'].'</h6>';
 										echo '<a class="card p-3 text-center" download href="'.base_url().'/uploads/userimages/'.$userId.'/'.$pds['name'].'" ><i class="fa '.getFileIconClass($pds['name']).'"></i> '.(!empty($pds['file_field_title']) ? $pds['file_field_title'] : $pds['field_name']).'</a>';
 									}
-								}else{ if($pds['field_type'] != 'Checkbox'){ ?>
+								}else{ //if($pds['field_type'] != 'Checkbox'){ ?>
 									<h6><?php echo $pds['field_name']; ?></h6>
-								<?php } ?>
+								<?php //} ?>
+								<?php echo ($pds['field_type'] == 'Textarea') ? '<span class="rte-output">':'';?>
 									<?php echo $pds['name'];
+									echo ($pds['field_type'] == 'Textarea') ? '</span>':'';
 								}
 								?>
 								</div>								
@@ -1092,6 +1130,19 @@ function send_email_to_friend(val) {
     return false;
 }
 </script>
-
+<?php 
+}else{ ?>
+	
+					<div class="d-flex flex-column flex-md-row no-list align-items-center justify-content-center gap-4 my-5 py-md-5">
+						<div class="mb-4 mb-md-5">
+							<h3 class="fw-bolder my-0">This listing is no longer available!</h3>
+							
+						</div>
+						<div class="">
+						<img src="<?php echo base_url('assets/frontend/images/nolist.png'); ?>" />
+						</div>
+					</div>
+<?php }
+?>
 
 <?= $this->endSection() ?>

@@ -201,6 +201,9 @@ $routes->group("admin", ["namespace" => "App\Controllers\Admin"], function ($rou
         $routes->get('filter-fields', 'Fields::filter_fields');
         $routes->get('change_plan', 'UserManagement::change_plan');
         $routes->post('change_plan_post', 'UserManagement::change_plan_post');
+        $routes->get('watermark', 'UserManagement::watermark');
+        $routes->post('watermark', 'UserManagement::watermark');
+		
 	});	
 	
     $routes->group('providers',  function ($routes) {

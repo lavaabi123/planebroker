@@ -268,7 +268,7 @@ function change_plan(sale_id,plan_id,ptype,user_id){
 }
 </script>
 <script src="https://js.stripe.com/v3/" ></script>
-<script src="<?php echo base_url(); ?>/assets/frontend/js/charge.js?v=1.0"></script>	
+<script src="<?php echo base_url(); ?>/assets/frontend/js/charge.js"></script>	
 <?= $this->endSection() ?>
 <style>
 .StripeElement {

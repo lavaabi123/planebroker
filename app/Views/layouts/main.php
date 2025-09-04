@@ -833,7 +833,7 @@ document.addEventListener("DOMContentLoaded", function () {
           updateSlimColor(selectElement, info.value);
         }
       });
-
+		selectElement._slim = slim;
       // Initial color based on current value
       updateSlimColor(selectElement, selectElement.value);
     });
@@ -1397,6 +1397,7 @@ $(function () {
 tinymce.init({
   selector: '.show_text_editor',
   // license_key: 'gpl', // keep if you're on the OSS build
+  height: 600,
   menubar: false,                 // set true if you want the top menus
   plugins: 'lists advlist image autolink autoresize codesample emoticons link media pagebreak preview searchreplace table visualblocks wordcount nonbreaking',
   toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image table | removeformat',

@@ -268,6 +268,13 @@ function fetchProducts(opts = {}) {
       }
     });
   }
+   const kwFromInput = $('#mySearchForm input[name="keywords"]').val()?.trim();
+  if (kwFromInput) {
+    merged.set('keywords', kwFromInput);
+  } else if (preserveExisting) {
+    const kwFromUrl = new URLSearchParams(window.location.search).get('keywords');
+    if (kwFromUrl) merged.set('keywords', kwFromUrl);
+  }
 
   const base = `${BASE_URL}/listings/${CATEGORY}`;
   const url  = merged.toString() ? `${base}?${merged.toString()}` : base;
@@ -422,7 +429,7 @@ function fetchProducts(opts = {}) {
     }
 $(function () {
 
-    fetchProducts({ preserveExisting: false });                                 // first load
+    fetchProducts({ preserveExisting: true });                                 // first load
 
     // run on *any* change inside the filter panel
     $('#searchFilter').on('input change', 'input,select', debounce(function () {
@@ -470,6 +477,10 @@ $(document).on('click', '#appliedFilters .remove-filter', function () {
     $(`#searchFilter input[name="${name}[]"], #searchFilter input[name="${name}"]`).val('');
     $('#searchFilter input[name="price_static[]"], #searchFilter input[name="price_static"]').prop('checked', false);
   }
+  if (name === 'keywords') {
+    $('#mySearchForm input[name="keywords"]').val('');
+	$('#mySearchForm2 input[name="keywords"]').val('');
+  }
 
   // IMPORTANT: do NOT re-merge the old URL
   fetchProducts({ preserveExisting: false });
@@ -498,23 +509,89 @@ $(document).ready(function () {
 		$('#range-input-max-price').val($(this).attr('data-p-max'));
     });
 	
-	
-    $('#mySearchForm').on('submit', function (e) {
-        e.preventDefault(); // Prevent normal form submission
-		console.log('1');
-		urlchange1($(this));
+	// --- helper: collect values from both forms and make ?a=b|c&keywords=... ---
+function buildUnifiedParams() {
+  const params = new URLSearchParams();
+
+  // 1) from the side filter form (#mySearchForm1)
+  const multiNames = ['category[]','manufacturer[]','model[]','year[]']; // add more if needed
+  multiNames.forEach(name => {
+    const values = [];
+
+    // checkboxes
+    $(`#mySearchForm1 input[name="${name}"]:checked`).each(function () {
+      values.push(this.value);
     });
-    $('#mySearchForm1').on('submit', function (e) {
-        e.preventDefault(); // Prevent normal form submission
-		console.log('2');
-		urlchange($(this));
+
+    // <select multiple> or single <select>
+    $(`#mySearchForm1 select[name="${name}"] option:selected`).each(function () {
+      if (this.value !== '') values.push(this.value);
     });
-    $('#mySearchForm2').on('submit', function (e) {
-        e.preventDefault(); // Prevent normal form submission
-		console.log('3');
-		urlchange1($(this));
-    });
-	
+
+    if (values.length) params.set(name.replace('[]',''), values.join('|'));
+  });
+
+  // 2) single-value inputs in #mySearchForm1 (numbers/dates/text) if you use them
+  $('#mySearchForm1 input[type="number"], #mySearchForm1 input[type="date"], #mySearchForm1 input[type="text"]').each(function () {
+    const n = this.name && this.name.replace(/\[\]$/, '');
+    const v = this.value.trim();
+    if (n && v) params.set(n, v);
+  });
+
+  // 3) keywords: prefer the top quick search (#mySearchForm); fallback to existing URL
+  const kw =
+    $('#mySearchForm input[name="keywords"]').val()?.trim() ||
+    new URLSearchParams(location.search).get('keywords');
+  if (kw) params.set('keywords', kw);
+
+  return params;
+}
+$('#mySearchForm').on('submit', function (e) {
+	e.preventDefault(); // Prevent normal form submission
+	console.log('1');
+	fetchProducts({ preserveExisting: false }); 
+});
+$('#mySearchForm1').on('submit', function (e) {
+	e.preventDefault(); // Prevent normal form submission
+	console.log('2');
+	urlchange($(this));
+});
+$('#mySearchForm2').on('submit', function (e) {
+	e.preventDefault(); // Prevent normal form submission
+	console.log('3');
+	fetchProducts({ preserveExisting: false }); 
+});
+function syncCategoryToQuickSearch() {
+  const selectedCats = $('#searchFilter input[name="category[]"]:checked')
+    .map((i, el) => el.value).get();
+	const newVal = (selectedCats.length >= 1) ? selectedCats[0] : '';
+console.log(selectedCats[0]);
+  const quickSel = document.querySelector('#mySearchForm select[name="category[]"]');
+
+  if (quickSel) {
+    // ensure the option exists (IDs must match)
+    if (newVal && !$('#mySearchForm select[name="category[]"] option[value="'+newVal+'"]').length) {
+      $('#mySearchForm select[name="category[]"]').append('<option value="'+newVal+'"></option>');
+    }
+
+    // ✅ update SlimSelect UI + underlying <select>
+    if (quickSel._slim && typeof quickSel._slim.set === 'function') {
+      quickSel._slim.set(newVal || '');
+    } else {
+      // fallback if SlimSelect isn’t attached for some reason
+      $('#mySearchForm select[name="category[]"]').val(newVal).trigger('change');
+    }
+  }
+}
+$(document).on('change', '#mySearchForm select[name="category[]"]', function () {
+    const val = $(this).val();
+    $('#mySearchForm1 input[name="category[]"]').prop('checked', false);
+
+    if (val) {
+        $('#mySearchForm1 input[name="category[]"][value="' + val + '"]').prop('checked', true);
+    }
+});
+$(document).on('change', '#searchFilter input[name="category[]"]', syncCategoryToQuickSearch);
 	function urlchange1(form1){
 		
         const form = form1;

@@ -489,7 +489,14 @@ class ProductModel extends Model
 		
 		$product_detail = $this->db->query("SELECT p.*,u.fullname,c.name as category_name,sc.name as sub_category_name,c.permalink,(SELECT GROUP_CONCAT(pd.field_value ORDER BY t.sort_order SEPARATOR ' ') AS field_values FROM products_dynamic_fields pd JOIN ( SELECT t.field_id, t.sort_order FROM title_fields t LEFT JOIN fields f ON f.id = t.field_id WHERE t.title_type = 'title') t ON t.field_id = pd.field_id WHERE pd.product_id = p.id) as display_name, (SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT fi.id FROM `fields` fi  join field_categories fc on fc.field_id=fi.id where fi.name = 'price' and fc.category_id=p.category_id LIMIT 1)  limit 1) as price, (SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` where name = 'Price Notes ex. OBO, FIRM, MAKE AN OFFER, etc.' limit 1)  limit 1) as price_notes FROM products p LEFT JOIN categories c ON c.id=p.category_id LEFT JOIN categories_sub sc ON sc.id=p.sub_category_id LEFT JOIN users u ON u.id=p.user_id WHERE p.id >= 1 ".$where."")->getRowArray();
 		
-		$product_detail['price'] = ($product_detail['price'] != NULL) ? (float)preg_replace('/[^\d.]/', '', $product_detail['price']) : 0;
+		// Safe normalization of price
+		$rawPrice = $product_detail['price'] ?? null;
+		$product_detail['price'] = is_string($rawPrice) && $rawPrice !== ''
+			? (float) preg_replace('/[^\d.]/', '', $rawPrice)
+			: 0.0;
+
+
+		//$product_detail['price'] = ($product_detail['price'] != NULL) ? (float)preg_replace('/[^\d.]/', '', $product_detail['price']) : 0;
 		
 		return $product_detail;
 	}

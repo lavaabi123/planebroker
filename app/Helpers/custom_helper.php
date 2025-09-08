@@ -1000,56 +1000,45 @@ function check_aircraft_status($product_id)
     return !empty($products->field_value) ? $products->field_value : 'Available';
 }
 
-/**
- * Watermark Helper – robust loader (no-AVIF preference), AVIF fallback (GD/Imagick),
- * coordinate clamps, opacity sampling guards, and safe saving.
- */
-
 if (!function_exists('addWatermarkFromUrls')) {
 /**
- * Add a bottom-right watermark that scales to any image size.
+ * Add a bottom-right watermark that scales for any image size.
  *
- * @param string   $mainImageUrl  URL or local path of the base image (jpg/png/webp/avif*)
- * @param string   $watermarkUrl  URL or local path of the watermark (PNG with alpha recommended)
- * @param string   $savePath      Local path to save result (.jpg or .png)
- * @param float    $opacity       0.0–1.0 overall opacity multiplier
- * @param float    $sizeRatio     Watermark width as fraction of the image’s shorter side
- * @param int      $minWmPx       Min watermark width
- * @param int      $maxWmPx       Max watermark width
- * @param int|null $paddingPx     Padding from edges (auto if null)
- * @param bool     $preferLocal   If true, convert same-host URLs to filesystem paths
- * @param string|null $referer    Optional Referer header for remote fetches (bypasses hotlink rules)
- * @return bool
- * @throws Exception on I/O/decoding/saving errors
+ * @param string   $mainImageUrl  URL or local path of the base image (any format; AVIF supported via fallbacks)
+ * @param string   $watermarkUrl  URL or local path of the watermark (prefer PNG with alpha)
+ * @param string   $savePath      Local path to save result (.jpg or .png). Do NOT use .avif unless your server supports it.
+ * @param float    $opacity       0.0–1.0 base opacity multiplier; actual used is adaptive (background-aware)
+ * @param float    $sizeRatio     Target watermark width as fraction of the image's shorter side
+ * @param int      $minWmPx       Lower clamp for watermark width in px
+ * @param int      $maxWmPx       Upper clamp for watermark width in px
+ * @param int|null $paddingPx     If null, auto: 2% of shorter side (clamped 8–60px). Otherwise fixed px.
+ * @throws Exception
  */
 function addWatermarkFromUrls(
     string $mainImageUrl,
     string $watermarkUrl,
     string $savePath,
-    float  $opacity     = 0.5,
-    float  $sizeRatio   = 0.22,
-    int    $minWmPx     = 120,
-    int    $maxWmPx     = 600,
-    ?int   $paddingPx   = null,
-    bool   $preferLocal = true,
-    ?string $referer    = null
+    float  $opacity   = 0.5,
+    float  $sizeRatio = 0.22,
+    int    $minWmPx   = 120,
+    int    $maxWmPx   = 600,
+    ?int   $paddingPx = null
 ) {
-    // --- Resolve inputs to bytes (robust fetch) ---
-    if ($preferLocal) {
-        $maybeLocalMain = url_to_local_path($mainImageUrl);
-        if ($maybeLocalMain !== null) $mainImageUrl = $maybeLocalMain;
+    // --- Load binaries (with generous timeouts)
+    $ctx = stream_context_create([
+        'http' => ['timeout' => 20, 'follow_location' => 1],
+        'https'=> ['timeout' => 20, 'follow_location' => 1],
+    ]);
 
-        $maybeLocalWm = url_to_local_path($watermarkUrl);
-        if ($maybeLocalWm !== null) $watermarkUrl = $maybeLocalWm;
-    }
+    $mainData = @file_get_contents($mainImageUrl, false, $ctx);
+    if ($mainData === false) throw new Exception("Failed to read main image: $mainImageUrl");
 
-    $mainData = read_bytes($mainImageUrl, $referer);
-    $wmData   = read_bytes($watermarkUrl,   $referer);
+    $wmData = @file_get_contents($watermarkUrl, false, $ctx);
+    if ($wmData === false) throw new Exception("Failed to read watermark: $watermarkUrl");
 
-    // --- Decode to GD images (with AVIF fallback via GD/Imagick) ---
-    $mainImg = decode_to_gd($mainData);
-    if (!$mainImg) throw new Exception("Failed to decode main image");
-    $wmImg   = decode_to_gd($wmData); // PNG will be fast-path; AVIF WM also supported
+    // --- Create GD images (AVIF-aware)
+    [$mainImg, $mainMime] = loadGdFromDataOrAvif($mainData, 'main image');
+    [$wmImg,   $wmMime]   = loadGdFromDataOrAvif($wmData, 'watermark', /*allowAvif*/false); // watermark should be PNG; allowAvif=false still tries normal GD first
 
     // Ensure alpha on watermark
     imagealphablending($wmImg, false);
@@ -1061,24 +1050,23 @@ function addWatermarkFromUrls(
     $wW = imagesx($wmImg);
     $wH = imagesy($wmImg);
 
-    // Use true shorter side
+    // Auto padding if not provided: 2% of shorter side, clamped 8–60 px
     $short = min($W, $H);
-
-    // Auto padding: ~2% of shorter side, clamped 8–60 px
     if ($paddingPx === null) {
         $paddingPx = max(8, min(60, (int)round($short * 0.02)));
     }
 
-    // Target watermark width: fraction of shorter side, clamped and no overflow/upscale
-    $targetW = (int)round($short * $sizeRatio);
+    // Target width: percentage of shorter side, clamped, and never overflow canvas
+    $targetW = (int) round($short * $sizeRatio);
     $targetW = max($minWmPx, min($maxWmPx, $targetW));
-    $targetW = min($targetW, max(1, $W - 2 * $paddingPx)); // avoid canvas overflow
+    $targetW = min($targetW, max(1, $W - 2*$paddingPx)); // don't overflow canvas
 
-    // Preserve aspect ratio & never upscale
-    $scale = min($targetW / max(1, $wW), 1.0);
-    $newW  = (int)max(1, round($wW * $scale));
-    $newH  = (int)max(1, round($wH * $scale));
+    // Preserve aspect ratio; never upscale watermark
+    $scale   = min($targetW / $wW, 1.0);
+    $newW    = (int) max(1, round($wW * $scale));
+    $newH    = (int) max(1, round($wH * $scale));
 
+    // Resize watermark if needed
     if ($newW !== $wW || $newH !== $wH) {
         $resized = imagecreatetruecolor($newW, $newH);
         imagesavealpha($resized, true);
@@ -1092,213 +1080,185 @@ function addWatermarkFromUrls(
         $wW = $newW; $wH = $newH;
     }
 
-    // --- Position: bottom-right with padding (clamp both axes) ---
+    // --- Position: bottom-right with padding ---
     $dstX = max(0, $W - $wW - $paddingPx);
     $dstY = max(0, $H - $wH - $paddingPx);
 
-    // --- Blend with adaptive opacity ---
+    // --- Adaptive opacity based on background luminance under the watermark ---
     imagealphablending($mainImg, true);
-    $adaptiveOpacity = autoAdjustOpacity(
-        $mainImg, $wW, $wH, $dstX, $dstY,
-        max(0.0, min(1.0, 0.25 * $opacity)),
-        min(1.0, 0.85 * $opacity)
-    );
+    $adaptiveOpacity = autoAdjustOpacity($mainImg, $wW, $wH, $dstX, $dstY, max(0.0, min(1.0, $opacity*0.5)), max(0.0, min(1.0, $opacity*1.7)));
+
+    // --- Merge (preserves per-pixel alpha in watermark) ---
     imagecopymerge_alpha($mainImg, $wmImg, $dstX, $dstY, 0, 0, $wW, $wH, $adaptiveOpacity);
 
-    // --- Save (with error check) ---
+    // --- Save (JPG/PNG only unless your stack supports AVIF encode) ---
     $ext = strtolower(pathinfo($savePath, PATHINFO_EXTENSION));
-    $ok = false;
     switch ($ext) {
         case 'jpg':
         case 'jpeg':
-            // JPEG has no alpha
-            $ok = imagejpeg($mainImg, $savePath, 90);
+            imageinterlace($mainImg, true);
+            imagejpeg($mainImg, $savePath, 90);
             break;
         case 'png':
             imagesavealpha($mainImg, true);
-            $ok = imagepng($mainImg, $savePath);
+            imagepng($mainImg, $savePath, 6);
             break;
         default:
             imagedestroy($mainImg);
             imagedestroy($wmImg);
-            throw new Exception("Unsupported output format: .$ext (use .jpg or .png)");
-    }
-    if (!$ok) {
-        imagedestroy($mainImg);
-        imagedestroy($wmImg);
-        throw new Exception("Failed to save output to $savePath (permissions/open_basedir?)");
+            throw new Exception("Unsupported output image format: .$ext (use .jpg or .png)");
     }
 
     imagedestroy($mainImg);
     imagedestroy($wmImg);
     return true;
+} // addWatermarkFromUrls
 }
-}
 
+/** ---------------- Low-level helpers (AVIF-aware loader, alpha-merge, opacity) ---------------- */
 
-/* ------------------------ Helpers below ------------------------ */
-
-/**
- * Try to convert a same-host HTTP URL to a local filesystem path.
- * Returns null if it can't safely map.
- */
-if (!function_exists('url_to_local_path')) {
-function url_to_local_path(string $url): ?string
+if (!function_exists('loadGdFromDataOrAvif')) {
+function loadGdFromDataOrAvif(string $data, string $label = 'image', bool $allowAvif = true): array
 {
-    if (!preg_match('~^https?://~i', $url)) {
-        return $url; // already a path
+    $mime = 'application/octet-stream';
+    if (function_exists('finfo_open')) {
+        $fi = finfo_open(FILEINFO_MIME_TYPE);
+        if ($fi) { $mime = finfo_buffer($fi, $data) ?: $mime; finfo_close($fi); }
     }
-    if (!isset($_SERVER['HTTP_HOST'], $_SERVER['DOCUMENT_ROOT'])) {
-        return null;
+
+    // 1) Try GD directly
+    $img = @imagecreatefromstring($data);
+    if ($img !== false) {
+        return [$img, $mime];
     }
-    $u = parse_url($url);
-    if (!isset($u['host'], $u['path'])) return null;
 
-    // Accept same host or 'www.' variant
-    $hostNow = strtolower($_SERVER['HTTP_HOST']);
-    $hostUrl = strtolower($u['host']);
-    $sameHost = ($hostNow === $hostUrl) ||
-                (ltrim($hostNow, 'www.') === ltrim($hostUrl, 'www.'));
-    if (!$sameHost) return null;
+    // 2) If it's AVIF/HEIC/HEIF, try all fallbacks
+    $isHeifFamily = (stripos($mime, 'image/avif') !== false) ||
+                    (stripos($mime, 'image/heic') !== false) ||
+                    (stripos($mime, 'image/heif') !== false) ||
+                    // some servers mislabel; quick sniff by extension in first bytes
+                    (strncmp($data, '....ftyp', 8) === 0); // harmless heuristic; optional
 
-    $docroot = rtrim($_SERVER['DOCUMENT_ROOT'], '/');
-    $path    = $u['path'];
-    $full    = $docroot . $path;
-
-    // Only return if file exists (avoid mapping to nowhere)
-    return is_file($full) ? $full : null;
-}
-}
-
-
-/**
- * Read bytes from local path or URL, preferring non-AVIF formats from CDNs.
- * Adds Referer/User-Agent to avoid hotlink blocks.
- */
-if (!function_exists('read_bytes')) {
-function read_bytes(string $pathOrUrl, ?string $referer = null): string
-{
-    // Local file?
-    if (!preg_match('~^https?://~i', $pathOrUrl)) {
-        if (!is_file($pathOrUrl)) {
-            // Optional: suggest case mismatch
-            $dir  = dirname($pathOrUrl);
-            $base = basename($pathOrUrl);
-            if (is_dir($dir)) {
-                foreach (scandir($dir) as $f) {
-                    if (strcasecmp($f, $base) === 0) {
-                        throw new Exception("Case mismatch: requested '$base' vs actual '$f' in $dir");
-                    }
-                }
-            }
-            throw new Exception("Local file not found: $pathOrUrl");
+    if ($allowAvif && $isHeifFamily) {
+        // 2a) Native GD AVIF support
+        if (function_exists('imagecreatefromavif')) {
+            $tmpAvif = tempnam(sys_get_temp_dir(), 'avif_') . '.avif';
+            @file_put_contents($tmpAvif, $data);
+            $img = @imagecreatefromavif($tmpAvif);
+            @unlink($tmpAvif);
+            if ($img !== false) return [$img, 'image/avif'];
         }
-        $data = @file_get_contents($pathOrUrl);
-        if ($data === false) throw new Exception("Failed reading local file: $pathOrUrl");
-        return $data;
+
+        // 2b) Imagick (with libheif)
+        if (class_exists('Imagick')) {
+            try {
+                $im = new Imagick();
+                $im->readImageBlob($data); // will throw if no delegate
+                if ($im->getNumberImages() > 1) {
+                    $im = $im->coalesceImages();
+                    $im->setIteratorIndex(0);
+                }
+                $im->setImageAlphaChannel(Imagick::ALPHACHANNEL_ACTIVATE);
+                $im->setImageColorspace(Imagick::COLORSPACE_SRGB);
+                $im->setImageFormat('png32');
+                $png = $im->getImagesBlob();
+                $im->clear(); $im->destroy();
+
+                $img = @imagecreatefromstring($png);
+                if ($img !== false) return [$img, 'image/png'];
+            } catch (\Throwable $e) {
+                // fall through to CLI tools
+            }
+        }
+
+        // 2c) CLI tools fallback: only if exec() is available
+		if (function_exists('exec')) {
+			$tmpAvif = tempnam(sys_get_temp_dir(), 'avif_') . '.avif';
+			$tmpPng  = tempnam(sys_get_temp_dir(), 'avif_') . '.png';
+			@file_put_contents($tmpAvif, $data);
+
+			$cmd = null;
+			if (command_exists('magick')) {
+				$cmd = "magick ".escapeshellarg($tmpAvif)." -alpha on -colorspace sRGB PNG32:".escapeshellarg($tmpPng);
+			} elseif (command_exists('convert')) {
+				$cmd = "convert ".escapeshellarg($tmpAvif)." -alpha on -colorspace sRGB PNG32:".escapeshellarg($tmpPng);
+			} elseif (command_exists('ffmpeg')) {
+				$cmd = "ffmpeg -y -i ".escapeshellarg($tmpAvif)." -frames:v 1 ".escapeshellarg($tmpPng);
+			} elseif (command_exists('heif-convert')) {
+				$cmd = "heif-convert ".escapeshellarg($tmpAvif)." ".escapeshellarg($tmpPng)." >/dev/null 2>&1";
+			}
+
+			if ($cmd) {
+				$out = []; $ret = 1;
+				safe_exec($cmd, $out, $ret);
+				if ($ret === 0 && is_file($tmpPng)) {
+					$img = @imagecreatefrompng($tmpPng);
+					@unlink($tmpAvif); @unlink($tmpPng);
+					if ($img !== false) return [$img, 'image/png'];
+				}
+			}
+			@unlink($tmpAvif ?? ''); @unlink($tmpPng ?? '');
+		}
+		// If exec() isn’t available, we just skip CLI fallback and continue to throw later.
+
     }
 
-    // Remote: cURL with Accept header that discourages AVIF
-    $ch = curl_init($pathOrUrl);
-    $headers = [
-        'Accept: image/webp,image/jpeg,image/png;q=0.9,*/*;q=0.5',
-        'User-Agent: Watermark/1.0 (+php)'
-    ];
-    if ($referer) $headers[] = "Referer: $referer";
-
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_MAXREDIRS      => 5,
-        CURLOPT_TIMEOUT        => 30,
-        CURLOPT_SSL_VERIFYPEER => true,
-        CURLOPT_HTTPHEADER     => $headers,
-    ]);
-
-    $body = curl_exec($ch);
-    if ($body === false) {
-        $err = curl_error($ch);
-        curl_close($ch);
-        throw new Exception("cURL error fetching $pathOrUrl: $err");
-    }
-    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-
-    if ($code >= 400) {
-        throw new Exception("HTTP $code fetching $pathOrUrl");
-    }
-    return $body;
+    // If we got here, we couldn’t decode it
+    throw new Exception("$label: unsupported format or no AVIF decoder available (MIME: $mime)");
 }
 }
 
-
-/**
- * Decode arbitrary image bytes into a GD resource.
- * Supports: standard GD formats; AVIF via GD if compiled, else via Imagick fallback.
- */
-if (!function_exists('decode_to_gd')) {
-function decode_to_gd(string $bytes)
+if (!function_exists('command_exists')) {
+function command_exists(string $name): bool
 {
-    $info = @getimagesizefromstring($bytes);
-    $mime = $info['mime'] ?? '';
+    // If exec is disabled, we simply report "not found"
+    if (!function_exists('exec')) return false;
 
-    // Fast path for non-AVIF
-    if ($mime !== 'image/avif') {
-        $im = @imagecreatefromstring($bytes);
-        if (!$im) throw new Exception("GD failed to decode image (mime=$mime)");
-        return $im;
-    }
-
-    // AVIF: try GD's loader if available (PHP 8.1+ with libavif)
-    if (function_exists('imagecreatefromavif')) {
-        $tmp = tmpfile();
-        $meta = stream_get_meta_data($tmp);
-        file_put_contents($meta['uri'], $bytes);
-        $im = @imagecreatefromavif($meta['uri']);
-        fclose($tmp);
-        if ($im) return $im;
-    }
-
-    // AVIF via Imagick fallback
-    if (class_exists('Imagick')) {
-        $img = new Imagick();
-        $img->readImageBlob($bytes);    // requires ImageMagick with heif/avif delegate
-        $img->setImageFormat('png');    // convert to PNG
-        $pngBytes = $img->getImageBlob();
-        $img->clear(); $img->destroy();
-
-        $gd = @imagecreatefromstring($pngBytes);
-        if ($gd) return $gd;
-    }
-
-    throw new Exception("AVIF image received but server lacks AVIF support (GD/Imagick).");
+    $probe = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' ? 'where' : 'command -v';
+    @exec("$probe " . escapeshellarg($name), $out, $code);
+    return $code === 0 && !empty($out);
+}
+}
+if (!function_exists('safe_exec')) {
+function safe_exec(string $cmd, ?array &$out = null, ?int &$code = null): bool
+{
+    if (!function_exists('exec')) { $out = []; $code = 127; return false; }
+    @exec($cmd, $out, $code);
+    return $code === 0;
 }
 }
 
 
-/**
- * Alpha-aware merge with overall opacity (0–1), preserving per-pixel alpha.
- */
 if (!function_exists('imagecopymerge_alpha')) {
 function imagecopymerge_alpha($dstImg, $srcImg, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $baseOpacity)
 {
     $baseOpacity = max(0.0, min(1.0, $baseOpacity));
 
+    $dstW = imagesx($dstImg);
+    $dstH = imagesy($dstImg);
+
     for ($x = 0; $x < $src_w; $x++) {
         for ($y = 0; $y < $src_h; $y++) {
-            $rgba = imagecolorat($srcImg, $src_x + $x, $src_y + $y);
-            $c    = imagecolorsforindex($srcImg, $rgba);
-            if ($c['alpha'] === 127) continue; // fully transparent
+            $dx = $dst_x + $x;
+            $dy = $dst_y + $y;
+            if ($dx < 0 || $dy < 0 || $dx >= $dstW || $dy >= $dstH) continue;
 
-            $dx = $dst_x + $x; $dy = $dst_y + $y;
+            $rgba = imagecolorat($srcImg, $src_x + $x, $src_y + $y);
+            $c = imagecolorsforindex($srcImg, $rgba);
+            if ($c['alpha'] === 127) continue; // fully transparent pixel
+
+            // Sample destination background pixel
             $bgRgba = imagecolorat($dstImg, $dx, $dy);
-            $bg     = imagecolorsforindex($dstImg, $bgRgba);
+            $bg = imagecolorsforindex($dstImg, $bgRgba);
             $bgBrightness = ($bg['red'] + $bg['green'] + $bg['blue']) / 3;
 
-            // Slight opacity boost on lighter backgrounds
-            $contrastBoost = ($bgBrightness > 200) ? 1.0 : (($bgBrightness > 150) ? 0.6 : 0.2);
+            // Contrast-aware boost
+            $contrastBoost = ($bgBrightness > 200) ? 1.0
+                            : (($bgBrightness > 150) ? 0.6 : 0.2);
+
             $effectiveOpacity = min(1.0, $baseOpacity * (1 + $contrastBoost));
 
+            // Combine watermark alpha + overall opacity
             $finalAlpha = $c['alpha'] + (127 - $c['alpha']) * (1 - $effectiveOpacity);
             $finalAlpha = (int) max(0, min(127, round($finalAlpha)));
 
@@ -1309,42 +1269,40 @@ function imagecopymerge_alpha($dstImg, $srcImg, $dst_x, $dst_y, $src_x, $src_y, 
 }
 }
 
-
-/**
- * Sample the area under the watermark to choose a good opacity (bounds-safe).
- */
 if (!function_exists('autoAdjustOpacity')) {
 function autoAdjustOpacity($dstImg, $wmWidth, $wmHeight, $dstX, $dstY, float $minOpacity = 0.25, float $maxOpacity = 0.85): float
 {
+    $dstW = imagesx($dstImg);
+    $dstH = imagesy($dstImg);
+
+    $stepX = max(1, (int)($wmWidth  / 20));
+    $stepY = max(1, (int)($wmHeight / 20));
+
     $sampleCount = 0;
     $totalLum = 0;
 
-    $stepX = max(1, (int)($wmWidth / 20));
-    $stepY = max(1, (int)($wmHeight / 20));
-
-    $imgW = imagesx($dstImg);
-    $imgH = imagesy($dstImg);
-
+    // Sample a grid of pixels under the watermark area safely within bounds
     for ($x = 0; $x < $wmWidth; $x += $stepX) {
         for ($y = 0; $y < $wmHeight; $y += $stepY) {
             $px = $dstX + $x;
             $py = $dstY + $y;
-            if ($px < 0 || $py < 0 || $px >= $imgW || $py >= $imgH) continue;
+            if ($px < 0 || $py < 0 || $px >= $dstW || $py >= $dstH) continue;
 
             $rgba = imagecolorat($dstImg, $px, $py);
             $c = imagecolorsforindex($dstImg, $rgba);
+            // perceived luminance
             $lum = 0.2126*$c['red'] + 0.7152*$c['green'] + 0.0722*$c['blue'];
             $totalLum += $lum;
             $sampleCount++;
         }
     }
 
-    $avgLum = $sampleCount > 0 ? ($totalLum / $sampleCount) : 128;
-    $t = max(0.0, min(1.0, $avgLum / 255.0)); // normalize 0–1
-    return max($minOpacity, min($maxOpacity, $minOpacity*(1-$t) + $maxOpacity*$t));
-}
-}
+    $avgLum = $sampleCount > 0 ? $totalLum / $sampleCount : 128;
+    $t = max(0.0, min(1.0, $avgLum / 255));
 
+    return $minOpacity*(1-$t) + $maxOpacity*$t; // bright bg → higher opacity
+}
+}
 
 function getFileIconClass($filename) {
     $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));

@@ -315,9 +315,8 @@ video{
 														}else if($field->field_type == 'Number'){
 															echo '<input type="number" name="dynamic_fields['.$field->id.']" class="form-control" placeholder="'.$field->name.' '.$req_op.'" value="'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '').'" '.$req_op_text.'>';
 														}else if($field->field_type == 'Textarea'){
-															echo '<label class="mb-1 mt-4 d-block mx-0 fw-bold text-black">'.$field->name.' '.$req_op.'</label>';
 															$rowsnumber = ($field->name == 'About this Aircraft' || $field->id == 14) ? 'rows="5"' :'';
-															echo '<textarea name="dynamic_fields['.$field->id.']" class="form-control '.(!empty($field->show_text_editor)? 'show_text_editor' : '').'"  '.$req_op_text.' '.$rowsnumber.'>'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '').'</textarea>';
+															echo '<textarea data-label="'.$field->name.' '.$req_op.'" name="dynamic_fields['.$field->id.']" name="dynamic_fields['.$field->id.']" class="form-control '.(!empty($field->show_text_editor)? 'show_text_editor' : '').'"  '.$req_op_text.' '.$rowsnumber.'>'. (!empty($dynamic_fields_values[$field->id]) ? $dynamic_fields_values[$field->id] : '').'</textarea>';
 														}else if($field->field_type == 'Checkbox'){
 															echo empty($field->show_cat_based) ? '<label class="mb-1 mt-4 d-block mx-0 fw-bold text-black">'.$field->name.' '.$req_op.'</label>':'';
 															$decoded_option = !empty($field->field_options) ? json_decode($field->field_options) : array();
@@ -429,7 +428,7 @@ video{
 									<label class="dz-wrap" style="display:block !important;margin-left:0 !important;">
 										<span>Upload your files — drag & drop or click to select (multiple files allowed) </span><br />
 										<span>(pdf,.doc,.docx,.png,.jpeg,.jpg)</span>
-										<input type='file' id="userphoto" name='uploads[]' data-type="add" multiple class="cropimage w-100" accept=".jpg,.jpeg,.png,.mp4,.mov">
+										<input type='file' id="userphoto" name='uploads[]' data-avif2png data-type="add" multiple class="cropimage w-100" accept=".jpg,.jpeg,.png,.mp4,.mov">
 									</label>
 									</div>
 									
@@ -664,6 +663,129 @@ video{
     
   </div>
 </div>
+<script>
+// --------- HEIF/AVIF robust detection + conversion ----------
+
+// Quick checks by mime/ext
+function isHeifFamilyByMeta(file){
+  const t=(file.type||'').toLowerCase(), n=(file.name||'').toLowerCase();
+  return t.includes('avif')||t.includes('heif')||t.includes('heic')
+      || /\.avif$/i.test(n)||/\.heif$/i.test(n)||/\.heic$/i.test(n);
+}
+
+// Sniff ISO-BMFF magic: looks for an 'ftyp' box with HEIF/AVIF brands
+async function sniffHeifMagic(file){
+  try{
+    const ab = await file.slice(0, 128).arrayBuffer();
+    const u8 = new Uint8Array(ab);
+    // Search for 'ftyp'
+    for(let i=0;i+7<u8.length;i++){
+      if (u8[i]===0x66 && u8[i+1]===0x74 && u8[i+2]===0x79 && u8[i+3]===0x70){ // 'ftyp'
+        const brand = String.fromCharCode(u8[i+4],u8[i+5],u8[i+6],u8[i+7]).toLowerCase();
+        const heifBrands = ['avif','avis','heic','heix','hevc','hevx','mif1','msf1'];
+        return {heif: heifBrands.includes(brand), brand};
+      }
+    }
+  } catch(e){}
+  return {heif:false, brand:null};
+}
+
+// Convert any HEIF/AVIF (incl. mislabeled .jpg) to PNG in-place on an <input type="file">
+async function normalizeImageFormatsOnInput(input, opts = {}) {
+  if (!input?.files?.length) return {converted:0, failed:0, total:0, debug:[]};
+
+  const originals = Array.from(input.files);
+  const dt = new DataTransfer();
+  let converted=0, failed=0;
+  const debug=[];
+
+  for (const f of originals){
+    let need = isHeifFamilyByMeta(f);
+
+    // If it looks like a normal image by meta/extension, still sniff the bytes:
+    // catches "HEIC renamed to .jpg"
+    if (!need && (f.type||'').startsWith('image/')) {
+      const sniff = await sniffHeifMagic(f);
+      debug.push({name:f.name, type:f.type, sniff:sniff.brand||null});
+      if (sniff.heif) need = true;
+    } else {
+      debug.push({name:f.name, type:f.type, sniff:null});
+    }
+
+    if (need){
+      try{
+        const png = await imageFileToPngFile(f, opts); // lossless, preserves alpha
+        dt.items.add(png);
+        converted++;
+      }catch(err){
+        console.warn('HEIF/AVIF→PNG failed; keeping original', f.name, err);
+        dt.items.add(f);
+        failed++;
+      }
+    } else {
+      dt.items.add(f);
+    }
+  }
+
+  if (converted>0) input.files = dt.files; // replace selection only if something converted
+  return {converted, failed, total: originals.length, debug};
+}
+
+// Generic image -> PNG via canvas
+async function imageFileToPngFile(file, opts = {}){
+  const {bitmap, width, height} = await decodeToBitmapWithFallback(file);
+  const {canvas, ctx, targetW, targetH} = createCanvas(width, height, opts.maxW||null, opts.maxH||null);
+  ctx.drawImage(bitmap, 0, 0, targetW, targetH);
+  const blob = await canvasToBlob(canvas, 'image/png');
+  const newName = (file.name||'image').replace(/\.(avif|heic|heif|jpe?g|webp)$/i,'') + '.png';
+  return new File([blob], newName, {type:'image/png', lastModified:file.lastModified});
+}
+
+async function decodeToBitmapWithFallback(file){
+  if ('createImageBitmap' in window){
+    try{
+      const bmp = await createImageBitmap(file, {
+        imageOrientation: 'from-image',
+        premultiplyAlpha: 'premultiply',
+        colorSpaceConversion: 'default'
+      });
+      return {bitmap:bmp, width:bmp.width, height:bmp.height};
+    }catch(e){}
+  }
+  const img = await loadImage(file);
+  let bmp = img;
+  if ('createImageBitmap' in window){ try{ bmp = await createImageBitmap(img);}catch{} }
+  return {bitmap:bmp, width:img.naturalWidth||img.width, height:img.naturalHeight||img.height};
+}
+
+function loadImage(file){
+  return new Promise((res,rej)=>{
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.decoding = 'async';
+    img.onload  = () => { URL.revokeObjectURL(url); res(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('decode failed')); };
+    img.src = url;
+  });
+}
+
+function createCanvas(sw, sh, maxW=null, maxH=null){
+  let tw=sw, th=sh;
+  if (maxW||maxH){
+    const rw = maxW ? maxW/sw : 1, rh = maxH ? maxH/sh : 1;
+    const r = Math.min(rw, rh);
+    if (r<1){ tw=Math.round(sw*r); th=Math.round(sh*r); }
+  }
+  const c = document.createElement('canvas');
+  c.width = tw; c.height = th;
+  const ctx = c.getContext('2d', {alpha:true});
+  return {canvas:c, ctx, targetW:tw, targetH:th};
+}
+
+function canvasToBlob(canvas, type='image/png', q){
+  return new Promise((res,rej)=> canvas.toBlob(b=> b?res(b):rej(new Error('toBlob failed')), type, q));
+}
+</script>
 
 <style>
   .dz-wrap {
@@ -1664,10 +1786,14 @@ $(document).ready(function () {
   $(".cropimageedit").on("click", function(){ fileListedit = []; });
 
   /* ===== FAST preview using blob URLs (no FileReader) + queue ===== */
-  $(".cropimage").on("change", function (event) {
-    $(".load-images-final").empty();
-    const files = event.target.files;
-    if (!files || !files.length) return;
+  $(".cropimage").on("change", async function (event) {
+	  // Convert any AVIFs to PNG first (keeps alpha)
+	  const res = await normalizeImageFormatsOnInput(this, { maxW: 4096, maxH: 4096 });
+  
+	  $(".load-images-final").empty();
+	  const files = this.files; // use the possibly replaced list
+	  if (!files || !files.length) return;
+
 
     $("#upload-file-modal").find(".header-message").html("<h5 class='mb-0 fw-bolder'>Add Tags and Upload</h5>");
     $("#upload-file-modal").find(".modal-footer .photoupload").show();
@@ -1728,10 +1854,12 @@ $(document).ready(function () {
   });
 
   // Edit input preview (also blob URL)
-  $(".cropimageedit").on("change", function (event) {
-    revokePreviewURLs();
-    const files = event.target.files;
-    if (files && files.length) {
+	$(".cropimageedit").on("change", async function (event) {
+	  const res = await normalizeImageFormatsOnInput(this, { maxW: 4096, maxH: 4096 });
+
+	  revokePreviewURLs();
+	  const files = this.files;
+	  if (files && files.length) {
       let i = 0;
       for (let singleFile of files) {
         const url = URL.createObjectURL(singleFile);

@@ -192,7 +192,7 @@ class ProductModel extends Model
         pl.is_premium_listing,pl.name as package_names,
         u.fullname,
         c.name as category_name,
-        sc.name as sub_category_name,
+        sc.name as sub_category_name,s.id as original_sale_id,s.stripe_subscription_end_date,s.admin_plan_update,s.stripe_subscription_status,
         c.permalink,s.admin_plan_update,
         (
             SELECT GROUP_CONCAT(pd.field_value ORDER BY t.sort_order SEPARATOR ' ') 

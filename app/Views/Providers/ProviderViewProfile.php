@@ -256,8 +256,96 @@ $count = !empty($images) ? count($images) : 0;
 						if(!empty($product_dynamic_fields)){
 							foreach($product_dynamic_fields as $pd){
 								if(!empty($pd)){
-									foreach($pd as $pds){  if(!empty($pds['frontend_show']) && ($pds['group_name'] == 'General Information' || $pds['group_name'] == 'Basic Property Details')){ ?>
+									if($pd[0]['group_name'] == 'Social Media Handles'){
+										$grouped = [];
+										foreach ($pd as $r) {
+											$id = $r['group_name'];
+
+											if (!isset($grouped[$id])) {
+												// keep the first row as the base; start collecting names
+												$grouped[$id] = $r;
+												$grouped[$id]['name'] = [$r['field_name'].'|||'.$r['name']];
+											} else {
+												$grouped[$id]['name'][] = $r['field_name'].'|||'.$r['name'];
+											}
+										}
+
+										// finalize: unique + trim + implode
+										foreach ($grouped as &$g) {
+											$names = array_map('trim', $g['name']);
+											$names = array_filter($names, 'strlen');
+											$names = array_values(array_unique($names));
+											$g['name'] = implode(', ', $names);
+										}
+										unset($g);
+
+										// If you want a numerically indexed array (instead of keyed by id):
+										$result = array_values($grouped);
+									}else{
+										$result = $pd;
+									}
+									foreach($result as $pds){  if(!empty($pds['frontend_show']) && ($pds['group_name'] == 'General Information' || $pds['group_name'] == 'Basic Property Details' || $pds['group_name'] == 'Social Media Handles')){ ?>
 									<?php
+									if($pds['group_name'] == 'Social Media Handles'){ ?>
+										<div class="d-flex justify-content-center pt-3">
+											
+											<?php 
+function normalizeUrl($url, $platform) {
+    $url = trim($url);
+
+    // If already absolute
+    if (preg_match('~^https?://~i', $url)) {
+        return $url;
+    }
+
+    // If it's a bare domain
+    if (preg_match('~\.[a-z]{2,}(/.*)?$~i', $url)) {
+        return 'https://' . ltrim($url, '/');
+    }
+
+    // Otherwise treat it like a username/handle
+    switch (strtolower($platform)) {
+        case 'facebook':
+            return 'https://www.facebook.com/' . ltrim($url, '@');
+        case 'instagram':
+            return 'https://www.instagram.com/' . ltrim($url, '@');
+        case 'youtube':
+            return 'https://www.youtube.com/@' . ltrim($url, '@');
+        case 'tiktok':
+            return 'https://www.tiktok.com/@' . ltrim($url, '@');
+        case 'gmb':
+            return 'https://www.google.com/search?q=' . rawurlencode($url);
+        default:
+            return 'https://' . ltrim($url, '/');
+    }
+}
+
+$icons = [
+    'facebook'  => 'fab fa-facebook',
+    'instagram' => 'fab fa-instagram',
+    'youtube'   => 'fab fa-youtube',
+    'tiktok'    => 'fab fa-tiktok',
+    'gmb'       => 'fas fa-map-marker-alt',
+];
+
+$entries = explode(',', $pds['name']);
+foreach ($entries as $ea) {
+    [$platform, $value] = array_map('trim', explode('|||', $ea));
+    if (!$platform || !$value) continue;
+
+    $href = normalizeUrl($value, $platform);
+
+    if (isset($icons[strtolower($platform)])) {
+        echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+                <i class="'.$icons[strtolower($platform)].'"></i>
+              </a>';
+    }
+}
+?>
+
+
+										</div>
+									<?php }else{
 									$hasDesc = stripos($pds['field_name'], 'description') !== false;
 									$divClass = 'd-flex justify-content-between border-bottom py-3' . ($hasDesc ? ' flex-column gap-3' : '');
 									?>
@@ -268,7 +356,7 @@ $count = !empty($images) ? count($images) : 0;
 										<?php echo $pds['name']; ?>
 										</span>
 									</div>	
-									<?php } }									
+									<?php } } }									
 								}
 								//break;
 							}
@@ -396,7 +484,7 @@ $count = !empty($images) ? count($images) : 0;
 			if(!empty($product_dynamic_fields)){
 				foreach($product_dynamic_fields as $p => $pd){
 					$pg++;
-					if(!empty($pd) && $p != 'General Information' && $p != 'Basic Property Details' && $p != 'Aircraft Status'){ ?>					
+					if(!empty($pd) && $p != 'General Information' && $p != 'Basic Property Details' && $p != 'Aircraft Status' && $p != 'Social Media Handles'){ ?>					
 						<div class="accordion-item">
 							<h2 class="accordion-header">
 							  <button class="accordion-button <?php echo ($p != 'Logbook(s)') ? '' : 'collapsed'; ?>" type="button" data-bs-toggle="collapse" data-bs-target="#pd-<?php echo $pg; ?>" aria-expanded="<?php echo ($pg == 2) ? 'true' : 'false'; ?>" aria-controls="pd-<?php echo $pg; ?>">

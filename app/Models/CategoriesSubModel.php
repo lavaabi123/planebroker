@@ -99,8 +99,9 @@ class CategoriesSubModel extends Model
 				(
 					SELECT COUNT(*) 
 					FROM products p 
+					LEFT JOIN sales s ON s.id = p.sale_id
 					WHERE p.sub_category_id = categories_sub.id 
-					  AND p.status = 1
+					  AND p.status=1 AND (p.is_cancel = 0 || s.stripe_subscription_end_date >= NOW()) and s.id > 0
 				) AS product_count
 			FROM categories_sub
 			LEFT JOIN categories ON categories.id = categories_sub.category_id

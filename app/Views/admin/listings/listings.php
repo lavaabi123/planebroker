@@ -82,11 +82,27 @@
 											<?php } ?>
 										</td>  
 										<td style="text-align: center;"> 
-											<?php if ($user['is_cancel'] == 0){ ?>
-												<span class="text-success" title="<?php echo trans('active'); ?>">ACTIVE</span>
-											<?php }else{ ?>
-												<span class="text-danger" title="<?php echo trans('banned'); ?>">CANCELLED</span>
-											<?php } ?>   
+											<?php 
+											if(!empty($user['admin_plan_update']) && $user['stripe_subscription_end_date'] != NULL && !empty($user['stripe_subscription_end_date']) && strtotime($user['stripe_subscription_end_date']) < time()){
+												echo '<span class="text-danger">Expired</span>';
+											}else{
+												$cvar = ($user['stripe_subscription_status'] == 'active')
+												? 'success'
+												: (
+													($user['stripe_subscription_status'] == 'trialing')
+														? 'primary'
+														: (
+															($user['stripe_subscription_status'] == 'canceled')
+																? 'danger'
+																: 'primary'
+														)
+												); 
+												$cvar = !empty($user['is_cancel']) ? 'danger' : (empty($user['stripe_subscription_status']) ? 'success' : $cvar);
+												echo '<span class="text-'.$cvar.'">'.(!empty($user['is_cancel']) ? 'Canceled' : (empty($user['stripe_subscription_status']) ? 'Active' : ucfirst($user['stripe_subscription_status']))).'</span>'; 
+											
+											}
+											
+											?>  
 										</td>														
 										<td><?php echo date("m-d-Y",strtotime($user['created_at'])); ?></td>
 										<td><?php echo ( empty($user['added_by']) ) ? 'User' : 'Admin'; ?></td>  

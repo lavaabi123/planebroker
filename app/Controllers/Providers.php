@@ -254,8 +254,9 @@ class Providers extends BaseController
 			if(!empty($_GET['keywords'])){
 				//get fields to show				
 				$this->ProductModel = new ProductModel();
+				$category_detail = $this->db->query("SELECT id, name,skill_name,permalink FROM categories WHERE permalink LIKE '".$category."' ORDER BY name ASC", 'r')->getRowArray();
 				//$data['title_fields'] = $this->ProductModel->title_fields($category,'title');
-				$where .= ' AND ((SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` where name = "manufacturer" limit 1)) like "%'.$_GET['keywords'].'%" OR (SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` where name = "Make/Model")) like "%'.$_GET['keywords'].'%" OR (SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` where name = "year")) like "%'.$_GET['keywords'].'%")';
+				$where .= ' AND ((SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` where name = "manufacturer" limit 1)) like "%'.$_GET['keywords'].'%" OR (SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` where name = "Make/Model")) like "%'.$_GET['keywords'].'%" OR (SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` where name = "year")) like "%'.$_GET['keywords'].'%" Or (SELECT GROUP_CONCAT(pd.field_value ORDER BY t.sort_order SEPARATOR " ") AS field_values FROM products_dynamic_fields pd JOIN ( SELECT t.field_id, t.sort_order FROM title_fields t LEFT JOIN fields f ON f.id = t.field_id WHERE t.category_id = "'.$category_detail['id'].'" and t.title_type = "title") t ON t.field_id = pd.field_id WHERE pd.product_id = p.id) like "%'.$_GET['keywords'].'%" )';
 				$filter_texts['keywords'] = 'Keywords';
 			}
 			if(!empty($_GET['created_at'])){
@@ -397,7 +398,7 @@ class Providers extends BaseController
 		
 		//get subcategory list
 		$this->categoriessubModel = new CategoriesSubModel();
-        $data['categories_list'] = $this->categoriessubModel->get_categories_by_link($category,' AND categories_sub.id IN (SELECT DISTINCT sub_category_id FROM products where status=1)');
+        $data['categories_list'] = $this->categoriessubModel->get_categories_by_link($category,' AND categories_sub.id IN (SELECT DISTINCT sub_category_id FROM products pr LEFT JOIN sales s ON s.id = pr.sale_id WHERE pr.status=1 AND (pr.is_cancel = 0 || s.stripe_subscription_end_date >= NOW()) and s.id > 0)');
 		//get manufacturers List
 		$this->ProductModel = new ProductModel();
 		$data['manufacturers'] = $this->ProductModel->get_manufacturers($category, $where, $all=0);

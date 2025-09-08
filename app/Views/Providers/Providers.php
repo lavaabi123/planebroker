@@ -119,7 +119,7 @@ function radio($name, $val){
 								</select>	
 
 							</div>
-							
+							<?php if(!empty($manufacturers)){ ?>
 							<div class="form-group w-100">
 								<select name='manufacturer[]' type="select" class='form-control mb-0'>
 
@@ -134,6 +134,7 @@ function radio($name, $val){
 								</select>	
 
 							</div>
+							<?php } ?>
 							<div class="form-group w-100">
 
 								<input type="text" class="mb-0" id="keyword" name="keywords" placeholder="Search by Keyword" value="<?php echo !empty($_GET['keywords']) ? $_GET['keywords'] :''; ?>"	/>
@@ -191,6 +192,7 @@ function radio($name, $val){
 
 						</div>
 						
+								<?php if(!empty($manufacturers)){ ?>
 						<div class="form-group w-100">
 
 							<select name='manufacturer[]' type="select" class='form-control mb-0'>
@@ -206,6 +208,7 @@ function radio($name, $val){
 							</select>	
 
 						</div>
+						<?php } ?>
 						<div class="form-group w-100">
 
 							<input type="text" class="mb-0" id="keyword" name="keywords" placeholder="Search by Keyword"  value="<?php echo !empty($_GET['keywords']) ? $_GET['keywords'] :''; ?>" />
@@ -560,38 +563,56 @@ $('#mySearchForm2').on('submit', function (e) {
 	e.preventDefault(); // Prevent normal form submission
 	console.log('3');
 	fetchProducts({ preserveExisting: false }); 
-});
-function syncCategoryToQuickSearch() {
-  const selectedCats = $('#searchFilter input[name="category[]"]:checked')
-    .map((i, el) => el.value).get();
-	const newVal = (selectedCats.length >= 1) ? selectedCats[0] : '';
-console.log(selectedCats[0]);
-  const quickSel = document.querySelector('#mySearchForm select[name="category[]"]');
+});// one global guard to prevent recursive loops
+let syncingCategory = false;
 
-  if (quickSel) {
-    // ensure the option exists (IDs must match)
-    if (newVal && !$('#mySearchForm select[name="category[]"] option[value="'+newVal+'"]').length) {
-      $('#mySearchForm select[name="category[]"]').append('<option value="'+newVal+'"></option>');
-    }
+function setQuickSearchValue(val) {
+  const $select = $('#mySearchForm select[name="category[]"]');
+  const el = $select.get(0);
+  if (!el) return;
 
-    // ✅ update SlimSelect UI + underlying <select>
-    if (quickSel._slim && typeof quickSel._slim.set === 'function') {
-      quickSel._slim.set(newVal || '');
-    } else {
-      // fallback if SlimSelect isn’t attached for some reason
-      $('#mySearchForm select[name="category[]"]').val(newVal).trigger('change');
-    }
+  // make sure the option exists (optional)
+  if (val && !$select.find('option[value="'+val+'"]').length) {
+    $select.append('<option value="'+val+'"></option>');
+  }
+
+  // Update SlimSelect without re-triggering our change handler
+  if (el._slim && typeof el._slim.set === 'function') {
+    el._slim.set(val || '');
+  } else {
+    $select.val(val || ''); // NOTE: no .trigger('change') here
   }
 }
-$(document).on('change', '#mySearchForm select[name="category[]"]', function () {
-    const val = $(this).val();
-    $('#mySearchForm1 input[name="category[]"]').prop('checked', false);
 
-    if (val) {
-        $('#mySearchForm1 input[name="category[]"][value="' + val + '"]').prop('checked', true);
-    }
+/** RIGHT → LEFT **/
+$(document).on('change', '#mySearchForm select[name="category[]"]', function () {
+  if (syncingCategory) return;
+  syncingCategory = true;
+
+  const val = $(this).val() || '';
+
+  // Uncheck all then check the matching one
+  const $leftAll   = $('#searchFilter input[name="category[]"]');
+  const $leftMatch = $('#searchFilter input[name="category[]"][value="'+val+'"]');
+
+  $leftAll.prop('checked', false);
+  if (val) $leftMatch.prop('checked', true); // no .trigger('change')
+
+  syncingCategory = false;
 });
-$(document).on('change', '#searchFilter input[name="category[]"]', syncCategoryToQuickSearch);
+
+/** LEFT → RIGHT **/
+$(document).on('change', '#searchFilter input[name="category[]"]', function () {
+  if (syncingCategory) return;
+  syncingCategory = true;
+
+  // If you allow multiple checkboxes, pick the first (or define your own rule)
+  const val = $('#searchFilter input[name="category[]"]:checked').first().val() || '';
+  setQuickSearchValue(val); // no .trigger('change')
+
+  syncingCategory = false;
+});
+
 	function urlchange1(form1){
 		
         const form = form1;

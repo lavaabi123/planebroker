@@ -69,7 +69,27 @@ if($sale['provider'] != ''){									?>
 											<td><?php echo !empty($sale['stripe_subscription_amount_paid']) ? $sale['stripe_subscription_amount_paid'] : '0.00'; ?></td>
 											<td><?php echo formatted_date($sale['created_at'],'m/d/Y'); ?></td>
 											<td><?php echo !empty($sale['admin_plan_update']) ? 'Admin' : 'User'; ?></td>
-											<td><?php echo !empty($sale['is_cancel']) ? '<div class="text-danger">Cancelled</div>' : 'Active'; ?></td>
+											<td><?php 
+											if(!empty($sale['admin_plan_update']) && $sale['stripe_subscription_end_date'] != NULL && !empty($sale['stripe_subscription_end_date']) && strtotime($sale['stripe_subscription_end_date']) < time()){
+												echo '<div class="text-danger">Expired</div>';
+											}else{
+												$cvar = ($sale['stripe_subscription_status'] == 'active')
+												? 'success'
+												: (
+													($sale['stripe_subscription_status'] == 'trialing')
+														? 'primary'
+														: (
+															($sale['stripe_subscription_status'] == 'canceled')
+																? 'danger'
+																: 'primary'
+														)
+												);
+												$cvar = !empty($sale['is_cancel']) ? 'danger' : (empty($sale['stripe_subscription_status']) ? 'success' : $cvar);
+												echo '<span class="text-'.$cvar.'">'.(!empty($sale['is_cancel']) ? 'Canceled' : (empty($sale['stripe_subscription_status']) ? 'Active' : ucfirst($sale['stripe_subscription_status']))).'</span>'; 
+											
+											}
+											
+											?></td>
 											
 											<td class="text-center">
 												<div class="dropdown btn-group">

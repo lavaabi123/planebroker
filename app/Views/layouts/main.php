@@ -1406,6 +1406,15 @@ tinymce.init({
   advlist_bullet_styles: 'default circle disc square',
   advlist_number_styles: 'default lower-alpha lower-roman upper-alpha upper-roman',
   statusbar: false,
+  setup(editor) {
+    editor.on('init', () => {
+      // pull the data-label from the source <textarea>
+      const src = editor.targetElm;            // original textarea
+      const label = src.getAttribute('data-label') || '';
+      const body = editor.getBody();
+      body.setAttribute('data-inline-label', label);
+    });
+  },
   content_css: ['<?php echo base_url(); ?>/assets/rte-content.css'],
   content_style: `
     body { line-height: 1.25; }           /* overall line height */
@@ -1413,9 +1422,38 @@ tinymce.init({
     ul,ol { margin: 0.25em 0 0.25em 1.25em; padding-left: 1.25em; }
     li { margin: 0.15em 0; }              /* tighter list items */
     h1,h2,h3,h4,h5,h6 { margin: .6em 0 .3em; }
+	html,body{background:#fff}
+    body{
+      position:relative;
+      padding-top:24px; /* room for the label */
+      font-family:system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      font-size:14px;
+    }
+    body:before{
+      content: attr(data-inline-label);
+      position:absolute;
+      top:4px;
+      font-size:12px;
+      color:#667085;         /* subtle grey */
+      font-weight:600;
+      pointer-events:none;   /* never selectable */
+      line-height:1;
+    }
+    /* optional: show stronger color when editor focused */
+    body.mce-content-focus:before{
+      color:#111827;
+    }
   `
 });
 </script>
+<style>
+.tox.tox-tinymce {
+  resize: vertical;     /* allow dragging only up/down */
+  overflow: auto;       /* show scrollbar if resized smaller */
+  min-height: 150px;    /* prevent collapsing too much */
+  max-height: 800px;    /* optional: cap the growth */
+}
+</style>
 <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/rte-content.css">
 
 </html>

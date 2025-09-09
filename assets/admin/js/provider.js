@@ -104,105 +104,342 @@ $(document).ready(function() {
         }
     });
 
+function syncHiddenBlocks() {
+  $('.catbasedfield, .services-group').each(function () {
+    const $block = $(this);
+    const hide = !$block.is(':visible');
+    $block.find('input, select, textarea').prop('disabled', hide);
+
+    if (hide) {
+      // also clear any visual error state when hiding
+      $block.find('.error-border').removeClass('error-border');
+    }
+  });
+}
+
+// call once after the page renders the dynamic UI:
+syncHiddenBlocks();
+// and call every time category/subcategory changes:
+$(document).on('change', 'select[name="sub_category_id"]', syncHiddenBlocks);
+
 const $form = $('#aircraft-add-form-1');
-let skipValidation = false; // Used to track Save Listing intent
+let skipValidation = false;         // you already have this
+let allowLiveValidation = false;    // NEW: only true after first Publish attempt
 
-// SAVE LISTING button logic
+/* =========================
+   SAVE LISTING (unchanged)
+========================= */
 $('.save-listing').on('click', function (e) {
-    e.preventDefault();
-    skipValidation = true;
+  e.preventDefault();
+  skipValidation = true;
 
-    // Set status to 0 (inactive)
-    $form.find('input[name="status"]').val(0);
+  // Set status to 0 (inactive)
+  $form.find('input[name="status"]').val(0);
 
-    // Submit the form bypassing validation
-    $form.off('submit').submit();
+  // Submit the form bypassing validation
+  $form.off('submit').submit();
 });
 
-/* --------------------------------------------------------------
-   1. Start jQuery Validate
--------------------------------------------------------------- */
-$form.validate({
-    ignore: ':hidden:not([class~=selectized]),:hidden > .selectized, .selectize-control .selectize-input input',
-    errorElement: 'label',
-    errorClass: 'error text-danger',
-    errorPlacement: placeDynamicError,
-    highlight: highlightDynamicGroup,
-    unhighlight: unhighlightDynamicGroup,
-
-    rules: {
-        password: { minlength: 4 },
-        mobile_no: { phoneUS: true, minlength: 10, maxlength: 10 }
-    },
-    messages: {}
-});
-
-// Override form submit for "Publish"
-$form.on('submit', function (e) {
-    if (skipValidation) return; // Skip validation if SAVE LISTING triggered
-
-    if (!$form.valid()) {
-        e.preventDefault(); // Prevent submission if invalid
-        return false;
-    }
-
-    // Ensure status is set to 1 (active) on publish
-    $form.find('input[name="status"]').val(1);
-});
-
-/* --------------------------------------------------------------
-   2. Handle checkbox array groups like dynamic_fields[61][]
--------------------------------------------------------------- */
-const added = new Set();
-
-$('input[type="checkbox"][name^="dynamic_fields["]').each(function () {
-    const name = this.name;
-    if (added.has(name)) return;
-
-    if ($(this).prop('required')) {
-        $form.validate().settings.rules[name] = { required: true };
-        $form.validate().settings.messages[name] = {
-            required: 'Please choose at least one option.'
-        };
-    }
-
-    added.add(name);
-});
-
-/* --------------------------------------------------------------
-   3. Helper functions
--------------------------------------------------------------- */
-function placeDynamicError(error, element) {
-    if (element.attr('name').startsWith('dynamic_fields[')) {
-        const $group = element.closest('.services-group');
-        $group.find('.dyn-error-holder').first()
-            .html(error)
-            .removeClass('d-none');
-    } else {
-        element.before(error);
-    }
+/* =========================
+   0) Helpers for SS & MCE
+========================= */
+// Return the visible SS container for a hidden <select>
+function ssContainer($el) {
+  return $el.next('.ss-main');
+}
+function mceHasText(id) {
+  const ed = (window.tinymce && tinymce.get(id)) || null;
+  if (!ed) return false;
+  const text = ed.getContent({ format: 'text' }).replace(/\u200B/g, '').trim();
+  return text.length > 0;
+}
+function debounce(fn, wait){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn.apply(null,a), wait); }; }
+// Choose the visible UI for an element (for scrolling/focus)
+function getVisibleUI(el) {
+  const $el = $(el);
+  if ($el.is('select') && $el.next().hasClass('ss-main')) {
+    return ssContainer($el);
+  }
+  if ($el.is('textarea') && $el.attr('id') && window.tinymce && tinymce.get($el.attr('id'))) {
+    return $(tinymce.get($el.attr('id')).getContainer());
+  }
+  if ($el.is(':checkbox,:radio') && el.name.startsWith('dynamic_fields[')) {
+    return $el.closest('.services-group');
+  }
+  return $el;
 }
 
-function highlightDynamicGroup(element) {
-    if (element.name.startsWith('dynamic_fields[')) {
-        $(element).closest('.services-group').addClass('error-border');
-    } else {
-        $(element).addClass('error');
-    }
-}
+// Smooth scroll and focus the field's visible UI
+function scrollToErrorUI($ui) {
+  if (!$ui || !$ui.length) return;
+  const OFFSET = 120; // adjust for sticky header
+  $('html, body').stop(true).animate(
+    { scrollTop: Math.max(0, $ui.offset().top - OFFSET) },
+    350,
+    function () {
+      // Focus something sensible
+      let focused = false;
 
-function unhighlightDynamicGroup(element) {
-    if (element.name.startsWith('dynamic_fields[')) {
-        const $group = $(element).closest('.services-group');
-        const groupName = element.name;
-        if ($group.find('input[name="' + groupName + '"]:checked').length) {
-            $group.removeClass('error-border')
-                .find('.dyn-error-holder').addClass('d-none');
+      // TinyMCE container → focus editor
+      if ($ui.hasClass('tox') || $ui.hasClass('tox-tinymce')) {
+        const $ta = $ui.prev('textarea[id]');
+        const id = $ta.attr('id');
+        if (id && window.tinymce && tinymce.get(id)) {
+          tinymce.get(id).focus();
+          focused = true;
         }
-    } else {
-        $(element).removeClass('error');
+      }
+
+      if (!focused) {
+        const $focusable = $ui.find('input,select,textarea,[tabindex],[contenteditable="true"]')
+                              .filter(':visible')
+                              .first();
+        if ($focusable.length) { $focusable.trigger('focus'); focused = true; }
+      }
+
+      if (!focused && $ui.is('input,select,textarea,[contenteditable="true"]')) {
+        $ui.trigger('focus');
+      }
     }
+  );
 }
+/* =========================
+   1) Custom validator rules
+========================= */
+$.validator.addMethod('ssRequired', function (value, element) {
+  return $.trim(value || '') !== '';
+});
+$.validator.addMethod('mceRequired', function (value, element) {
+  if (element.id && window.tinymce && tinymce.get(element.id)) {
+    return mceHasText(element.id);
+  }
+  return $.trim(value || '') !== '';
+});
+
+/* =========================
+   2) jQuery Validate init
+========================= */
+$form.validate({
+  // IMPORTANT: we must validate the hidden originals (SS + TinyMCE)
+  ignore: [],
+
+  errorElement: 'label',
+  errorClass: 'error-border',
+
+   errorPlacement: function () { return false; },
+
+  highlight: function (element) {
+    const $el = $(element);
+
+    // SS select → highlight visible UI
+    if ($el.is('select') && $el.next().hasClass('ss-main')) {
+      ssContainer($el).addClass('error-border');
+      return;
+    }
+
+    // TinyMCE textarea → highlight editor UI
+    if ($el.is('textarea') && $el.attr('id') && window.tinymce && tinymce.get($el.attr('id'))) {
+      $el.siblings('.tox,.tox-tinymce,[role="application"]').first().addClass('error-border');
+      return;
+    }
+
+    // Your original group logic
+    if (element.name.startsWith('dynamic_fields[')) {
+      $el.closest('.services-group').addClass('error-border');
+      return;
+    }
+
+    // Default
+    $el.addClass('error');
+  },
+
+  unhighlight: function (element) {
+  const $el = $(element);
+
+  // always remove from the actual element too
+  $el.removeClass('error-border');
+
+  // SS select → remove from the visible UI
+  if ($el.is('select') && $el.next().hasClass('ss-main')) {
+    $el.next('.ss-main').removeClass('error-border');
+    return;
+  }
+
+  // TinyMCE → remove from its UI (use nextAll to be robust)
+  if ($el.is('textarea') && $el.attr('id') && window.tinymce && tinymce.get($el.attr('id'))) {
+    $el.nextAll('.tox,.tox-tinymce,[role="application"]').first()
+       .removeClass('error-border');
+    return;
+  }
+
+  if (element.name.startsWith('dynamic_fields[')) {
+    $el.closest('.services-group').removeClass('error-border');
+    return;
+  }
+},
+
+// called when a field becomes valid; double-remove just in case
+success: function (label, element) {
+  const $el = $(element);
+  $el.removeClass('error-border');
+
+  if ($el.is('select') && $el.next().hasClass('ss-main')) {
+    $el.next('.ss-main').removeClass('error-border');
+  } else if ($el.is('textarea') && $el.attr('id') && window.tinymce && tinymce.get($el.attr('id'))) {
+    $el.nextAll('.tox,.tox-tinymce,[role="application"]').first()
+       .removeClass('error-border');
+  } else if (element.name.startsWith('dynamic_fields[')) {
+    $el.closest('.services-group').removeClass('error-border');
+  }
+
+  // don’t keep any labels around since you show no text
+  if (label && label.remove) label.remove();
+}
+,
+ invalidHandler: function (e, validator) {
+    if (!validator.errorList.length) return;
+    const el = validator.errorList[0].element;
+    scrollToErrorUI(getVisibleUI(el));
+  },
+  rules: {
+    password: { minlength: 4 },
+    mobile_no: { phoneUS: true, minlength: 10, maxlength: 10 }
+  },
+  messages: {}
+});
+// --- Location fields wiring ---
+const $locMirror = $form.find('#cityState');                      // do NOT validate this
+
+// 3) When publish fails and shows border, clear mirror’s border when value exists
+$locMirror.on('input change', function () {
+  if (this.value.trim() !== '') $(this).removeClass('error error-border');
+});
+
+// Inputs & textareas (native)
+$form.find('input[required], textarea[required]').on('input keyup change', function () {
+  if (allowLiveValidation) $(this).valid();
+});
+
+// SS selects – hidden <select> and visible .ss-main
+$form.on('change', 'select', function () {
+  if (allowLiveValidation) $(this).valid();
+});
+$form.on('click keyup keydown', '.ss-main', function () {
+  if (!allowLiveValidation) return;
+  const $hidden = $(this).prev('select');
+  if ($hidden.length) $hidden.valid();
+});
+
+// TinyMCE – listen only to user activity (no SetContent/init)
+/* =========================
+   TinyMCE required + live clear FIX
+========================= */
+const mceBound = new Set();
+
+function attachMceHandlers(ed, $ta) {
+  if (!ed || mceBound.has(ed.id)) return;
+  mceBound.add(ed.id);
+
+  const $ui = $(ed.getContainer()); // visible editor chrome
+
+  // Clear border immediately while user edits
+  const clearBorder = () => {
+    if (!allowLiveValidation) return;
+    $ui.removeClass('error-border');
+    $ta.removeClass('error-border').attr('aria-invalid', 'false');
+    $ui.closest('.services-group, .form-group, .form-section').removeClass('error-border');
+  };
+
+  // Revalidate after brief pause
+  let t;
+  const revalidate = () => {
+    if (!allowLiveValidation) return;
+    clearTimeout(t);
+    t = setTimeout(() => { $ta.valid(); }, 160);
+  };
+
+  // Remove any previous bindings and attach robust listeners
+  ed.off('keydown input paste keyup undo redo ExecCommand NodeChange change focus');
+  ed.on('keydown input paste', () => { clearBorder(); revalidate(); });
+  ed.on('keyup undo redo ExecCommand NodeChange change', () => { clearBorder(); revalidate(); });
+  ed.on('focus', clearBorder);
+}
+
+// Find TinyMCE textareas that are required and switch to custom rule
+$form.find('textarea[required]').each(function () {
+  const $ta = $(this);
+
+  // 1) Disable the native required rule (this is the core fix)
+  $ta.prop('required', false).removeClass('required');
+  try { $ta.rules('remove', 'required'); } catch (e) {}
+
+  // 2) Add our TinyMCE-aware rule
+  $ta.rules('add', { mceRequired: true });
+
+  // 3) If editor already exists, wire events now
+  const id = this.id;
+  if (id && window.tinymce && tinymce.get(id)) {
+    attachMceHandlers(tinymce.get(id), $ta);
+  }
+});
+
+// 4) Also wire for editors created after page load
+if (window.tinymce && tinymce.on) {
+  tinymce.on('AddEditor', (e) => {
+    const ed = e.editor;
+    const $ta = $('#' + ed.id);
+    if ($ta.length) {
+      // ensure native required is removed for late editors
+      $ta.prop('required', false).removeClass('required');
+      try { $ta.rules('remove', 'required'); } catch (e2) {}
+      $ta.rules('add', { mceRequired: true });
+
+      attachMceHandlers(ed, $ta);
+    }
+  });
+}
+
+
+
+/* ==========================================
+   4) PUBLISH submit (unchanged logic)
+   – just sync TinyMCE before .valid()
+========================================== */
+$form.on('submit', function (e) {
+  if (skipValidation) return; // Skip validation if SAVE LISTING triggered
+// From now on, let field-level events clear borders live
+  allowLiveValidation = true;
+  // Make sure TinyMCE pushes content back to the hidden <textarea>
+  if (window.tinymce && tinymce.triggerSave) tinymce.triggerSave();
+
+  if (!$form.valid()) {
+    e.preventDefault(); // Prevent submission if invalid
+	const validator = $form.validate();
+    if (validator.errorList.length) {
+      const el = validator.errorList[0].element;
+      scrollToErrorUI(getVisibleUI(el));
+    }
+    return false;
+  }
+
+  // Ensure status is set to 1 (active) on publish
+  $form.find('input[name="status"]').val(1);
+});
+
+/* =================================================
+   5) Keep your dynamic checkbox group bootstrapping
+================================================= */
+const added = new Set();
+$('input[type="checkbox"][name^="dynamic_fields["]').each(function () {
+  const name = this.name;
+  if (added.has(name)) return;
+  if ($(this).prop('required')) {
+    $form.validate().settings.rules[name] = { required: true };
+    $form.validate().settings.messages[name] = {};
+  }
+  added.add(name);
+});
+
 
     $("#provider-form-edit").validate({
         ignore: ":hidden:not(#location_id)",

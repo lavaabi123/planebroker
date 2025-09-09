@@ -133,6 +133,9 @@
 				$(".stestimonial").owlCarousel({
 					loop:true,
 					margin:10,
+					autoplay: true,
+					autoplayTimeout: 5000,
+					autoplayHoverPause: true,
 					nav:true,
 					responsive:{
 						0:{

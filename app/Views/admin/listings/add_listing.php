@@ -10,12 +10,24 @@
 <script type='text/javascript' src='<?php echo base_url(); ?>/assets/selectize/js/standalone/selectize.min.js'></script>
 <script type='text/javascript' src='<?php echo base_url(); ?>/assets/pickadate/picker.js'></script>
 <script type='text/javascript' src='<?php echo base_url(); ?>/assets/pickadate/picker.time.js'></script>
-<script src="<?php echo base_url(); ?>/assets/admin/js/provider.js?v=2.0"></script>
+<script src="<?php echo base_url(); ?>/assets/admin/js/provider.js?v=2.7"></script>
 <!-- Fontawesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 	<!-- bootstrap js -->
 	<script src="<?php echo base_url(); ?>/assets/frontend/js/bootstrap.min.js"></script>
 	
+<!-- reCAPTCHA JS-->
+<script src="https://www.google.com/recaptcha/api.js?render=<?= getenv('GOOGLE_RECAPTCHAV3_SITEKEY') ?>"></script>
+<!-- Include script -->
+<script type="text/javascript">
+	grecaptcha.ready(function() {
+		 grecaptcha.execute("<?= getenv('GOOGLE_RECAPTCHAV3_SITEKEY') ?>", {action: 'validate'}).then(function(token) {
+			  // Store recaptcha response
+			  $("#g-recaptcha-response").val(token);
+
+		 });
+	});
+</script>
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/admin/plugins/bootstrap-4-tag-input/tagsinput.css">
 	<style>
 	.progress-bar-wrapper {
@@ -97,8 +109,9 @@ label.error {
     font-size: .875rem;
     margin-top: .25rem;
 }
-.form-control.error,.error-border input, .error-border textarea{
+.form-control.error,.error-border input, .error-border textarea, .ss-main.error .ss-single-selected, .ss-main.error-border .ss-single-selected,.tox-tinymce.error-border{
     border-color: #dc3545 !important;
+	border: 1px solid;
 }
 .form-control.error {
     border-color: red !important;
@@ -363,7 +376,7 @@ video{
 															$option_html = '';
 															if (!empty($decoded_option) && count($decoded_option) > 0) {
 																$nclass = (count($decoded_option) > 8) ?'sshome' : '';
-																echo '<select class="form-control '.$nclass.'" name="dynamic_fields['.$field->id.']"  '.$req_op_text.'><option value="">'.$field->name.' '.$req_op.'</option>';
+																echo '<select class="form-control '.$nclass.' '.$req_op_text.'" name="dynamic_fields['.$field->id.']"  '.$req_op_text.'><option value="">'.$field->name.' '.$req_op.'</option>';
 																foreach($decoded_option as $oi => $option){
 																	echo '<option value="'.$option.'" '. ((!empty($dynamic_fields_values[$field->id]) && ($option == $dynamic_fields_values[$field->id]) ) ? 'selected' : '').'>'.$option.'</option>';
 																}

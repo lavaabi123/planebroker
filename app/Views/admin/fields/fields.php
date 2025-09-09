@@ -458,8 +458,8 @@ $(function(){
     paging: true,
     ordering: true,
     order: [[2, 'asc']],
-    pageLength: 10,
-    lengthMenu: [10, 25, 50, 100],
+    pageLength: 50,
+    lengthMenu: [50, 100, 150, 200],
     dom: '<"d-flex align-items-center gap-2 mb-3"l<"dropdown-filter"><"user-filter"><"reset-filter">>t<"d-flex justify-content-center align-items-center my-3"ip>',
 	language: {
       paginate: {

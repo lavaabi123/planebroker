@@ -1789,7 +1789,7 @@ $(document).ready(function () {
   $(".cropimage").on("change", async function (event) {
 	  // Convert any AVIFs to PNG first (keeps alpha)
 	  const res = await normalizeImageFormatsOnInput(this, { maxW: 4096, maxH: 4096 });
-  
+  console.log('Normalize(add):', res);
 	  $(".load-images-final").empty();
 	  const files = this.files; // use the possibly replaced list
 	  if (!files || !files.length) return;
@@ -1856,6 +1856,7 @@ $(document).ready(function () {
   // Edit input preview (also blob URL)
 	$(".cropimageedit").on("change", async function (event) {
 	  const res = await normalizeImageFormatsOnInput(this, { maxW: 4096, maxH: 4096 });
+  console.log('Normalize(add):', res);
 
 	  revokePreviewURLs();
 	  const files = this.files;

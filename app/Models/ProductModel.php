@@ -455,15 +455,45 @@ class ProductModel extends Model
 	
 	public function get_product_dynamic_fields($category,$product_id){
 		$category_detail = $this->db->query("SELECT id, name,skill_name,permalink FROM categories WHERE permalink LIKE '".$category."' ORDER BY name ASC", 'r')->getRowArray();
-		$values = $this->db->query("		
-		SELECT p.field_value as name, p.field_id as id,p.file_field_title, p.product_id,f.name as field_name,fg.fields_group_id,g.name as group_name,f.field_type,f.frontend_show,pd.sub_category_id FROM `products_dynamic_fields` p left join fields f on f.id = p.field_id left join field_groups fg on fg.field_id = f.id left join fields_group g on g.id = fg.fields_group_id left join products pd on p.product_id=pd.id left join field_sub_categories fs on fs.sub_category_id=pd.sub_category_id where product_id = ".$product_id." and NOT EXISTS (
-          SELECT 1
-          FROM   title_fields t
-          WHERE  t.field_id   = p.field_id
-            AND  t.category_id = ".$category_detail['id']."
-            AND  t.title_type  = 'description'
-        ) and fs.sub_category_id = pd.sub_category_id and p.field_value != '' group by f.id,p.field_value order by g.sort_order,f.field_order;
-		")->getResultArray();
+		$values = $this->db->query("
+    SELECT 
+        p.field_value AS name,
+        p.field_id    AS id,
+        p.file_field_title,
+        p.product_id,
+        f.name        AS field_name,
+        fg.fields_group_id,
+        g.name        AS group_name,
+        f.field_type,
+        f.frontend_show,
+        pd.sub_category_id
+    FROM products_dynamic_fields p
+    LEFT JOIN fields f          ON f.id = p.field_id
+    LEFT JOIN field_groups fg   ON fg.field_id = f.id
+    LEFT JOIN fields_group g    ON g.id = fg.fields_group_id
+    LEFT JOIN products pd       ON pd.id = p.product_id
+    WHERE p.product_id = {$product_id}
+      AND p.field_value <> ''
+      AND NOT EXISTS (
+            SELECT 1
+            FROM title_fields t
+            WHERE t.field_id   = p.field_id
+              AND t.category_id = {$category_detail['id']}
+              AND t.title_type  = 'description'
+      )
+      AND (
+           COALESCE(f.show_cat_based,0) <> 1
+           OR EXISTS (
+                SELECT 1
+                FROM field_sub_categories fs
+                WHERE fs.field_id = f.id
+                  AND fs.sub_category_id = pd.sub_category_id
+           )
+      )
+    GROUP BY f.id, p.field_value
+    ORDER BY g.sort_order, f.field_order
+")->getResultArray();
+
 		$fields = array();
 		if(!empty($values)){
 			foreach($values as $value){

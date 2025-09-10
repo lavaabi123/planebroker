@@ -768,6 +768,7 @@ public function get_recommended_products_guaranteed(int $currentProductId): arra
             'address'      => $p['address'],
             'match_score'  => $p['_score'] ?? 0,
             'created_at'   => $p['created_at'],
+			'category_id'  => $p['category_id'],
         ];
     }
     return $out;

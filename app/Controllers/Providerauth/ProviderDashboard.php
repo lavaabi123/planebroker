@@ -485,9 +485,31 @@ else if($this->request->getVar('check') == '3'){
 			$mainImageUrl = FCPATH .'uploads/userimages/' . $user_id . '/' . $this->request->getVar('image');
 			$watermarkUrl = FCPATH .'uploads/sample-watermark.png';
 			$savePath = FCPATH .'uploads/userimages/' . $user_id . '/' . $this->request->getVar('image');
+			
+			// Path to originals folder
+			$originalsDir  = FCPATH .'uploads/userimages/' . $user_id . '/originals/';
+			$originalsPath = $originalsDir . $this->request->getVar('image');
+			// Ensure the originals folder exists
+			if (!is_dir($originalsDir)) {
+				mkdir($originalsDir, 0775, true);
+			}
+			// Copy the main image into originals/ only if it doesn't already exist
+			if (!file_exists($originalsPath)) {
+				if (!copy($mainImageUrl, $originalsPath)) {
+					throw new \RuntimeException("Failed to back up original image.");
+				}
+			}
 
 			try {
-				addWatermarkFromUrls($mainImageUrl, $watermarkUrl, $savePath, 40, 0.5);
+				addWatermarkFromUrls(
+    mainImageUrl: $mainImageUrl,
+    watermarkUrl: $watermarkUrl,
+    savePath:     $savePath,
+    opacity:      0.55,
+    paddingPx:    null,       // auto padding
+    fixedWidthPx: 360,        // ← match the “first image” size you like
+    allowUpscale: true
+);
 				//echo "Watermark applied successfully. Saved to: $savePath";
 			} catch (\Exception $e) {
 				//echo "Error: " . $e->getMessage();
@@ -530,8 +552,30 @@ else if($this->request->getVar('check') == '3'){
 			$watermarkUrl = FCPATH .'uploads/sample-watermark.png';
 			$savePath = FCPATH .'uploads/userimages/' . $user_id . '/' . $this->request->getVar('image');
 
+			// Path to originals folder
+			$originalsDir  = FCPATH .'uploads/userimages/' . $user_id . '/originals/';
+			$originalsPath = $originalsDir . $this->request->getVar('image');
+			// Ensure the originals folder exists
+			if (!is_dir($originalsDir)) {
+				mkdir($originalsDir, 0775, true);
+			}
+			// Copy the main image into originals/ only if it doesn't already exist
+			if (!file_exists($originalsPath)) {
+				if (!copy($mainImageUrl, $originalsPath)) {
+					throw new \RuntimeException("Failed to back up original image.");
+				}
+			}
+			
 			try {
-				addWatermarkFromUrls($mainImageUrl, $watermarkUrl, $savePath, 40, 0.5);
+				addWatermarkFromUrls(
+    mainImageUrl: $mainImageUrl,
+    watermarkUrl: $watermarkUrl,
+    savePath:     $savePath,
+    opacity:      0.55,
+    paddingPx:    null,       // auto padding
+    fixedWidthPx: 360,        // ← match the “first image” size you like
+    allowUpscale: true
+);
 				//echo "Watermark applied successfully. Saved to: $savePath";
 			} catch (\Exception $e) {
 				//echo "Error: " . $e->getMessage();

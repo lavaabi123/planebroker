@@ -211,6 +211,7 @@ $currentsegment = ($uri->getTotalSegments() >= (env('urlsegment')-1) && !empty($
 			</ul>
 		</div>
 		</div>
+		
 		<nav class="navbar navbar-expand-lg">
 		<div class="container-fluid py-xl-3">
 		<div class="row w-100 m-auto align-items-center justify-content-between">

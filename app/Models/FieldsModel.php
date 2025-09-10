@@ -9,7 +9,7 @@ class FieldsModel extends Model
     protected $DBGroup          = 'default';
     protected $table            = 'fields';
     protected $primaryKey       = 'id';
-    protected $allowedFields = ['name', 'rate_type','skill_name','in_house','seo_title','seo_keywords','seo_description','status','field_type','field_order','field_condition','field_options','is_filter','filter_order','filter_type'];
+    protected $allowedFields = ['name', 'rate_type','skill_name','in_house','seo_title','seo_keywords','seo_description','status','field_type','field_order','field_condition','field_options','is_filter','filter_order','filter_type','show_cat_based'];
 
     // Custom 
     protected $session;
@@ -176,6 +176,7 @@ class FieldsModel extends Model
             'name' => $this->request->getVar('name'), 
             'field_type' => $this->request->getVar('field_type'), 
             'field_condition' => $this->request->getVar('field_condition'), 
+            'show_cat_based' => $this->request->getVar('show_cat_based'), 
             'field_order' => $this->request->getVar('field_order'), 
             'field_options' => ($this->request->getVar('field_options') != null && count($this->request->getVar('field_options')) > 0) ? json_encode($this->request->getVar('field_options')) : '',
 			'status' => $this->request->getVar('status')
@@ -228,10 +229,12 @@ class FieldsModel extends Model
             'name' => $this->request->getVar('name'), 
             'field_type' => $this->request->getVar('field_type'), 
             'field_condition' => $this->request->getVar('field_condition'), 
+            'show_cat_based' => $this->request->getVar('show_cat_based'), 
             'field_order' => $this->request->getVar('field_order'),  
             'field_options' => ($this->request->getVar('field_options') != null && count($this->request->getVar('field_options')) > 0) ? json_encode($this->request->getVar('field_options')) : '',
             'status' => $this->request->getVar('status')
         );
+		
 		if(!empty($id)){
 			$this->db->table('field_categories')->where('field_id', $id)->delete();
 			if(!empty($this->request->getVar('category_id'))){

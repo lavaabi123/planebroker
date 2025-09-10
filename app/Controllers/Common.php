@@ -493,7 +493,8 @@ class Common extends BaseController
 				'selectedGroups' => array_column($selectedGroups, 'fields_group_id'),	
                 'status' => $field->status,
                 'is_filter' => $field->is_filter,	
-                'filter_type' => $field->filter_type, 		
+                'filter_type' => $field->filter_type, 	
+				'show_cat_based' => $field->show_cat_based,	
             );
         }
         echo json_encode($data);

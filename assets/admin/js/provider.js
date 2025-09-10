@@ -104,23 +104,67 @@ $(document).ready(function() {
         }
     });
 
-function syncHiddenBlocks() {
-  $('.catbasedfield, .services-group').each(function () {
-    const $block = $(this);
-    const hide = !$block.is(':visible');
-    $block.find('input, select, textarea').prop('disabled', hide);
+(function ($) {
+  // enable visible blocks; disable hidden ones
+  function syncHiddenBlocks() {
+    $('.catbasedfield, .services-group').each(function () {
+      var $block   = $(this);
+      var visible  = $block.is(':visible'); // covers display:none & visibility:hidden
 
-    if (hide) {
-      // also clear any visual error state when hiding
-      $block.find('.error-border').removeClass('error-border');
+      // only touch real form controls (skip hidden inputs)
+      var $fields = $block.find('input:not([type="hidden"]), select, textarea');
+
+      $fields.prop('disabled', !visible);
+
+      // clear any visual error state when hiding
+      if (!visible) {
+        $block.find('.error-border').removeClass('error-border');
+      }
+    });
+  }
+
+  // expose if you need to call it elsewhere
+  window.syncHiddenBlocks = syncHiddenBlocks;
+
+  // 1) run safely after DOM is ready and once layout settles
+  $(function () {
+    // first pass
+    syncHiddenBlocks();
+    // after the UI/plugins finish initialising
+    requestAnimationFrame(syncHiddenBlocks);
+    setTimeout(syncHiddenBlocks, 150);
+  });
+
+  // 2) re-run whenever subcategory changes (hidden <select>)…
+  $(document).on('change', 'select[name="sub_category_id"]', function () {
+    // defer so any plugin (SS select) finishes its DOM work first
+    setTimeout(syncHiddenBlocks, 0);
+  });
+
+  // 3) …and when the SS select UI is interacted with (some themes only fire on the UI)
+  $(document).on('click keyup', '.ss-main', function () {
+    setTimeout(syncHiddenBlocks, 0);
+  });
+
+  // 4) if your app toggles these blocks by class/style later, observe and sync
+  var observer = new MutationObserver(function (muts) {
+    for (var i = 0; i < muts.length; i++) {
+      var m = muts[i];
+      if (m.type === 'attributes' && (m.attributeName === 'class' || m.attributeName === 'style')) {
+        var $t = $(m.target);
+        if ($t.is('.catbasedfield, .services-group')) {
+          syncHiddenBlocks();
+          break;
+        }
+      }
     }
   });
-}
+  $('.catbasedfield, .services-group').each(function () {
+    observer.observe(this, { attributes: true, attributeFilter: ['class', 'style'] });
+  });
 
-// call once after the page renders the dynamic UI:
-syncHiddenBlocks();
-// and call every time category/subcategory changes:
-$(document).on('change', 'select[name="sub_category_id"]', syncHiddenBlocks);
+})(jQuery);
+
 
 const $form = $('#aircraft-add-form-1');
 let skipValidation = false;         // you already have this

@@ -62,7 +62,7 @@ td:hover {
                                                         <td><?php echo html_escape($item->name); ?></td>
                                                         <td><?php echo html_escape($item->field_type); ?></td>
                                                         <td><?php echo html_escape($item->category_names); ?></td>
-                                                        <td><?php echo html_escape($item->subcategory_names); ?></td>
+                                                        <td><?php echo ($item->show_cat_based == 1) ? html_escape($item->subcategory_names) : 'All'; ?></td>
                                                         <td><?php echo html_escape($item->group_names); ?></td>
                                                         <td><?php echo html_escape($item->field_order); ?></td>
                                                         <td><?php echo !empty($item->field_condition) ? 'Required' : 'Optional'; ?></td>
@@ -194,6 +194,21 @@ td:hover {
 							</div>
 						</div> 
                     </div> 
+                    <div class="form-group">
+						<div class="row align-items-center">
+                            <div class="col-auto">
+                                <label class="ms-0"><?php echo trans('Show field only for Selected Sub Category?'); ?></label>
+                            </div>					
+							<div class="col-auto d-flex align-items-center">
+								<input type="radio" name="show_cat_based" value="1" id="field_cat_1" class="square-purple" checked="checked">
+								<label for="field_cat_1" class="option-label ms-0">Yes</label>
+							</div>
+							<div class="col-auto d-flex align-items-center">
+								<input type="radio" name="show_cat_based" value="0" id="field_cat_2" class="square-purple">
+								<label for="field_cat_2" class="option-label ms-0">No</label>
+							</div>
+						</div> 
+                    </div> 
 					
 				</div>	
 				<div class="col-md-6">	
@@ -319,61 +334,82 @@ function manage_fields(fieldId) {
             url: baseUrl + "/common/get_field",
             data: data,
             success: function (response) {
-                var obj = JSON.parse(response);                
-                $('#modal_name').val(obj.name);
-                $('#modal_field_condition').val(obj.field_condition);
-                $('#modal_field_order').val(obj.field_order);
-				$("#modal_field_type").val(obj.field_type).change();
-				if(obj.field_type == 'Checkbox' || obj.field_type == 'Radio' || obj.field_type == 'Dropdown'){
-					$('.addOption').before(obj.option_html);
-					$('.fieldoptiondiv').show();
-				}else{
-					$('.fieldoptiondiv').hide();
-				}
-				$("input[name=field_condition][value="+obj.field_condition+"]").prop("checked",true);
-				$("input[name=status][value="+obj.status+"]").prop("checked",true);
-				
-				$('#category_id').attr('data-field-id',obj.id);
-				
-				// Categories
-				$('#category_id').empty();
-				$.each(obj.allCategories, function (i, cat) {
-					$('#category_id').append(
-						$('<option>', {
-							value: cat.id,
-							text: cat.name,
-							selected: obj.selectedCategories.includes(cat.id)
-						})
-					);
-				});
+			  const obj = JSON.parse(response);
 
-				// Subcategories
-				$('#sub_category_id').empty();
-				$.each(obj.allSubcategories, function (i, sub) {
-					$('#sub_category_id').append(
-						$('<option>', {
-							value: sub.id,
-							text: sub.name + ' (' + sub.category_name + ')',
-							selected: obj.selectedSubcategories.includes(sub.id)
-						})
-					);
-				});
-				
-				// Groups
-				$('#fields_group_id').empty();
-				$.each(obj.allGroups, function (i, grp) {
-					$('#fields_group_id').append(
-						$('<option>', {
-							value: grp.id,
-							text: grp.name + ' (' + grp.category_name + ')',
-							selected: obj.selectedGroups.includes(grp.id)
-						})
-					);
-				});
-				
-                $('.loader').hide();
-                $('#modal-fields').modal('show');
-            }
+			  // basics
+			  $('#modal_name').val(obj.name);
+			  $('#modal_field_condition').val(obj.field_condition);
+			  $('#modal_field_order').val(obj.field_order);
+
+			  const typeMap = { text:'Text', textarea:'Textarea', checkbox:'Checkbox', radio:'Radio', dropdown:'Dropdown', select:'Dropdown' };
+				const rawType = (obj.field_type || '').toString().trim().toLowerCase();
+				const resolvedType = typeMap[rawType] || obj.field_type;
+
+				const typeEl = document.getElementById('modal_field_type');
+
+				if (typeEl && typeEl._slim && typeof typeEl._slim.set === 'function') {
+				  typeEl._slim.set(resolvedType);          // updates SlimSelect UI
+				} else {
+				  $('#modal_field_type').val(resolvedType); // fallback if SS not mounted
+				}
+
+				// fire your logic explicitly (don’t rely on jQuery trigger)
+				if (typeof change_field_type === 'function') {
+				  change_field_type(typeEl);
+				}
+
+				// also emit a native change for any listeners bound that way
+				typeEl.dispatchEvent(new Event('change', { bubbles: true }));
+
+			  // options section visibility
+			  if (['Checkbox', 'Radio', 'Dropdown'].includes(resolvedType)) {
+				$('.addOption').before(obj.option_html);
+				$('.fieldoptiondiv').show();
+			  } else {
+				$('.fieldoptiondiv').hide();
+			  }
+
+			  // radios/toggles
+			  $(`input[name="field_condition"][value="${obj.field_condition}"]`).prop('checked', true);
+			  $(`input[name="show_cat_based"][value="${obj.show_cat_based}"]`).prop('checked', true);
+			  $(`input[name="status"][value="${obj.status}"]`).prop('checked', true);
+
+			  $('#category_id').attr('data-field-id', obj.id);
+
+			  // ---------- Categories ----------
+			  const catEl = document.getElementById('category_id');
+			  $('#category_id').empty();
+			  $.each(obj.allCategories, function (i, cat) {
+				$('#category_id').append(new Option(cat.name, cat.id, false, obj.selectedCategories.includes(cat.id)));
+			  });
+			  if (catEl && catEl._slim && typeof catEl._slim.set === 'function') {
+				catEl._slim.set((obj.selectedCategories || []).map(String)); // SS values are strings
+			  }
+
+			  // ---------- Subcategories ----------
+			  const subEl = document.getElementById('sub_category_id');
+			  $('#sub_category_id').empty();
+			  $.each(obj.allSubcategories, function (i, sub) {
+				$('#sub_category_id').append(new Option(`${sub.name} (${sub.category_name})`, sub.id, false, obj.selectedSubcategories.includes(sub.id)));
+			  });
+			  if (subEl && subEl._slim && typeof subEl._slim.set === 'function') {
+				subEl._slim.set((obj.selectedSubcategories || []).map(String));
+			  }
+
+			  // ---------- Groups ----------
+			  const grpEl = document.getElementById('fields_group_id');
+			  $('#fields_group_id').empty();
+			  $.each(obj.allGroups, function (i, grp) {
+				$('#fields_group_id').append(new Option(`${grp.name} (${grp.category_name})`, grp.id, false, obj.selectedGroups.includes(grp.id)));
+			  });
+			  if (grpEl && grpEl._slim && typeof grpEl._slim.set === 'function') {
+				grpEl._slim.set((obj.selectedGroups || []).map(String));
+			  }
+
+			  $('.loader').hide();
+			  $('#modal-fields').modal('show');
+			}
+
         });
     }else{
         $('#modal-fields').modal('show');

@@ -1169,8 +1169,8 @@ class UserManagement extends AdminController
 
 						try {
 							if (wm_rebuild_one($userId, $fileName, $wmPath, [
-								'opacity'   => 0.5,
-								'sizeRatio' => 0.22,
+								'opacity'   => 40,
+								'sizeRatio' => 0.5,
 								'paddingPx' => null,
 							])) {
 								$ok++;

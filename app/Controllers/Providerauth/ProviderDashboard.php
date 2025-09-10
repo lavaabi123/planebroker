@@ -501,15 +501,7 @@ else if($this->request->getVar('check') == '3'){
 			}
 
 			try {
-				addWatermarkFromUrls(
-    mainImageUrl: $mainImageUrl,
-    watermarkUrl: $watermarkUrl,
-    savePath:     $savePath,
-    opacity:      0.55,
-    paddingPx:    null,       // auto padding
-    fixedWidthPx: 360,        // ← match the “first image” size you like
-    allowUpscale: true
-);
+				addWatermarkFromUrls($mainImageUrl, $watermarkUrl, $savePath, 0.02, 0.7);
 				//echo "Watermark applied successfully. Saved to: $savePath";
 			} catch (\Exception $e) {
 				//echo "Error: " . $e->getMessage();
@@ -567,15 +559,7 @@ else if($this->request->getVar('check') == '3'){
 			}
 			
 			try {
-				addWatermarkFromUrls(
-    mainImageUrl: $mainImageUrl,
-    watermarkUrl: $watermarkUrl,
-    savePath:     $savePath,
-    opacity:      0.55,
-    paddingPx:    null,       // auto padding
-    fixedWidthPx: 360,        // ← match the “first image” size you like
-    allowUpscale: true
-);
+				addWatermarkFromUrls($mainImageUrl, $watermarkUrl, $savePath, 0.02, 0.7);
 				//echo "Watermark applied successfully. Saved to: $savePath";
 			} catch (\Exception $e) {
 				//echo "Error: " . $e->getMessage();

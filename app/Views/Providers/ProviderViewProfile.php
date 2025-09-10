@@ -28,14 +28,17 @@ if(!empty($product_detail['image'])){
 }else{ 
 	$img =  base_url()."/assets/img/user.png";				
 }
+
+$check_price_field = check_price_field($product_detail['cat_id']);
 ?>
 
 <div class="profileGallery text-center bg-blue py-5">
 	<h4 class="mb-0 text-white"><?php echo !empty($product_detail['name']) ? $product_detail['name'] : ''; ?></h4>
 	<p class="mb-3 text-primary fw-bold title-sm"><?php echo $product_detail['sub_cat_name']; ?></p>
 	<h4 class="mb-4 text-white"><?php 
-	echo (check_price_field($product_detail['cat_id']) == '') ? '' : (($product_detail['price'] != NULL) ? 'USD $'.number_format($product_detail['price'], 2, '.', ',') : 'Call for Price'); ?></h4>
-	<p class="mb-3 text-primary fw-bold title-sm"><?php echo $product_detail['aircraft_status']; ?></p>
+	echo ($check_price_field == '') ? '' : (($product_detail['price'] != NULL) ? 'USD $'.number_format($product_detail['price'], 2, '.', ',') : 'Call for Price'); ?></h4>
+	<?php 
+	echo ($check_price_field == '') ? '' : '<p class="mb-3 text-primary fw-bold title-sm">'.$product_detail['aircraft_status'].'</p>'; ?>
 	
 	<div class="container pt-2">
 <?php 
@@ -376,7 +379,7 @@ foreach ($entries as $ea) {
 				<div class="col-sm-6 proDetails ps-sm-5">
 					<h4 class="mb-0"><?php echo $product_detail['name']; ?></h4>
 					<p class="mb-3"><?php echo $product_detail['sub_cat_name']; ?></p>
-					<h4 class="mb-2"><?php echo (check_price_field($product_detail['cat_id']) == '') ? '' : (($product_detail['price'] != NULL) ? 'USD $'.number_format($product_detail['price'], 2, '.', ',') : 'Call for Price'); ?></h4>
+					<h4 class="mb-2"><?php echo ($check_price_field == '') ? '' : (($product_detail['price'] != NULL) ? 'USD $'.number_format($product_detail['price'], 2, '.', ',') : 'Call for Price'); ?></h4>
 					<p class="text-primary mb-2 fw-bold"><?php echo !empty($product_detail['price_notes']) ? $product_detail['price_notes'] : ''; ?></p>
 					<!--<div class="d-flex align-items-center fw-medium mb-0 open-finance-modal" role="button">
 						<img class="icons" src="<?php echo base_url('assets/frontend/images/calculator.png'); ?>" />
@@ -588,7 +591,7 @@ foreach ($entries as $ea) {
 								</div>
 								<div class="pro-content">
 									<h5 class="fw-medium title-xs">'.$provider['name'].'</h5>
-									<h6 class="fw-medium text-primary fs-6">'.((check_price_field($provider['category_id']) == "") ? "" : (($provider['price'] != NULL) ? "USD $".number_format($provider['price'], 2, ".", ",") : "Call for Price")).'</h6>
+									<h6 class="fw-medium text-primary fs-6">'.(($check_price_field == "") ? "" : (($provider['price'] != NULL) ? "USD $".number_format($provider['price'], 2, ".", ",") : "Call for Price")).'</h6>
 								</div>
 							</div>
 						</a>

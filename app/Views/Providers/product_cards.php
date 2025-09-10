@@ -1,5 +1,7 @@
 
-		<?php if(!empty($categories)){ ?>
+		<?php 
+		$check_price_field = !empty($category_detail->id) ? check_price_field($category_detail->id) : '';
+		if(!empty($categories)){ ?>
 		<div class="d-grid grid-col-4">
 		<?php foreach($categories as $cat){ ?>
 			<div class="item">
@@ -17,7 +19,7 @@
 							<h5 class="fw-medium title-xs"><?php echo !empty($cat['name']) ? $cat['name'] : '-'; ?></h5>
 							<h5 class="fw-medium text-primary title-xs"><?php echo $cat['sub_cat_name']; ?></h5>
 							<p class="text-grey mb-3"><?php echo $cat['address']; ?></p>
-							<h5 class="fw-medium title-xs"><?php echo ($cat['price'] != NULL) ? 'USD $'.number_format($cat['price'], 2, '.', ',') : 'Call for Price'; ?></h5>
+							<h5 class="fw-medium title-xs"><?php echo ( $check_price_field == '') ? '' : (($cat['price'] != NULL) ? 'USD $'.number_format($cat['price'], 2, '.', ',') : 'Call for Price'); ?></h5>
 						</div>
 					</a>
 				</div>

@@ -332,6 +332,13 @@ $routes->group("admin", ["namespace" => "App\Controllers\Admin"], function ($rou
         $routes->post('edit_ad_post', 'Ad::edit_ad_post');
         $routes->post('delete_ad_post', 'Ad::delete_ad_post');
     });
+		
+	$routes->group('menus', function($r){
+        $r->get('menus', 'Menus::index');
+		$r->post('item/create', 'Menus::createItem');
+		$r->post('item/delete', 'Menus::deleteItem');
+		$r->post('reorder',     'Menus::reorder');
+	});
 	
     $routes->group('support', function ($routes) {
         $routes->get('support', 'Support::index');

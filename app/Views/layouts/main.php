@@ -205,13 +205,12 @@ $currentsegment = ($uri->getTotalSegments() >= (env('urlsegment')-1) && !empty($
 				<?php endif; ?>
 				<?php if (session()->get('vr_sess_logged_in') != TRUE) : ?>
 				  <li class="nav-item d-block d-sm-none">
-					<a class="nav-link" href="<?= base_url('/pricing') ?>">Sell Today</a>
+					<a class="nav-link" href="<?= base_url('/pricing') ?>">SELL MY AIRCRAFT</a>
 				  </li>
 				<?php endif; ?>
 			</ul>
 		</div>
 		</div>
-		
 		<nav class="navbar navbar-expand-lg">
 		<div class="container-fluid py-xl-3">
 		<div class="row w-100 m-auto align-items-center justify-content-between">
@@ -223,69 +222,13 @@ $currentsegment = ($uri->getTotalSegments() >= (env('urlsegment')-1) && !empty($
 			  </div>
 		  </button>
 		  <div class="collapse navbar-collapse col-sm-10" id="navbarCollapse">
-			<ul class="navbar-nav ms-auto mb-2 mb-md-0 align-items-center flex-wrap-reverse justify-content-end">
-			  <li class="nav-item">
-				<a class="nav-link <?php echo (base_url() == str_replace('/index.php/','',$uri)) ? 'active' :''; ?>" aria-current="page" href="<?= base_url('/') ?>">Home</a>
-			  </li>
-			  <?php 
-			  $categories_all = getAllCategories();
-			  if(!empty($categories_all)){ foreach($categories_all as $cat_u){
-			  ?>
-			  <li class="nav-item">
-				<a class="nav-link <?php echo ($uri->getTotalSegments() >= env('urlsegment')-1 && $uri->getSegment(env('urlsegment')) == $cat_u->permalink) ? 'active' :''; ?>" href="<?= base_url('/listings/'.$cat_u->permalink) ?>"><?= $cat_u->name ?></a>
-			  </li>
-			  <?php } } ?>
-			  <!--<li class="nav-item">
-				<a class="nav-link <?php echo ($uri->getTotalSegments() >= env('urlsegment')-1 && $uri->getSegment(env('urlsegment')) == 'aircraft-services') ? 'active' :''; ?>" href="<?= base_url('/listings/aircraft-services') ?>">Aircraft Services</a>
-			  </li>
-			  <li class="nav-item">
-				<a class="nav-link <?php echo ($uri->getTotalSegments() >= env('urlsegment')-1 && $uri->getSegment(env('urlsegment')) == 'accessories') ? 'active' :''; ?>" href="<?= base_url('/listings/accessories') ?>">Accessories</a>
-			  </li>
-			  <li class="nav-item">
-				<a class="nav-link <?php echo ($uri->getTotalSegments() >= env('urlsegment')-1 && $uri->getSegment(env('urlsegment')) == 'real-estate') ? 'active' :''; ?>" href="<?= base_url('/listings/real-estate') ?>">Real Estate</a>
-			  </li>
-			  <li class="nav-item">
-				<a class="nav-link <?php echo ($uri->getTotalSegments() >= env('urlsegment')-1 && $uri->getSegment(env('urlsegment')-1) == 'wanted') ? 'active' :''; ?>" href="<?= base_url('/about-us') ?>">Wanted</a>
-			  </li>-->
-			  <li class="nav-item dropdown">
-				  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-					Education
-				  </a>
-				  <ul class="dropdown-menu">
-					<li><a class="dropdown-item <?php echo ($uri->getTotalSegments() >= env('urlsegment')-1 && $uri->getSegment(env('urlsegment')-1) == 'blog') ? 'active' :''; ?>" href="<?= base_url('/blog') ?>">Articles</a></li>
-					<li><a class="dropdown-item <?php echo ($uri->getTotalSegments() >= env('urlsegment')-1 && $uri->getSegment(env('urlsegment')-1) == 'videos') ? 'active' :''; ?>" href="<?= base_url('/videos') ?>">Videos</a></li>
-					<li><a class="dropdown-item <?php echo ($uri->getTotalSegments() >= env('urlsegment')-1 && $uri->getSegment(env('urlsegment')-1) == 'faq') ? 'active' :''; ?>" href="<?= base_url('/faq') ?>">FAQs</a></li>
-					<li><a class="dropdown-item <?php echo ($uri->getTotalSegments() >= env('urlsegment')-1 && $uri->getSegment(env('urlsegment')-1) == 'news') ? 'active' :''; ?>" href="<?= base_url('/news') ?>">News & Trends</a></li>
-				  </ul>
-				</li>
-			  <li class="nav-item">
-				<a class="nav-link <?php echo ($uri->getTotalSegments() >= env('urlsegment')-1 && $uri->getSegment(env('urlsegment')-1) == 'about-us') ? 'active' :''; ?>" href="<?= base_url('/about-us') ?>">About Us</a>
-			  </li>
-			  <li class="nav-item">
-				<a class="nav-link <?php echo ($uri->getTotalSegments() >= env('urlsegment')-1 && $uri->getSegment(env('urlsegment')-1) == 'contact') ? 'active' :''; ?>" href="<?= base_url('/contact') ?>">Contact Us</a>
-			  </li>
-			  <li class="nav-item mrev-order d-sm-none">
-				<a class="nav-link <?php echo ($uri->getTotalSegments() >= env('urlsegment')-1 && $uri->getSegment(env('urlsegment')-1) == 'pricing') ? 'active' :''; ?>" href="<?= base_url('/pricing') ?>">Sell Today</a>
-			  </li>
-			  <li class="nav-item d-block d-sm-none">
-				<?php if (session()->get('vr_sess_logged_in') != TRUE) : ?>
-				<a class="nav-link" href="<?= base_url('login') ?>"><svg class="me-1" style="fill:#000000a6;align-items: center;" width="20" height="20"><use xlink:href="#people-circle"></use></svg>Login</a>
-				<?php else : ?>	
-				<?php endif; ?>
-			  </li>
-			  <!--<li class="nav-item">
-				<a class="nav-link" href="<?= base_url('/pricing') ?>">Pricing</a>
-			  </li>	-->		  			  
-			  
-
+		  <ul class="navbar-nav ms-auto mb-2 mb-md-0 align-items-center flex-wrap-reverse justify-content-end">
+			<?= render_menu('primary', 'navbar-nav ms-auto mb-2 mb-md-0 align-items-center flex-wrap-reverse justify-content-end', true, false) ?>
 			<?php if (session()->get('vr_sess_logged_in') != TRUE) : ?>
 			  <li class="nav-item d-none d-sm-block">
 				<a class="btn bg-orange" href="<?php echo base_url('pricing'); ?>">SELL MY AIRCRAFT</a>
 			  </li>
 			  <?php else : ?>
-				<!--<li class="nav-item d-none d-sm-block">			  
-				<a class="btn bg-orange" href="<?php echo base_url('dashboard'); ?>">Dashboard</a>
-				</li>-->
 			<?php endif; ?>
 				
 			  <?php 
@@ -295,8 +238,6 @@ $currentsegment = ($uri->getTotalSegments() >= (env('urlsegment')-1) && !empty($
 				<a class="btn yellowbtn " href="<?php echo (getUserLevel(session()->get('vr_sess_user_id')) == 1) ? base_url('add-listing') : base_url('plan'); ?>">SELL MY AIRCRAFT</a>
 			  </li>
 			  <?php  } ?>
-			  
-			  
 			</ul>
 		  </div>
 		  </div>
@@ -493,7 +434,13 @@ $blogs = get_all_blog(0); ?>
 		</div>
 	</div>
 <style>
-
+.navbar-nav .nav-item.dropdown{ position:relative; }
+.navbar-nav .caret-toggle{
+  position: absolute !important;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
 /* Cookie Dialog */
 #gdpr-cookie-message {
     position: fixed;

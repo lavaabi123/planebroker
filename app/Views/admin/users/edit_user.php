@@ -68,6 +68,12 @@
                                         </div>
                                         <div class="col-6">
                                             <div class="form-group mb-3">
+                                                <label><?php echo trans("Company Name"); ?><span class="required"> *</span></label>
+                                                <input type="text" name="business_name" id="business_name" class="form-control auth-form-input" placeholder="<?php echo trans("Company Name"); ?>" value="<?php echo html_escape($user_detail->business_name); ?>">
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group mb-3">
                                                 <label><?php echo trans("email"); ?><span class="required"> *</span></label>
                                                 <input type="email" name="email" id="email" class="form-control auth-form-input" placeholder="<?php echo trans("email"); ?>" value="<?php echo html_escape($user_detail->email); ?>" parsley-type="email" required>
                                             </div>
@@ -78,19 +84,7 @@
                                                 <label><?php echo trans("Phone Number"); ?><span class="required"> *</span></label>
                                                 <input type="text" name="mobile_no" id="mobile_no" class="form-control auth-form-input" placeholder="<?php echo trans("Phone Number"); ?>" value="<?php echo html_escape($user_detail->mobile_no); ?>" required>
                                             </div>
-                                        </div>                       
-                                    </div>									
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="form-group mb-3">
-                                                <label><?php echo trans("form_password"); ?> (Leave Blank to Keep the Same)</label>
-                                                <input type="password" name="password" id="password" class="form-control auth-form-input" placeholder="<?php echo trans("form_password"); ?>" readonly onfocus="this.removeAttribute('readonly');" style="background-color: white; color: black;">
-                                            </div>
-                                             <div class="form-group mb-3">
-                                                <label><?php echo trans("form_confirm_password"); ?></label>
-                                                <input type="password" name="password_confirm" id="password_confirm" class="form-control form-input" value="" placeholder="<?php echo trans("form_confirm_password"); ?>" readonly onfocus="this.removeAttribute('readonly');" style="background-color: white; color: black;">
-                                            </div>
-                                        </div>
+                                        </div>  
                                          <div class="col-6">
                                             <div class="form-group mb-3">
                                                 <label><?php echo trans("User Level"); ?><span class="required"> *</span></label>
@@ -101,7 +95,62 @@
 													<option value="1" <?php echo !empty($user_detail->user_level) ? 'selected' : '' ; ?>>Captain User</option>
 												</select>
                                             </div>
+                                        </div> 
+                                        <div class="col-6">
+                                            <div class="form-group mb-3">
+                                                <label><?php echo trans("form_password"); ?> (Leave Blank to Keep the Same)</label>
+                                                <input type="password" name="password" id="password" class="form-control auth-form-input" placeholder="<?php echo trans("form_password"); ?>" readonly onfocus="this.removeAttribute('readonly');" style="background-color: white; color: black;">
+                                            </div>
+                                        </div> 
+                                        <div class="col-6">
+                                             <div class="form-group mb-3">
+                                                <label><?php echo trans("form_confirm_password"); ?></label>
+                                                <input type="password" name="password_confirm" id="password_confirm" class="form-control form-input" value="" placeholder="<?php echo trans("form_confirm_password"); ?>" readonly onfocus="this.removeAttribute('readonly');" style="background-color: white; color: black;">
+                                            </div>
                                         </div>
+										<div class="col-6">
+											<input class="form-control" type="text" id="city" name="city" placeholder="<?php echo trans('City') ?>" value="<?php echo $user_detail->city ?>">
+										</div>
+										<div class="col-6">
+											<input class="form-control" type="text" id="state" name="state" placeholder="<?php echo trans('State') ?>" value="<?php echo $user_detail->state ?>">
+										</div>
+										<div class="col-6">
+											<input class="form-control" type="text" id="website" name="website" placeholder="Website" value="<?php echo $user_detail->website ?>">
+										</div>
+										<div class="col-6">
+											<input class="form-control" type="text" id="facebook" name="facebook_link" placeholder="Facebook" value="<?php echo $user_detail->facebook_link ?>">
+										</div>
+										<div class="col-6">
+											<input class="form-control" type="text" id="linkedin" name="linkedin_link" placeholder="LinkedIn" value="<?php echo $user_detail->linkedin_link ?>">
+										</div>
+										<div class="col-6">
+											<input class="form-control" type="text" id="instagram" name="insta_link" placeholder="Instagram" value="<?php echo $user_detail->insta_link ?>">
+										</div>													
+										
+										<div class="col-6">
+											<input class="form-control" type="text" id="tiktok_link" name="tiktok_link" placeholder="<?php echo trans('TikTok Link') ?>" value="<?php echo $user_detail->tiktok_link ?>">
+										</div>
+										<div class="col-6">
+											<input class="form-control" type="text" id="youtube_link" name="youtube_link" placeholder="<?php echo trans('YouTube Link') ?>" value="<?php echo $user_detail->youtube_link ?>">
+										</div>
+										<div class="col-6">
+											<div class="file-upload">
+											<label class="dz-wrap" style="display:block !important;margin-left:0 !important;">
+												<span>Upload Profile Photo</span><br />
+												<span>(.png,.jpeg,.jpg)</span>
+												<input type='file' id="profile-pic-input" name='profile_picture' class="choose-file-button w-100" accept=".jpg,.jpeg,.png">
+											</label>
+											</div>
+											</label>
+										</div>
+										<div class="col-6">
+											<div class="proPic" id="upload-icon" style="cursor: pointer;">
+												<img class="uimg" width="100px" src="<?php echo ($user_detail->avatar) ? base_url().'/uploads/userimages/'.$user_detail->id.'/'.$user_detail->avatar : base_url('assets/frontend/images/user-pic.png'); ?>" alt="user pic"/>
+											</div>
+										</div>
+										<div class="col-12 mt-3">
+											<textarea class="form-control" name="about_me" placeholder="About Seller"><?php echo $user_detail->about_me ?></textarea>
+										</div>
                                     </div>									
 									
                                     <div class="form-group mb-3 float-right">
@@ -131,6 +180,48 @@
 <!-- /.content -->
 </div>
 <script type="text/javascript">
+$(document).ready(function () {
+    // Trigger input when "+" icon clicked
+    $('#upload-icon').on('click', function () {
+        $('#profile-pic-input').click();
+    });
+
+    // Handle file input change
+    $('#profile-pic-input').on('change', function () {
+        const fileInput = this;
+        const fileName = fileInput.files[0]?.name || "No file chosen";
+        $('#file-name').text(fileName);
+
+        // Create FormData object
+        const formData = new FormData();
+        formData.append('upload', fileInput.files[0]);
+
+        // Send via AJAX
+        $.ajax({
+            url: '<?php echo base_url(); ?>/fileupload.php?uploadpath=userimages/'+'<?php echo session()->get('vr_sess_user_id'); ?>', // Change to your upload route
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                if(response.uploaded == 1){
+					$.ajax({
+						url: '<?php echo base_url(); ?>/providerauth/upload_profile_photo',
+						data: {image:response.fileName},
+						type: 'POST',
+						dataType: 'HTML',
+						success: function(respdonse){
+							$('#upload-icon').find('.uimg').attr('src',response.url);							
+						}
+					})
+				}
+            },
+            error: function (xhr) {
+                alert('Upload failed. Please try again.');
+            }
+        });
+    });
+});
 function confirm_once(_this){
 	var user_level = $(_this).val();
 	if(user_level == 1){
@@ -349,6 +440,43 @@ $(function() {
   }).on("apply.daterangepicker", function (e, picker) {
         picker.element.val(picker.startDate.format(picker.locale.format));
     });
+  // 1) Wire all existing
+  document.querySelectorAll('.dz-wrap').forEach(wireDropZone);
+
+  // 2) Wire dynamically added ones
+  const observer = new MutationObserver(muts => {
+    muts.forEach(m => {
+      m.addedNodes.forEach(node => {
+        if (node.nodeType !== 1) return;
+        if (node.matches('.dz-wrap')) wireDropZone(node);
+        node.querySelectorAll?.('.dz-wrap').forEach(wireDropZone);
+      });
+    });
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+
 });
 </script>
+
+<style>
+  .dz-wrap {
+    border: 2px dashed #ccc;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+
+  .dz-wrap.over {
+    background-color: #f0faff;
+  }
+
+  .dz-wrap input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+</style>
 <?php echo $this->endSection() ?>

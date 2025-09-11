@@ -46,14 +46,12 @@
 											<h4 class="title-sm text-center mb-4 mb-md-5 fw-bolder">Basic Info</h4>
 											<div class="form-section d-sm-flex row-cols-1 row-cols-sm-2 gap-2">
 											<div class="p-0">
-												<div class="form-section d-flex gap-2">
 													<div class="form-group">
 														<input class="form-control required" type="text" id="first_name" name="first_name" placeholder="<?php echo trans('form_firstname') ?>" value="<?php echo $user_detail->first_name ?>">
 													</div>
 													<div class="form-group">
-														<input class="form-control required" type="text" id="last_name" name="last_name" placeholder="<?php echo trans('form_lastname') ?>" value="<?php echo $user_detail->last_name ?>">
+														<input class="form-control" type="text" id="business_name" name="business_name" placeholder="Company Name" value="<?php echo $user_detail->business_name ?>">
 													</div>
-												</div>
 												<div class="form-group">
 													<input class="form-control required" type="text" id="mobile_no" name="mobile_no" placeholder="<?php echo trans('Telephone Number') ?>" value="<?php echo $user_detail->mobile_no ?>">
 												</div>
@@ -65,37 +63,42 @@
 															<!-- Custom File Trigger -->
 													<label for="profile-pic-input" class="choose-file-button">Choose Profile Image</label>
 												</div>
-												<div class="form-section d-flex gap-2">
-													<div class="form-group">
-														<input class="form-control required" type="text" id="city" name="city" placeholder="<?php echo trans('City') ?>" value="<?php echo $user_detail->city ?>">
-													</div>
-													<div class="form-group">
-														<input class="form-control required" type="text" id="state" name="state" placeholder="<?php echo trans('State') ?>" value="<?php echo $user_detail->state ?>">
-													</div>
+												<div class="form-group">
+													<input class="form-control" type="text" id="city" name="city" placeholder="<?php echo trans('City') ?>" value="<?php echo $user_detail->city ?>">
+												</div>
+												<div class="form-group">
+													<input class="form-control" type="text" id="state" name="state" placeholder="<?php echo trans('State') ?>" value="<?php echo $user_detail->state ?>">
 												</div>
 											</div>
 												<div class="p-0">
 													<div class="form-group">
-														<input class="form-control" type="text" id="business_name" name="business_name" placeholder="Company Name (optional)" value="<?php echo $user_detail->business_name ?>">
+														<input class="form-control required" type="text" id="last_name" name="last_name" placeholder="<?php echo trans('form_lastname') ?>" value="<?php echo $user_detail->last_name ?>">
 													</div>
 													<div class="form-group">
-														<input class="form-control" type="text" id="website" name="website" placeholder="Website (optional)" value="<?php echo $user_detail->website ?>">
+														<input class="form-control" type="text" id="website" name="website" placeholder="Website" value="<?php echo $user_detail->website ?>">
 													</div>
 													<div class="form-group">
-														<input class="form-control" type="text" id="facebook" name="facebook_link" placeholder="Facebook (optional)" value="<?php echo $user_detail->facebook_link ?>">
+														<input class="form-control" type="text" id="facebook" name="facebook_link" placeholder="Facebook" value="<?php echo $user_detail->facebook_link ?>">
 													</div>
 													<div class="form-group">
-														<input class="form-control" type="text" id="linkedin" name="linkedin_link" placeholder="LinkedIn (optional)" value="<?php echo $user_detail->linkedin_link ?>">
+														<input class="form-control" type="text" id="linkedin" name="linkedin_link" placeholder="LinkedIn" value="<?php echo $user_detail->linkedin_link ?>">
 													</div>
 													<div class="form-group">
-														<input class="form-control" type="text" id="instagram" name="insta_link" placeholder="Instagram (optional)" value="<?php echo $user_detail->insta_link ?>">
+														<input class="form-control" type="text" id="instagram" name="insta_link" placeholder="Instagram" value="<?php echo $user_detail->insta_link ?>">
+													</div>													
+													
+													<div class="form-group">
+														<input class="form-control" type="text" id="tiktok_link" name="tiktok_link" placeholder="<?php echo trans('TikTok Link') ?>" value="<?php echo $user_detail->tiktok_link ?>">
+													</div>
+													<div class="form-group">
+														<input class="form-control" type="text" id="youtube_link" name="youtube_link" placeholder="<?php echo trans('YouTube Link') ?>" value="<?php echo $user_detail->youtube_link ?>">
 													</div>
 													
 												</div>
 												
 											</div>	
 											<div class="form-group w-100">
-													<textarea class="w-100" name="about_me" placeholder="About Seller (optional)"><?php echo $user_detail->about_me ?></textarea>
+													<textarea class="w-100" name="about_me" placeholder="About Seller"><?php echo $user_detail->about_me ?></textarea>
 												</div>
 											<input type="submit" class="btn" value="Save Details" />				
 										</fieldset>

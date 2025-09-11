@@ -30,6 +30,48 @@ if(!empty($product_detail['image'])){
 }
 
 $check_price_field = check_price_field($product_detail['cat_id']);
+
+
+function normalizeUrl($url, $platform) {
+    $url = trim($url);
+
+    // If already absolute
+    if (preg_match('~^https?://~i', $url)) {
+        return $url;
+    }
+
+    // If it's a bare domain
+    if (preg_match('~\.[a-z]{2,}(/.*)?$~i', $url)) {
+        return 'https://' . ltrim($url, '/');
+    }
+
+    // Otherwise treat it like a username/handle
+    switch (strtolower($platform)) {
+        case 'facebook':
+            return 'https://www.facebook.com/' . ltrim($url, '@');
+        case 'instagram':
+            return 'https://www.instagram.com/' . ltrim($url, '@');
+        case 'youtube':
+            return 'https://www.youtube.com/@' . ltrim($url, '@');
+        case 'tiktok':
+            return 'https://www.tiktok.com/@' . ltrim($url, '@');
+        case 'gmb':
+            return 'https://www.google.com/search?q=' . rawurlencode($url);
+        default:
+            return 'https://' . ltrim($url, '/');
+    }
+}
+
+$icons = [
+    'facebook'  => 'fab fa-facebook',
+    'instagram' => 'fab fa-instagram',
+    'linkedin'   => 'fab fa-linkedin',
+    'twitter'   => 'fab fa-x-twitter',
+    'youtube'   => 'fab fa-youtube',
+    'tiktok'    => 'fab fa-tiktok',
+    'gmb'       => 'fas fa-map-marker-alt',
+];
+
 ?>
 
 <div class="profileGallery text-center bg-blue py-5">
@@ -291,62 +333,21 @@ $count = !empty($images) ? count($images) : 0;
 									<?php
 									if($pds['group_name'] == 'Social Media Handles'){ ?>
 										<div class="d-flex social-media justify-content-center pt-3">
-											
 											<?php 
-function normalizeUrl($url, $platform) {
-    $url = trim($url);
+											$entries = explode(',', $pds['name']);
+											foreach ($entries as $ea) {
+												[$platform, $value] = array_map('trim', explode('|||', $ea));
+												if (!$platform || !$value) continue;
 
-    // If already absolute
-    if (preg_match('~^https?://~i', $url)) {
-        return $url;
-    }
+												$href = normalizeUrl($value, $platform);
 
-    // If it's a bare domain
-    if (preg_match('~\.[a-z]{2,}(/.*)?$~i', $url)) {
-        return 'https://' . ltrim($url, '/');
-    }
-
-    // Otherwise treat it like a username/handle
-    switch (strtolower($platform)) {
-        case 'facebook':
-            return 'https://www.facebook.com/' . ltrim($url, '@');
-        case 'instagram':
-            return 'https://www.instagram.com/' . ltrim($url, '@');
-        case 'youtube':
-            return 'https://www.youtube.com/@' . ltrim($url, '@');
-        case 'tiktok':
-            return 'https://www.tiktok.com/@' . ltrim($url, '@');
-        case 'gmb':
-            return 'https://www.google.com/search?q=' . rawurlencode($url);
-        default:
-            return 'https://' . ltrim($url, '/');
-    }
-}
-
-$icons = [
-    'facebook'  => 'fab fa-facebook',
-    'instagram' => 'fab fa-instagram',
-    'youtube'   => 'fab fa-youtube',
-    'tiktok'    => 'fab fa-tiktok',
-    'gmb'       => 'fas fa-map-marker-alt',
-];
-
-$entries = explode(',', $pds['name']);
-foreach ($entries as $ea) {
-    [$platform, $value] = array_map('trim', explode('|||', $ea));
-    if (!$platform || !$value) continue;
-
-    $href = normalizeUrl($value, $platform);
-
-    if (isset($icons[strtolower($platform)])) {
-        echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
-                <i class="'.$icons[strtolower($platform)].'"></i>
-              </a>';
-    }
-}
-?>
-
-
+												if (isset($icons[strtolower($platform)])) {
+													echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+															<i class="'.$icons[strtolower($platform)].'"></i>
+														  </a>';
+												}
+											}
+											?>
 										</div>
 									<?php }else{
 									$hasDesc = stripos($pds['field_name'], 'description') !== false;
@@ -408,6 +409,65 @@ foreach ($entries as $ea) {
 						<img class="icons" src="<?php echo base_url('assets/frontend/images/pin.png'); ?>" />
 						<p class=""><?php echo $product_detail['address']; ?></p>
 					</div>
+					<?php if(!empty($user_detail->website)){ ?>
+						<hr>
+						<div class="d-flex align-items-center fw-medium mb-0">
+							<i class="fa fa-globe"></i>
+							<p class=""><?php echo $user_detail->website; ?></p>
+						</div>
+					<?php } if(!empty($user_detail->facebook_link) || !empty($user_detail->insta_link) || !empty($user_detail->	twitter_link) || !empty($user_detail->linkedin_link) || !empty($user_detail->tiktok_link) || !empty($user_detail->youtube_link)){ ?>
+						<hr>
+						<?php
+						if(!empty($user_detail->facebook_link)){
+							$href = normalizeUrl($user_detail->facebook_link, 'facebook');
+							if (isset($icons[strtolower('facebook')])) {
+								echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+										<i class="'.$icons[strtolower('facebook')].'"></i>
+									  </a>';
+							}
+						}
+						if(!empty($user_detail->linkedin_link)){
+							$href = normalizeUrl($user_detail->linkedin_link, 'linkedin');
+							if (isset($icons[strtolower('linkedin')])) {
+								echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+										<i class="'.$icons[strtolower('linkedin')].'"></i>
+									  </a>';
+							}
+						}
+						if(!empty($user_detail->insta_link)){
+							$href = normalizeUrl($user_detail->insta_link, 'instagram');
+							if (isset($icons[strtolower('instagram')])) {
+								echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+										<i class="'.$icons[strtolower('instagram')].'"></i>
+									  </a>';
+							}
+						}
+						if(!empty($user_detail->twitter_link)){
+							$href = normalizeUrl($user_detail->twitter_link, 'twitter');
+							if (isset($icons[strtolower('twitter')])) {
+								echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+										<i class="'.$icons[strtolower('twitter')].'"></i>
+									  </a>';
+							}
+						}
+						if(!empty($user_detail->tiktok_link)){
+							$href = normalizeUrl($user_detail->tiktok_link, 'tiktok');
+							if (isset($icons[strtolower('tiktok')])) {
+								echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+										<i class="'.$icons[strtolower('tiktok')].'"></i>
+									  </a>';
+							}
+						}
+						if(!empty($user_detail->youtube_link)){
+							$href = normalizeUrl($user_detail->youtube_link, 'youtube');
+							if (isset($icons[strtolower('youtube')])) {
+								echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+										<i class="'.$icons[strtolower('youtube')].'"></i>
+									  </a>';
+							}
+						}
+						
+					}	?>
 					<hr>
 					
 					<!-- MESSAGE ME - START -->

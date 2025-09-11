@@ -154,14 +154,28 @@ class UsersModel extends Model
     {
         $user = $this->get_user($id);
         if (!empty($user)) {
-            $data = array(
-                'first_name' => $this->request->getVar('first_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-                'last_name' => $this->request->getVar('last_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-                'fullname' => $this->request->getVar('first_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS).' '.$this->request->getVar('last_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS),         
-                'email' => $this->request->getVar('email', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-                'password' => empty($this->request->getVar('password')) ? $user->password : password_hash($this->request->getVar('password'), PASSWORD_BCRYPT),
-				'user_level' => !empty( $this->request->getVar('user_level') ) ? 1 : 0,				
-            );			
+			$data = $this->input_values();        
+        
+			$data['email'] = $this->request->getVar('email');
+			$data['first_name'] = $this->request->getVar('first_name');
+			$data['last_name'] = $this->request->getVar('last_name');
+			$data['fullname'] = $this->request->getVar('first_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS).' '.$this->request->getVar('last_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+			$data['mobile_no'] = $this->request->getVar('mobile_no');
+			$data['business_name'] = !empty($this->request->getVar('business_name')) ? $this->request->getVar('business_name') : '';					
+			$data['city'] = !empty($this->request->getVar('city')) ? $this->request->getVar('city') : '';
+			$data['state'] = !empty($this->request->getVar('state')) ? $this->request->getVar('state') : '';
+			$data['website'] = !empty($this->request->getVar('website')) ? $this->request->getVar('website') : '';
+			$data['facebook_link'] = !empty($this->request->getVar('facebook_link')) ? $this->request->getVar('facebook_link') : '';
+			$data['insta_link'] = !empty($this->request->getVar('insta_link')) ? $this->request->getVar('insta_link') : '';	
+			$data['linkedin_link'] = !empty($this->request->getVar('linkedin_link')) ? $this->request->getVar('linkedin_link') : '';
+			$data['tiktok_link'] = !empty($this->request->getVar('tiktok_link')) ? $this->request->getVar('tiktok_link') : '';	
+			$data['youtube_link'] = !empty($this->request->getVar('youtube_link')) ? $this->request->getVar('youtube_link') : '';	
+			$data['about_me'] = !empty($this->request->getVar('about_me')) ? $this->request->getVar('about_me') : '';
+			
+			$data['password'] = empty($this->request->getVar('password')) ? $user->password : password_hash($this->request->getVar('password'), PASSWORD_BCRYPT);
+			$data['user_level'] = !empty( $this->request->getVar('user_level') ) ? 1 : 0;	
+			
+          		
             return $this->protect(false)->update($user->id, $data);
         }
     }
@@ -881,14 +895,16 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
 		$data['last_name'] = $this->request->getVar('last_name');
 		$data['fullname'] = $this->request->getVar('first_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS).' '.$this->request->getVar('last_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 		$data['mobile_no'] = $this->request->getVar('mobile_no');
-		
-		
+        $data['business_name'] = !empty($this->request->getVar('business_name')) ? $this->request->getVar('business_name') : '';
+				
 		$data['city'] = !empty($this->request->getVar('city')) ? $this->request->getVar('city') : '';
 		$data['state'] = !empty($this->request->getVar('state')) ? $this->request->getVar('state') : '';
 		$data['website'] = !empty($this->request->getVar('website')) ? $this->request->getVar('website') : '';
 		$data['facebook_link'] = !empty($this->request->getVar('facebook_link')) ? $this->request->getVar('facebook_link') : '';
 		$data['insta_link'] = !empty($this->request->getVar('insta_link')) ? $this->request->getVar('insta_link') : '';	
 		$data['linkedin_link'] = !empty($this->request->getVar('linkedin_link')) ? $this->request->getVar('linkedin_link') : '';
+		$data['tiktok_link'] = !empty($this->request->getVar('tiktok_link')) ? $this->request->getVar('tiktok_link') : '';	
+		$data['youtube_link'] = !empty($this->request->getVar('youtube_link')) ? $this->request->getVar('youtube_link') : '';	
 		$data['about_me'] = !empty($this->request->getVar('about_me')) ? $this->request->getVar('about_me') : '';
 		
 		

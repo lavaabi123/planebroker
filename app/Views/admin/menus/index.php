@@ -63,7 +63,7 @@ $render = function($pid) use (&$render,$byParent) {
         <div class="actions">
           <button class="dd-outdent" type="button" title="Move out one level">←</button>
           <button class="dd-indent"  type="button" title="Nest under previous">→</button>
-          <a class="ml-3 text-danger del" data-id="<?= $row['id'] ?>"><i class="fas fa-trash"></i></a>
+          <a class="ml-3 text-danger del" type="button" href="#" data-id="<?= $row['id'] ?>"><i class="fas fa-trash"></i></a>
         </div>
       </div>
       <ul class="dd-list"><?php $render($row['id']); ?></ul>
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="actions">
           <button class="dd-outdent" type="button" title="Move out one level">←</button>
           <button class="dd-indent"  type="button" title="Nest under previous">→</button>
-		  <a class="ml-3 text-danger del" data-id="${id}"><i class="fas fa-trash"></i></a>
+		  <a href="#" class="ml-3 text-danger del" type="button"  data-id="${id}"><i class="fas fa-trash"></i></a>
         </div>
       </div>
       <ul class="dd-list"></ul>
@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.addEventListener('click', async ()=>{
       if (!confirm('Remove this item?')) return;
       const r = await post('<?= base_url('admin/menus/item/delete') ?>', { id: btn.dataset.id });
-      if (!r.ok) return alert('Delete failed');
+      if (!r.ok) return Swal.fire("Delete Failed.", "", "error");
       btn.closest('li.dd-item').remove();
     });
   }
@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
     draggable: '.dd-item, .palette-item',
 
     // BUT let buttons/links be clickable (don’t start a drag from them)
-    filter: '.del, .dd-indent, .dd-outdent, a, button',
+    filter: '.del, .dd-indent, .dd-outdent,  button',
     preventOnFilter: false,
     onStart(){ document.body.classList.add('dragging-no-select'); },
     onEnd(){ document.body.classList.remove('dragging-no-select'); },
@@ -258,7 +258,8 @@ document.addEventListener('DOMContentLoaded', function() {
       };
 
       const r = await post('<?= site_url('admin/menus/item/create') ?>', payload);
-      if (!r.ok || !r.json?.id) { el.remove(); alert('Could not add item.'); return; }
+      if (!r.ok || !r.json?.id) { el.remove(); 
+		Swal.fire("Could not add item.", "", "success");  return; }
 
       const li = document.createElement('li');
       li.className = 'dd-item';
@@ -294,9 +295,10 @@ document.addEventListener('DOMContentLoaded', function() {
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ tree, [CSRF.name]: CSRF.hash })
     });
-    if (!res.ok) return alert('Save failed');
+    if (!res.ok) return 
+	Swal.fire("Save Failed", "", "error");;
     try { const j = await res.json(); if (j?.csrf) CSRF.hash = j.csrf; } catch {}
-    alert('Order saved');
+	Swal.fire("Order Saved!", "", "success");
   });
 
   /* Optional: highlight potential parent while hovering */
@@ -308,7 +310,41 @@ document.addEventListener('DOMContentLoaded', function() {
   nest.addEventListener('dragleave', ()=> {
     document.querySelectorAll('.dd-item.drop-target').forEach(n=>n.classList.remove('drop-target'));
   });
+  nest.addEventListener('click', async (e) => {
+  const del = e.target.closest('.del');
+  if (!del) return;
+  e.preventDefault();
+  e.stopPropagation();
+
+const confirmed = await jConfirm({
+    title: 'Remove this item?',     // your requested title
+    content: 'Are you sure you want to remove?',
+    okText: 'Remove',
+    cancelText: 'Cancel',
+    type: 'red'
+  });
+  if (!confirmed) return;
+
+  const r = await post('<?= base_url('admin/menus/item/delete') ?>', { id: del.dataset.id });
+  if (!r.ok) {
+    Swal.fire("Delete Failed.", "", "error");
+    return;
+  }
+  del.closest('li.dd-item').remove();
 });
+});
+function jConfirm({ title='Confirm', content='Are you sure?', okText='OK', cancelText='Cancel', type='red' } = {}) {
+  return new Promise(resolve => {
+    $.confirm({
+      title, content, type,
+      buttons: {
+        ok: { text: okText, btnClass: `btn-${type}`, action: () => resolve(true) },
+        cancel: { text: cancelText, action: () => resolve(false) }
+      },
+      onClose: () => resolve(false)
+    });
+  });
+}
 </script>
 
 <style>

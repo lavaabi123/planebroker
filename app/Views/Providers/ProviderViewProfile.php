@@ -290,7 +290,7 @@ $count = !empty($images) ? count($images) : 0;
 									foreach($result as $pds){  if(!empty($pds['frontend_show']) && ($pds['group_name'] == 'General Information' || $pds['group_name'] == 'Basic Property Details' || $pds['group_name'] == 'Social Media Handles')){ ?>
 									<?php
 									if($pds['group_name'] == 'Social Media Handles'){ ?>
-										<div class="d-flex justify-content-center pt-3">
+										<div class="d-flex social-media justify-content-center pt-3">
 											
 											<?php 
 function normalizeUrl($url, $platform) {

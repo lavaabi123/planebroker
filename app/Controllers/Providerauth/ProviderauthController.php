@@ -35,7 +35,7 @@ class ProviderauthController extends BaseController
      *
      * @var array
      */
-    protected $helpers     = ['url', 'cookie', 'form', 'security', 'custom', 'form', 'text'];
+    protected $helpers     = ['url', 'cookie', 'form', 'security', 'custom', 'form', 'text','menu'];
 
     /**
      * Constructor.

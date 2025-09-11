@@ -396,7 +396,7 @@ $(function(){
     pageLength: 50,
     lengthMenu: [50, 100, 150, 200],
     dom: 
-	'<"d-flex align-items-center gap-2 mb-3"lf<"dropdown-filter"><"user-filter"><"date-filter"><"reset-filter">>t<"d-flex justify-content-center align-items-center my-3"ip>',
+	'<"d-flex align-items-center gap-2 mb-3"lf<"cat-filter"><"dropdown-filter"><"user-filter"><"date-filter"><"reset-filter">>t<"d-flex justify-content-center align-items-center my-3"ip>',
     language: {
       paginate: {
         previous: "<i class='fas fa-caret-left'></i>",
@@ -442,6 +442,20 @@ $(function(){
 				if(!empty($packages)){
 					foreach($packages as $packages_row){ ?>
 						<option value="<?php echo $packages_row->name; ?>"><?php echo $packages_row->name; ?></option>
+				<?php }
+				}
+				?>
+        </select>
+      `);
+	  
+	  $('.cat-filter').html(`
+        <label>Category</label>
+        <select id="catfilterDropdown" class="form-control form-select-sm">
+          <option value=""><?php echo trans('All') ?></option>
+				<?php
+				if(!empty($categories)){
+					foreach($categories as $category_row){ ?>
+						<option value="<?php echo $category_row->name; ?>"><?php echo $category_row->name; ?></option>
 				<?php }
 				}
 				?>
@@ -509,6 +523,7 @@ $(function(){
 
     // Reset dropdown
     $('#filterDropdown').val('');
+    $('#catfilterDropdown').val('');
     $('#userDropdown').val('');
 
     // Reset date filter
@@ -530,6 +545,14 @@ $(function(){
       dt.column(1).search(selectedValue).draw();
     } else {
       dt.column(1).search('').draw();
+    }
+  });
+  $('#catfilterDropdown').on('change', function () {
+    const selectedValue = $(this).val();
+    if (selectedValue) {
+      dt.column(2).search(selectedValue).draw();
+    } else {
+      dt.column(2).search('').draw();
     }
   });
   $('#userDropdown').on('change', function () {

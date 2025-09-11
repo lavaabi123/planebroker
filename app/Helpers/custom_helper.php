@@ -1032,7 +1032,7 @@ function addWatermarkFromUrls(string $mainImageUrl, string $watermarkUrl, string
 
     // ---- Scale watermark relative to short side (keep your 15%)
     $short = min($mw, $mh);
-    $targetRatio = 0.30;
+    $targetRatio = 0.65;
     $newW = max(1, (int) round($short * $targetRatio));
     $newH = max(1, (int) round($wh * ($newW / $ww)));
 
@@ -1223,7 +1223,7 @@ function wm_rebuild_one(int $userId, string $fileName, string $watermarkPath, ar
 
         // Apply — wrap to prevent throw from bubbling
         try {
-            return addWatermarkFromUrls($orig, $watermarkPath, $dest, 0.02, 0.7);
+            return addWatermarkFromUrls($orig, $watermarkPath, $dest, 0, 0.7);
         } catch (\Throwable $e) {
             log_message('error', "[WM] Apply failed {$userId}/{$fileName}: ".$e->getMessage());
             return false;

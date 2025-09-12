@@ -1223,7 +1223,7 @@ function wm_rebuild_one(int $userId, string $fileName, string $watermarkPath, ar
 
         // Apply — wrap to prevent throw from bubbling
         try {
-            return addWatermarkFromUrls($orig, $watermarkPath, $dest, 0, 0.7);
+            return addWatermarkFromUrls($orig, $watermarkPath, $dest, 0.02, 0.7);
         } catch (\Throwable $e) {
             log_message('error', "[WM] Apply failed {$userId}/{$fileName}: ".$e->getMessage());
             return false;

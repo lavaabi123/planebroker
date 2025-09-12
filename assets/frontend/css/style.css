@@ -859,6 +859,9 @@ footer li a:hover, .footer2 a:hover {
 .viewProfile .social-media a {
     font-size: 30px;
 }
+.proDetails .social-media a {
+    font-size: 24px;
+}
 /** Login **/
 .login-sec .form-section {
     max-width: 410px;
@@ -1133,7 +1136,7 @@ img.icons {
     height: 27px;
     object-fit: contain;
     width: 27px;
-    object-position: center left;
+    object-position: center center;
     margin-right: 10px;
 }
 .favorite-btn img.icons {
@@ -2150,6 +2153,12 @@ label#email-error {
 span.save-listing
  {
     font-size: 16px !important;
+}
+.proDetails .fa-globe {
+    color: var(--primary);
+    width: 27px;
+    margin-right: 10px;
+	font-size: 24px;
 }
 @media(min-width:768px) {
 .left-section {

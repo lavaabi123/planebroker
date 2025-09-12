@@ -25,15 +25,18 @@ class ProductModel extends Model
 	public function get_filters($category = 'all', $where = '')
 {
     // Get category details
+	if($category == 'all'){
+		
+	}else{
     $category_detail = $this->db->query("
         SELECT id, name, skill_name, permalink 
         FROM categories 
         WHERE permalink LIKE '".$category."' 
         ORDER BY name ASC
     ", 'r')->getRowArray();
-
+	}
     // Get field filters for that category
-    $result = $this->db->query("
+	$sql = "
         SELECT 
             id, 
             name, 
@@ -41,10 +44,13 @@ class ProductModel extends Model
             LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name, '/', '_'), ' ', '_'), '-', '_'), '(', '_'), ')', '_'), '&', '_')) as slug 
         FROM fields f
         LEFT JOIN field_categories c ON c.field_id = f.id 
-        WHERE c.category_id = ".$category_detail['id']." AND f.is_filter = 1 
-        GROUP BY name 
-        ORDER BY f.filter_order ASC
-    ")->getResultArray();
+        WHERE f.is_filter = 1 ";		
+	if($category == 'all'){		
+	}else{
+	$sql .= " AND c.category_id = ".$category_detail['id']."";
+	}
+	$sql .= " GROUP BY name ORDER BY f.filter_order ASC";
+    $result = $this->db->query($sql)->getResultArray();
     $filters = [];
 
     // Clean the WHERE clause for subquery use (remove table aliases)
@@ -58,7 +64,7 @@ class ProductModel extends Model
 
             if ($filter['filter_type'] == 'checkbox') {
                 // Fetch value + count for each checkbox filter
-                $values = $this->db->query("
+				$sql1 = "
                     SELECT 
                         pd.field_value AS name, 
                         pd.field_id AS id, 
@@ -73,11 +79,15 @@ class ProductModel extends Model
                     ) 
                     AND pd.product_id IN (
                         SELECT id 
-                        FROM products 
-                        WHERE category_id = ".$category_detail['id'].($cleanWhere ? " AND ".$cleanWhere : "")."
-                    ) AND pd.field_value != ''
+                        FROM products ";
+						if($category == 'all'){		
+				}else{
+                $sql1 .= "        WHERE category_id = ".$category_detail['id'].($cleanWhere ? " AND ".$cleanWhere : "")."";
+				}
+                $sql1 .= "    ) AND pd.field_value != ''
                     GROUP BY field_value
-                ")->getResultArray();
+                ";
+                $values = $this->db->query($sql1)->getResultArray();
             }
 
             // Add filter values to the response
@@ -333,6 +343,7 @@ class ProductModel extends Model
 			
 			LEFT JOIN products p on p.id=pdf.product_id
 			LEFT JOIN sales s on s.id=p.sale_id
+			LEFT JOIN plans pl on pl.id=p.plan_id
 					
             WHERE f.name = 'manufacturer'
               AND fc.category_id IN (

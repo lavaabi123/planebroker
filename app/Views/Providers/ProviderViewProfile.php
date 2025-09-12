@@ -401,8 +401,10 @@ $count = !empty($images) ? count($images) : 0;
 					<?php } ?>		
 					
 					<div class="d-flex align-items-center fw-medium mb-0">
+						<a class="d-flex align-items-center" href="<?php echo base_url('user-listings?seller_id='.$user_detail->id); ?>">
 						<img class="icons" src="<?php echo base_url('assets/frontend/images/usericon.png'); ?>" />
-						<p class=""><?php echo !empty($product_detail['business_name']) ? $product_detail['business_name'] : $product_detail['user_name']; ?></p>
+						<p class="mb-0"><?php echo !empty($product_detail['business_name']) ? $product_detail['business_name'] : $product_detail['user_name']; ?></p>
+						</a>
 					</div>
 					<hr>
 					<div class="d-flex align-items-center fw-medium mb-0">
@@ -412,11 +414,12 @@ $count = !empty($images) ? count($images) : 0;
 					<?php if(!empty($user_detail->website)){ ?>
 						<hr>
 						<div class="d-flex align-items-center fw-medium mb-0">
-							<i class="fa fa-globe"></i>
+							<img class="icons" src="<?php echo base_url('assets/frontend/images/web.png'); ?>" />
 							<p class=""><?php echo $user_detail->website; ?></p>
 						</div>
 					<?php } if(!empty($user_detail->facebook_link) || !empty($user_detail->insta_link) || !empty($user_detail->	twitter_link) || !empty($user_detail->linkedin_link) || !empty($user_detail->tiktok_link) || !empty($user_detail->youtube_link)){ ?>
 						<hr>
+						<div class="social-media">
 						<?php
 						if(!empty($user_detail->facebook_link)){
 							$href = normalizeUrl($user_detail->facebook_link, 'facebook');
@@ -466,7 +469,7 @@ $count = !empty($images) ? count($images) : 0;
 									  </a>';
 							}
 						}
-						
+						echo '</div>';
 					}	?>
 					<hr>
 					

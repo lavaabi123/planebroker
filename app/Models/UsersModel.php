@@ -174,7 +174,6 @@ class UsersModel extends Model
 			
 			$data['password'] = empty($this->request->getVar('password')) ? $user->password : password_hash($this->request->getVar('password'), PASSWORD_BCRYPT);
 			$data['user_level'] = !empty( $this->request->getVar('user_level') ) ? 1 : 0;	
-			
           		
             return $this->protect(false)->update($user->id, $data);
         }

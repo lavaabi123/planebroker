@@ -659,9 +659,9 @@ class UserManagement extends AdminController
 					$sale_id = $this->UsersModel->insert_sales($data_insert);	
 				}*/
 			}
-            $this->userModel->edit_user($data["id"]);
+            $user =$this->userModel->edit_user($data["id"]);
 			
-            $user = $this->userModel->update_user($data["id"]);
+            //$user = $this->userModel->update_user($data["id"]);
             if ($user) {
                 $this->session->setFlashData('success', trans("User updated successfully!"));
                 return redirect()->back();

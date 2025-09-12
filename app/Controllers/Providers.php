@@ -451,6 +451,261 @@ class Providers extends BaseController
 		}
 		return view('Providers/Providers', $data);
 	}
+	public function providers_list_user_based($category = null, $location = null)
+    {
+		$category = 'all';
+		
+		$this->UsersModel = new UsersModel();
+		$data['user_detail']    = $this->UsersModel->get_user($_GET['seller_id']);
+		$data['fromuserId'] = !empty($this->session->get('vr_sess_user_id')) ? $this->session->get('vr_sess_user_id') : 0;
+		$data['userId'] = $_GET['seller_id'];
+		$data['share_url'] = str_replace('index.php/','',current_url(true));
+		
+		$data['meta_title'] = !empty(get_seo('Home')) ? get_seo('Home')->meta_title :'Plane Broker';
+		$data['meta_desc'] = !empty(get_seo('Home')) ? get_seo('Home')->meta_description :"Looking for the best Plane Broker? Look no further! Discover experts who cater to your needs.";
+		$data['meta_keywords'] = !empty(get_seo('Home')) ? get_seo('Home')->meta_keywords : '';
+				
+		
+		$where = '';
+		$filter_texts['category'] = array();
+		$filter_ids['category_ids'] = array();
+		$filter_ids['manufacturer'] = array();
+		$filter_texts['manufacturer'] = array();
+		$filter_texts['keywords'] = '';
+		$filter_texts['model'] = array();
+		$filter_ids['model'] = array();
+		$filter_texts['year'] = '';
+		$filter_ids['year'] = array();
+		$data['is_get'] = 0;
+		
+		
+		//get products list
+		$this->ProductModel = new ProductModel();
+		$raw_filters = $this->ProductModel->get_filters($category,$where);
+		
+		$wherecat = '';
+		if(!empty($_GET)){
+			$realFilters = $_GET;
+			unset($realFilters['sort_by']);          // ignore the sort radio
+
+			// Remove keys that are empty or contain only empty strings
+			$realFilters = array_filter($realFilters, function ($v) {
+				if (is_array($v)) {                 // drop arrays like [''] or []
+					return count(array_filter($v, fn($x) => $x !== '' && $x !== null)) > 0;
+				}
+				return $v !== '' && $v !== null;
+			});
+
+			// --------------------------------------------------
+			// 1)  Now set the flag
+			// --------------------------------------------------
+			$data['is_get'] = empty($realFilters) ? 0 : 1;
+			if(!empty($_GET['category']) && !empty($_GET['category'][0])){
+				$where .= ' AND p.sub_category_id IN ('.implode(',',explode('|',$_GET['category'])).')';				
+				$wherecat .= ' AND p.sub_category_id IN ('.implode(',',explode('|',$_GET['category'])).')';				
+				$filter_texts['category'] = explode(', ',getSubcategoryName(explode('|',$_GET['category'])));
+				$filter_ids['category_ids'] = explode('|',$_GET['category']);
+			}
+			if(!empty($_GET['keywords'])){
+				//get fields to show				
+				$this->ProductModel = new ProductModel();
+				$category_detail = $this->db->query("SELECT id, name,skill_name,permalink FROM categories WHERE permalink LIKE '".$category."' ORDER BY name ASC", 'r')->getRowArray();
+				//$data['title_fields'] = $this->ProductModel->title_fields($category,'title');
+				$where .= ' AND ((SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` where name = "manufacturer" limit 1)) like "%'.$_GET['keywords'].'%" OR (SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` where name = "Make/Model")) like "%'.$_GET['keywords'].'%" OR (SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` where name = "year")) like "%'.$_GET['keywords'].'%" Or (SELECT GROUP_CONCAT(pd.field_value ORDER BY t.sort_order SEPARATOR " ") AS field_values FROM products_dynamic_fields pd JOIN ( SELECT t.field_id, t.sort_order FROM title_fields t LEFT JOIN fields f ON f.id = t.field_id WHERE t.category_id = "'.$category_detail['id'].'" and t.title_type = "title") t ON t.field_id = pd.field_id WHERE pd.product_id = p.id) like "%'.$_GET['keywords'].'%" )';
+				$filter_texts['keywords'] = 'Keywords';
+			}
+			if(!empty($_GET['created_at'])){
+				$created_at = explode('|',$_GET['created_at']);
+				if(!empty($created_at[0])){
+					$where .= ' AND (p.created_at >= "'.$created_at[0].' 00:00:00"';
+				}
+				if(!empty($created_at[1])){
+					$where .= ' AND p.created_at <= "'.$created_at[1].' 23:59:59"';
+				}
+				$where .= ')';
+				$filter_texts['created_at'] = 'Date';
+				$filter_ids['created_at'] = explode('|',$_GET['created_at']);
+			}
+			
+			if(!empty($_GET['featured'])){
+				$where .= " AND pl.is_featured_listing = 1";
+				$filter_texts['featured'] = 'Featured';
+				$filter_ids['featured'] = 'yes';
+			}
+			foreach($_GET as $g => $getparam){
+				if($g != 'category' && $g != 'created_at' && $g != 'featured'){
+					
+					$slugToFind = $g;
+					$slugText = $g;
+					$check_filter_type = null;
+					foreach ($raw_filters as $item) {
+						if ($item['slug'] === $slugToFind) {
+							$check_filter_type = $item['filter_type'];
+							$slugText = $item['name'];
+							break;
+						}
+					}
+
+					if($check_filter_type == 'checkbox'){
+						$whereIn = explode('|', $getparam);
+						$whereIn = array_map(function($val) {
+							return "'" . addslashes($val) . "'";
+						}, $whereIn);
+						
+						$where .= " AND (SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` join field_categories fc on fc.field_id=id where LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name, '/', '_'), ' ', '_'), '-', '_'), '(', '_'), ')', '_'), '&', '_')) = '".$g."' and fc.category_id=p.category_id LIMIT 1)) IN (" . implode(",", $whereIn) . ")";
+						
+						$filter_texts[$g] = explode('|',$getparam);
+						$filter_ids[$g] = explode('|',$getparam);
+					}
+					if($check_filter_type == 'number'){
+						$time = explode('|',$getparam);
+						
+						$where .= 'AND (';
+						$time[0] = !empty($time[0]) ? $time[0] : 0 ;
+						$time[1] = !empty($time[1]) ? $time[1] : 0 ;
+						if(!empty($time[0])){
+							if($g == 'price'){
+								$where .= " (SELECT REPLACE(field_value, ',', '') FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` join field_categories fc on fc.field_id=id where LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name, '/', '_'), ' ', '_'), '-', '_'), '(', '_'), ')', '_'), '&', '_')) = '".$g."' and fc.category_id=p.category_id LIMIT 1)) >= ".(int)$time[0];
+							}else{
+								$where .= " (SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` join field_categories fc on fc.field_id=id where LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name, '/', '_'), ' ', '_'), '-', '_'), '(', '_'), ')', '_'), '&', '_')) = '".$g."' and fc.category_id=p.category_id LIMIT 1)) >= ".(int)$time[0];
+							}
+						}
+						if(!empty($time[0]) && !empty($time[1])){
+							$where .= " AND ";
+						}
+						if(!empty($time[1])){
+							if($g == 'price'){								
+								$where .= " (SELECT REPLACE(field_value, ',', '') FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` join field_categories fc on fc.field_id=id where LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name, '/', '_'), ' ', '_'), '-', '_'), '(', '_'), ')', '_'), '&', '_')) = '".$g."' and fc.category_id=p.category_id LIMIT 1)) <= ".(int)$time[1];
+							}else{
+								$where .= " (SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` join field_categories fc on fc.field_id=id where LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name, '/', '_'), ' ', '_'), '-', '_'), '(', '_'), ')', '_'), '&', '_')) = '".$g."' and fc.category_id=p.category_id LIMIT 1)) <= ".(int)$time[1];
+							}
+						}
+						$where .= ')';
+						
+						$filter_texts[$g] = $slugText;
+						$filter_ids[$g] = explode('|',$getparam);
+					}
+					if($check_filter_type == 'text'){
+						if(!empty($getparam)){
+							$where .= " AND (SELECT field_value FROM `products_dynamic_fields` where product_id = p.id and field_id = (SELECT id FROM `fields` join field_categories fc on fc.field_id=id WHERE LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(name, '/', '_'), ' ', '_'), '-', '_'), '(', '_'), ')', '_'), '&', '_')) = '".$g."' and fc.category_id=p.category_id LIMIT 1)) like '%".$getparam."%'";
+						}
+						$filter_texts[$g] = $slugText;
+						$filter_ids[$g] = $getparam;
+					}
+				}
+			}
+		}
+		$where .= ' AND p.user_id = "'.$_GET['seller_id'].'" AND p.status=1 AND (p.is_cancel = 0 || s.stripe_subscription_end_date >= NOW()) and p.sale_id > 0';
+		$wherecat .= ' AND p.user_id = "'.$_GET['seller_id'].'" AND p.status=1 AND (p.is_cancel = 0 || s.stripe_subscription_end_date >= NOW()) and p.sale_id > 0';
+		
+				
+		$sort_by = $this->request->getGet('sort_by') ?? '';   // '' when not present
+		$orderBy = '';                      // default → newest first
+
+		switch ($sort_by) {
+			case 'price_asc':        // Price (Low → High)
+				$orderBy = "
+					CAST(
+						REPLACE(
+							(SELECT field_value
+							 FROM   products_dynamic_fields
+							 WHERE  product_id = p.id
+							   AND  field_id   = (SELECT id FROM fields WHERE name = 'price' LIMIT 1)
+							 LIMIT  1
+							), ',', ''
+						) AS UNSIGNED
+					) ASC";
+				break;
+
+			case 'price_desc':       // Price (High → Low)
+				$orderBy = "
+					CAST(
+						REPLACE(
+							(SELECT field_value
+							 FROM   products_dynamic_fields
+							 WHERE  product_id = p.id
+							   AND  field_id   = (SELECT id FROM fields WHERE name = 'price' LIMIT 1)
+							 LIMIT  1
+							), ',', ''
+						) AS UNSIGNED
+					) DESC";
+				break;
+
+			case 'oldest':           // Oldest first
+				$orderBy = 'p.created_at ASC';
+				break;
+
+			case 'newest':           // explicit newest (same as default)
+			default:
+				$orderBy = 'p.created_at DESC';
+				break;
+		}
+		
+		$data['filters'] = $this->ProductModel->get_filters($category,$wherecat);
+		//echo "<pre>";print_r($data['filters']);exit;
+		//get products list
+		$this->ProductModel = new ProductModel();
+		if(!empty($orderBy)){
+			$data['categories'] = $this->ProductModel->get_products($category,$where,$orderBy);
+		}else{
+			$data['categories'] = $this->ProductModel->get_products($category,$where);
+		}
+		
+		//get subcategory list
+		$this->CategoriesModel = new CategoriesModel();
+		$data['categories_list'] = $this->db->query("select * from categories where id in (SELECT category_id  FROM `products` WHERE `user_id` = '".$_GET['seller_id']."' group by category_id)")->getResult();
+		//get manufacturers List
+		$this->ProductModel = new ProductModel();
+		$data['manufacturers'] = $this->ProductModel->get_manufacturers($category, $where, $all=0);
+		//get models List
+		$this->ProductModel = new ProductModel();
+		$data['models'] = $this->ProductModel->get_models($category, $where);
+		
+		$data['category'] = $category;
+		$data['filter_texts'] = $filter_texts;
+		//print_r($data['categories_list']);exit;
+		$data['filter_ids'] = $filter_ids;
+		
+		$price_range_array = array('Under $20,000'=>array('','20000',0),'$20,000 to $49,999'=>array('20000','49999',0),'$50,000 to $99,999'=>array('50000','99999',0),'$100,000 to $249,999'=>array('100000','249999',0),'$250,000 to $499,999'=>array('250000','499999',0),'$500,000 and Over'=>array('500000','',0));
+		
+		if(!empty($data['categories'])){
+			foreach($data['categories'] as $prod){
+				if($prod['price'] > 0 && $prod['price'] < 20000){
+					$price_range_array['Under $20,000'][2]++;
+				}elseif($prod['price'] >= 20000 && $prod['price'] <= 49999){
+					$price_range_array['$20,000 to $49,999'][2]++;
+				}elseif($prod['price'] >= 50000 && $prod['price'] <= 99999){
+					$price_range_array['$50,000 to $99,999'][2]++;
+				}elseif($prod['price'] <= 100000 && $prod['price'] <= 249999){
+					$price_range_array['$100,000 to $249,999'][2]++;
+				}elseif($prod['price'] >= 250000 && $prod['price'] <= 499999){
+					$price_range_array['$250,000 to $499,999'][2]++;
+				}elseif($prod['price'] >= 500000){
+					$price_range_array['$500,000 and Over'][2]++;
+				}
+			}
+		}
+		$new_pr_arr = [];
+		foreach($price_range_array as $th => $pr){
+			//if($pr[2] > 0){
+				$new_pr_arr[$th] = $pr;
+			//}
+		}
+		$data['price_range_array'] = $new_pr_arr;
+		//echo "<pre>";print_r($data);exit;
+		$data['result_count'] = count($data['categories']);
+        $this->CategoriesModel = new CategoriesModel();
+		$data['category_detail'] = $this->CategoriesModel->get_categories_link($category);
+		if ($this->request->isAJAX()) {
+			return $this->response->setJSON([
+				'grid'    => view('Providers/product_cards',   $data, ['saveData' => false]),
+				'filters' => view('Providers/applied_filters', $data, ['saveData' => false]),
+				'sidebar'  => view('Providers/filter_sidebar', $data, ['saveData' => false]),
+				'count'   => $data['result_count'],
+			]);
+		}
+		return view('Providers/ProvidersUserBased', $data);
+	}
 	
 	public function providers_list_old($location = null, $category = null)
     {	

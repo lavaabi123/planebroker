@@ -501,7 +501,7 @@ else if($this->request->getVar('check') == '3'){
 			}
 
 			try {
-				addWatermarkFromUrls($mainImageUrl, $watermarkUrl, $savePath, 0, 0.7);
+				addWatermarkFromUrls($mainImageUrl, $watermarkUrl, $savePath, 0.02, 0.7);
 				//echo "Watermark applied successfully. Saved to: $savePath";
 			} catch (\Exception $e) {
 				//echo "Error: " . $e->getMessage();
@@ -559,7 +559,7 @@ else if($this->request->getVar('check') == '3'){
 			}
 			
 			try {
-				addWatermarkFromUrls($mainImageUrl, $watermarkUrl, $savePath, 0, 0.7);
+				addWatermarkFromUrls($mainImageUrl, $watermarkUrl, $savePath, 0.02, 0.7);
 				//echo "Watermark applied successfully. Saved to: $savePath";
 			} catch (\Exception $e) {
 				//echo "Error: " . $e->getMessage();

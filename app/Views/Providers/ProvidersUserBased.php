@@ -119,11 +119,11 @@ $icons = [
 					<img class="icons" src="<?php echo base_url('assets/frontend/images/usericon.png'); ?>" />
 					<p class=""><?php echo $user_detail->fullname; ?></p>
 				</div>
-				<?php if(!empty($user_detail->city) || !empty($user_detail->state)){ ?>
+				<?php if(!empty($user_detail->address)){ ?>
 				<hr>
 				<div class="d-flex align-items-center fw-medium mb-0">
 					<img class="icons" src="<?php echo base_url('assets/frontend/images/pin.png'); ?>" />
-					<p class=""><?php echo $user_detail->city.' '.$user_detail->state; ?></p>
+					<p class=""><?php echo $user_detail->address; ?></p>
 				</div>
 				<?php } ?>
 				<?php if(!empty($user_detail->website)){ ?>

@@ -51,7 +51,22 @@ class UsersModel extends Model
         $data['last_name'] = $this->request->getVar('last_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $data['fullname'] = $this->request->getVar('first_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS).' '.$this->request->getVar('last_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $data['email'] = $this->request->getVar('email', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $data['mobile_no'] = $this->request->getVar('mobile_no', FILTER_SANITIZE_FULL_SPECIAL_CHARS);	
+        $data['mobile_no'] = $this->request->getVar('mobile_no', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+			
+		$data['business_name'] = !empty($this->request->getVar('business_name')) ? $this->request->getVar('business_name') : '';	
+		$data['address'] = !empty($this->request->getVar('address')) ? $this->request->getVar('address') : '';				
+		$data['city'] = !empty($this->request->getVar('city')) ? $this->request->getVar('city') : '';
+		$data['state'] = !empty($this->request->getVar('state')) ? $this->request->getVar('state') : '';
+		$data['website'] = !empty($this->request->getVar('website')) ? $this->request->getVar('website') : '';
+		$data['facebook_link'] = !empty($this->request->getVar('facebook_link')) ? $this->request->getVar('facebook_link') : '';
+		$data['insta_link'] = !empty($this->request->getVar('insta_link')) ? $this->request->getVar('insta_link') : '';	
+		$data['linkedin_link'] = !empty($this->request->getVar('linkedin_link')) ? $this->request->getVar('linkedin_link') : '';
+		$data['tiktok_link'] = !empty($this->request->getVar('tiktok_link')) ? $this->request->getVar('tiktok_link') : '';	
+		$data['youtube_link'] = !empty($this->request->getVar('youtube_link')) ? $this->request->getVar('youtube_link') : '';	
+		$data['about_me'] = !empty($this->request->getVar('about_me')) ? $this->request->getVar('about_me') : '';
+			
+		
         $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
         $data['user_type'] = "registered";
         $data['role'] = 2;
@@ -161,7 +176,8 @@ class UsersModel extends Model
 			$data['last_name'] = $this->request->getVar('last_name');
 			$data['fullname'] = $this->request->getVar('first_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS).' '.$this->request->getVar('last_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 			$data['mobile_no'] = $this->request->getVar('mobile_no');
-			$data['business_name'] = !empty($this->request->getVar('business_name')) ? $this->request->getVar('business_name') : '';					
+			$data['business_name'] = !empty($this->request->getVar('business_name')) ? $this->request->getVar('business_name') : '';	
+			$data['address'] = !empty($this->request->getVar('address')) ? $this->request->getVar('address') : '';				
 			$data['city'] = !empty($this->request->getVar('city')) ? $this->request->getVar('city') : '';
 			$data['state'] = !empty($this->request->getVar('state')) ? $this->request->getVar('state') : '';
 			$data['website'] = !empty($this->request->getVar('website')) ? $this->request->getVar('website') : '';
@@ -896,6 +912,7 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
 		$data['mobile_no'] = $this->request->getVar('mobile_no');
         $data['business_name'] = !empty($this->request->getVar('business_name')) ? $this->request->getVar('business_name') : '';
 				
+		$data['address'] = !empty($this->request->getVar('address')) ? $this->request->getVar('address') : '';
 		$data['city'] = !empty($this->request->getVar('city')) ? $this->request->getVar('city') : '';
 		$data['state'] = !empty($this->request->getVar('state')) ? $this->request->getVar('state') : '';
 		$data['website'] = !empty($this->request->getVar('website')) ? $this->request->getVar('website') : '';

@@ -501,7 +501,7 @@ video{
 						</div>
 							</fieldset>
 
-							<fieldset class="form-input">
+							<!--<fieldset class="form-input">
 								<h3 class="title-xl black my-3"><?php echo trans('Seller Information') ?></h3>
 								<div class="form-section row row-cols-1 row-cols-md-2">
 								<div class="form-group">
@@ -517,21 +517,8 @@ video{
 								<div class="form-group">
 									<input class="form-control required" type="email" id="email" name="email" placeholder="<?php echo trans('Email') ?>" autocomplete="off" value="<?php echo !empty($product_detail['email']) ? $product_detail['email'] : (!empty(old('email'))?old('email'):$user_detail->email); ?>" required>
 								</div>	
-								<!--<div class="form-group">
-									<input class="form-control" type="text" id="address2" name="suite" placeholder="<?php echo trans('Suite, Apartment, etc') ?>" value="<?php echo old('suite') ?>" >
 								</div>
-								<div class="form-group row">
-								<div class="col-12 col-md-5 pr-md-0">							
-									<input type="text" value="" placeholder="City" name='locality' id="locality" class='form-control required' />
-								</div>
-								<div class="col-12 col-md-4 px-md-1">							
-									<input type="text" value="" placeholder="State" name='state' id="state" class='form-control required' />
-								</div>
-								<div class="col-12 col-md-3 pl-md-0">							
-									<input type="text" value="" placeholder="Zip Code" name='postcode' id="postcode" class='form-control required' />
-								</div>-->
-								</div>
-							</fieldset>
+							</fieldset>-->
 								
 								<input type="hidden" id="g-recaptcha-response"  class="form-control required" name="check_bot" value="" >
 								

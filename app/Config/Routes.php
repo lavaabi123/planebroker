@@ -143,6 +143,7 @@ $routes->group("providerauth", ["namespace" => "App\Controllers\Providerauth"], 
     $routes->get('photos', 'ProviderDashboard::photos');
     $routes->post('photos_post', 'ProviderDashboard::photos_post');
     $routes->post('upload_profile_photo', 'ProviderDashboard::upload_profile_photo');
+    $routes->post('remove_profile_photo', 'ProviderDashboard::remove_profile_photo');
     $routes->post('photosedit_post', 'ProviderDashboard::photosedit_post');
     $routes->post('photos_delete', 'ProviderDashboard::photos_delete');
     $routes->get('upgrade', 'ProviderDashboard::upgrade');

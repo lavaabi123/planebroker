@@ -528,9 +528,22 @@ else if($this->request->getVar('check') == '3'){
 		}
 	}
 	public function upload_profile_photo(){
-			$this->UsersModel = new UsersModel();
-		$user = $this->UsersModel->update_user_profile_photo($this->request->getVar('image'),$this->session->get('vr_sess_user_id'));
-		echo 'success';
+		$this->UsersModel = new UsersModel();
+		$u_id = !empty($_POST['user_id']) ? $_POST['user_id'] : $this->session->get('vr_sess_user_id') ;
+		$user = $this->UsersModel->update_user_profile_photo($this->request->getVar('image'),$u_id);
+		return $this->response->setJSON([
+        'success' => true,
+        'message' => 'Profile photo updated'
+    ]);
+	}
+	public function remove_profile_photo(){
+		$this->UsersModel = new UsersModel();
+		$u_id = !empty($_POST['user_id']) ? $_POST['user_id'] : $this->session->get('vr_sess_user_id') ;
+		$user = $this->UsersModel->update_user_profile_photo('',$u_id);
+		return $this->response->setJSON([
+        'success' => true,
+        'message' => 'Profile photo updated'
+    ]);
 	}
 	public function photosedit_post(){
 		

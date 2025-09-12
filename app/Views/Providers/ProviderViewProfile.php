@@ -392,10 +392,8 @@ $count = !empty($images) ? count($images) : 0;
 					<?php if(!empty($user_detail->mobile_no)){ ?>
 					<div class="d-flex align-items-center fw-medium mb-0">
 						<img class="icons" src="<?php echo base_url('assets/frontend/images/phone.png'); ?>" />
-						<p class="mb-0"><?php echo !empty($product_detail['phone']) ? $product_detail['phone'] : $user_detail->mobile_no; ?></p>
-						<a class="showPhone btn btn-sm mx-3" href="tel:+1<?php echo !empty($product_detail['phone']) ? preg_replace('/\D+/', '', $product_detail['phone']) : preg_replace('/\D+/', '', $user_detail->mobile_no); ?>"> CALL </a>		
-						<!--<a href="javascript:void(0)" data-phone="<?php echo phoneFormat($user_detail->mobile_no); ?>" data-label="<?php if(!empty($user_detail->business_name)){ echo "Us"; }else{ echo "Me"; } ?>" class="showPhone button btn yellowbtn mx-3" data-id="<?php echo $userId; ?>" data-pid="<?php echo $product_detail['id']; ?>" onclick="showPhone(this)"> CALL </a>	-->
-					
+						<p class="mb-0"><?php echo $user_detail->mobile_no; ?></p>
+						<a class="showPhone btn btn-sm mx-3" href="tel:+1<?php echo preg_replace('/\D+/', '', $user_detail->mobile_no); ?>"> CALL </a>
 					</div>
 					<hr>
 					<?php } ?>		
@@ -403,22 +401,24 @@ $count = !empty($images) ? count($images) : 0;
 					<div class="d-flex align-items-center fw-medium mb-0">
 						<a class="d-flex align-items-center" href="<?php echo base_url('user-listings?seller_id='.$user_detail->id); ?>">
 						<img class="icons" src="<?php echo base_url('assets/frontend/images/usericon.png'); ?>" />
-						<p class="mb-0"><?php echo !empty($product_detail['business_name']) ? $product_detail['business_name'] : $product_detail['user_name']; ?></p>
+						<p class="mb-0"><?php echo $user_detail->fullname; ?></p>
 						</a>
 					</div>
 					<hr>
+					<?php if(!empty($user_detail->address)){ ?>
 					<div class="d-flex align-items-center fw-medium mb-0">
 						<img class="icons" src="<?php echo base_url('assets/frontend/images/pin.png'); ?>" />
-						<p class=""><?php echo $product_detail['address']; ?></p>
+						<p class=""><?php echo $user_detail->address; ?></p>
 					</div>
+					<hr>
+					<?php } ?>		
 					<?php if(!empty($user_detail->website)){ ?>
-						<hr>
 						<div class="d-flex align-items-center fw-medium mb-0">
 							<img class="icons" src="<?php echo base_url('assets/frontend/images/web.png'); ?>" />
 							<p class=""><?php echo $user_detail->website; ?></p>
 						</div>
-					<?php } if(!empty($user_detail->facebook_link) || !empty($user_detail->insta_link) || !empty($user_detail->	twitter_link) || !empty($user_detail->linkedin_link) || !empty($user_detail->tiktok_link) || !empty($user_detail->youtube_link)){ ?>
 						<hr>
+					<?php } if(!empty($user_detail->facebook_link) || !empty($user_detail->insta_link) || !empty($user_detail->	twitter_link) || !empty($user_detail->linkedin_link) || !empty($user_detail->tiktok_link) || !empty($user_detail->youtube_link)){ ?>
 						<div class="social-media">
 						<?php
 						if(!empty($user_detail->facebook_link)){
@@ -469,9 +469,9 @@ $count = !empty($images) ? count($images) : 0;
 									  </a>';
 							}
 						}
-						echo '</div>';
+						echo '</div>
+						<hr>';
 					}	?>
-					<hr>
 					
 					<!-- MESSAGE ME - START -->
 					<div id="contact-provider" class="providerMsg rounded-5 p-4 my-5 bg-grey">

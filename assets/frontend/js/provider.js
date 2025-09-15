@@ -234,6 +234,79 @@ form.validate({
             }
         }
     });
+	
+// ---- Helpers: normalize loose inputs to full URLs ----
+function normalizeUrlToNetwork(network, raw) {
+  if (!raw) return '';
+  let v = (raw + '').trim();
+
+  // if it's already a URL, force https + tidy
+  if (/^https?:\/\//i.test(v) || v.startsWith('www.')) {
+    v = v.replace(/^http:\/\//i, 'https://');
+    try {
+      const u = new URL(v.startsWith('http') ? v : 'https://' + v);
+      if (u.pathname !== '/' && v.endsWith('/')) v = v.slice(0, -1);
+    } catch (_) {}
+    return v;
+  }
+
+  // handle-only -> build a URL for the network
+  const handle = v.replace(/^@/, '');
+  switch (network) {
+    case 'facebook':  return 'https://www.facebook.com/'   + handle;
+    case 'linkedin':  return 'https://www.linkedin.com/in/'+ handle;
+    case 'instagram': return 'https://www.instagram.com/'  + handle;
+    case 'tiktok':    return 'https://www.tiktok.com/@'    + handle;
+    case 'youtube':   return 'https://www.youtube.com/@'   + handle;
+    default:          return /^https?:\/\//i.test(v) ? v : 'https://' + v;
+  }
+}
+
+// ---- Regexes per network (anchor ^$) ----
+const RX = {
+	website  : /^(https?:\/\/)([a-z0-9\-]+\.)+[a-z]{2,}(:\d+)?(\/[^\s]*)?$/i,
+  facebook : /^(https?:\/\/)(www\.)?facebook\.com\/[A-Za-z0-9.\-_]+(\/[A-Za-z0-9.\-_]+)*(\/)?(\?[^\s]*)?$/i,
+  linkedin : /^(https?:\/\/)([a-z]{2,3}\.)?linkedin\.com\/(in|company)\/[A-Za-z0-9\-_%\.]+(\/)?(\?[^\s]*)?$/i,
+  instagram: /^(https?:\/\/)(www\.)?instagram\.com\/[A-Za-z0-9._]+(\/)?(\?[^\s]*)?$/i,
+  tiktok   : /^(https?:\/\/)(www\.)?tiktok\.com\/@?[A-Za-z0-9._]+(\/)?(\?[^\s]*)?$/i,
+  youtube  : /^(https?:\/\/)(www\.)?(youtube\.com\/(channel\/[A-Za-z0-9_\-]+|user\/[A-Za-z0-9_\-]+|@?[A-Za-z0-9_\-\.]+|watch\?v=[A-Za-z0-9_\-]+|shorts\/[A-Za-z0-9_\-]+)|youtu\.be\/[A-Za-z0-9_\-]+)(\/)?(\?[^\s]*)?$/i
+};
+
+// ---- jQuery Validate custom methods (optional if empty) ----
+$.validator.addMethod('facebookUrl',  function(v, el){ if(!v) return true; return RX.facebook.test(v); },  'Please enter a valid Facebook URL.');
+$.validator.addMethod('linkedinUrl',  function(v, el){ if(!v) return true; return RX.linkedin.test(v); },  'Please enter a valid LinkedIn URL (e.g., https://www.linkedin.com/username).');
+$.validator.addMethod('instagramUrl', function(v, el){ if(!v) return true; return RX.instagram.test(v); }, 'Please enter a valid Instagram URL.');
+$.validator.addMethod('tiktokUrl',    function(v, el){ if(!v) return true; return RX.tiktok.test(v); },   'Please enter a valid TikTok URL (e.g., https://www.tiktok.com/@handle).');
+$.validator.addMethod('youtubeUrl',   function(v, el){ if(!v) return true; return RX.youtube.test(v); },  'Please enter a valid YouTube URL.');
+$.validator.addMethod(
+  'websiteUrl',
+  function (v, el) {
+    if (!v) return true; // optional
+    // ensure normalized for validation
+    const norm = normalizeUrlToNetwork('website', v);
+    //$(el).val(norm);
+    return RX.website.test(norm);
+  },
+  'Please enter a valid website URL (e.g., https://example.com).'
+);
+
+// ---- Auto-normalize on blur (turn handles into URLs) ----
+$(document).on('blur', '#website,#facebook,#linkedin,#instagram,#tiktok_link,#youtube_link', function(){
+  const id = this.id;
+  const map = {
+    website: 'website',
+    facebook: 'facebook',
+    linkedin: 'linkedin',
+    instagram: 'instagram',
+    tiktok_link: 'tiktok',
+    youtube_link: 'youtube'
+  };
+  const network = map[id];
+  const normalized = normalizeUrlToNetwork(network, $(this).val());
+  //$(this).val(normalized);
+});
+
+
 	$("#edit-account-form").validate({
 		ignore: ':hidden:not([class~=selectized]),:hidden > .selectized, .selectize-control .selectize-input input',
         rules: {
@@ -246,8 +319,23 @@ form.validate({
 				maxlength:10
 			},
 			email: { required: true, email: true},
-        }
+			website: { websiteUrl: true },
+			facebook_link: { facebookUrl: true },
+			linkedin_link: { linkedinUrl: true },
+			insta_link:    { instagramUrl: true },
+			tiktok_link:   { tiktokUrl: true },
+			youtube_link:  { youtubeUrl: true }
+        },
+		  messages: {
+			website: "Example: https://example.com",
+			facebook_link: { facebookUrl: "Example: https://www.facebook.com/yourpage" },
+			linkedin_link: { linkedinUrl: "Example: https://www.linkedin.com/yourname" },
+			insta_link:    { instagramUrl: "Example: https://www.instagram.com/username" },
+			tiktok_link:   { tiktokUrl: "Example: https://www.tiktok.com/@handle" },
+			youtube_link:  { youtubeUrl: "Channel/User/@handle/Video links allowed" }
+		  }
     });
+	
 	$("#edit-password-form").validate({
 		ignore: ':hidden:not([class~=selectized]),:hidden > .selectized, .selectize-control .selectize-input input',
         rules: {

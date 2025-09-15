@@ -90,7 +90,7 @@ $icons = [
 		
 		<div class="row mb-5 mt-5">
 			<div class="col-sm-6">
-				<img class="img-fluid w-100 br-full" src="<?php echo ($user_detail->avatar) ? base_url().'/uploads/userimages/'.$user_detail->id.'/'.$user_detail->avatar : base_url('assets/frontend/images/user-pic-new.png'); ?>">
+				<img class="img-fluid w-100 br-full" src="<?php echo ($user_detail->avatar) ? base_url().'/uploads/userimages/'.$user_detail->id.'/'.$user_detail->avatar : base_url('assets/frontend/images/user-pic-new.jpg'); ?>">
 				<?php 
 				if(!empty($user_detail->about_me)){
 				?>
@@ -129,57 +129,59 @@ $icons = [
 				<?php if(!empty($user_detail->website)){ ?>
 					<hr>
 					<div class="d-flex align-items-center fw-medium mb-0">
+					<a class="d-flex align-items-center" target="_blank" href="<?php echo $user_detail->website; ?>">
 						<img class="icons" src="<?php echo base_url('assets/frontend/images/web.png'); ?>" />
-						<p class=""><?php echo $user_detail->website; ?></p>
+						<p class="mb-0"><?php echo $user_detail->website; ?></p>
+					</a>
 					</div>
 				<?php } if(!empty($user_detail->facebook_link) || !empty($user_detail->insta_link) || !empty($user_detail->	twitter_link) || !empty($user_detail->linkedin_link) || !empty($user_detail->tiktok_link) || !empty($user_detail->youtube_link)){ ?>
 					<hr>
 					<div class="social-media">
 					<?php
 					if(!empty($user_detail->facebook_link)){
-						$href = normalizeUrl($user_detail->facebook_link, 'facebook');
+						//$href = normalizeUrl($user_detail->facebook_link, 'facebook');
 						if (isset($icons[strtolower('facebook')])) {
-							echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+							echo '<a href="'.$user_detail->facebook_link.'" target="_blank" rel="noopener noreferrer" class="mx-2">
 									<i class="'.$icons[strtolower('facebook')].'"></i>
 								  </a>';
 						}
 					}
 					if(!empty($user_detail->linkedin_link)){
-						$href = normalizeUrl($user_detail->linkedin_link, 'linkedin');
+						//$href = normalizeUrl($user_detail->linkedin_link, 'linkedin');
 						if (isset($icons[strtolower('linkedin')])) {
-							echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+							echo '<a href="'.$user_detail->linkedin_link.'" target="_blank" rel="noopener noreferrer" class="mx-2">
 									<i class="'.$icons[strtolower('linkedin')].'"></i>
 								  </a>';
 						}
 					}
 					if(!empty($user_detail->insta_link)){
-						$href = normalizeUrl($user_detail->insta_link, 'instagram');
+						//$href = normalizeUrl($user_detail->insta_link, 'instagram');
 						if (isset($icons[strtolower('instagram')])) {
-							echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+							echo '<a href="'.$user_detail->insta_link.'" target="_blank" rel="noopener noreferrer" class="mx-2">
 									<i class="'.$icons[strtolower('instagram')].'"></i>
 								  </a>';
 						}
 					}
 					if(!empty($user_detail->twitter_link)){
-						$href = normalizeUrl($user_detail->twitter_link, 'twitter');
+						//$href = normalizeUrl($user_detail->twitter_link, 'twitter');
 						if (isset($icons[strtolower('twitter')])) {
-							echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+							echo '<a href="'.$user_detail->twitter_link.'" target="_blank" rel="noopener noreferrer" class="mx-2">
 									<i class="'.$icons[strtolower('twitter')].'"></i>
 								  </a>';
 						}
 					}
 					if(!empty($user_detail->tiktok_link)){
-						$href = normalizeUrl($user_detail->tiktok_link, 'tiktok');
+						//$href = normalizeUrl($user_detail->tiktok_link, 'tiktok');
 						if (isset($icons[strtolower('tiktok')])) {
-							echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+							echo '<a href="'.$user_detail->tiktok_link.'" target="_blank" rel="noopener noreferrer" class="mx-2">
 									<i class="'.$icons[strtolower('tiktok')].'"></i>
 								  </a>';
 						}
 					}
 					if(!empty($user_detail->youtube_link)){
-						$href = normalizeUrl($user_detail->youtube_link, 'youtube');
+						//$href = normalizeUrl($user_detail->youtube_link, 'youtube');
 						if (isset($icons[strtolower('youtube')])) {
-							echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+							echo '<a href="'.$user_detail->youtube_link.'" target="_blank" rel="noopener noreferrer" class="mx-2">
 									<i class="'.$icons[strtolower('youtube')].'"></i>
 								  </a>';
 						}
@@ -222,9 +224,8 @@ $icons = [
 					<hr>
 			</div>
 		</div>
-		<div id="">
+		<div class="mb-5">
 		<?php 
-		$check_price_field = !empty($category_detail->id) ? check_price_field($category_detail->id) : '';
 		if(!empty($categories)){ ?>
 		<!-- Category Tabs -->
 		<div class="category-tabs">
@@ -254,7 +255,9 @@ $icons = [
 							<h5 class="fw-medium title-xs"><?php echo !empty($cat['name']) ? $cat['name'] : '-'; ?></h5>
 							<h5 class="fw-medium text-primary title-xs"><?php echo $cat['sub_cat_name']; ?></h5>
 							<p class="text-grey mb-3"><?php echo $cat['address']; ?></p>
-							<h5 class="fw-medium title-xs"><?php echo ( $check_price_field == '') ? '' : (($cat['price'] != NULL) ? 'USD $'.number_format($cat['price'], 2, '.', ',') : 'Call for Price'); ?></h5>
+							<h5 class="fw-medium title-xs"><?php 							
+							$check_price_field = !empty($cat['cat_id']) ? check_price_field($cat['cat_id']) : '';
+							echo ( $check_price_field == '') ? '' : (($cat['price'] != NULL) ? 'USD $'.number_format($cat['price'], 2, '.', ',') : 'Call for Price'); ?></h5>
 						</div>
 					</a>
 				</div>
@@ -319,7 +322,7 @@ $icons = [
 			<h5 class="fw-bolder mb-0">Share User Profile</h5>
 			</div>
 			<div class="modal-body p-4">
-			<img src="<?php echo ($user_detail->avatar) ? base_url().'/uploads/userimages/'.$user_detail->id.'/'.$user_detail->avatar : base_url('assets/frontend/images/user-pic-new.png'); ?>" width="100%" class="rounded-4" />
+			<img src="<?php echo ($user_detail->avatar) ? base_url().'/uploads/userimages/'.$user_detail->id.'/'.$user_detail->avatar : base_url('assets/frontend/images/user-pic-new.jpg'); ?>" width="100%" class="rounded-4" />
 			<h6 class="mb-0 text-black"><?php 'hjhkkjj';//echo !empty($user_detail->business_name) ? $user_detail->business_name : $user_detail->fullname; ?></h6>						
 			<p class="fs-7"><?php //echo $user_detail->city.', '.$user_detail->state_code.' '.$user_detail->zipcode; ?></p>
 			<!-- AddToAny BEGIN -->

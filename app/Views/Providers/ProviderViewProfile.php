@@ -414,8 +414,10 @@ $count = !empty($images) ? count($images) : 0;
 					<?php } ?>		
 					<?php if(!empty($user_detail->website)){ ?>
 						<div class="d-flex align-items-center fw-medium mb-0">
+						<a class="d-flex align-items-center" target="_blank" href="<?php echo $user_detail->website; ?>">
 							<img class="icons" src="<?php echo base_url('assets/frontend/images/web.png'); ?>" />
-							<p class=""><?php echo $user_detail->website; ?></p>
+							<p class="mb-0"><?php echo $user_detail->website; ?></p>
+						</a>
 						</div>
 						<hr>
 					<?php } if(!empty($user_detail->facebook_link) || !empty($user_detail->insta_link) || !empty($user_detail->	twitter_link) || !empty($user_detail->linkedin_link) || !empty($user_detail->tiktok_link) || !empty($user_detail->youtube_link)){ ?>
@@ -424,7 +426,7 @@ $count = !empty($images) ? count($images) : 0;
 						if(!empty($user_detail->facebook_link)){
 							$href = normalizeUrl($user_detail->facebook_link, 'facebook');
 							if (isset($icons[strtolower('facebook')])) {
-								echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+								echo '<a href="'.$user_detail->facebook_link.'" target="_blank" rel="noopener noreferrer" class="mx-2">
 										<i class="'.$icons[strtolower('facebook')].'"></i>
 									  </a>';
 							}
@@ -432,7 +434,7 @@ $count = !empty($images) ? count($images) : 0;
 						if(!empty($user_detail->linkedin_link)){
 							$href = normalizeUrl($user_detail->linkedin_link, 'linkedin');
 							if (isset($icons[strtolower('linkedin')])) {
-								echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+								echo '<a href="'.$user_detail->linkedin_link.'" target="_blank" rel="noopener noreferrer" class="mx-2">
 										<i class="'.$icons[strtolower('linkedin')].'"></i>
 									  </a>';
 							}
@@ -440,7 +442,7 @@ $count = !empty($images) ? count($images) : 0;
 						if(!empty($user_detail->insta_link)){
 							$href = normalizeUrl($user_detail->insta_link, 'instagram');
 							if (isset($icons[strtolower('instagram')])) {
-								echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+								echo '<a href="'.$user_detail->insta_link.'" target="_blank" rel="noopener noreferrer" class="mx-2">
 										<i class="'.$icons[strtolower('instagram')].'"></i>
 									  </a>';
 							}
@@ -448,7 +450,7 @@ $count = !empty($images) ? count($images) : 0;
 						if(!empty($user_detail->twitter_link)){
 							$href = normalizeUrl($user_detail->twitter_link, 'twitter');
 							if (isset($icons[strtolower('twitter')])) {
-								echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+								echo '<a href="'.$user_detail->twitter_link.'" target="_blank" rel="noopener noreferrer" class="mx-2">
 										<i class="'.$icons[strtolower('twitter')].'"></i>
 									  </a>';
 							}
@@ -456,7 +458,7 @@ $count = !empty($images) ? count($images) : 0;
 						if(!empty($user_detail->tiktok_link)){
 							$href = normalizeUrl($user_detail->tiktok_link, 'tiktok');
 							if (isset($icons[strtolower('tiktok')])) {
-								echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+								echo '<a href="'.$user_detail->tiktok_link.'" target="_blank" rel="noopener noreferrer" class="mx-2">
 										<i class="'.$icons[strtolower('tiktok')].'"></i>
 									  </a>';
 							}
@@ -464,7 +466,7 @@ $count = !empty($images) ? count($images) : 0;
 						if(!empty($user_detail->youtube_link)){
 							$href = normalizeUrl($user_detail->youtube_link, 'youtube');
 							if (isset($icons[strtolower('youtube')])) {
-								echo '<a href="'.$href.'" target="_blank" rel="noopener noreferrer" class="mx-2">
+								echo '<a href="'.$user_detail->youtube_link.'" target="_blank" rel="noopener noreferrer" class="mx-2">
 										<i class="'.$icons[strtolower('youtube')].'"></i>
 									  </a>';
 							}

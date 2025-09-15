@@ -85,13 +85,6 @@
 														<?php if ($user['email_status'] != 1) : ?>
 															<a class="dropdown-item" href="javascript:void(0)" onclick="confirm_user_email(<?php echo $user['id']; ?>);"><?php echo trans('confirm_user_email'); ?></a>
 														<?php endif; ?>
-														<?php if (is_admin()) : ?>
-															<?php if ($user['status'] == "1") : ?>
-																<a class="dropdown-item" href="javascript:void(0)" onclick="ban_user('<?php echo $user['id']; ?>','<?php echo trans('confirm_ban'); ?>', 'ban');"><?php echo trans('ban_user'); ?></a>
-															<?php else : ?>
-																<a class="dropdown-item" href="javascript:void(0)" onclick="ban_user('<?php echo $user['id']; ?>', '<?php echo trans('confirm_remove_ban'); ?>', 'remove_ban');"><?php echo trans('remove_ban'); ?></a>
-															<?php endif; ?>
-														<?php endif; ?>
 
 														<?php 
 															if (is_admin()) : ?>
@@ -99,7 +92,7 @@
 															<div class="dropdown-divider"></div>
 															<a class="dropdown-item" href="javascript:void(0)" onclick="delete_item('/admin/delete_user_post','<?php echo $user['id']; ?>','<?php echo trans('confirm_user'); ?>')"><?php echo trans('delete'); ?></a>
 															<div class="dropdown-divider"></div>
-															<a class="dropdown-item" target="_blank" href="<?php echo admin_url().'listings?user_id='.$user['id']; ?>"><?php echo trans('View Listings'); ?></a>
+															<a class="dropdown-item" target="_blank" href="<?php echo base_url('user-listings?seller_id='.$user['id']); ?>"><?php echo trans('View Listings'); ?></a>
 														<?php endif;  ?>
 														
 													</div>

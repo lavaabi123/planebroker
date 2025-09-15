@@ -18,7 +18,7 @@
 						<div class="text-center mb-4">
 						
 						<div class="uploader-row">
-						  <div class="file-upload">
+						  <div class="file-upload d-none">
 							<label class="dz-wrap">
 							  <span>Upload Profile Photo</span><br />
 							  <span>(.png,.jpeg,.jpg)</span>
@@ -32,8 +32,8 @@
 								   src="<?php echo !empty($user_detail->avatar) ? base_url().'/uploads/userimages/'.$user_detail->id.'/'.$user_detail->avatar : base_url('assets/frontend/images/user-pic.png'); ?>"
 								   alt="Current profile photo" />
 							  <div class="proPic-actions">
-								<button type="button" class="btn-change" id="btn-change-photo">Change</button>
-								<button type="button" class="btn-remove" id="btn-remove-photo">Remove</button>
+								<button type="button" class="btn-change" id="btn-change-photo"><i class="fa fa-camera"></i></button>
+								<button type="button" class="btn-remove" id="btn-remove-photo"><i class="far fa-trash-o"></i></button>
 							  </div>
 							</div>
 						</div>
@@ -83,16 +83,16 @@
 													<input class="form-control" type="text" id="state" name="state" placeholder="<?php echo trans('State') ?>" value="<?php echo $user_detail->state ?>">
 												</div>-->
 													<div class="col-md-6">
-														<input class="form-control" type="text" id="website" name="website" placeholder="Website" value="<?php echo $user_detail->website ?>">
+														<input class="form-control" type="text" id="website" name="website" placeholder="Website Link" value="<?php echo $user_detail->website ?>">
 													</div>
 													<div class="col-md-6">
-														<input class="form-control" type="text" id="facebook" name="facebook_link" placeholder="Facebook" value="<?php echo $user_detail->facebook_link ?>">
+														<input class="form-control" type="text" id="facebook" name="facebook_link" placeholder="Facebook Link" value="<?php echo $user_detail->facebook_link ?>">
 													</div>
 													<div class="col-md-6">
-														<input class="form-control" type="text" id="linkedin" name="linkedin_link" placeholder="LinkedIn" value="<?php echo $user_detail->linkedin_link ?>">
+														<input class="form-control" type="text" id="linkedin" name="linkedin_link" placeholder="LinkedIn Link" value="<?php echo $user_detail->linkedin_link ?>">
 													</div>
 													<div class="col-md-6">
-														<input class="form-control" type="text" id="instagram" name="insta_link" placeholder="Instagram" value="<?php echo $user_detail->insta_link ?>">
+														<input class="form-control" type="text" id="instagram" name="insta_link" placeholder="Instagram Link" value="<?php echo $user_detail->insta_link ?>">
 													</div>													
 													
 													<div class="col-md-6">
@@ -148,24 +148,26 @@
 
 <!-- Crop Modal -->
 <div id="cropper-modal" class="cropper-modal" aria-hidden="true">
-  <div class="cropper-dialog">
-    <div class="cropper-header">
-      <strong>Crop your photo</strong>
-      <button type="button" class="cropper-close" id="cropper-cancel">&times;</button>
+  <div class="cropper-dialog rounded-5 position-relative">
+    <div class="cropper-header text-center py-4">
+      <h3 class="title-md fw-bolder">Crop your photo</h3>
+      <button type="button" class="cropper-close position-absolute top-0 end-0 m-4" id="cropper-cancel">&times;</button>
     </div>
-    <div class="cropper-body">
+    <div class="cropper-body p-0">
       <img id="cropper-image" alt="Crop preview" />
     </div>
-    <div class="cropper-footer">
+    <div class="cropper-footer flex-column flex-sm-row gap-3">
       <div class="left-actions">
-        <button type="button" id="zoom-in">Zoom +</button>
-        <button type="button" id="zoom-out">Zoom −</button>
-        <button type="button" id="rotate-left">⟲</button>
-        <button type="button" id="rotate-right">⟳</button>
-        <button type="button" id="reset">Reset</button>
+        <button type="button" id="zoom-in" class="btn btn-sm">Zoom +</button>
+        <button type="button" id="zoom-out" class="btn btn-sm">Zoom −</button>
+		<div class="position-absolute top-0 start-0 m-4">
+        <button type="button" id="rotate-left" class="revision-btn">⟲</button>
+        <button type="button" id="rotate-right" class="revision-btn">⟳</button>
+		</div>
+        <button type="button" id="reset" class="btn btn-sm">Reset</button>
       </div>
       <div class="right-actions">
-        <button type="button" id="cropper-confirm" class="primary">Crop & Upload</button>
+        <button type="button" id="cropper-confirm" class="primary btn btn-sm">Crop & Upload</button>
       </div>
     </div>
   </div>
@@ -308,7 +310,9 @@ $(document).ready(function() {
         movable: true,
         rotatable: true,
         scalable: true,
-        checkOrientation: true
+        checkOrientation: true,
+		minCropBoxWidth: 600,
+		minCropBoxHeight: 400
       });
     }
     function closeCropper(){
@@ -559,21 +563,15 @@ $(document).ready(function() {
 .dz-wrap input[type="file"]{ position:absolute; inset:0; opacity:0; cursor:pointer; }
 
 /* ===== Right-side preview card ===== */
-.proPic{
-  flex:0 0 auto;
-  width:240px;                 /* set the card width you want */
+.proPic{               /* set the card width you want */
   aspect-ratio: 135 / 100;     /* PlaneBroker-style ratio; use 1/1 for square */
-  border:1px solid #e5e8ec;
+  /*border:1px solid #e5e8ec;*/
   border-radius:12px;
-  background:#f8fafc;
-  overflow:hidden;
-  position:relative;
-  cursor:pointer;
-  box-shadow:0 2px 10px rgba(16,24,40,.04);
+  overflow: hidden;
+  position: relative;
+  max-width:270px;
 }
-.proPic .uimg{
-  width:100%; height:100%; object-fit:cover; display:block;
-}
+.proPic .uimg{ width:100%; height:100%; object-fit:cover; display:block;border-radius: 0;}
 .proPic.has-image{ border-color:#f59e0b; }
 
 /* Hover actions (Change / Remove) */
@@ -581,7 +579,7 @@ $(document).ready(function() {
   position:absolute; left:0; right:0; bottom:0;
   display:flex; gap:8px; justify-content:center;
   padding:10px;
-  background:linear-gradient(to top, rgba(0,0,0,.45), rgba(0,0,0,0));
+  background:linear-gradient(to top, rgba(0,0,0,.75), rgba(0,0,0,0));
   opacity:1; transition:opacity .2s ease-in-out;
 }
 .proPic:hover .proPic-actions{ opacity:1; }
@@ -593,13 +591,21 @@ $(document).ready(function() {
 
 /* Action buttons */
 .proPic-actions button{
-  appearance:none; border:0; border-radius:10px;
-  font-size:12px; padding:8px 12px; color:#fff; cursor:pointer;
+	appearance: none;
+    border: 0;
+    border-radius: 100px;
+    font-size: 16px;
+    padding: 0px 8px;
+    color: var(--white);
+    cursor: pointer;
+    background: var(--primary);
+    aspect-ratio: 1 / 1;
+    width: 34px;
 }
-.proPic-actions .btn-change{ background:#2563eb; }  /* blue */
-.proPic-actions .btn-remove{ background:#dc2626; }  /* red */
+/*.proPic-actions .btn-change{ background:#2563eb; }   blue */
+/*.proPic-actions .btn-remove{ background:#dc2626; }   red */
 .proPic-actions .btn-change:hover,
-.proPic-actions .btn-remove:hover{ filter:brightness(1.05); }
+.proPic-actions .btn-remove:hover{ color: var(--white); }
 
 /* ===== Cropper Modal ===== */
 .cropper-modal{
@@ -609,14 +615,13 @@ $(document).ready(function() {
 }
 .cropper-modal.show{ display:flex; }
 .cropper-dialog{
-  width:min(92vw, 720px);
+  width:min(92vw, 620px);
   background:#fff; border-radius:14px; overflow:hidden;
   box-shadow:0 10px 40px rgba(0,0,0,.25);
 }
-.cropper-header, .cropper-footer{
+.cropper-footer{
   padding:12px 16px; display:flex; align-items:center; justify-content:space-between;
 }
-.cropper-header{ border-bottom:1px solid #eee; }
 .cropper-body{ padding:12px 16px; max-height:70vh; }
 .cropper-body img{ max-width:100%; display:block; margin:0 auto; }
 .cropper-close{ background:none; border:0; font-size:24px; line-height:1; cursor:pointer; }
@@ -627,6 +632,12 @@ $(document).ready(function() {
 .cropper-primary{ background:#1a73e8; color:#fff; border-color:#1a73e8; }
 .cropper-modal{
 	opacity:1;
+}
+.revision-btn {
+	    border: none;
+    background: transparent;
+    font-size: 21px;
+    font-weight: 700;
 }
 </style>
 <?= $this->endSection() ?>

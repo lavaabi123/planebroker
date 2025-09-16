@@ -138,8 +138,8 @@ $("#provider-form").validate({
     last_name:  { required: true, lettersonly: true },
     mobile_no:  { required: true, phoneUS: true, minlength: 10, maxlength: 10 },
     email:      { required: true, email: true },
-    password:   { required: true, minlength: 4 },
-    password_confirm: { required: true, minlength: 4, equalTo: "#password" },
+    password:   { required: true, minlength: 12 },
+    password_confirm: { required: true, minlength: 12, equalTo: "#password" },
 	website: { websiteUrl: true },
     // --- Socials (optional but must match if present)
     facebook_link: { facebookUrl: true },
@@ -399,7 +399,7 @@ success: function (label, element) {
     scrollToErrorUI(getVisibleUI(el));
   },
   rules: {
-    password: { minlength: 4 },
+    password: { minlength: 12 },
     mobile_no: { phoneUS: true, minlength: 10, maxlength: 10 }
   },
   messages: {}
@@ -546,14 +546,14 @@ $("#provider-form-edit").validate({
     last_name:  { required: true, lettersonly: true },
     mobile_no:  { required: true, phoneUS: true, minlength: 10, maxlength: 10 },
     email:      { required: true, email: true },
-    password:   { minlength: 4 },
+    password:   { minlength: 12 },
     password_confirm: {
 	   required: {
 			depends: function(element) {
 			  return $("#password").val().length > 0;
 			}
 		  },
-		  minlength: 4,
+		  minlength: 12,
 		  equalTo: "#password"
 	},
 	website: { websiteUrl: true },

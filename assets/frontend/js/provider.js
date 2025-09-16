@@ -339,9 +339,9 @@ $(document).on('blur', '#website,#facebook,#linkedin,#instagram,#tiktok_link,#yo
 	$("#edit-password-form").validate({
 		ignore: ':hidden:not([class~=selectized]),:hidden > .selectized, .selectize-control .selectize-input input',
         rules: {
-            new_password: { required: true, minlength: 4 },
+            new_password: { required: true, minlength: 12 },
 			confirm_new_password: {
-				minlength: 4,
+				minlength: 12,
 				equalTo: "#new_password"
 			}
         },

@@ -9,7 +9,7 @@
 <script type='text/javascript' src='<?php echo base_url(); ?>/assets/selectize/js/standalone/selectize.min.js'></script>
 <script type='text/javascript' src='<?php echo base_url(); ?>/assets/pickadate/picker.js'></script>
 <script type='text/javascript' src='<?php echo base_url(); ?>/assets/pickadate/picker.time.js'></script>
-<script src="<?php echo base_url(); ?>/assets/admin/js/provider.js?v=1.1"></script>
+<script src="<?php echo base_url(); ?>/assets/admin/js/provider.js?v=1.2"></script>
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <div class="content-header">

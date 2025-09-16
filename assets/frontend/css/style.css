@@ -435,7 +435,7 @@ transform-origin: top center;
     width: 75%;
     max-width: 100%;
 }
-a.btn.btn-sm {
+a.btn.btn-sm, button.btn.btn-sm {
     min-width: 110px;
     font-size: 12px;
     padding: 0.6rem 1.2rem !important;
@@ -880,6 +880,9 @@ footer li a:hover, .footer2 a:hover {
 .leftSec > div {
     max-width: 530px;
 	width:85%;
+}
+.form-section .form-group {
+	position:relative;
 }
 .form-section .form-group .input-group-append {
     position: absolute;
@@ -1589,6 +1592,18 @@ p.date_time {
 .dbContent.billingpage .table-responsive.proMsg, .dbContent.subpage .table-responsive.proMsg {
     overflow: visible;
 }
+.form-section div[class*="col"] {
+    position: relative;
+}
+input.error + label.error {
+    position: absolute;
+    bottom: -4px;
+    font-size: 11px;
+	color:var(--red);
+}
+.login-sec input.error + label.error {
+	bottom: -1.2rem;
+}
 td.status span {
     min-width: 105px;
 }
@@ -1622,6 +1637,9 @@ border: 2px solid #d5d7db;
 }
 .pic .video__wrapper {
     margin: 0;
+}
+.userpic {
+ border: 2px solid var(--red);
 }
 span.text-success, span.text-danger, a.call {
     text-align: center;
@@ -1871,6 +1889,7 @@ a.text-danger {
 #v-pills-tabContent .form-section, #v-pills-tabContent .form-group {
     padding: 0;
     margin: 0;
+	position:relative;
 }
 #v-pills-tabContent input[type="file"] {
     padding: 4px 5px !important;

@@ -67,7 +67,7 @@ class UsersModel extends Model
 		$data['about_me'] = !empty($this->request->getVar('about_me')) ? $this->request->getVar('about_me') : '';
 			
 		
-        $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
+        $data['password'] = !empty($data['password']) ? password_hash($data['password'], PASSWORD_BCRYPT) : '';
         $data['user_type'] = "registered";
         $data['role'] = 2;
         $data['status'] = 1;
@@ -1142,6 +1142,22 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
             );
             //change password
             $this->builder()->where('id', $user->id);
+            return $this->builder()->update($data);
+        }
+        return false;
+    }
+    public function reset_password_by_id($id)
+    {
+        $user = $this->get_user($id);
+        if (!empty($user)) {
+
+            $new_password = $this->request->getVar('password');
+            $data = array(
+                'password' => password_hash($new_password, PASSWORD_BCRYPT),
+                //'token' => generate_unique_id()
+            );
+            //change password
+            $this->builder()->where('id', $id);
             return $this->builder()->update($data);
         }
         return false;

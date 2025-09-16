@@ -159,7 +159,7 @@ form.validate({
         confirm_password: {
             equalTo: "#password"
         },
-        password: { required: true, minlength: 4 },
+        password: { required: true, minlength: 12 },
         mobile_no: {
             required: true,
             phoneUS: true,
@@ -177,7 +177,7 @@ form.validate({
         },
         password: {
             required: "",         // suppress required message
-            minlength: ""         // suppress minlength message
+            minlength: "Please enter at least 12 characters"         // suppress minlength message
         },
         mobile_no: {
             required: "",
@@ -343,6 +343,17 @@ $(document).on('blur', '#website,#facebook,#linkedin,#instagram,#tiktok_link,#yo
 			confirm_new_password: {
 				minlength: 12,
 				equalTo: "#new_password"
+			}
+        }
+    });
+	
+	$("#form_safes").validate({
+		ignore: ':hidden:not([class~=selectized]),:hidden > .selectized, .selectize-control .selectize-input input',
+        rules: {
+            password: { required: true, minlength: 12 },
+			confirm_password: {
+				minlength: 12,
+				equalTo: "#password"
 			}
         }
     });

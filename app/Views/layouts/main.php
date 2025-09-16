@@ -28,7 +28,7 @@
     <!-- Reset CSS -->
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/reset.css">
     <!-- Style CSS -->
-    <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/style.css?v=2.5">    <!-- Responsive  CSS -->
+    <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/style.css?v=2.6">    <!-- Responsive  CSS -->
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/responsive.css">
     <!-- STYLES -->
 	<link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/lightbox.min.css">
@@ -618,7 +618,7 @@ button#gdpr-cookie-advanced {
 	<script src="<?php echo base_url();?>/assets/cc/javascripts/skeuocard.js"></script>
 	<script src='<?php echo base_url();?>/assets/cc/javascripts/vendor/cssua.min.js'></script>
 	<?php } ?>
-	<script src="<?php echo base_url(); ?>/assets/frontend/js/provider.js?version=1.17"></script>
+	<script src="<?php echo base_url(); ?>/assets/frontend/js/provider.js?version=1.21"></script>
 	<script src="<?php echo base_url(); ?>/assets/frontend/js/lightbox.js"></script>
 	
 	

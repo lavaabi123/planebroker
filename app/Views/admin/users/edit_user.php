@@ -80,13 +80,13 @@
                                         </div>
 
                                          <div class="col-6">
-                                            <div class="form-group mb-3">
+                                            <div class="form-group ">
                                                 <label><?php echo trans("Phone Number"); ?><span class="required"> *</span></label>
                                                 <input type="text" name="mobile_no" id="mobile_no" class="form-control auth-form-input" placeholder="<?php echo trans("Phone Number"); ?>" value="<?php echo html_escape($user_detail->mobile_no); ?>" required>
                                             </div>
                                         </div>  
                                          <div class="col-6">
-                                            <div class="form-group mb-3">
+                                            <div class="form-group ">
                                                 <label><?php echo trans("User Level"); ?><span class="required"> *</span></label>
 												<select onchange="confirm_once(this)" name="user_level" class="form-control">
 												<?php if($user_detail->user_level == 0 || $product_count == 0){ ?>
@@ -96,18 +96,6 @@
 												</select>
                                             </div>
                                         </div> 
-                                        <div class="col-6">
-                                            <div class="form-group mb-3">
-                                                <label><?php echo trans("form_password"); ?> (Leave Blank to Keep the Same)</label>
-                                                <input type="password" name="password" id="password" class="form-control auth-form-input" placeholder="<?php echo trans("form_password"); ?>" readonly onfocus="this.removeAttribute('readonly');" style="background-color: white; color: black;">
-                                            </div>
-                                        </div> 
-                                        <div class="col-6">
-                                             <div class="form-group mb-3">
-                                                <label><?php echo trans("form_confirm_password"); ?></label>
-                                                <input type="password" name="password_confirm" id="password_confirm" class="form-control form-input" value="" placeholder="<?php echo trans("form_confirm_password"); ?>" readonly onfocus="this.removeAttribute('readonly');" style="background-color: white; color: black;">
-                                            </div>
-                                        </div>
 										<div class="col-6">
 											<!--<input class="form-control" type="text" id="city" name="city" placeholder="<?php echo trans('City') ?>" value="<?php echo $user_detail->city ?>">-->
 											<input class="form-control city-state" type="text" id="cityState" name="address" placeholder="<?php echo trans('Location (City, State)') ?>" autocomplete="off" value="<?php echo $user_detail->address; ?>">

@@ -429,25 +429,7 @@ class UserManagement extends AdminController
                     'max_length' => trans('form_validation_max_length'),
                     //'regex_match' => 'The telephone number field should be a valid US phone number.',
                 ],
-            ],       
-            'password'    => [
-                'label'  => trans('password'),
-                'rules'  => 'required|min_length[4]|max_length[200]',
-                'errors' => [
-                    'required' => trans('form_validation_required'),
-                    'min_length' => trans('form_validation_min_length'),
-                    'max_length' => trans('form_validation_max_length'),
-                ],
-            ],
-            'password_confirm'    => [
-                'label'  => trans('form_confirm_password'),
-                'rules'  => 'required|matches[password]',
-                'errors' => [
-                    'required' => trans('form_validation_required'),
-                    'min_length' => trans('form_validation_min_length'),
-                    'max_length' => trans('form_validation_max_length'),
-                ],
-            ],
+            ]
         ];
 
         if ($this->validate($rules)) {
@@ -475,6 +457,26 @@ class UserManagement extends AdminController
 						$this->userModel->update_user_profile_photo($tmpName,$id);
 					}
 				}
+				//send email to create password
+				$get_email_content = $this->db->table('email_templates')->where('email_title', 'set_password')->get()->getRowArray();
+				$emailContent = $get_email_content['content'];
+				$placeholders = [
+					'{user_name}' => $this->request->getVar('first_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS).' '.$this->request->getVar('last_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+					'{set_password_link}'     => base_url('set-password?user_id='.$id)
+				];
+
+				foreach ($placeholders as $key => $value) {
+					$emailContent = str_replace($key, $value, $emailContent);
+				}
+				$emailModel = new EmailModel();
+				$data_email = array(
+					'subject' => $get_email_content['name'],
+					'content' => $emailContent,
+					'to' => $this->request->getVar('email'),
+					'template_path' => "email/email_content",
+				);
+				$emailModel->send_email($data_email);
+				
                 $this->session->setFlashData('success', trans("User added successfully!"));
                 return redirect()->to(admin_url().'users');
             } else {

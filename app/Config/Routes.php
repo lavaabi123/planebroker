@@ -90,7 +90,9 @@ $routes->post('checkout-post', 'Providerauth\ProviderDashboard::checkout_post');
 $routes->get('thankyou', 'Providerauth\ProviderDashboard::thankyou'); 
 $routes->post('favorites_add', 'Providerauth\ProviderDashboard::favorites_add'); 
 $routes->post('remove_favorite', 'Providerauth\ProviderDashboard::remove_favorite');
-$routes->get('renew_plan', 'Providerauth\ProviderDashboard::renew_plan');	 
+$routes->get('renew_plan', 'Providerauth\ProviderDashboard::renew_plan');
+$routes->get('set-password', 'Providerauth\ProviderResetPassword::set_password');
+$routes->post('set-password-post', 'Providerauth\ProviderResetPassword::set_password_post'); 
 
 
 $routes->group("api", ["namespace" => "App\Controllers\Api"], function ($routes) {
@@ -132,7 +134,9 @@ $routes->group("providerauth", ["namespace" => "App\Controllers\Providerauth"], 
     $routes->get('forgot-password', 'ProviderForgotPassword::index');
     $routes->post('forgot-password-post', 'ProviderForgotPassword::forgot_password_post');
     $routes->get('reset-password', 'ProviderResetPassword::index');
+    $routes->get('set-password', 'ProviderResetPassword::set_password');
     $routes->post('reset-password-post', 'ProviderResetPassword::reset_password_post');
+    $routes->post('set-password-post', 'ProviderResetPassword::set_password_post');
 	$routes->get('get-locations', 'ProviderRegister::get_location');
     $routes->get('dashboard1', 'ProviderDashboard::index1');
 	$routes->get('groomer_dashboard', 'ProviderDashboard::groomer_dashboard');

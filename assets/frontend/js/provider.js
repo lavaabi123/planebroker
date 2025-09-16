@@ -344,10 +344,7 @@ $(document).on('blur', '#website,#facebook,#linkedin,#instagram,#tiktok_link,#yo
 				minlength: 12,
 				equalTo: "#new_password"
 			}
-        },
-		errorPlacement: function (error, element) {
-			error.insertBefore(element); // Puts error above the input
-		}
+        }
     });
 	$("#card-form").validate({
 		ignore: ':hidden:not([class~=selectized]),:hidden > .selectized, .selectize-control .selectize-input input',

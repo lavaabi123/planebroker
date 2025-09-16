@@ -29,11 +29,11 @@
 						  <!-- Preview Card -->
 						  <div class="proPic" id="upload-icon" aria-label="Change or remove photo">
 							  <img class="uimg"
-								   src="<?php echo !empty($user_detail->avatar) ? base_url().'/uploads/userimages/'.$user_detail->id.'/'.$user_detail->avatar : base_url('assets/frontend/images/user-pic.png'); ?>"
+								   src="<?php echo !empty($user_detail->avatar) ? base_url().'/uploads/userimages/'.$user_detail->id.'/'.$user_detail->avatar : base_url('assets/frontend/images/user-pic-new-1.png'); ?>"
 								   alt="Current profile photo" />
 							  <div class="proPic-actions">
 								<button type="button" class="btn-change" id="btn-change-photo"><i class="fa fa-camera"></i></button>
-								<button type="button" class="btn-remove" id="btn-remove-photo"><i class="far fa-trash-o"></i></button>
+								<button type="button" style="display:<?php echo !empty($user_detail->avatar) ? '' :'none'; ?>" class="btn-remove" id="btn-remove-photo"><i class="far fa-trash-o"></i></button>
 							  </div>
 							</div>
 						</div>
@@ -188,7 +188,7 @@ $(document).ready(function() {
   const OUTPUT_TYPE = 'image/jpeg'; // 'image/png' if you need transparency
   const OUTPUT_QUALITY = 0.9;
   const MAX_MB = 8;              // client-side size limit
-  const PLACEHOLDER_URL = '<?php echo base_url("assets/frontend/images/user-pic.png"); ?>';
+  const PLACEHOLDER_URL = '<?php echo base_url("assets/frontend/images/user-pic-new-1.png"); ?>';
 
   // Your endpoints (same as your existing code)
   const UPLOAD_URL = '<?php echo base_url(); ?>/fileupload.php?uploadpath=userimages/'+'<?php echo session()->get('vr_sess_user_id'); ?>';
@@ -260,8 +260,8 @@ $(document).ready(function() {
     if ($wrap.find('.proPic-actions').length) return;
     $wrap.append(`
       <div class="proPic-actions">
-        <button type="button" class="btn-change" id="btn-change-photo">Change</button>
-        <button type="button" class="btn-remove" id="btn-remove-photo">Remove</button>
+        <button type="button" class="btn-change" id="btn-change-photo"><i class="fa fa-camera"></i></button>
+        <button type="button" class="btn-remove" id="btn-remove-photo"><i class="far fa-trash-o"></i></button>
       </div>
     `);
   }
@@ -280,7 +280,7 @@ $(document).ready(function() {
     const $dz     = $('.dz-wrap');
 
     // Show orange border when a real image is present (optional)
-    if ($imgEl.attr('src') && !$imgEl.attr('src').includes('user-pic.png')){
+    if ($imgEl.attr('src') && !$imgEl.attr('src').includes('user-pic-new-1.png')){
       $wrap.addClass('has-image');
     }
 
@@ -405,6 +405,7 @@ $(document).ready(function() {
         const formData = new FormData();
         formData.append('upload', blob, safeName);
 
+    $('.loader').show(); 
         // Upload to your existing upload endpoint
         $.ajax({
           url: UPLOAD_URL,
@@ -425,6 +426,7 @@ $(document).ready(function() {
                   // Update avatar to final URL
                   const finalUrl = (response.url || $imgEl.attr('src')) + '?t=' + Date.now();
                   $imgEl.attr('src', finalUrl);
+                 $('#btn-remove-photo').show();
                   $wrap.addClass('has-image');
                   closeCropper();
                 },
@@ -433,8 +435,9 @@ $(document).ready(function() {
             } else {
               alert((response?.error) || 'Upload failed. Please try again.');
             }
+			$('.loader').hide();
           },
-          error: function () { alert('Upload failed. Please try again.'); }
+          error: function () { alert('Upload failed. Please try again.');$('.loader').hide(); }
         });
       }, OUTPUT_TYPE, OUTPUT_QUALITY);
     });
@@ -452,7 +455,7 @@ $(document).ready(function() {
         text: 'Yes, remove',
         btnClass: 'btn-red',
         action: function(){
-          const $btn = $('#btn-remove-photo').prop('disabled', true).text('Remove');
+          const $btn = $('#btn-remove-photo').prop('disabled', true).html('<i class="fas fa-trash-alt"></i>');
 
           $.ajax({
             url: REMOVE_URL,
@@ -463,6 +466,7 @@ $(document).ready(function() {
               if(resp && resp.success){
                 const placeholder = resp.url || PLACEHOLDER_URL;
                 $('#upload-icon .uimg').attr('src', placeholder + '?t=' + Date.now());
+                 $('#btn-remove-photo').hide();
                 $('#upload-icon').removeClass('has-image');
                 $('#profile-pic-input').val('');
               }else{
@@ -473,7 +477,7 @@ $(document).ready(function() {
               $.alert('Remove failed. Please try again.');
             },
             complete: function(){
-              $btn.prop('disabled', false).text('Remove');
+              $btn.prop('disabled', false).html('<i class="fas fa-trash-alt"></i>');
             }
           });
         }
@@ -639,5 +643,36 @@ $(document).ready(function() {
     font-size: 21px;
     font-weight: 700;
 }
+.loader{
+	z-index:99999;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    display: none;
+}
+.loader:before {
+    content: "";
+    box-sizing: border-box;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    margin-top: -30px;
+    margin-left: -30px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    border-top-color: #333;
+    animation: spin 1s 
+ease-in-out infinite;
+}
 </style>
+<div class="loader"></div>
 <?= $this->endSection() ?>

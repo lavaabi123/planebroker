@@ -49,6 +49,7 @@
                         <div class="card-body">
                             <div class="tab-content" id="custom-tabs-four-tabContent">
                                     <input type="hidden" id="crsf">
+									<input type="hidden" id="profile_image_tmp" name="profile_image_tmp" value="">
                                     <div class="row">
                                         <div class="col-6">
                                             <div class="form-group mb-3">
@@ -140,15 +141,16 @@
 										  </div>
 
 										  <!-- Preview Card -->
-										  <div class="proPic" id="upload-icon" aria-label="Change or remove photo">
+										  <div class="proPic" id="upload-icon" data-user-id="" aria-label="Change or remove photo">
 											  <img class="uimg"
-												   src="<?php echo !empty($user_detail->avatar) ? base_url().'/uploads/userimages/'.$user_detail->id.'/'.$user_detail->avatar : base_url('assets/frontend/images/user-pic.png'); ?>"
+												   src="<?php echo !empty($user_detail->avatar) ? base_url().'/uploads/userimages/'.$user_detail->id.'/'.$user_detail->avatar : base_url('assets/frontend/images/user-pic-new-1.png'); ?>"
 												   alt="Current profile photo" />
 											  <div class="proPic-actions">
 												<button type="button" class="btn-change" id="btn-change-photo"><i class="fa fa-camera"></i></button>
-												<button type="button" class="btn-remove" id="btn-remove-photo"><i class="fas fa-trash-alt"></i></button>
+												<button type="button" class="btn-remove" style="display:<?php echo !empty($user_detail->avatar) ? '' :'none'; ?>" id="btn-remove-photo"><i class="fas fa-trash-alt"></i></button>
 											  </div>
 											</div>
+											<p class="TwCenMT fw-bold fs-6 mt-3">Upload Profile Photo / Logo</p>
 										</div>
 										</div>							
                                     </div>
@@ -219,12 +221,15 @@
   const OUTPUT_TYPE = 'image/jpeg'; // 'image/png' if you need transparency
   const OUTPUT_QUALITY = 0.9;
   const MAX_MB = 8;              // client-side size limit
-  const PLACEHOLDER_URL = '<?php echo base_url("assets/frontend/images/user-pic.png"); ?>';
-
-  // Your endpoints (same as your existing code)
-  const UPLOAD_URL = '<?php echo base_url(); ?>/fileupload.php?uploadpath=userimages/'+'<?php echo session()->get('vr_sess_user_id'); ?>';
-  const SAVE_URL   = '<?php echo base_url(); ?>/providerauth/upload_profile_photo';
-  const REMOVE_URL = '<?php echo base_url(); ?>/providerauth/remove_profile_photo';
+  const PLACEHOLDER_URL = '<?php echo base_url("assets/frontend/images/user-pic-new-1.png"); ?>';
+  
+  const USER_ID = ($('#upload-icon').data('user-id') || '').toString().trim();
+  const IS_NEW_USER = !USER_ID;
+  
+	const BASE_URL   = '<?= base_url(); ?>';
+	const UPLOAD_URL = BASE_URL + '/fileupload.php?uploadpath=userimages/tmp'; 
+	const SAVE_URL   = BASE_URL + '/providerauth/upload_profile_photo';
+	const REMOVE_URL = BASE_URL + '/providerauth/remove_profile_photo';
 
   // If your CI4 routes need CSRF, fill these (else leave blank)
   const CSRF_NAME = '<?= csrf_token() ?>';
@@ -291,8 +296,8 @@
     if ($wrap.find('.proPic-actions').length) return;
     $wrap.append(`
       <div class="proPic-actions">
-        <button type="button" class="btn-change" id="btn-change-photo">Change</button>
-        <button type="button" class="btn-remove" id="btn-remove-photo">Remove</button>
+        <button type="button" class="btn-change" id="btn-change-photo"><i class="fa fa-camera"></i></button>
+        <button type="button" class="btn-remove" id="btn-remove-photo"><i class="fas fa-trash-alt"></i></button>
       </div>
     `);
   }
@@ -311,7 +316,7 @@
     const $dz     = $('.dz-wrap');
 
     // Show orange border when a real image is present (optional)
-    if ($imgEl.attr('src') && !$imgEl.attr('src').includes('user-pic.png')){
+    if ($imgEl.attr('src') && !$imgEl.attr('src').includes('user-pic-new-1.png')){
       $wrap.addClass('has-image');
     }
 
@@ -436,6 +441,7 @@
         const formData = new FormData();
         formData.append('upload', blob, safeName);
 
+    $('.loader').show(); 
         // Upload to your existing upload endpoint
         $.ajax({
           url: UPLOAD_URL,
@@ -446,26 +452,37 @@
           success: function (response) {
             try { if (typeof response === 'string') response = JSON.parse(response); } catch(e){}
             if (response?.uploaded == 1) {
+				// DEFER SAVE: just stash the temp filename and show preview
+				const finalUrl = (response.url || '') + '?t=' + Date.now();
+				$('#profile_image_tmp').val(response.fileName);
+				$imgEl.attr('src', finalUrl || $imgEl.attr('src'));
+				$('#btn-remove-photo').show();
+				$wrap.addClass('has-image');
+				closeCropper();
               // Save filename to DB
-              $.ajax({
+              /*$.ajax({
                 url: SAVE_URL,
                 type: 'POST',
                 dataType: 'json',
                 data: addCsrf({ image: response.fileName,user_id:'' }),
                 success: function(resp){
-                  // Update avatar to final URL
                   const finalUrl = (response.url || $imgEl.attr('src')) + '?t=' + Date.now();
                   $imgEl.attr('src', finalUrl);
+                 $('#btn-remove-photo').show();
                   $wrap.addClass('has-image');
                   closeCropper();
                 },
                 error: function(){ alert('Saved file, but failed to update profile. Please refresh.'); }
-              });
+              });*/
+			  
+    $('.loader').hide(); 
             } else {
               alert((response?.error) || 'Upload failed. Please try again.');
+    $('.loader').hide(); 
             }
           },
-          error: function () { alert('Upload failed. Please try again.'); }
+          error: function () { alert('Upload failed. Please try again.');
+    $('.loader').hide();  }
         });
       }, OUTPUT_TYPE, OUTPUT_QUALITY);
     });
@@ -483,9 +500,14 @@
         text: 'Yes, remove',
         btnClass: 'btn-red',
         action: function(){
-          const $btn = $('#btn-remove-photo').prop('disabled', true).text('Remove');
-
-          $.ajax({
+          const $btn = $('#btn-remove-photo').prop('disabled', true).html('<i class="fas fa-trash-alt"></i>');
+		$('#profile_image_tmp').val('');
+		$('#upload-icon .uimg').attr('src', PLACEHOLDER_URL + '?t=' + Date.now());
+		$('#btn-remove-photo').hide();
+		$('#upload-icon').removeClass('has-image');
+		$('#profile-pic-input').val('');
+		return;
+          /*$.ajax({
             url: REMOVE_URL,
             type: 'POST',
             dataType: 'json',
@@ -494,6 +516,7 @@
               if(resp && resp.success){
                 const placeholder = resp.url || PLACEHOLDER_URL;
                 $('#upload-icon .uimg').attr('src', placeholder + '?t=' + Date.now());
+                $('#btn-remove-photo').hide();
                 $('#upload-icon').removeClass('has-image');
                 $('#profile-pic-input').val('');
               }else{
@@ -504,9 +527,9 @@
               $.alert('Remove failed. Please try again.');
             },
             complete: function(){
-              $btn.prop('disabled', false).text('Remove');
+              $btn.prop('disabled', false).html('<i class="fas fa-trash-alt"></i>');
             }
-          });
+          });*/
         }
       },
       cancel: {
@@ -520,6 +543,7 @@
   });
 })(jQuery);
 </script>
+
 
 <style> 
 /* Make sure autocomplete appears on top */
@@ -603,6 +627,21 @@
 .proPic.has-image{ border-color:#f59e0b; }
 
 /* Hover actions (Change / Remove) */
+.proPic-actions{
+  position:absolute; left:0; right:0; bottom:0;
+  display:flex; gap:8px; justify-content:center;
+  padding:10px;
+  background:linear-gradient(to top, rgba(0,0,0,.45), rgba(0,0,0,0));
+  opacity:1; transition:opacity .2s ease-in-out;
+}
+.proPic:hover .proPic-actions{ opacity:1; }
+
+/* Show actions on mobile */
+@media (max-width: 768px){
+  .proPic-actions{ opacity:1; }
+}
+
+/* Action buttons */
 .proPic-actions button{
 	appearance: none;
     border: 0;
@@ -614,18 +653,6 @@
     background: var(--primary);
     aspect-ratio: 1 / 1;
     width: 34px;
-}
-.proPic:hover .proPic-actions{ opacity:1; }
-
-/* Show actions on mobile */
-@media (max-width: 768px){
-  .proPic-actions{ opacity:1; }
-}
-
-/* Action buttons */
-.proPic-actions button{
-  appearance:none; border:0; border-radius:10px;
-  font-size:16px; background: transparent; padding:0px 12px; color: var(--primary); cursor:pointer;
 }
 /*.proPic-actions .btn-change{ background:#2563eb; }   blue */
 /*.proPic-actions .btn-remove{ background:#dc2626; }   red */
@@ -664,5 +691,10 @@
     font-size: 21px;
     font-weight: 700;
 }
+.loader{
+	z-index:99999;
+}
 </style>
+
+<div class="loader"></div>
 <?php echo $this->endSection() ?>

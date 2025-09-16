@@ -148,13 +148,14 @@
 										  <!-- Preview Card -->
 										  <div class="proPic" id="upload-icon" aria-label="Change or remove photo">
 											  <img class="uimg"
-												   src="<?php echo ($user_detail->avatar) ? base_url().'/uploads/userimages/'.$user_detail->id.'/'.$user_detail->avatar : base_url('assets/frontend/images/user-pic.png'); ?>"
+												   src="<?php echo ($user_detail->avatar) ? base_url().'/uploads/userimages/'.$user_detail->id.'/'.$user_detail->avatar : base_url('assets/frontend/images/user-pic-new-1.png'); ?>"
 												   alt="Current profile photo" />
 											  <div class="proPic-actions">
 												<button type="button" class="btn-change" id="btn-change-photo"><i class="fa fa-camera"></i></button>
-												<button type="button" class="btn-remove" id="btn-remove-photo"><i class="fas fa-trash-alt"></i></button>
+												<button type="button" class="btn-remove"  style="display:<?php echo !empty($user_detail->avatar) ? '' :'none'; ?>" id="btn-remove-photo"><i class="fas fa-trash-alt"></i></button>
 											  </div>
 											</div>
+											<p class="TwCenMT fw-bold fs-6 mt-3">Upload Profile Photo / Logo</p>
 										</div>
 										</div>
                                     </div>									
@@ -229,10 +230,10 @@
   const OUTPUT_TYPE = 'image/jpeg'; // 'image/png' if you need transparency
   const OUTPUT_QUALITY = 0.9;
   const MAX_MB = 8;              // client-side size limit
-  const PLACEHOLDER_URL = '<?php echo base_url("assets/frontend/images/user-pic.png"); ?>';
+  const PLACEHOLDER_URL = '<?php echo base_url("assets/frontend/images/user-pic-new-1.png"); ?>';
 
   // Your endpoints (same as your existing code)
-  const UPLOAD_URL = '<?php echo base_url(); ?>/fileupload.php?uploadpath=userimages/'+'<?php echo session()->get('vr_sess_user_id'); ?>';
+  const UPLOAD_URL = '<?php echo base_url(); ?>/fileupload.php?uploadpath=userimages/'+'<?php echo $user_detail->id; ?>';
   const SAVE_URL   = '<?php echo base_url(); ?>/providerauth/upload_profile_photo';
   const REMOVE_URL = '<?php echo base_url(); ?>/providerauth/remove_profile_photo';
 
@@ -301,8 +302,8 @@
     if ($wrap.find('.proPic-actions').length) return;
     $wrap.append(`
       <div class="proPic-actions">
-        <button type="button" class="btn-change" id="btn-change-photo">Change</button>
-        <button type="button" class="btn-remove" id="btn-remove-photo">Remove</button>
+        <button type="button" class="btn-change" id="btn-change-photo"><i class="fa fa-camera"></i></button>
+        <button type="button" class="btn-remove" id="btn-remove-photo"><i class="fas fa-trash-alt"></i></button>
       </div>
     `);
   }
@@ -321,7 +322,7 @@
     const $dz     = $('.dz-wrap');
 
     // Show orange border when a real image is present (optional)
-    if ($imgEl.attr('src') && !$imgEl.attr('src').includes('user-pic.png')){
+    if ($imgEl.attr('src') && !$imgEl.attr('src').includes('user-pic-new-1.png')){
       $wrap.addClass('has-image');
     }
 
@@ -446,6 +447,7 @@
         const formData = new FormData();
         formData.append('upload', blob, safeName);
 
+    $('.loader').show(); 
         // Upload to your existing upload endpoint
         $.ajax({
           url: UPLOAD_URL,
@@ -466,6 +468,7 @@
                   // Update avatar to final URL
                   const finalUrl = (response.url || $imgEl.attr('src')) + '?t=' + Date.now();
                   $imgEl.attr('src', finalUrl);
+                 $('#btn-remove-photo').show();
                   $wrap.addClass('has-image');
                   closeCropper();
                 },
@@ -474,8 +477,10 @@
             } else {
               Swal.fire((response?.error) || 'Upload failed. Please try again.', 'warning');
             }
+    $('.loader').hide(); 
           },
-          error: function () { Swal.fire('Upload failed. Please try again.', 'warning'); }
+          error: function () { Swal.fire('Upload failed. Please try again.', 'warning');
+    $('.loader').hide();  }
         });
       }, OUTPUT_TYPE, OUTPUT_QUALITY);
     });
@@ -493,17 +498,18 @@
         text: 'Yes, remove',
         btnClass: 'btn-red',
         action: function(){
-          const $btn = $('#btn-remove-photo').prop('disabled', true).text('Remove');
+          const $btn = $('#btn-remove-photo').prop('disabled', true).html('<i class="fas fa-trash-alt"></i>');
 
           $.ajax({
             url: REMOVE_URL,
             type: 'POST',
             dataType: 'json',
-            data: addCsrf({}),
+            data: addCsrf({user_id:'<?php echo $user_detail->id; ?>'}),
             success: function(resp){
               if(resp && resp.success){
                 const placeholder = resp.url || PLACEHOLDER_URL;
                 $('#upload-icon .uimg').attr('src', placeholder + '?t=' + Date.now());
+                 $('#btn-remove-photo').hide();
                 $('#upload-icon').removeClass('has-image');
                 $('#profile-pic-input').val('');
               }else{
@@ -514,7 +520,7 @@
               $.alert('Remove failed. Please try again.');
             },
             complete: function(){
-              $btn.prop('disabled', false).text('Remove');
+              $btn.prop('disabled', false).html('<i class="fas fa-trash-alt"></i>');
             }
           });
         }
@@ -696,6 +702,10 @@ function confirm_once(_this){
     font-size: 21px;
     font-weight: 700;
 }
+.loader{
+	z-index:99999;
+}
 </style>
 
+<div class="loader"></div>
 <?php echo $this->endSection() ?>

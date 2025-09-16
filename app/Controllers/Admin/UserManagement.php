@@ -461,6 +461,20 @@ class UserManagement extends AdminController
             //add user
             $id =  $this->userModel->add_user();
             if ($id) {
+				// >>> Move temp avatar (if any) into the user's folder and update DB
+				$tmpName = $this->request->getVar('profile_image_tmp');
+				if (!empty($tmpName)) {
+					$src = FCPATH . 'uploads/userimages/tmp/' . $tmpName;
+					$destDir = FCPATH . 'uploads/userimages/' . $id . '/';
+					if (!is_dir($destDir)) { @mkdir($destDir, 0755, true); }
+					$dest = $destDir . $tmpName;
+
+					if (is_file($src)) {
+						@rename($src, $dest);
+						// persist avatar field on the user
+						$this->userModel->update_user_profile_photo($tmpName,$id);
+					}
+				}
                 $this->session->setFlashData('success', trans("User added successfully!"));
                 return redirect()->to(admin_url().'users');
             } else {

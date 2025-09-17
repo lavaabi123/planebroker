@@ -102,18 +102,28 @@ $.validator.addMethod('linkedinUrl',  function(v, el){ if(!v) return true; retur
 $.validator.addMethod('instagramUrl', function(v, el){ if(!v) return true; return RX.instagram.test(v); }, 'Please enter a valid Instagram URL.');
 $.validator.addMethod('tiktokUrl',    function(v, el){ if(!v) return true; return RX.tiktok.test(v); },   'Please enter a valid TikTok URL (e.g., https://www.tiktok.com/@handle).');
 $.validator.addMethod('youtubeUrl',   function(v, el){ if(!v) return true; return RX.youtube.test(v); },  'Please enter a valid YouTube URL.');
-$.validator.addMethod(
-  'websiteUrl',
-  function (v, el) {
-    if (!v) return true; // optional
-    // ensure normalized for validation
-    const norm = normalizeUrlToNetwork('website', v);
-    //$(el).val(norm);
-    return RX.website.test(norm);
-  },
-  'Please enter a valid website URL (e.g., https://example.com).'
-);
+const websiteRegex = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,63})([/?].*)?$/;
 
+$.validator.addMethod(
+  "websiteUrl",
+  function (value, element) {
+    if (!value) return true; // optional field
+
+    return this.optional(element) || websiteRegex.test(value.trim());
+  },
+  "Please enter a valid website URL."
+);
+$.validator.addMethod("nameOrCompany", function(value, element) {
+  const first  = $("#first_name").val().trim();
+  const last   = $("#last_name").val().trim();
+  const company = $("#business_name").val().trim();
+
+  // Either both first & last OR company must be filled
+  if ((first && last) || company) {
+    return true;
+  }
+  return false;
+}, "Please provide First & Last Name OR a Company Name.");
 // ---- Auto-normalize on blur (turn handles into URLs) ----
 $(document).on('blur', '#website,#facebook,#linkedin,#instagram,#tiktok_link,#youtube_link', function(){
   const id = this.id;
@@ -129,14 +139,40 @@ $(document).on('blur', '#website,#facebook,#linkedin,#instagram,#tiktok_link,#yo
   const normalized = normalizeUrlToNetwork(network, $(this).val());
   //$(this).val(normalized);
 });
+// Auto-format (xxx) xxx-xxxx without blocking typing
+$('#mobile_no').on('input', function () {
+  const el = this;
+
+  // keep only digits, hard-limit to 10
+  const digits = el.value.replace(/\D/g, '').slice(0, 10);
+
+  let formatted = '';
+  if (digits.length === 0) {
+    formatted = '';
+  } else if (digits.length < 4) {
+    formatted = `(${digits}`;
+  } else if (digits.length < 7) {
+    formatted = `(${digits.slice(0,3)}) ${digits.slice(3)}`;
+  } else {
+    formatted = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
+  }
+
+  // set the value
+  el.value = formatted;
+});
+
+jQuery.validator.addMethod("tenDigits", function (value, element) {
+  return this.optional(element) || value.replace(/\D/g, '').length === 10;
+}, "Please enter a valid 10-digit phone number.");
 
 $("#provider-form").validate({
   ignore: ":hidden:not(#location_id)",
   onfocusout: function(el){ this.element(el); }, // validate on blur
   rules: {
-    first_name: { required: true, lettersonly: true },
-    last_name:  { required: true, lettersonly: true },
-    mobile_no:  { required: true, phoneUS: true, minlength: 10, maxlength: 10 },
+    first_name: {nameOrCompany: true,lettersonly: true },
+    last_name:  { nameOrCompany: true,lettersonly: true },
+    business_name:  {nameOrCompany: true},
+    mobile_no:  { required: true, tenDigits: true, minlength: 10, maxlength: 10,normalizer: function (value) { return value.replace(/\D/g, ''); } },
     email:      { required: true, email: true },
 	website: { websiteUrl: true },
     // --- Socials (optional but must match if present)
@@ -146,13 +182,30 @@ $("#provider-form").validate({
     tiktok_link:   { tiktokUrl: true },
     youtube_link:  { youtubeUrl: true }
   },
+  groups: {
+    nameGroup: "first_name last_name business_name"
+  },
+  errorPlacement: function(error, element) {
+    if (element.attr("name") === "first_name" ||
+        element.attr("name") === "last_name" ||
+        element.attr("name") === "business_name") {
+      // append error only once, after company_name (or anywhere you want)
+      error.insertAfter("#first_name");
+    } else {
+      error.insertAfter(element);
+    }
+  },
   messages: {
-	  website: "Example: https://example.com",
+	website: "Please enter a valid website URL.",
     facebook_link: { facebookUrl: "Example: https://www.facebook.com/yourpage" },
     linkedin_link: { linkedinUrl: "Example: https://www.linkedin.com/yourname" },
     insta_link:    { instagramUrl: "Example: https://www.instagram.com/username" },
     tiktok_link:   { tiktokUrl: "Example: https://www.tiktok.com/@handle" },
-    youtube_link:  { youtubeUrl: "Channel/User/@handle/Video links allowed" }
+    youtube_link:  { youtubeUrl: "Channel/User/@handle/Video links allowed" },
+	mobile_no: {
+      minlength: "Enter exactly 10 digits.",
+      maxlength: "Enter exactly 10 digits."
+    }
   }
 });
 (function ($) {
@@ -398,7 +451,7 @@ success: function (label, element) {
   },
   rules: {
     password: { minlength: 12 },
-    mobile_no: { phoneUS: true, minlength: 10, maxlength: 10 }
+    mobile_no: { }
   },
   messages: {}
 });
@@ -540,9 +593,10 @@ $("#provider-form-edit").validate({
   ignore: ":hidden:not(#location_id)",
   onfocusout: function(el){ this.element(el); }, // validate on blur
   rules: {
-    first_name: { required: true, lettersonly: true },
-    last_name:  { required: true, lettersonly: true },
-    mobile_no:  { required: true, phoneUS: true, minlength: 10, maxlength: 10 },
+    first_name: {nameOrCompany: true,lettersonly: true },
+    last_name:  { nameOrCompany: true,lettersonly: true },
+    business_name:  {nameOrCompany: true},
+    mobile_no:  { required: true, tenDigits: true, minlength: 10, maxlength: 10,normalizer: function (value) { return value.replace(/\D/g, ''); } },
     email:      { required: true, email: true },
 	website: { websiteUrl: true },
     // --- Socials (optional but must match if present)
@@ -552,13 +606,30 @@ $("#provider-form-edit").validate({
     tiktok_link:   { tiktokUrl: true },
     youtube_link:  { youtubeUrl: true }
   },
+  groups: {
+    nameGroup: "first_name last_name business_name"
+  },
+  errorPlacement: function(error, element) {
+    if (element.attr("name") === "first_name" ||
+        element.attr("name") === "last_name" ||
+        element.attr("name") === "business_name") {
+      // append error only once, after company_name (or anywhere you want)
+      error.insertAfter("#first_name");
+    } else {
+      error.insertAfter(element);
+    }
+  },
   messages: {
-	  website: "Example: https://example.com",
+	website: "Please enter a valid website URL.",
     facebook_link: { facebookUrl: "Example: https://www.facebook.com/yourpage" },
     linkedin_link: { linkedinUrl: "Example: https://www.linkedin.com/yourname" },
     insta_link:    { instagramUrl: "Example: https://www.instagram.com/username" },
     tiktok_link:   { tiktokUrl: "Example: https://www.tiktok.com/@handle" },
-    youtube_link:  { youtubeUrl: "Channel/User/@handle/Video links allowed" }
+    youtube_link:  { youtubeUrl: "Channel/User/@handle/Video links allowed" },
+	mobile_no: {
+      minlength: "Enter exactly 10 digits.",
+      maxlength: "Enter exactly 10 digits."
+    }
   }
 });
 

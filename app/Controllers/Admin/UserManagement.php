@@ -387,27 +387,6 @@ class UserManagement extends AdminController
         //validate inputs
 
         $rules = [
-             'first_name' => [
-                'label'  => trans('first_name'),
-                'rules'  => 'required|max_length[100]|regex_match[/^[a-zA-Z\s]+$/]',
-                'errors' => [
-                    'required' => trans('form_validation_required'),
-                    'min_length' => trans('form_validation_min_length'),
-                    'max_length' => trans('form_validation_max_length'),
-                    'regex_match' => 'The first name field should contain letters only.',
-                ],
-            ],
-            'last_name' => [
-                'label'  => trans('last name'),
-                'rules'  => 'required|max_length[100]|regex_match[/^[a-zA-Z\s]+$/]',
-                'errors' => [
-                    'required' => trans('form_validation_required'),
-                    'min_length' => trans('form_validation_min_length'),
-                    'max_length' => trans('form_validation_max_length'),
-                    'regex_match' => 'The last name field should contain letters only.',
-                ],
-            ],
-
             'email'    => [
                 'label'  => trans('email'),
                 'rules'  => 'required|max_length[200]|valid_email',
@@ -416,18 +395,6 @@ class UserManagement extends AdminController
                     'min_length' => trans('form_validation_min_length'),
                     'max_length' => trans('form_validation_max_length'),
                     'valid_email' => 'Please check the Email field. It does not appear to be valid.',
-                ],
-            ],
-            'mobile_no' => [
-                'label'  => trans('telephone number'),
-                'rules'  => 'required|numeric|min_length[10]|max_length[10]',
-                //'rules'  => 'required|regex_match[/^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/]',
-                'errors' => [
-                    'required' => trans('form_validation_required'),
-                    'numeric' => 'The telephone number must be numeric.',
-                    'min_length' => trans('form_validation_min_length'),
-                    'max_length' => trans('form_validation_max_length'),
-                    //'regex_match' => 'The telephone number field should be a valid US phone number.',
                 ],
             ]
         ];
@@ -569,27 +536,6 @@ class UserManagement extends AdminController
 
         //validate inputs
         $rules = [
-            'first_name' => [
-                'label'  => trans('first_name'),
-                'rules'  => 'required|max_length[100]|regex_match[/^[a-zA-Z\s]+$/]',
-                'errors' => [
-                    'required' => trans('form_validation_required'),
-                    'min_length' => trans('form_validation_min_length'),
-                    'max_length' => trans('form_validation_max_length'),
-                    'regex_match' => 'The first name field should contain letters only.',
-                ],
-            ],
-            'last_name' => [
-                'label'  => trans('last name'),
-                'rules'  => 'required|max_length[100]|regex_match[/^[a-zA-Z\s]+$/]',
-                'errors' => [
-                    'required' => trans('form_validation_required'),
-                    'min_length' => trans('form_validation_min_length'),
-                    'max_length' => trans('form_validation_max_length'),
-                    'regex_match' => 'The last name field should contain letters only.',
-                ],
-            ],
-
             'email'    => [
                 'label'  => trans('email'),
                 'rules'  => 'required|max_length[200]|valid_email',
@@ -599,19 +545,7 @@ class UserManagement extends AdminController
                     'max_length' => trans('form_validation_max_length'),
                     'valid_email' => 'Please check the Email field. It does not appear to be valid.',
                 ],
-            ],
-            'mobile_no' => [
-                'label'  => trans('telephone number'),
-                'rules'  => 'required|numeric|min_length[10]|max_length[10]',
-                //'rules'  => 'required|regex_match[/^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/]',
-                'errors' => [
-                    'required' => trans('form_validation_required'),
-                    'numeric' => 'The telephone number must be numeric.',
-                    'min_length' => trans('form_validation_min_length'),
-                    'max_length' => trans('form_validation_max_length'),
-                    //'regex_match' => 'The telephone number field should be a valid US phone number.',
-                ],
-            ],
+            ]
         ];
 
         if (!empty($this->request->getVar('password'))) {

@@ -9,7 +9,7 @@
 <script type='text/javascript' src='<?php echo base_url(); ?>/assets/selectize/js/standalone/selectize.min.js'></script>
 <script type='text/javascript' src='<?php echo base_url(); ?>/assets/pickadate/picker.js'></script>
 <script type='text/javascript' src='<?php echo base_url(); ?>/assets/pickadate/picker.time.js'></script>
-<script src="<?php echo base_url(); ?>/assets/admin/js/provider.js?v=1.2"></script>
+<script src="<?php echo base_url(); ?>/assets/admin/js/provider.js?v=1.3"></script>
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <div class="content-header">
@@ -56,19 +56,19 @@
                                     <div class="row">
                                         <div class="col-6">
                                             <div class="form-group mb-3">
-                                                <label><?php echo trans("First Name"); ?><span class="required"> *</span></label>
-                                                <input type="text" name="first_name" id="first_name" class="form-control auth-form-input required" placeholder="<?php echo trans("First Name"); ?>" value="<?php echo html_escape($user_detail->first_name); ?>" required>
+                                                <label><?php echo trans("First Name"); ?></label>
+                                                <input type="text" name="first_name" id="first_name" class="form-control auth-form-input required" placeholder="<?php echo trans("First Name"); ?>" value="<?php echo html_escape($user_detail->first_name); ?>">
                                             </div>
                                         </div>
                                         <div class="col-6">
                                             <div class="form-group mb-3">
-                                                <label><?php echo trans("Last Name"); ?><span class="required"> *</span></label>
-                                                <input type="text" name="last_name" id="last_name" class="form-control auth-form-input" placeholder="<?php echo trans("Last Name"); ?>" value="<?php echo html_escape($user_detail->last_name); ?>" required>
+                                                <label><?php echo trans("Last Name"); ?></label>
+                                                <input type="text" name="last_name" id="last_name" class="form-control auth-form-input" placeholder="<?php echo trans("Last Name"); ?>" value="<?php echo html_escape($user_detail->last_name); ?>">
                                             </div>
                                         </div>
                                         <div class="col-6">
                                             <div class="form-group mb-3">
-                                                <label><?php echo trans("Company Name"); ?><span class="required"> *</span></label>
+                                                <label><?php echo trans("Company Name"); ?></label>
                                                 <input type="text" name="business_name" id="business_name" class="form-control auth-form-input" placeholder="<?php echo trans("Company Name"); ?>" value="<?php echo html_escape($user_detail->business_name); ?>">
                                             </div>
                                         </div>

@@ -598,6 +598,16 @@ $("#provider-form-edit").validate({
     business_name:  {nameOrCompany: true},
     mobile_no:  { required: true, tenDigits: true, minlength: 10, maxlength: 10,normalizer: function (value) { return value.replace(/\D/g, ''); } },
     email:      { required: true, email: true },
+	password:   { minlength: 12 },
+    password_confirm: {
+	   required: {
+			depends: function(element) {
+			  return $("#password").val().length > 0;
+			}
+		  },
+		  minlength: 12,
+		  equalTo: "#password"
+	},
 	website: { websiteUrl: true },
     // --- Socials (optional but must match if present)
     facebook_link: { facebookUrl: true },

@@ -9,7 +9,7 @@
 <script type='text/javascript' src='<?php echo base_url(); ?>/assets/selectize/js/standalone/selectize.min.js'></script>
 <script type='text/javascript' src='<?php echo base_url(); ?>/assets/pickadate/picker.js'></script>
 <script type='text/javascript' src='<?php echo base_url(); ?>/assets/pickadate/picker.time.js'></script>
-<script src="<?php echo base_url(); ?>/assets/admin/js/provider.js?v=1.3"></script>
+<script src="<?php echo base_url(); ?>/assets/admin/js/provider.js?v=1.4"></script>
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <div class="content-header">
@@ -96,6 +96,20 @@
 												</select>
                                             </div>
                                         </div> 
+										
+										<div class="col-6">
+                                            <div class="form-group mb-3">
+                                                <label><?php echo trans("form_password"); ?> (Leave Blank to Keep the Same)</label>
+                                                <input type="password" name="password" id="password" class="form-control auth-form-input" placeholder="<?php echo trans("form_password").' (Leave Blank to Keep the Same)'; ?>" readonly onfocus="this.removeAttribute('readonly');" style="background-color: white; color: black;">
+                                            </div>
+                                        </div> 
+                                        <div class="col-6">
+                                             <div class="form-group mb-3">
+                                                <label><?php echo trans("form_confirm_password"); ?></label>
+                                                <input type="password" name="password_confirm" id="password_confirm" class="form-control form-input" value="" placeholder="<?php echo trans("form_confirm_password"); ?>" readonly onfocus="this.removeAttribute('readonly');" style="background-color: white; color: black;">
+                                            </div>
+                                        </div>
+										
 										<div class="col-6">
 											<!--<input class="form-control" type="text" id="city" name="city" placeholder="<?php echo trans('City') ?>" value="<?php echo $user_detail->city ?>">-->
 											<input class="form-control city-state" type="text" id="cityState" name="address" placeholder="<?php echo trans('Location (City, State)') ?>" autocomplete="off" value="<?php echo $user_detail->address; ?>">

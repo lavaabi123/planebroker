@@ -90,7 +90,7 @@ $icons = [
 		
 		<div class="row mb-5 mt-5">
 			<div class="col-sm-6">
-				<img class="img-fluid w-100 br-full" src="<?php echo ($user_detail->avatar) ? base_url().'/uploads/userimages/'.$user_detail->id.'/'.$user_detail->avatar : base_url('assets/frontend/images/user-pic-new.jpg'); ?>">
+				<img class="img-fluid w-100 br-full userpic" src="<?php echo ($user_detail->avatar) ? base_url().'/uploads/userimages/'.$user_detail->id.'/'.$user_detail->avatar : base_url('assets/frontend/images/user-pic-new.jpg'); ?>">
 				<?php 
 				if(!empty($user_detail->about_me)){
 				?>

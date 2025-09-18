@@ -405,10 +405,10 @@ $count = !empty($images) ? count($images) : 0;
 						</a>
 					</div>
 					<hr>
-					<?php if(!empty($user_detail->address)){ ?>
+					<?php if(!empty($product_detail['address'])){ ?>
 					<div class="d-flex align-items-center fw-medium mb-0">
 						<img class="icons" src="<?php echo base_url('assets/frontend/images/pin.png'); ?>" />
-						<p class=""><?php echo $user_detail->address; ?></p>
+						<p class=""><?php echo $product_detail['address']; ?></p>
 					</div>
 					<hr>
 					<?php } ?>		

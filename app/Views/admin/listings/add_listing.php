@@ -501,24 +501,24 @@ video{
 						</div>
 							</fieldset>
 
-							<!--<fieldset class="form-input">
-								<h3 class="title-xl black my-3"><?php echo trans('Seller Information') ?></h3>
+							<fieldset class="form-input">
+								<h3 class="title-xl black my-3"><?php echo trans('Location') ?></h3>
 								<div class="form-section row row-cols-1 row-cols-md-2">
-								<div class="form-group">
+								<!--<div class="form-group">
 									<input class="form-control required" type="text" id="business_name" name="business_name" placeholder="<?php echo trans('Name') ?>" value="<?php echo !empty($product_detail['business_name']) ? $product_detail['business_name'] : (!empty(old('business_name'))?old('business_name'):$user_detail->fullname); ?>" required>
 								</div>													
 								<div class="form-group">
 									<input class="form-control required" type="text" id="phone" name="phone" placeholder="<?php echo trans('Phone Number') ?>" autocomplete="off" value="<?php echo !empty($product_detail['phone']) ? $product_detail['phone'] : (!empty(old('phone'))?old('phone'):$user_detail->mobile_no); ?>" required>
-								</div>													
+								</div>-->													
 								<div class="form-group">
 									<input class="form-control city-state required" type="text" id="cityState" name="address" placeholder="<?php echo trans('Location (City, State)') ?>" autocomplete="off" value="<?php echo !empty($product_detail['address']) ? $product_detail['address'] : old('address'); ?>" required>
 								</div>	  
 																				
-								<div class="form-group">
+								<!--<div class="form-group">
 									<input class="form-control required" type="email" id="email" name="email" placeholder="<?php echo trans('Email') ?>" autocomplete="off" value="<?php echo !empty($product_detail['email']) ? $product_detail['email'] : (!empty(old('email'))?old('email'):$user_detail->email); ?>" required>
-								</div>	
+								</div>-->	
 								</div>
-							</fieldset>-->
+							</fieldset>
 								
 								<input type="hidden" id="g-recaptcha-response"  class="form-control required" name="check_bot" value="" >
 								

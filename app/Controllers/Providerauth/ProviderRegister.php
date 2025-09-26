@@ -427,8 +427,8 @@ class ProviderRegister extends ProviderauthController
 						</div>
 						<div class="pro-content">
 							<h5 class="fw-medium title-xs">'.$provider['name'].'</h5>
-							<h5 class="fw-medium text-primary title-xs">'.$provider['business_name'].'</h5>
-							<p class="text-grey mb-3">'.$provider['address'].'</p>
+							<h5 class="fw-medium text-primary title-xs">'.(!empty($provider['business_name'])?$provider['business_name']:$provider['user_name']).'</h5>
+							<p class="text-grey mb-3">'.(!empty($provider['address'])?$provider['address']:$provider['user_address']).'</p>
 							<h5 class="fw-medium title-xs">'.(($provider['price'] != NULL) ? 'USD $'.number_format($provider['price'], 2, '.', ',') : 'Call for Price').'</h5>
 						</div>
 					</div>

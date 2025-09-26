@@ -61,7 +61,7 @@ $render = function($pid) use (&$render,$byParent) {
       <div class="dd-handle">
         <span class="title"><?= esc($row['title']) ?></span>
         <div class="actions">
-          <a class="ml-3 text-danger del" type="button" href="#" data-id="<?= $row['id'] ?>"><i class="fas fa-trash"></i></a>
+          <a class="ml-3 text-danger del" type="button" href="javascript:void(0);" data-id="<?= $row['id'] ?>"><i class="fas fa-trash"></i></a>
         </div>
       </div>
       <ul class="dd-list"><?php $render($row['id']); ?></ul>
@@ -119,7 +119,7 @@ foreach ($subs as $s) $catSubs[$s['category_id']][] = $s;
                   data-type="subcategory"
                   data-entity_id="<?= $sc['id'] ?>"
                   data-title="<?= esc($sc['name']) ?>"
-                  data-url="<?= esc('listings/'.$c['permalink'].'?category='.$sc['id']) ?>">
+                  data-url="<?= esc('listings/'.$c['permalink'].'?from=menu&category='.$sc['id']) ?>">
                 <span class="label"><?= esc($sc['name']) ?></span>
               </li>
             <?php endforeach; ?>
@@ -127,8 +127,7 @@ foreach ($subs as $s) $catSubs[$s['category_id']][] = $s;
         </ul>
 
         <p class="text-muted small mt-3">
-          Drag any item to the right. Drag up/down to reorder. Drop inside a dashed area to make it a sub menu,
-          or use the arrows (→ nest under previous, ← move out).
+          
         </p>
       </div>
     </div>
@@ -139,12 +138,16 @@ foreach ($subs as $s) $catSubs[$s['category_id']][] = $s;
   <section class="card-body" id="menuScroll">
     <div class="d-flex justify-content-between align-items-center mb-2">
       <h5 class="m-0">Menu Structure</h5>
-      <button id="saveOrder" class="btn btn-success btn-sm">Save Menu</button>
+      <button id="saveOrder" class="btn btn-success btn-sm saveOrder">Save Menu</button>
     </div>
 
     <ul id="menuNest" class="dd-list">
       <?php $render(0); ?>
     </ul>
+	
+    <div class="d-flex justify-content-end align-items-center mb-2 mt-3">
+      <button id="saveOrder1" class="btn btn-success btn-sm saveOrder">Save Menu</button>
+    </div>
   </section>
   </div>
 </div>
@@ -160,7 +163,39 @@ foreach ($subs as $s) $catSubs[$s['category_id']][] = $s;
 const RIGHT      = document.getElementById('menuScroll');
 const NEST       = document.getElementById('menuNest');
 let   CSRF       = { name: '<?= csrf_token() ?>', hash: '<?= csrf_hash() ?>' };
+const nest = document.getElementById('menuNest');
 
+nest.addEventListener('click', async (e) => {
+  const del = e.target.closest('.del');
+  if (!del) return;                  // not a delete click
+  e.preventDefault();
+  e.stopPropagation();
+
+  const li = del.closest('li.dd-item');
+  if (!li) return;
+
+	 const { isConfirmed } = await Swal.fire({
+      title: 'Remove this item?',
+      text: 'This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Remove',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+      focusCancel: true
+    });
+    if (!isConfirmed) return;
+  // If you're staging creates (new-* ids), just remove locally:
+  const id = li.dataset.id || '';
+  if (id.startsWith('new-')) {
+    li.remove();
+    return;
+  }
+  // Otherwise call your delete API (persisted row)
+  const r = await postForm('<?= base_url('admin/menus/item/delete') ?>', { id });
+  if (!r.ok) { Swal.fire("Delete Failed.", "", "error"); return; }
+  li.remove();
+});
 /* POST helper (CI4 csrf) */
 async function postForm(url, data){
   const body = new URLSearchParams({ ...data, [CSRF.name]: CSRF.hash });
@@ -237,7 +272,7 @@ function ddHTML(id, title){
   return `
     <div class="dd-handle">
       <span class="title">${title}</span>
-      <a href="#" class="ml-3 text-danger del" data-id="${id}">
+      <a href="javascript:void(0);" class="ml-3 text-danger del" data-id="${id}">
         <i class="fas fa-trash"></i>
       </a>
     </div>
@@ -337,7 +372,8 @@ makeDroppable(NEST);
 NEST.querySelectorAll(':scope .dd-list').forEach(makeDroppable);
 
 /* ------------------ SAVE: create new, then reorder ------------------ */
-document.getElementById('saveOrder').addEventListener('click', async ()=>{
+document.querySelectorAll('.saveOrder').forEach(button => {
+  button.addEventListener('click', async () => {
   const tree = serialize(NEST);                               // grab current structure
   const { list:newIds, meta } = collectNewNodes(tree, NEST);  // which nodes are new?
 
@@ -377,7 +413,8 @@ document.getElementById('saveOrder').addEventListener('click', async ()=>{
 
   if (!res.ok) { Swal.fire('Save Failed', '', 'error'); return; }
   try { const j = await res.json(); if (j?.csrf) CSRF.hash = j.csrf; } catch {}
-  Swal.fire('Order Saved!', '', 'success');
+  Swal.fire('Menu Saved!', '', 'success');
+});
 });
 </script>
 

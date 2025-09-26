@@ -50,7 +50,7 @@ if (!function_exists('render_menu')) {
 								  . '>'.esc($n['title']).'</a>';
 
 							// Split toggle (no navigation)
-							$out .= '<a class="dropdown-toggle dropdown-toggle-split caret-toggle"'
+							$out .= '<a class="dropdown-toggle dropdown-toggle-split caret-toggle top-0 mt-3"'
 								  . ' href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">'
 								  . '<span class="visually-hidden">Toggle dropdown</span></a>';
 						} else {

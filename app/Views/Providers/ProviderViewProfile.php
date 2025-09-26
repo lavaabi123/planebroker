@@ -389,11 +389,11 @@ $count = !empty($images) ? count($images) : 0;
 					
 					<hr>
 					
-					<?php if(!empty($user_detail->mobile_no)){ ?>
+					<?php if(!empty($product_detail['phone']) || !empty($user_detail->mobile_no)){ ?>
 					<div class="d-flex align-items-center fw-medium mb-0">
 						<img class="icons" src="<?php echo base_url('assets/frontend/images/phone.png'); ?>" />
-						<p class="mb-0"><?php echo $user_detail->mobile_no; ?></p>
-						<a class="showPhone btn btn-sm mx-3" href="tel:+1<?php echo preg_replace('/\D+/', '', $user_detail->mobile_no); ?>"> CALL </a>
+						<p class="mb-0"><?php echo !empty($product_detail['phone']) ? $product_detail['phone'] : $user_detail->mobile_no; ?></p>
+						<a class="showPhone btn btn-sm mx-3" href="tel:+1<?php echo preg_replace('/\D+/', '', (!empty($product_detail['phone']) ? $product_detail['phone'] : $user_detail->mobile_no)); ?>"> CALL </a>
 					</div>
 					<hr>
 					<?php } ?>		
@@ -401,22 +401,22 @@ $count = !empty($images) ? count($images) : 0;
 					<div class="d-flex align-items-center fw-medium mb-0">
 						<a class="d-flex align-items-center" href="<?php echo base_url('user-listings?seller_id='.$user_detail->id); ?>">
 						<img class="icons" src="<?php echo base_url('assets/frontend/images/usericon.png'); ?>" />
-						<p class="mb-0"><?php echo $user_detail->fullname; ?></p>
+						<p class="mb-0"><?php echo !empty($product_detail['business_name']) ? $product_detail['business_name'] : $user_detail->fullname; ?></p>
 						</a>
 					</div>
 					<hr>
-					<?php if(!empty($product_detail['address'])){ ?>
+					<?php if(!empty($product_detail['address']) || !empty($user_detail->address)){ ?>
 					<div class="d-flex align-items-center fw-medium mb-0">
 						<img class="icons" src="<?php echo base_url('assets/frontend/images/pin.png'); ?>" />
-						<p class=""><?php echo $product_detail['address']; ?></p>
+						<p class=""><?php echo !empty($product_detail['address']) ? $product_detail['address'] : $user_detail->address; ?></p>
 					</div>
 					<hr>
 					<?php } ?>		
-					<?php if(!empty($user_detail->website)){ ?>
+					<?php if(!empty($product_detail['website']) || !empty($user_detail->website)){ ?>
 						<div class="d-flex align-items-center fw-medium mb-0">
-						<a class="d-flex align-items-center" target="_blank" href="<?php echo $user_detail->website; ?>">
+						<a class="d-flex align-items-center" target="_blank" href="<?php echo !empty($product_detail['website']) ? $product_detail['website'] : $user_detail->website; ?>">
 							<img class="icons" src="<?php echo base_url('assets/frontend/images/web.png'); ?>" />
-							<p class="mb-0"><?php echo $user_detail->website; ?></p>
+							<p class="mb-0"><?php echo !empty($product_detail['website']) ? $product_detail['website'] :$user_detail->website; ?></p>
 						</a>
 						</div>
 						<hr>

@@ -9,7 +9,7 @@ class CategoriesSubModel extends Model
     protected $DBGroup          = 'default';
     protected $table            = 'categories_sub';
     protected $primaryKey       = 'id';
-    protected $allowedFields = ['name','category_id','status','seo_title','seo_keywords','seo_description'];
+    protected $allowedFields = ['name','category_id','status','seo_title','seo_keywords','seo_description','description'];
 
     // Custom 
     protected $session;
@@ -100,7 +100,8 @@ class CategoriesSubModel extends Model
 					SELECT COUNT(*) 
 					FROM products p 
 					LEFT JOIN sales s ON s.id = p.sale_id
-					WHERE p.sub_category_id = categories_sub.id 
+					LEFT JOIN users u ON u.id = p.user_id
+					WHERE u.id is not null and p.sub_category_id = categories_sub.id 
 					  AND p.status=1 AND (p.is_cancel = 0 || s.stripe_subscription_end_date >= NOW()) and s.id > 0
 				) AS product_count
 			FROM categories_sub
@@ -123,6 +124,7 @@ class CategoriesSubModel extends Model
             'seo_title' => $this->request->getVar('seo_title'), 
             'seo_keywords' => $this->request->getVar('seo_keywords'), 
             'seo_description' => $this->request->getVar('seo_description'),
+            'description' => $this->request->getVar('description'),
             'status' => $this->request->getVar('status'),
         );
 
@@ -137,7 +139,8 @@ class CategoriesSubModel extends Model
             'category_id' => $this->request->getVar('category_id'),
             'seo_title' => $this->request->getVar('seo_title'), 
             'seo_keywords' => $this->request->getVar('seo_keywords'), 
-            'seo_description' => $this->request->getVar('seo_description'),       
+            'seo_description' => $this->request->getVar('seo_description'), 
+            'description' => $this->request->getVar('description'),      
             'status' => $this->request->getVar('status')
         );
 

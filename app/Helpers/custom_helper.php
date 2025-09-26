@@ -945,6 +945,25 @@ function getSubcategoryName($id)
     return $user_detail->category_names;
 }
 
+function getSubcategory_Name($id)
+{
+    $db       = \Config\Database::connect();
+    $sql = "SELECT s.name,c.heading_text FROM categories_sub s left join categories c on c.id = s.category_id where s.id=".$id."";
+	
+	$query = $db->query($sql);
+	$res = $query->getRowArray();
+	return $res['name'].' '.$res['heading_text'];
+}
+
+function getSubcategory_des($id)
+{
+    $db       = \Config\Database::connect();
+    $sql = "SELECT s.description FROM categories_sub s left join categories c on c.id = s.category_id where s.id=".$id."";
+	
+	$query = $db->query($sql);
+	$res = $query->getRowArray();
+	return $res['description'];
+}
 function getCategoryName($id)
 {
     $db       = \Config\Database::connect();

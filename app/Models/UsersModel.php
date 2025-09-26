@@ -585,7 +585,8 @@ class UsersModel extends Model
 		$data['email'] = !empty($this->request->getVar('email')) ? $this->request->getVar('email') : '';
 		$data['clean_url'] = '';
 				
-		$data['address'] = !empty($this->request->getVar('address')) ? $this->request->getVar('address') : '';	
+		$data['address'] = !empty($this->request->getVar('address')) ? $this->request->getVar('address') : '';
+			$data['website'] = !empty($this->request->getVar('website')) ? $this->request->getVar('website') : '';	
 		$data['suite'] = !empty($this->request->getVar('suite')) ? $this->request->getVar('suite') : '';
 		$data['city'] = !empty($this->request->getVar('locality')) ? $this->request->getVar('locality') : '';
 		$data['state'] = !empty($this->request->getVar('state')) ? $this->request->getVar('state') : '';

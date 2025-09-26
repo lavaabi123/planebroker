@@ -10,7 +10,7 @@
 <script type='text/javascript' src='<?php echo base_url(); ?>/assets/selectize/js/standalone/selectize.min.js'></script>
 <script type='text/javascript' src='<?php echo base_url(); ?>/assets/pickadate/picker.js'></script>
 <script type='text/javascript' src='<?php echo base_url(); ?>/assets/pickadate/picker.time.js'></script>
-<script src="<?php echo base_url(); ?>/assets/admin/js/provider.js?v=2.8"></script>
+<script src="<?php echo base_url(); ?>/assets/admin/js/provider.js?v=2.12"></script>
 <!-- Fontawesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 	<!-- bootstrap js -->
@@ -502,21 +502,26 @@ video{
 							</fieldset>
 
 							<fieldset class="form-input">
-								<h3 class="title-xl black my-3"><?php echo trans('Location') ?></h3>
+								<h3 class="title-xl black my-3"><?php echo trans('Seller Information') ?></h3>
 								<div class="form-section row row-cols-1 row-cols-md-2">
-								<!--<div class="form-group">
-									<input class="form-control required" type="text" id="business_name" name="business_name" placeholder="<?php echo trans('Name') ?>" value="<?php echo !empty($product_detail['business_name']) ? $product_detail['business_name'] : (!empty(old('business_name'))?old('business_name'):$user_detail->fullname); ?>" required>
+								<div class="form-group">
+									<input class="form-control" type="text" id="business_name" name="business_name" placeholder="<?php echo trans('Name') ?>" value="<?php echo !empty($product_detail['business_name']) ? $product_detail['business_name'] : (!empty(old('business_name'))?old('business_name'):''); ?>">
 								</div>													
 								<div class="form-group">
-									<input class="form-control required" type="text" id="phone" name="phone" placeholder="<?php echo trans('Phone Number') ?>" autocomplete="off" value="<?php echo !empty($product_detail['phone']) ? $product_detail['phone'] : (!empty(old('phone'))?old('phone'):$user_detail->mobile_no); ?>" required>
-								</div>-->													
+									<input class="form-control" type="text" id="phone" name="phone" placeholder="<?php echo trans('Phone Number') ?>" autocomplete="off" value="<?php echo !empty($product_detail['phone']) ? $product_detail['phone'] : (!empty(old('phone'))?old('phone'):''); ?>" >
+								</div>													
 								<div class="form-group">
-									<input class="form-control city-state required" type="text" id="cityState" name="address" placeholder="<?php echo trans('Location (City, State)') ?>" autocomplete="off" value="<?php echo !empty($product_detail['address']) ? $product_detail['address'] : old('address'); ?>" required>
+									<input class="form-control city-state" type="text" id="cityState" name="address" placeholder="<?php echo trans('Location (City, State)') ?>" autocomplete="off" value="<?php echo !empty($product_detail['address']) ? $product_detail['address'] : old('address'); ?>">
 								</div>	  
 																				
-								<!--<div class="form-group">
-									<input class="form-control required" type="email" id="email" name="email" placeholder="<?php echo trans('Email') ?>" autocomplete="off" value="<?php echo !empty($product_detail['email']) ? $product_detail['email'] : (!empty(old('email'))?old('email'):$user_detail->email); ?>" required>
-								</div>-->	
+								<div class="form-group">
+									<input class="form-control" type="email" id="email" name="email" placeholder="<?php echo trans('Email') ?>" autocomplete="off" value="<?php echo !empty($product_detail['email']) ? $product_detail['email'] : (!empty(old('email'))?old('email'):''); ?>" >
+								</div>		  
+																				
+								<div class="form-group">
+									<input class="form-control" type="website" id="website" name="website" placeholder="<?php echo trans('Website') ?>" autocomplete="off" value="<?php echo !empty($product_detail['website']) ? $product_detail['website'] : (!empty(old('website'))?old('website'):''); ?>">
+								</div>
+								
 								</div>
 							</fieldset>
 								

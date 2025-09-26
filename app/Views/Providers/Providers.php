@@ -87,7 +87,7 @@ function radio($name, $val){
 	
 	<div class="carftList right-section">
 		<div class="container-xl">
-		<h3 class="text-center d-blue fw-bolder mt-5 mb-3 my-md-5"><?php echo !empty($category_detail->skill_name) ? $category_detail->skill_name : 'Aircraft for Sale'; ?></h3>
+		<h3 class="text-center d-blue fw-bolder mt-5 mb-3 my-md-5"><?php echo !empty($sub_category_name) ? $sub_category_name : (!empty($category_detail->skill_name) ? $category_detail->skill_name : 'Aircraft for Sale'); ?></h3>
 		
 		<div class="row mb-5">
 			<div class="col-sm-3 align-self-end">
@@ -222,6 +222,27 @@ function radio($name, $val){
 					</div>
 
 				</form>
+		</div>
+		    <?php
+		    if(!empty($_GET['from'])){
+		         if(!empty($sub_category_des)){
+		             echo '
+		<div class="mb-5 mt-3">';
+		             echo '<h4>'.$sub_category_name.'</h4>';
+		             echo $sub_category_des;
+		             echo '</div>';
+		         }
+		    }else{
+                if(!empty($category_detail->description)){
+                    echo '
+		<div class="mb-5 mt-3">';
+                     echo '<h4>'.$category_detail->skill_name.'</h4>';
+		             echo $category_detail->description;
+		             echo '</div>';
+                }
+		    }
+		    ?>
+		
 		</div>
 		</div>
 	</div>

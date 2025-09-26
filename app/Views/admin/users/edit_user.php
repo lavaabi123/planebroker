@@ -57,7 +57,7 @@
                                         <div class="col-6">
                                             <div class="form-group mb-3">
                                                 <label><?php echo trans("First Name"); ?></label>
-                                                <input type="text" name="first_name" id="first_name" class="form-control auth-form-input required" placeholder="<?php echo trans("First Name"); ?>" value="<?php echo html_escape($user_detail->first_name); ?>">
+                                                <input type="text" name="first_name" id="first_name" class="form-control auth-form-input" placeholder="<?php echo trans("First Name"); ?>" value="<?php echo html_escape($user_detail->first_name); ?>">
                                             </div>
                                         </div>
                                         <div class="col-6">

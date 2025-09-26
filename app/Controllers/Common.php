@@ -354,7 +354,8 @@ class Common extends BaseController
                 'category_icon' => $category->category_icon,
                 'seo_title' => $category->seo_title, 
                 'seo_keywords' => $category->seo_keywords, 
-                'seo_description' => $category->seo_description,            
+                'seo_description' => $category->seo_description,  
+                'description' => $category->description,          
             );
         }
         echo json_encode($data);
@@ -373,7 +374,8 @@ class Common extends BaseController
                 'status' => $category->status,
                 'seo_title' => $category->seo_title, 
                 'seo_keywords' => $category->seo_keywords, 
-                'seo_description' => $category->seo_description,            
+                'seo_description' => $category->seo_description, 
+                'description' => $category->description,                    
             );
         }
         echo json_encode($data);

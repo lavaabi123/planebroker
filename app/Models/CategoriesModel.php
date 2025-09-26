@@ -9,7 +9,7 @@ class CategoriesModel extends Model
     protected $DBGroup          = 'default';
     protected $table            = 'categories';
     protected $primaryKey       = 'id';
-    protected $allowedFields = ['name', 'category_icon','seo_title','seo_keywords','seo_description','status'];
+    protected $allowedFields = ['name', 'category_icon','seo_title','seo_keywords','seo_description','description','status'];
 
     // Custom 
     protected $session;
@@ -87,6 +87,7 @@ class CategoriesModel extends Model
             'seo_title' => $this->request->getVar('seo_title'), 
             'seo_keywords' => $this->request->getVar('seo_keywords'), 
             'seo_description' => $this->request->getVar('seo_description'),
+            'description' => $this->request->getVar('description'),
 			'category_icon' => $img_name
         );
 
@@ -103,7 +104,8 @@ class CategoriesModel extends Model
             'in_house' => $this->request->getVar('in_house'), 
             'seo_title' => $this->request->getVar('seo_title'), 
             'seo_keywords' => $this->request->getVar('seo_keywords'), 
-            'seo_description' => $this->request->getVar('seo_description'),       
+            'seo_description' => $this->request->getVar('seo_description'), 
+            'description' => $this->request->getVar('description'),        
             'status' => $this->request->getVar('status'),
 			'category_icon' => $img_name
         );

@@ -109,7 +109,7 @@
 </div>
 <!-- Modal -->
 <div id="modal-categories" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modal-modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header justify-content-center p-2 pb-0">
                 <h4 class="modal-title mb-0 fw-bolder" id="modal-modalLabel"><?php echo trans('add'); ?></h4>
@@ -142,6 +142,10 @@
 					</select>
 				</div>  
 				
+				<div class="form-group">
+					<label><?php echo trans("description"); ?></label>
+					<textarea id="description" name="description" class="form-control form-input show_text_editor" placeholder="<?php echo trans("description"); ?>"></textarea>
+				</div>        
 				<div class="form-group">
 					<label><?php echo trans("seo_title"); ?></label>
 					<input type="text" id="modal_seo_title" name="seo_title" maxlength="255" class="form-control form-input" placeholder="<?php echo trans("seo_title"); ?>" required>
@@ -192,6 +196,7 @@ function manage_categories(categoryId) {
     $('#modal_seo_title').val('');
     $('#modal_seo_keywords').val('');
     $('#modal_seo_description').val('');
+    tinymce.get('description').setContent('');
 
     if(categoryId != ''){
         $('.loader').show();
@@ -212,6 +217,7 @@ function manage_categories(categoryId) {
                 $('#modal_seo_title').val(obj.seo_title);
                 $('#modal_seo_keywords').val(obj.seo_keywords);
                 $('#modal_seo_description').val(obj.seo_description);
+                tinymce.get('description').setContent(obj.description || '');
                 $('.loader').hide();
                 $('#modal-categories').modal('show');
             }

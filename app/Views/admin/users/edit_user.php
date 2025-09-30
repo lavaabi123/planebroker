@@ -136,7 +136,7 @@
 										<div class="row">
 										<div class="col-6">
 											<input class="form-control" type="text" id="youtube_link" name="youtube_link" placeholder="<?php echo trans('YouTube Link') ?>" value="<?php echo $user_detail->youtube_link ?>">
-											<textarea class="form-control" name="about_me" placeholder="About Seller"><?php echo $user_detail->about_me ?></textarea>
+											<textarea class="form-control show_text_editor" name="about_me" placeholder="About Seller"><?php echo $user_detail->about_me ?></textarea>
 										</div>
 										<div class="col-6 uploader-row">
 										  <div class="file-upload">
@@ -608,7 +608,7 @@ function confirm_once(_this){
 /* Layout */
 .uploader-row{
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   gap:18px;
 }
 

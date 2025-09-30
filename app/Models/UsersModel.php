@@ -1060,6 +1060,9 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
 	}
 	
 	public function insert_sales($data){
+	    if (empty($data['admin_plan_end_date'])) {
+            $data['admin_plan_end_date'] = date('Y-m-d H:i:s', strtotime('+1 week'));
+        } 
 		$this->db->table('sales')->insert($data);
 		return $this->db->insertID();
 	}

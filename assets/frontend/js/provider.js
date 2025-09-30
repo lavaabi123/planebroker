@@ -133,6 +133,7 @@ form.validate({
 		(name === "mobile_no" && msg !== "") ||
 		(name === "first_name" && msg !== "") ||
 		(name === "last_name" && msg !== "") ||
+		(name === "password" && msg !== "") ||
         (name === "confirm_password" && msg !== "") ||
         (name === "check_bot")
     )) {
@@ -160,11 +161,7 @@ form.validate({
             equalTo: "#password"
         },
         password: { required: true, minlength: 12 },
-        mobile_no: {
-            required: true,
-            phoneUS: true,
-            minlength: 10,
-            maxlength: 10
+        mobile_no: { required: true, tenDigits: true, minlength: 10, maxlength: 10,normalizer: function (value) { return value.replace(/\D/g, ''); } 
         },
         first_name: { required: true, lettersonly: true },
         last_name: { required: true, lettersonly: true }

@@ -260,6 +260,7 @@ class UserManagement extends AdminController
 
 		if(empty($_GET['user_id'])){
 			$data['users'] = $this->userModel->get_users();
+			//echo "<pre>";print_r($data['users']);exit;
 			return view('admin/listings/users', $data);		
 		}else if(!empty($_GET['user_id']) && empty($_GET['plan_id'])){
 			$data['user_plan_details'] = array();
@@ -361,8 +362,8 @@ class UserManagement extends AdminController
 				
 			$sale_id = !empty($_GET['sale_id']) ? $_GET['sale_id'] : '';	
 			$payment_type = !empty($_GET['payment_type']) ? $_GET['payment_type'] : '';	
-			$data['selected_sale_id'] = !empty(session()->get('selected_sale_id')) ? session()->get('selected_sale_id') : $sale_id ;
-			$data['selected_payment'] = !empty(session()->get('selected_payment')) ? session()->get('selected_payment') : $payment_type ;
+			$data['selected_sale_id'] = $sale_id ;
+			$data['selected_payment'] = $payment_type ;
 			$data['sale_detail'] = array();
 			if(!empty($_GET['payment_type']) && $_GET['payment_type'] == 'paypal'){
 				$data['sale_detail'] = $this->UsersModel->get_paypal_sales_by_id($this->request->getVar('sale_id'));

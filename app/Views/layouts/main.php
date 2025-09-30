@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
     <title><?php echo !empty($meta_title) ? $meta_title : 'Find a Plane Broker Near You!'; ?></title>
-    <meta name="description" content="<?php echo !empty($meta_desc) ? $meta_desc : 'At planebroker.com, Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries.'; ?>">
+    <meta name="description" content="<?php echo !empty($meta_desc) ? $meta_desc : 'Plane Broker is built for aircraft owners, buyers, and sellers who want a smarter, more straightforward way to navigate the market. Whether you\'re listing a single aircraft or searching for your next one, our platform gives you the tools to take off with confidence.'; ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/png" href="<?php echo base_url(); ?>/assets/img/favicon-v2.ico" />
     
     <meta name="keywords" content="<?php echo !empty($meta_keywords) ? $meta_keywords : 'plane broker las vegas'; ?>">
     <meta property="og:title" content="Find a Plane Broker Near You!"/>
-    <meta property="og:description" content="At planebroker.com, Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s."/>
-    <meta property="og:image" content="<?php echo base_url(); ?>/assets/img/fmg-logo.jpg"/>
+    <meta property="og:description" content="Plane Broker is built for aircraft owners, buyers, and sellers who want a smarter, more straightforward way to navigate the market. Whether you're listing a single aircraft or searching for your next one, our platform gives you the tools to take off with confidence."/>
+    <meta property="og:image" content="<?php echo base_url(); ?>/assets/frontend/images/user-pic-new.jpg"/>
     <!--<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <link rel="preload" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback" as="font" type="font/woff" crossorigin>-->
     <!-- Bootstrap CSS -->
@@ -120,13 +120,13 @@
     </script>
     <script src="<?php echo base_url(); ?>/assets/frontend/js/custom-frontend.js?version=2.0"></script>
     
-     <!-- Google tag (gtag.js) --> 
+  <!-- Google tag (gtag.js) --> 
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-BMHFJMLGQL"></script> 
   <script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-BMHFJMLGQL'); </script>
 </head>
 <?php $uri = current_url(true);?>
 <body class="hold-transition <?php echo (session()->get('vr_sess_logged_in') == TRUE) ? ' logged-in ' : ''; ?> <?php echo (base_url() == str_replace('/index.php/','',$uri)) ? 'home' : ''; ?> " >
-
+    
     <!-- HEADER: MENU + HEROE SECTION -->
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="bootstrap" viewBox="0 0 118 94">
@@ -564,7 +564,7 @@ button#gdpr-cookie-advanced {
 	<script src="<?php echo base_url();?>/assets/cc/javascripts/skeuocard.js"></script>
 	<script src='<?php echo base_url();?>/assets/cc/javascripts/vendor/cssua.min.js'></script>
 	<?php } ?>
-	<script src="<?php echo base_url(); ?>/assets/frontend/js/provider.js?version=1.20"></script>
+	<script src="<?php echo base_url(); ?>/assets/frontend/js/provider.js?version=1.21"></script>
 	<script src="<?php echo base_url(); ?>/assets/frontend/js/lightbox.js"></script>
 	
 	

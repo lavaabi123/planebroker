@@ -100,7 +100,7 @@ function radio($name, $val){
 			<div class="col-sm-9">
 				<div class="advSearch">
 					<h5 class="mb-1">Quick Search</h5>
-					<form class="form-input p-3 search-form" method='get' id="mySearchForm" action='<?php echo base_url(); ?>/listings/<?php echo $category; ?>'>
+					<form class="form-input p-3 search-form" method='get' data-category-slug="<?= esc($category) ?>" id="mySearchForm" action='<?php echo base_url(); ?>/listings/<?php echo $category; ?>'>
 						<div class="form-section align-items-center d-flex flex-column flex-sm-row gap-2 gap-sm-3">
 
 							<div class="form-group w-100">
@@ -586,9 +586,26 @@ $('#mySearchForm2').on('submit', function (e) {
 	fetchProducts({ preserveExisting: false }); 
 });// one global guard to prevent recursive loops
 let syncingCategory = false;
-
+let syncingmanufacturer = false;
 function setQuickSearchValue(val) {
   const $select = $('#mySearchForm select[name="category[]"]');
+  const el = $select.get(0);
+  if (!el) return;
+
+  // make sure the option exists (optional)
+  if (val && !$select.find('option[value="'+val+'"]').length) {
+    $select.append('<option value="'+val+'"></option>');
+  }
+
+  // Update SlimSelect without re-triggering our change handler
+  if (el._slim && typeof el._slim.set === 'function') {
+    el._slim.set(val || '');
+  } else {
+    $select.val(val || ''); // NOTE: no .trigger('change') here
+  }
+}
+function setQuickSearchValueM(val) {
+  const $select = $('#mySearchForm select[name="manufacturer[]"]');
   const el = $select.get(0);
   if (!el) return;
 
@@ -621,6 +638,22 @@ $(document).on('change', '#mySearchForm select[name="category[]"]', function () 
 
   syncingCategory = false;
 });
+/** RIGHT → LEFT **/
+$(document).on('change', '#mySearchForm select[name="manufacturer[]"]', function () {
+  if (syncingmanufacturer) return;
+  syncingmanufacturer = true;
+
+  const val = $(this).val() || '';
+
+  // Uncheck all then check the matching one
+  const $leftAll   = $('#searchFilter input[name="manufacturer[]"]');
+  const $leftMatch = $('#searchFilter input[name="manufacturer[]"][value="'+val+'"]');
+
+  $leftAll.prop('checked', false);
+  if (val) $leftMatch.prop('checked', true); // no .trigger('change')
+
+  syncingmanufacturer = false;
+});
 
 /** LEFT → RIGHT **/
 $(document).on('change', '#searchFilter input[name="category[]"]', function () {
@@ -632,6 +665,16 @@ $(document).on('change', '#searchFilter input[name="category[]"]', function () {
   setQuickSearchValue(val); // no .trigger('change')
 
   syncingCategory = false;
+});
+$(document).on('change', '#searchFilter input[name="manufacturer[]"]', function () {
+  if (syncingmanufacturer) return;
+  syncingmanufacturer = true;
+
+  // If you allow multiple checkboxes, pick the first (or define your own rule)
+  const val = $('#searchFilter input[name="manufacturer[]"]:checked').first().val() || '';
+  setQuickSearchValueM(val); // no .trigger('change')
+
+  syncingmanufacturer = false;
 });
 
 	function urlchange1(form1){
@@ -860,6 +903,64 @@ $(document).ready(function () {
 });
 </script>
 
+<script>
+(function () {
+  // native <select> elements (SlimSelect wraps them; keep references to the originals)
+  const catSel = document.querySelector('select[name="category[]"]');
+  const manSel = document.querySelector('select[name="manufacturer[]"]');
+
+  if (!catSel || !manSel) return;
+
+  // Grab SlimSelect instances if you create them manually, otherwise detect:
+  const getSlim = (selectEl) => selectEl.slim || window.Slim && SlimSelect && SlimSelect.instances?.find(i => i.select === selectEl);
+
+  const manSlim = getSlim(manSel);
+
+  async function loadManufacturers() {
+    // Build the selected subcategory id list from the category select
+    // Your Quick Search posts category ids joined by "|" (as seen in providers_list)
+    const ids = Array.from(catSel.selectedOptions).map(o => o.value).filter(Boolean).join('|');
+
+    // Clear current manufacturers
+    if (manSlim && manSlim.setData) {
+      manSlim.setData([{ text: 'All Manufacturers', value: '' }]);
+    } else {
+      manSel.innerHTML = '<option value="">All Manufacturers</option>';
+    }
+
+    // Call the endpoint; also send the page category slug if you have it in a data-attr
+    const pageCategorySlug = document.querySelector('#mySearchForm')?.dataset?.categorySlug || '';
+
+    const url = '<?php echo base_url(); ?>'+`/listingsv/ajax-manufacturers?subcategory_ids=${encodeURIComponent(ids)}&category=${encodeURIComponent(pageCategorySlug)}`;
+
+    try {
+      const res  = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+      const json = await res.json();
+      if (!json.ok) return;
+
+      const options = [{ text: 'All Manufacturers', value: '' }].concat(json.items);
+
+      if (manSlim && manSlim.setData) {
+        manSlim.setData(options);
+      } else {
+        // fallback without SlimSelect
+        manSel.innerHTML = options.map(o => `<option value="${o.value}">${o.text}</option>`).join('');
+      }
+
+    } catch (e) {
+      console.error('Manufacturer load failed', e);
+    }
+  }
+
+  // When category changes → reload manufacturers
+  catSel.addEventListener('change', loadManufacturers);
+
+  // Also run once on page load if a category is preselected
+  if (Array.from(catSel.selectedOptions).some(o => o.value)) {
+    loadManufacturers();
+  }
+})();
+</script>
 <style>
 .hidden-filter {
     display: none;

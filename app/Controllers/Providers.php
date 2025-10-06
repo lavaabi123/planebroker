@@ -409,14 +409,14 @@ class Providers extends BaseController
         $data['categories_list'] = $this->categoriessubModel->get_categories_by_link($category,' AND categories_sub.id IN (SELECT DISTINCT pr.sub_category_id FROM products pr LEFT JOIN sales s ON s.id = pr.sale_id LEFT JOIN users us ON us.id = pr.user_id WHERE us.id is not null and pr.status=1 AND (pr.is_cancel = 0 || s.stripe_subscription_end_date >= NOW()) and s.id > 0)');
 		//get manufacturers List
 		$this->ProductModel = new ProductModel();
-		$data['manufacturers'] = $this->ProductModel->get_manufacturers($category, $where, $all=0);
+		$data['manufacturers'] = $this->ProductModel->get_manufacturers($category, $wherecat, $all=0);
 		//get models List
 		$this->ProductModel = new ProductModel();
 		$data['models'] = $this->ProductModel->get_models($category, $where);
 		
 		$data['category'] = $category;
 		$data['filter_texts'] = $filter_texts;
-		//print_r($data['categories_list']);exit;
+		//print_r($data['manufacturers']);exit;
 		$data['filter_ids'] = $filter_ids;
 		
 		$price_range_array = array('Under $20,000'=>array('','20000',0),'$20,000 to $49,999'=>array('20000','49999',0),'$50,000 to $99,999'=>array('50000','99999',0),'$100,000 to $249,999'=>array('100000','249999',0),'$250,000 to $499,999'=>array('250000','499999',0),'$500,000 and Over'=>array('500000','',0));
@@ -459,6 +459,45 @@ class Providers extends BaseController
 		}
 		return view('Providers/Providers', $data);
 	}
+	
+	public function ajax_manufacturers()
+	{
+		// slug of the main category page (e.g., 'aircraft-for-sale')
+		$categorySlug = $this->request->getGet('category') ?? null;
+
+		// selected subcategory ids from Quick Search, e.g. "12|34"
+		$subcatParam  = trim((string)$this->request->getGet('subcategory_ids'));
+
+		$where = '';
+		if ($subcatParam !== '') {
+			// sanitize: keep ints only
+			$ids = array_filter(array_map('intval', explode('|', $subcatParam)));
+			if (!empty($ids)) {
+				$where .= ' AND p.sub_category_id IN (' . implode(',', $ids) . ')';
+			}
+		}
+
+		$this->ProductModel = new ProductModel();
+		// same function you already use for the left sidebar
+		$items = $this->ProductModel->get_manufacturers($categorySlug, $where, $all = 0);
+
+		// Normalize to [{value:'Cirrus', text:'Cirrus (3)'}]
+		$out = [];
+		foreach ($items as $row) {
+			// expect keys like ['name' => 'Cirrus', 'total' => 3] – adjust if yours differ
+			$label = $row->name . (isset($row->count) ? ' (' . (int)$row->count . ')' : '');
+			$out[] = [
+				'value' => $row->name,   // your filter expects the raw manufacturer text
+				'text'  => $label,
+			];
+		}
+
+		return $this->response->setJSON([
+			'ok'    => true,
+			'items' => $out,
+		]);
+	}
+
 	public function providers_list_user_based($category = null, $location = null)
     {
 		$category = 'all';

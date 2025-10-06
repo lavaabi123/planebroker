@@ -48,6 +48,7 @@ $routes->get('/provider/(:any)(/(:num))?', 'Providers::view_profile/$1/$3');
 $routes->get('/provider_gallery/(:num)','Providers::view_gallery/$1');
 $routes->get('/providers/set_session', 'Providers::set_session');
 $routes->get('/providers', 'Providers::providers_list');
+$routes->get('/listingsv/ajax-manufacturers', 'Providers::ajax_manufacturers');
 $routes->get('/listings/(:any)/(:num)/(:any)', 'Providers::view_profile/$1/$2');
 $routes->get('/listings/(:any)', 'Providers::providers_list/$1');
 $routes->get('/user-listings', 'Providers::providers_list_user_based');

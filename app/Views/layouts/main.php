@@ -24,6 +24,9 @@ if (!empty($user_photos)) {
         }
     }
 }
+if (!empty($blogimage)) {
+    $ogImage = base_url("uploads/blog/".$blogimage);
+}
 ?>
 
 <!-- Open Graph tags -->
@@ -136,9 +139,7 @@ if (!empty($user_photos)) {
     </script>
     <script src="<?php echo base_url(); ?>/assets/frontend/js/custom-frontend.js?version=2.0"></script>
     
-  <!-- Google tag (gtag.js) --> 
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BMHFJMLGQL"></script> 
-  <script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-BMHFJMLGQL'); </script>
+
 </head>
 <?php $uri = current_url(true);?>
 <body class="hold-transition <?php echo (session()->get('vr_sess_logged_in') == TRUE) ? ' logged-in ' : ''; ?> <?php echo (base_url() == str_replace('/index.php/','',$uri)) ? 'home' : ''; ?> " >

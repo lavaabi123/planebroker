@@ -31,6 +31,11 @@ class ProviderLogin extends ProviderauthController
 		$data['meta_title'] = !empty(get_seo('Login')) ? get_seo('Login')->meta_title : 'Login | Plane Broker';
 		$data['meta_desc'] = !empty(get_seo('Login')) ? get_seo('Login')->meta_description : '';
 		$data['meta_keywords'] = !empty(get_seo('Login')) ? get_seo('Login')->meta_keywords : '';
+		
+		if (!empty($_COOKIE['remember_email']) && !empty($_COOKIE['remember_pass'])) {
+			$data['remember_email'] = base64_decode($_COOKIE['remember_email']);
+			$data['remember_pass']  = base64_decode($_COOKIE['remember_pass']);
+		}
 
         return view('Providerauth/ProviderLogin', $data);
     }
@@ -73,6 +78,22 @@ class ProviderLogin extends ProviderauthController
             }
 
             if ($userModel->login()) {
+				
+				
+				// ✅ If Remember Me is checked
+				if ($this->request->getPost('remember_me')) {
+					// Encrypt credentials before saving
+					$email    = base64_encode($user->email);
+					$password = base64_encode($this->request->getPost('password'));
+
+					setcookie('remember_email', $email, time() + (86400 * 30), "/"); // 30 days
+					setcookie('remember_pass', $password, time() + (86400 * 30), "/");
+				} else {
+					// Clear if unchecked
+					setcookie('remember_email', '', time() - 3600, "/");
+					setcookie('remember_pass', '', time() - 3600, "/");
+				}
+				
                 //remember user
                 $remember_me = $this->request->getVar('remember_me');
                 if ($remember_me == 1) {

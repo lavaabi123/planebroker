@@ -25,7 +25,7 @@
 						<a href="<?= base_url(); ?>"><img src="<?php echo base_url('assets/img/logo.png'); ?>" /></a>
 						<h5 class="text-black mt-4 mb-2 fw-bolder">Welcome back! <span class="text-primary">Sign in</span></h5>
                     <div class="form-group input-group">
-                        <input type="email" name="email" class="form-control" placeholder="<?php echo trans('email') ?>" value="<?php echo old('email') ?>" required>
+                        <input type="email" name="email" value="<?= isset($remember_email) ? esc($remember_email) : '' ?>" class="form-control" placeholder="<?php echo trans('email') ?>" value="<?php echo old('email') ?>" required>
                         <!--<div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-envelope"></span>
@@ -35,7 +35,7 @@
 					
 					
                     <div class="form-group input-group">
-                        <input type="password" name="password" class="form-control" placeholder="<?php echo trans('form_password') ?>" required>
+                        <input type="password" name="password" class="form-control" value="<?= isset($remember_pass) ? esc($remember_pass) : '' ?>" placeholder="<?php echo trans('form_password') ?>" required>
                         <!--<div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -44,7 +44,7 @@
                     </div>
 					<div class="d-flex justify-content-between align-items-center">
 					<div class="icheck-primary d-flex align-items-center gap-2">
-						<input type="checkbox" name="remember_me" id="remember" value="1">
+						<input type="checkbox" name="remember_me" <?= isset($remember_email) ? 'checked' : '' ?> id="remember" value="1">
 						<label for="remember">
 							<?php echo trans("remember_me"); ?>
 						</label>

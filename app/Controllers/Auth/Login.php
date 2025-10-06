@@ -71,20 +71,55 @@ class Login extends AuthController
             }
 
             if ($userModel->login()) {
-                //remember user
-                $remember_me = $this->request->getVar('remember_me');
-                if ($remember_me == 1) {
-                    $this->response->setCookie('_remember_user_id_admin', user()->id, time() + 86400);
-                }
-                if($this->session->get('admin_sess_user_role') > 1){
-                    return redirect()->to(base_url('/'))->withCookies();
-                }else{
-                    return redirect()->to(admin_url())->withCookies();
-                }                
-            } else {
 
-                return redirect()->back()->withInput();
+    // Remember user — safe (only if we actually have a user ID)
+    $remember_me = (int) ($this->request->getVar('remember_me') ?? 0);
+    if ($remember_me === 1) {
+        // Try Myth\Auth current user first
+        $uid = null;
+        if (function_exists('auth')) {
+            $authUser = auth()->user();
+            if ($authUser) {
+                $uid = $authUser->id;
             }
+        }
+        // Fallback: your session value set by login()
+        if (empty($uid)) {
+            $uid = $this->session->get('admin_sess_user_id');
+        }
+
+        // Only set cookie when we actually have an ID
+        if (!empty($uid)) {
+            // CI4 expects "seconds from now" for expire (not a timestamp)
+            // Use secure flag based on request scheme to avoid issues on HTTP dev
+            $secure = $this->request->isSecure();
+
+            $this->response->setCookie(
+                '_remember_user_id_admin',
+                (string) $uid,
+                86400,     // 1 day
+                '',        // domain
+                '/',       // path
+                '',        // prefix
+                $secure,   // secure only if HTTPS
+                true,      // HttpOnly
+                'Lax'      // SameSite
+            );
+        }
+        // If no UID is available yet, skip cookie silently (prevents the fatal)
+    }
+
+    // Your existing redirects (unchanged)
+    if ($this->session->get('admin_sess_user_role') > 1) {
+        return redirect()->to(base_url('/'))->withCookies();
+    } else {
+        return redirect()->to(admin_url())->withCookies();
+    }
+
+} else {
+    return redirect()->back()->withInput();
+}
+
         } else {
 
             $this->session->setFlashData('errors_form', $this->validator->listErrors());

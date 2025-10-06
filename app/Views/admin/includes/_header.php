@@ -142,6 +142,12 @@
                 <i class="fas fa-expand-arrows-alt"></i>
             </a>
         </li> */ ?>
+        <?php 
+if (! user()) {
+    session()->destroy();
+    return redirect()->to('/admin');
+}
+?>
         <li class="nav-item dropdown">
 
             <a data-toggle="dropdown" href="#">

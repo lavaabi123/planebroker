@@ -11,9 +11,25 @@
     <link rel="shortcut icon" type="image/png" href="<?php echo base_url(); ?>/assets/img/favicon-v2.ico" />
     
     <meta name="keywords" content="<?php echo !empty($meta_keywords) ? $meta_keywords : 'plane broker las vegas'; ?>">
-    <meta property="og:title" content="Find a Plane Broker Near You!"/>
-    <meta property="og:description" content="Plane Broker is built for aircraft owners, buyers, and sellers who want a smarter, more straightforward way to navigate the market. Whether you're listing a single aircraft or searching for your next one, our platform gives you the tools to take off with confidence."/>
-    <meta property="og:image" content="<?php echo base_url(); ?>/assets/frontend/images/user-pic-new.jpg"/>
+    <meta property="og:title" content="<?php echo !empty($meta_title) ? $meta_title : 'Find a Plane Broker Near You!'; ?>"/>
+    <meta property="og:description" content="<?php echo !empty($meta_desc) ? $meta_desc : 'Plane Broker is built for aircraft owners, buyers, and sellers who want a smarter, more straightforward way to navigate the market. Whether you\'re listing a single aircraft or searching for your next one, our platform gives you the tools to take off with confidence.'; ?>"/>
+    <?php
+$ogImage = base_url('/assets/frontend/images/user-pic-new.jpg'); // default fallback logo
+
+if (!empty($user_photos)) {
+    foreach ($user_photos as $p => $photo) {
+        if ($photo['file_type'] == 'image') {
+            $ogImage = base_url("uploads/userimages/".$userId."/".$photo['file_name']);
+            break; // stop after first image
+        }
+    }
+}
+?>
+
+<!-- Open Graph tags -->
+<meta property="og:image" content="<?= $ogImage ?>" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="<?= current_url() ?>" />
     <!--<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <link rel="preload" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback" as="font" type="font/woff" crossorigin>-->
     <!-- Bootstrap CSS -->
@@ -28,7 +44,7 @@
     <!-- Reset CSS -->
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/reset.css">
     <!-- Style CSS -->
-    <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/style.css?v=2.6">    <!-- Responsive  CSS -->
+    <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/style.css?v=2.7">    <!-- Responsive  CSS -->
     <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/responsive.css">
     <!-- STYLES -->
 	<link rel="stylesheet" href="<?php echo base_url(); ?>/assets/frontend/css/lightbox.min.css">
@@ -564,7 +580,7 @@ button#gdpr-cookie-advanced {
 	<script src="<?php echo base_url();?>/assets/cc/javascripts/skeuocard.js"></script>
 	<script src='<?php echo base_url();?>/assets/cc/javascripts/vendor/cssua.min.js'></script>
 	<?php } ?>
-	<script src="<?php echo base_url(); ?>/assets/frontend/js/provider.js?version=1.21"></script>
+	<script src="<?php echo base_url(); ?>/assets/frontend/js/provider.js?version=1.22"></script>
 	<script src="<?php echo base_url(); ?>/assets/frontend/js/lightbox.js"></script>
 	
 	

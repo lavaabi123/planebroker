@@ -37,8 +37,10 @@
 						<?php if(!empty($users)){ ?>
 						<select name="user_id" class="form-control" required>
 						<option value="">Select</option>
-						<?php foreach($users as $user){ ?>	
-							<option value="<?php echo $user->id; ?>"><?php echo (!empty(trim($user->fullname))?$user->fullname:$user->business_name); ?></option>
+						<?php foreach($users as $user){
+						$display_name = !empty(trim($user->fullname)) ? $user->fullname : $user->business_name;
+						?>	
+							<option value="<?php echo $user->id; ?>"><?php echo $display_name ; ?></option>
 						<?php } ?>
 						</select>
 						<?php } ?>

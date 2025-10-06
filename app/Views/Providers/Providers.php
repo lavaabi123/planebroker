@@ -32,7 +32,7 @@ function radio($name, $val){
 ?>
 <style>
 #filterSidebar{
-    max-height:100vh;
+    max-height:100dvh;
     overflow-y:auto;
 }
 .z-999{
@@ -61,8 +61,8 @@ function radio($name, $val){
 		</div>
 		<div class="">
 		<!--h6 class="mt-2 px-4">Search Filter</h6-->
-		<form class="form-input pb-3 search-form needs-ajax" method='get' id="searchFilter" action='<?php echo base_url(); ?>/listings/<?php echo $category; ?>'>
-		<div id="filterSidebarContent">
+		<form class="form-input pb-5 search-form needs-ajax" method='get' id="searchFilter" action='<?php echo base_url(); ?>/listings/<?php echo $category; ?>'>
+		<div id="filterSidebarContent" class="pb-3">
 			<?= view('Providers/filter_sidebar', [
 				'filters'         => $filters,
 				'categories_list' => $categories_list,
@@ -80,7 +80,7 @@ function radio($name, $val){
 	</div>
 		
 		</div>
-		<div class="d-flex align-items-center justify-content-between py-3 px-4 bg-white z-999 border-top position-sticky bottom-0">
+		<div class="d-flex align-items-center justify-content-between py-3 px-4 bg-white z-999 border-top position-absolute w-100 bottom-0">
 			<button class="btn w-100" data-bs-toggle="collapse" data-bs-target="#filterSidebar" aria-controls="filterSidebar" aria-expanded="false" aria-label="Close">Apply (<span id="applyCount" class="badge p-1"><?= $result_count ?></span>)</button> 
 		</div>
 	</div>

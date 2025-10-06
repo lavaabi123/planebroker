@@ -1451,12 +1451,20 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
             return false;
         }
         if (auth_check()) {
-            //update last seen
-            $data = array(
-                'last_seen' => date("Y-m-d H:i:s"),
-            );
-            return $this->protect(false)->update(user()->id, $data);
+            $u = user();
+            if ($u && isset($u->id)) {
+                // update last seen
+                $data = [
+                    'last_seen' => date("Y-m-d H:i:s"),
+                ];
+                return $this->protect(false)->update($u->id, $data);
+            } else {
+                // clear session and redirect
+                session()->destroy();
+                return redirect()->to('/admin'); // change '/login' to your login URL
+            }
         }
+        return false;
     }
 
     public function userPaginate()

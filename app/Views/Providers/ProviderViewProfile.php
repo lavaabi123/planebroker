@@ -350,7 +350,7 @@ $count = !empty($images) ? count($images) : 0;
 											?>
 										</div>
 									<?php }else{
-									$hasDesc = stripos($pds['field_name'], 'description') !== false;
+									$hasDesc = (stripos($pds['field_name'], 'description') !== false || stripos($pds['field_name'], 'details') !== false);
 									$divClass = 'd-flex justify-content-between border-bottom py-3' . ($hasDesc ? ' flex-column gap-3' : '');
 									?>
 									<div class="<?= $divClass ?>">
@@ -401,7 +401,7 @@ $count = !empty($images) ? count($images) : 0;
 					<div class="d-flex align-items-center fw-medium mb-0">
 						<a class="d-flex align-items-center" href="<?php echo base_url('user-listings?seller_id='.$user_detail->id); ?>">
 						<img class="icons" src="<?php echo base_url('assets/frontend/images/usericon.png'); ?>" />
-						<p class="mb-0"><?php echo !empty($product_detail['business_name']) ? $product_detail['business_name'] : $user_detail->fullname; ?></p>
+						<p class="mb-0"><?php echo !empty($product_detail['business_name']) ? $product_detail['business_name'] : (!empty(trim($user_detail->business_name))?$user_detail->business_name:$user_detail->fullname); ?></p>
 						</a>
 					</div>
 					<hr>

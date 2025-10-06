@@ -8,7 +8,7 @@
 			<div class="col">
 				
 				<div class="bg-white pb-4" style="position:relative;">
-					<a href="<?php echo  base_url('blog_detail/'.$blog['clean_url']); ?>">
+					<a href="<?php echo  base_url('blog/'.$blog['clean_url']); ?>">
 					<div class="w-100">
 						<img src="<?php echo !empty($blog['image']) ? base_url().'/uploads/blog/'.$blog['image'] : base_url().'/assets/img/user.png'; ?>" class="d-block w-100" alt="...">
 					</div>

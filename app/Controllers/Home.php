@@ -166,7 +166,7 @@ class Home extends BaseController
 		$data['blog'] = (array)$this->BlogModel->get_blog($clean_url);
 		$data['blogimage'] = !empty($data['blog']['image']) ? $data['blog']['image'] : '';
 		$data['meta_title'] = !empty($data['blog']['seo_title']) ? $data['blog']['seo_title'] : $data['blog']['name'];
-		$data['meta_desc'] = !empty($data['blog']['seo_description']) ? $data['blog']['seo_description'] : '';
+		$data['meta_desc'] = !empty($data['blog']['seo_description']) ? $data['blog']['seo_description'] : substr(strip_tags($data['blog']['content']), 0, 155);
 		$data['meta_keywords'] = !empty($data['blog']['seo_keywords']) ? $data['blog']['seo_keywords'] : '';
         return view('pages/blog_detail', $data);
     }

@@ -311,9 +311,9 @@ $blogs = get_all_blog(0); ?>
 			<div class="col item">
 				<div class="bg-white mb-3 pb-4" style="position:relative;">
 					<div class="mb-1 mb-md-3 w-100">
-						<a href="<?php echo  base_url('blog_detail/'.$blog['clean_url']); ?>"><img src="<?php echo !empty($blog['image']) ? base_url().'/uploads/blog/'.$blog['image'] : base_url().'/assets/img/user.png'; ?>" class="d-block w-100" alt="..."></a>
+						<a href="<?php echo  base_url('blog/'.$blog['clean_url']); ?>"><img src="<?php echo !empty($blog['image']) ? base_url().'/uploads/blog/'.$blog['image'] : base_url().'/assets/img/user.png'; ?>" class="d-block w-100" alt="..."></a>
 					</div>
-					<a href="<?php echo  base_url('blog_detail/'.$blog['clean_url']); ?>"><h6 class="black title-sm px-3"><?php echo $blog['name']; ?></h6></a>
+					<a href="<?php echo  base_url('blog/'.$blog['clean_url']); ?>"><h6 class="black title-sm px-3"><?php echo $blog['name']; ?></h6></a>
 				</div>
 			</div>
 		<?php } ?>

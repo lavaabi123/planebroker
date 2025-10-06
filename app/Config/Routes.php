@@ -39,7 +39,7 @@ $routes->get('/testimonials', 'Home::testimonials');
 $routes->get('/blog', 'Home::blog');
 $routes->get('/videos', 'Home::videos');
 $routes->get('/news', 'Home::news');
-$routes->get('/blog_detail/(:any)', 'Home::blog_detail/$1');
+$routes->get('/blog/(:any)', 'Home::blog_detail/$1');
 $routes->get('/terms', 'Home::terms');
 $routes->get('/privacy', 'Home::privacy');
 $routes->get('/pricing', 'Home::pricing');

@@ -35,9 +35,9 @@
 						<div class="col item">
 							<div class="bg-white mb-3" style="position:relative;">
 								<div class="w-100">
-									<a href="<?php echo  base_url('blog_detail/'.$blog1['clean_url']); ?>"><img src="<?php echo !empty($blog1['image']) ? base_url().'/uploads/blog/'.$blog1['image'] : base_url().'/assets/img/user.png'; ?>" class="d-block w-100" alt="..."></a>
+									<a href="<?php echo  base_url('blog/'.$blog1['clean_url']); ?>"><img src="<?php echo !empty($blog1['image']) ? base_url().'/uploads/blog/'.$blog1['image'] : base_url().'/assets/img/user.png'; ?>" class="d-block w-100" alt="..."></a>
 								</div>
-								<div class="p-3"><a class="fs-6 fw-bold d-blue" href="<?php echo  base_url('blog_detail/'.$blog1['clean_url']); ?>"><h6><?php echo $blog1['name']; ?></h6></a></div>
+								<div class="p-3"><a class="fs-6 fw-bold d-blue" href="<?php echo  base_url('blog/'.$blog1['clean_url']); ?>"><h6><?php echo $blog1['name']; ?></h6></a></div>
 							</div>
 						</div>
 					<?php } } ?>
@@ -51,7 +51,7 @@
 					<ul>
 						<?php if(!empty($blogs)){ foreach($blogs as $blog){ ?>		
 								<li class="text-left">
-									<a href="<?php echo  base_url('blog_detail/'.$blog['clean_url']); ?>"><?php echo $blog['name']; ?></a>
+									<a href="<?php echo  base_url('blog/'.$blog['clean_url']); ?>"><?php echo $blog['name']; ?></a>
 								</li>
 						<?php } }else{
 							echo '<p>No Records Found!</p>';

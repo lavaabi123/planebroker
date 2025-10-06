@@ -142,8 +142,8 @@
 										  <div class="file-upload">
 											<label class="dz-wrap">
 											  <span>Upload Profile Photo</span><br />
-											  <span>(.png,.jpeg,.jpg)</span>
-											  <input type="file" id="profile-pic-input" name="profile_picture" class="choose-file-button" accept=".jpg,.jpeg,.png">
+											  <span>(.png,.jpeg,.jpg,.avif)</span>
+											  <input type="file" id="profile-pic-input" name="profile_picture" class="choose-file-button" accept=".jpg,.jpeg,.png,.avif">
 											</label>
 										  </div>
 
@@ -414,8 +414,8 @@
     }
 
     function handleFile(file){
-	  const okTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-	  if (!okTypes.includes(file.type)) { Swal.fire('Please select a JPG or PNG image.', 'warning'); return; }
+	  const okTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/avif'];
+	  if (!okTypes.includes(file.type)) { Swal.fire('Please select a JPG or PNG or AVIF image.', 'warning'); return; }
 	  if (file.size > MAX_MB * 1024 * 1024) { Swal.fire('Image is too large. Max '+MAX_MB+'MB.', 'warning'); return; }
 
 	  currentFileName = sanitizeName(file.name);

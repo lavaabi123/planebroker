@@ -282,7 +282,7 @@ class EmailModel extends Model
         $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n"; 
          
         // Additional headers 
-        $headers .= "From: Plane Broker <developer@royalinkdevelopment.com>\r\n";
+        $headers .= "From: Plane Broker <info@planebroker.com>\r\n";
 		$headers .= "Reply-To: ".$fromName." <".$from.">\r\n";
         if(!empty($ccEmail)){
             $headers .= 'Cc: ' . $ccEmail . "\r\n"; // Add CC recipient here

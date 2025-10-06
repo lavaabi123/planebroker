@@ -390,7 +390,7 @@ video{
 															}
 															echo '<label class="dz-wrap mb-3" style="display:block !important;margin-left:0 !important;">
 										<span>Upload your files — drag & drop or click to select (multiple files allowed) </span><br />
-										<span>(pdf,.doc,.docx,.png,.jpeg,.jpg)</span><input type="file" name="dynamic_fields['.$field->id.'][]" class="form-control dynamic-file-input" placeholder="'.$field->name.'" value="" data-field-id="' . $field->id . '" accept=".pdf,.doc,.docx,.png,.jpeg,.jpg"  multiple>
+										<span>(pdf,.doc,.docx,.png,.jpeg,.jpg,.avif)</span><input type="file" name="dynamic_fields['.$field->id.'][]" class="form-control dynamic-file-input" placeholder="'.$field->name.'" value="" data-field-id="' . $field->id . '" accept=".pdf,.doc,.docx,.png,.jpeg,.jpg,.avif"  multiple>
 									</label>';
 									echo '<div id="file-previews-'.$field->id.'" class="file-previews-grid" data-field-id="'.$field->id.'"></div>';
 															//echo '<button type="button" class="btn btn-sm px-5 mb-3 edit-titles-btn min-w-auto d-none" data-field-id="'.$field->id.'">Edit File Details</button>';
@@ -440,8 +440,8 @@ video{
 									<div class="file-upload">
 									<label class="dz-wrap" style="display:block !important;margin-left:0 !important;">
 										<span>Upload your files — drag & drop or click to select (multiple files allowed) </span><br />
-										<span>(pdf,.doc,.docx,.png,.jpeg,.jpg)</span>
-										<input type='file' id="userphoto" name='uploads[]' data-avif2png data-type="add" multiple class="cropimage w-100" accept=".jpg,.jpeg,.png,.mp4,.mov">
+										<span>(pdf,.doc,.docx,.png,.jpeg,.jpg,.avif)</span>
+										<input type='file' id="userphoto" name='uploads[]' data-avif2png data-type="add" multiple class="cropimage w-100" accept=".jpg,.jpeg,.png,.mp4,.mov,.avif">
 									</label>
 									</div>
 									
@@ -611,8 +611,8 @@ video{
 					</div>
 					
 						<label class="dz-wrap mb-3" style="display:block !important;margin-left:0 !important;margin-right: 0 !important;">
-							<span>Replace Photo/Video (.png,.jpeg,.jpg,.mp4,.mov)</span>
-							<input type='file' id="userphoto_edit" name='uploads[]' data-type="edit" style="padding: 4px 4px !important;" class="w-100 cropimageedit" accept=".png,.jpeg,.jpg,.mp4,.mov">	
+							<span>Replace Photo/Video (.png,.jpeg,.jpg,.mp4,.mov,.avif)</span>
+							<input type='file' id="userphoto_edit" name='uploads[]' data-type="edit" style="padding: 4px 4px !important;" class="w-100 cropimageedit" accept=".png,.jpeg,.jpg,.mp4,.mov,.avif">	
 						</label>					
 					</div>
 				</div>	
@@ -1135,7 +1135,7 @@ $(document).on('click', '#triggerModalFileInput', function (e) {
   updateTitleStoreFromModal();
 
   const fieldId = $(this).attr('data-field-id');
-  const tempInput = $('<input type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" multiple style="display:none;">');
+  const tempInput = $('<input type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.avif" multiple style="display:none;">');
   $('body').append(tempInput);
   tempInput.trigger('click');
 

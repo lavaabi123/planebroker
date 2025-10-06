@@ -21,8 +21,8 @@
 						  <div class="file-upload d-none">
 							<label class="dz-wrap">
 							  <span>Upload Profile Photo</span><br />
-							  <span>(.png,.jpeg,.jpg)</span>
-							  <input type="file" id="profile-pic-input" name="profile_picture" class="choose-file-button" accept=".jpg,.jpeg,.png">
+							  <span>(.png,.jpeg,.jpg,.avif)</span>
+							  <input type="file" id="profile-pic-input" name="profile_picture" class="choose-file-button" accept=".jpg,.jpeg,.png,.avif">
 							</label>
 						  </div>
 
@@ -370,8 +370,8 @@ $(document).ready(function() {
     }
 
     function handleFile(file){
-	  const okTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-	  if (!okTypes.includes(file.type)) { alert('Please select a JPG or PNG image.'); return; }
+	  const okTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/avif'];
+	  if (!okTypes.includes(file.type)) { alert('Please select a JPG or PNG or AVIF image.'); return; }
 	  if (file.size > MAX_MB * 1024 * 1024) { alert('Image is too large. Max '+MAX_MB+'MB.'); return; }
 
 	  currentFileName = sanitizeName(file.name);

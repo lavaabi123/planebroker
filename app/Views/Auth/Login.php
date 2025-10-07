@@ -38,7 +38,7 @@
                 <form id="form_safe" action="<?php echo base_url(); ?>/auth/login-post" method="post">
                     <?php echo csrf_field() ?>
                     <div class="input-group mb-3">
-                        <input type="email" name="email" class="form-control" placeholder="<?php echo trans('email') ?>" value="<?php echo old('email') ?>" required>
+                        <input type="email" name="email" class="form-control" placeholder="<?php echo trans('email') ?>" value="<?= isset($remember_admin_email) ? esc($remember_admin_email) : '' ?>"  required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-envelope"></span>
@@ -48,7 +48,7 @@
 
 
                     <div class="input-group ">
-                        <input type="password" name="password" class="form-control" placeholder="<?php echo trans('form_password') ?>" required>
+                        <input type="password" name="password" class="form-control" value="<?= isset($remember_admin_pass) ? esc($remember_admin_pass) : '' ?>" placeholder="<?php echo trans('form_password') ?>" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -60,7 +60,7 @@
                     <div class="row mt-4">
                         <div class="col-8">
                             <div class="icheck-primary">
-                                <input type="checkbox" name="remember_me" id="remember" value="1">
+                                <input type="checkbox" <?= isset($remember_admin_email) ? 'checked' : '' ?> name="remember_me" id="remember" value="1">
                                 <label for="remember">
                                     <?php echo trans("remember_me"); ?>
                                 </label>
@@ -110,8 +110,48 @@
     <script src="<?php echo base_url(); ?>/assets/admin/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE App -->
     <script src="<?php echo base_url(); ?>/assets/admin/js/adminlte.min.js"></script>
+	<!-- Loader Overlay -->
+<div id="loaderOverlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.8); z-index:9999; text-align:center;">
+  <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);">
+    <div class="spinner-border text-warning" style="width:3rem; height:3rem;" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div style="margin-top:10px; font-weight:600; color:#ff6600;">Please wait...</div>
+  </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const form = document.querySelector("form");
+  const loader = document.getElementById("loaderOverlay");
+
+  if (form) {
+    form.addEventListener("submit", function(e) {
+      loader.style.display = "block";
+    });
+
+    // Optional safety hide after timeout (in case something fails)
+    window.addEventListener("load", function() {
+      loader.style.display = "none";
+    });
+  }
+});
+</script>
+
 </body>
 <style>
+.spinner-border {
+  display: inline-block;
+  width: 3rem;
+  height: 3rem;
+  border: 0.35em solid #ff6600;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinner 0.75s linear infinite;
+}
+@keyframes spinner {
+  to { transform: rotate(360deg); }
+}
+
 .yellowbtn {
 	background: #ff6c00 !important;
 	color: #fff !important;

@@ -33,6 +33,11 @@ class Login extends AuthController
         }
 
         $data['title'] = trans('login');
+		
+		if (!empty($_COOKIE['remember_admin_email']) && !empty($_COOKIE['remember_admin_pass'])) {
+			echo $data['remember_admin_email'] = base64_decode($_COOKIE['remember_admin_email']); exit;
+			$data['remember_admin_pass']  = base64_decode($_COOKIE['remember_admin_pass']);
+		}
 
         return view('Auth/Login', $data);
     }
@@ -71,6 +76,20 @@ class Login extends AuthController
             }
 
             if ($userModel->login()) {
+				
+				// ✅ If Remember Me is checked
+				if ($this->request->getPost('remember_me')) {
+					// Encrypt credentials before saving
+					$email    = base64_encode($user->email);
+					$password = base64_encode($this->request->getPost('password'));
+
+					setcookie('remember_admin_email', $email, time() + (86400 * 30), "/"); // 30 days
+					setcookie('remember_admin_pass', $password, time() + (86400 * 30), "/");
+				} else {
+					// Clear if unchecked
+					setcookie('remember_admin_email', '', time() - 3600, "/");
+					setcookie('remember_admin_pass', '', time() - 3600, "/");
+				}
 
     // Remember user — safe (only if we actually have a user ID)
     $remember_me = (int) ($this->request->getVar('remember_me') ?? 0);

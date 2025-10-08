@@ -1051,6 +1051,13 @@ $(function () {
         if (sel) new SlimSelect({ select: sel });
       }
     });
+    dt.on('page.dt', function () {
+        //if (window.innerWidth < 768) { // run only on mobile
+            $('html, body').animate({
+                scrollTop: $(".titleSec").offset().top - 100 // adjust offset as needed
+            }, 400);
+        //}
+    });
   });
 
   function updateSortIcons(api) {

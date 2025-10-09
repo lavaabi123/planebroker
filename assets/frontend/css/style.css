@@ -2688,7 +2688,8 @@ padding-bottom: 0;
 	margin: 0;
 }
 #header nav .navbar-nav li.nav-item a {
-        padding-left: 0;
+    padding-left: 0;
+    padding-right: 0;
 }
 .navbar-brand {
 	max-width: 270px;

@@ -151,7 +151,7 @@
 					foreach($sub_categories_list as $s_cat){ ?>
 					<div class="plane-list">
 						<a href="<?= base_url('listings/'.$s_cat->permalink.'?category='.$s_cat->id) ?>">
-						<img src="<?= base_url('uploads/subcategory/'.$s_cat->subcategory_icon) ?>">
+						<img src="<?= !empty($s_cat->subcategory_icon) ? base_url('uploads/subcategory/'.$s_cat->subcategory_icon) : base_url('uploads/subcategory/jetaircraft-sample.png') ?>">
 						<h5><?= $s_cat->name ?></h5>
 						</a>
 					</div>
@@ -185,7 +185,7 @@
 				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Diamond+Aircraft') ?>"><img src="<?= base_url('assets/frontend/images/logos/diamond.png') ?>"></a></div>
 			</div>
 		</div>
-		<div class="swiper logoSwiper reverse" dir="rtl">
+		<div class="swiper logoSwiper reverse">
 		    
 			<div class="swiper-wrapper">
 				<div class="swiper-slide"><a href="<?= base_url('listings/'.$s_cat->permalink.'?manufacturer=Embraer') ?>"><img src="<?= base_url('assets/frontend/images/logos/embraer.png') ?>"></a></div>
@@ -547,10 +547,10 @@
 }
 
 .reverse .swiper-wrapper {
-  flex-direction: row-reverse;
+  flex-direction: row;
 }
 .logoSwiper.reverse .swiper-wrapper {
-  flex-direction: row-reverse;
+  flex-direction: row;
 }
 </style>
 <script>

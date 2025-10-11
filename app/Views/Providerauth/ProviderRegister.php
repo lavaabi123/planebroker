@@ -7,7 +7,7 @@
 <!-- Include script -->
 <script type="text/javascript">
 	grecaptcha.ready(function() {
-		 grecaptcha.execute("<?= getenv('GOOGLE_RECAPTCHAV3_SITEKEY') ?>", {action: 'validate'}).then(function(token) {
+		 grecaptcha.execute("<?= getenv('GOOGLE_RECAPTCHAV3_SITEKEY') ?>", {action: 'signup'}).then(function(token) {
 			 console.log(token);
 			  // Store recaptcha response
 			  $("#g-recaptcha-response").val(token);
@@ -15,6 +15,7 @@
 		 });
 	});
 </script>
+
 <style>
 input.is-invalid, select.is-invalid, textarea.is-invalid {
     border: 1px solid red !important;
@@ -66,7 +67,7 @@ input.is-invalid, select.is-invalid, textarea.is-invalid {
 										<input type="password" name="confirm_password" class="form-control required" placeholder="<?php echo trans("form_confirm_password").'*'; ?>" data-parsley-equalto="#password">
 									</div>
 									
-									<input type="hidden" name="role" value="3">
+									<input type="hidden" name="role" value="2">
 									
 								</div>	
 								<input type="hidden" id="g-recaptcha-response"  class="form-control required" name="check_bot" value="" >

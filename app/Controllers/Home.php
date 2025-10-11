@@ -216,6 +216,25 @@ class Home extends BaseController
 		
         return view('Providerauth/ProviderPlan', $data);
     }
+	function verifyRecaptcha(string $token, string $expectedAction = 'validate', float $minScore = 0.7): bool {
+		$secret = getenv('GOOGLE_RECAPTCHAV3_SECRETKEY');
+		$ch = curl_init('https://www.google.com/recaptcha/api/siteverify');
+		curl_setopt_array($ch, [
+			CURLOPT_POST => true,
+			CURLOPT_POSTFIELDS => http_build_query([
+				'secret'   => $secret,
+				'response' => $token,
+				'remoteip' => $_SERVER['REMOTE_ADDR'] ?? null,
+			]),
+			CURLOPT_RETURNTRANSFER => true,
+		]);
+		$res = json_decode(curl_exec($ch) ?: '{}', true);
+		curl_close($ch);
+		// Must return success AND good score
+		if (empty($res['success'])) return false;
+		if (isset($res['score']) && ($res['score'] < $minScore || $res['action'] != $expectedAction)) return false;
+		return true;
+	}
 	
 	public function submit_contact(){
 		
@@ -244,6 +263,12 @@ class Home extends BaseController
 		];
 			
 		if ($this->validate($rules)) {
+			
+			$token = $this->request->getPost('recaptcha_response');
+			if (!$this->verifyRecaptcha($token, 'validate', 0.7)) {
+				return redirect()->back()->with('error','Captcha failed');
+			}
+			
 			//echo '1';exit;     
 			$email          = $this->request->getVar('email');
 			$phone          = $this->request->getVar('phone');
@@ -333,6 +358,10 @@ class Home extends BaseController
 		];
 			
 		if ($this->validate($rules)) {
+			$token = $this->request->getPost('recaptcha_response');
+			if (!$this->verifyRecaptcha($token, 'validate', 0.7)) {
+				return redirect()->back()->with('error','Captcha failed');
+			}
 			//echo '1';exit;     
 			$email          = $this->request->getVar('email');
 			$phone          = $this->request->getVar('phone');

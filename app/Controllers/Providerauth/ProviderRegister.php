@@ -80,6 +80,26 @@ class ProviderRegister extends ProviderauthController
     /**
      * Register Post
      */
+	function verifyRecaptcha(string $token, string $expectedAction = 'signup', float $minScore = 0.7): bool {
+		$secret = getenv('GOOGLE_RECAPTCHAV3_SECRETKEY');
+		$ch = curl_init('https://www.google.com/recaptcha/api/siteverify');
+		curl_setopt_array($ch, [
+			CURLOPT_POST => true,
+			CURLOPT_POSTFIELDS => http_build_query([
+				'secret'   => $secret,
+				'response' => $token,
+				'remoteip' => $_SERVER['REMOTE_ADDR'] ?? null,
+			]),
+			CURLOPT_RETURNTRANSFER => true,
+		]);
+		$res = json_decode(curl_exec($ch) ?: '{}', true);
+		curl_close($ch);
+		// Must return success AND good score
+		if (empty($res['success'])) return false;
+		if (isset($res['score']) && ($res['score'] < $minScore || $res['action'] != $expectedAction)) return false;
+		return true;
+	}
+
     public function provider_register_post()
     {
 
@@ -88,6 +108,11 @@ class ProviderRegister extends ProviderauthController
 
 			
         if (!empty($this->request->getVar('check_bot'))) {
+			$token = $this->request->getPost('check_bot');
+			if (!$this->verifyRecaptcha($token, 'signup', 0.7)) {
+				return redirect()->back()->with('error','Captcha failed');
+			}
+			
             $email = $this->request->getVar('email');
             //is email unique
             if (!$userModel->is_unique_email($email)) {

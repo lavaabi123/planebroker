@@ -232,10 +232,14 @@ $(document).ready(function () {
     $('.menu_permission').on('click', function () {
         const menuId = $(this).data('menu');
         const roleId = $(this).data('role');
+        const is_edit = $(this).closest('tr').find('.editcheck').is(':checked') ? 1 : 0;
+        const is_view = $(this).closest('tr').find('.viewcheck').is(':checked') ? 1 : 0;
 
         var data = {
             'menuID': menuId,
             'roleID': roleId,
+			'is_edit' :is_edit,
+			'is_view' :is_view
         };
 
         data[csrfName] = $.cookie(csrfCookie);
@@ -246,19 +250,24 @@ $(document).ready(function () {
             data: data,
             success: function (response) {
                 console.log(response);
-                // alert('User Access has been changed !');
-                location.reload();
+                //alert('User Access has been changed !');
+                //location.reload();
             }
         });
     });
+	
 
     $('.submenu_permission').on('click', function () {
         const submenuID = $(this).data('submenu');
         const roleId = $(this).data('role');
+        const is_edit = $(this).closest('tr').find('.editcheck').is(':checked') ? 1 : 0;
+        const is_view = $(this).closest('tr').find('.viewcheck').is(':checked') ? 1 : 0;
 
         var data = {
             'submenuID': submenuID,
             'roleID': roleId,
+			'is_edit' :is_edit,
+			'is_view' :is_view
         };
         data[csrfName] = $.cookie(csrfCookie);
 
@@ -267,11 +276,12 @@ $(document).ready(function () {
             type: 'post',
             data: data,
             success: function () {
-                // alert('User Access has been changed !');
-                location.reload();
+                //alert('User Access has been changed !');
+                //location.reload();
             }
         });
     });
+	
 
     document.querySelectorAll('[data-toggle="password"]').forEach(function (el) {
         el.addEventListener("click", function (e) {

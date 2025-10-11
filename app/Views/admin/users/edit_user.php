@@ -87,6 +87,18 @@
                                         </div>  
                                          <div class="col-6">
                                             <div class="form-group ">
+                                                <label><?php echo trans("Role"); ?><span class="required"> *</span></label>
+												<select name="role" class="form-control">
+												<?php if(!empty($roles)){
+												foreach($roles as $role){
+												if($role->id != 1){	?>
+													<option value="<?= $role->id; ?>" <?php echo ($user_detail->role == $role->id) ? 'selected' : '' ; ?>><?= $role->role_name; ?></option>
+												<?php } } } ?>
+												</select>
+                                            </div>
+                                        </div>
+                                         <div class="col-6">
+                                            <div class="form-group ">
                                                 <label><?php echo trans("User Level"); ?><span class="required"> *</span></label>
 												<select onchange="confirm_once(this)" name="user_level" class="form-control">
 												<?php if($user_detail->user_level == 0 || $product_count == 0){ ?>

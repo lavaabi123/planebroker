@@ -40,11 +40,13 @@ $ver    = file_exists($wmPath) ? filemtime($wmPath) : time();
 						<label class="ml-0">Current watermark:</label>
 						<img width="25%" style="background:#9d9d9d;" src="<?= base_url($wmRel) . '?v=' . $ver ?>" />
 						<br />
-					  <label class="mt-5 ml-0">Upload new watermark (PNG with transparency):</label>
-					  <input type="file" name="watermark" class="ml-0 mt-2 w-auto" style="width: auto !important;" accept="image/png" required>
+					  <label class="permission_show mt-5 ml-0">Upload new watermark (PNG with transparency):</label>
+					  <input type="file" name="watermark" class="permission_show ml-0 mt-2 w-auto" style="width: auto !important;" accept="image/png" required>
 					  <br />
-					  <button type="submit" name="save" class="btn btn-primary mt-5">Save only</button>
-					  <button type="submit" name="apply" class="btn btn-primary mt-5">Save and Apply to ALL old images</button>
+					  <div class="d-flex">
+					  <button type="submit" name="save" class="permission_show btn btn-primary mt-5 mr-2">Save only</button>
+					  <button type="submit" name="apply" class="permission_show btn btn-primary mt-5">Save and Apply to ALL old images</button>
+					  </div>
 					</form>
 					<div>
 					</div>

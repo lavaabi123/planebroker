@@ -38,7 +38,7 @@
 					<div class="col-sm-12">
 						<div class="table-responsive">
 
-							<table class="table table-bordered table-striped">
+							<table class="permission_show1 table table-bordered table-striped">
 								<thead>
 									<tr role="row">
 										<th><?php echo trans('Name'); ?></th>
@@ -55,7 +55,7 @@
 											<td><?php echo $provider_message['from_email']; ?></td>
 											<td><?php echo $provider_message['from_phone']; ?></td>
 											<td><?php echo formatted_date($provider_message['created_at'],'m/d/Y h:i a'); ?></td>
-											<td class="text-center"> <a href="javascript:void(0)" onclick="get_provider_messages('<?php echo html_escape($provider_message['id']); ?>');"><i class="fas fa-eye ml-3 mr-1"></i><?php echo trans('View'); ?></a><a href="javascript:void(0)" onclick="delete_provider_messages('<?php echo html_escape($provider_message['id']); ?>');"><i class="fas fa-trash ml-3 mr-1"></i><?php echo trans('Delete'); ?></a></td>      
+											<td class="text-center d-flex justify-content-center"> <a href="javascript:void(0)" onclick="get_provider_messages('<?php echo html_escape($provider_message['id']); ?>');"><i class="fas fa-eye ml-3 mr-1"></i><?php echo trans('View'); ?></a><a href="javascript:void(0)" class="permission_show" onclick="delete_provider_messages('<?php echo html_escape($provider_message['id']); ?>');"><i class="fas fa-trash ml-3 mr-1"></i><?php echo trans('Delete'); ?></a></td>      
 										</tr>
 									<?php endforeach; ?>
 								</tbody>

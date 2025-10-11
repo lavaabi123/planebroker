@@ -49,7 +49,7 @@ td:hover {
                                                     <th><?php echo trans('Show under Filter?'); ?></th>
                                                     <th><?php echo trans('Filter Order'); ?></th>
                                                     <th><?php echo trans('Filter Type'); ?></th>
-                                                    <th class="max-width-120 text-center"><?php echo trans('options'); ?></th>
+                                                    <th class="permission_show text-center max-width-120"><?php echo trans('options'); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -66,7 +66,7 @@ td:hover {
                                                         </td>	
                                                         <td><?php echo html_escape($item->filter_order); ?></td>
                                                         <td><?php echo html_escape($item->filter_type); ?></td>
-                                                        <td class="text-center">
+                                                        <td class="text-center permission_show">
                                                             <div class="dropdown btn-group">
                                                                 <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                     <i class="mdi mdi-circle-edit-outline mr-2"></i><?php echo trans('select_an_option'); ?>

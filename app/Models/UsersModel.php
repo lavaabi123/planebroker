@@ -69,7 +69,7 @@ class UsersModel extends Model
 		
         $data['password'] = !empty($data['password']) ? password_hash($data['password'], PASSWORD_BCRYPT) : '';
         $data['user_type'] = "registered";
-        $data['role'] = 2;
+        $data['role'] = !empty($this->request->getVar('role')) ? $this->request->getVar('role') : 2;
         $data['status'] = 1;
         $data['email_status'] = 1;
         $data['user_level'] = !empty( $this->request->getVar('user_level') ) ? 1 : 0 ;
@@ -190,6 +190,7 @@ class UsersModel extends Model
 			
 			$data['password'] = empty($this->request->getVar('password')) ? $user->password : password_hash($this->request->getVar('password'), PASSWORD_BCRYPT);
 			$data['user_level'] = !empty( $this->request->getVar('user_level') ) ? 1 : 0;	
+			$data['role'] = !empty($this->request->getVar('role')) ? $this->request->getVar('role') : 2;
           		
             return $this->protect(false)->update($user->id, $data);
         }
@@ -322,7 +323,8 @@ class UsersModel extends Model
                 return false;
             }
 			
-			if($user->role == 1){
+			if($user->role != 2){
+			
 			
 				//set user data
 				$user_data = array(
@@ -1391,7 +1393,7 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
             return false;
         }
         //check role
-        if (user()->role == 1) {
+        if (user()->role != 2) {
             return true;
         } else {
             return false;
@@ -1507,7 +1509,7 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
             $this->builder()->where("DATE(users.created_at) >=", $created_at_start)
                     ->where("DATE(users.created_at) <=", $created_at_end);
         }
-        $this->builder()->where('users.id !=', 1);
+        $this->builder()->where('users.role !=', 1);
 		$result = $paginateData->paginate($show, 'default');
         return [
             'users'  =>  $result,
@@ -1518,7 +1520,7 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
     }
     public function users_lists()
     {
-        $sql = "SELECT * FROM users WHERE id != ? order by id desc";
+        $sql = "SELECT * FROM users WHERE role != ? order by id desc";
         $query = $this->db->query($sql, array(1));
         return $query->getResultArray();
     }
@@ -2130,7 +2132,7 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
 			}
 			$query .= ")";
 		}
-        $sql = "SELECT u.id,u.fullname,u.email,u.about_me,h.id as hid,i.id as imgid FROM users u LEFT JOIN hours_of_operation h ON h.user_id = u.id LEFT JOIN user_images i ON i.user_id = u.id WHERE u.id != 1 AND u.deleted_at IS NULL".$query." GROUP BY u.id";
+        $sql = "SELECT u.id,u.fullname,u.email,u.about_me,h.id as hid,i.id as imgid FROM users u LEFT JOIN hours_of_operation h ON h.user_id = u.id LEFT JOIN user_images i ON i.user_id = u.id WHERE u.role != 1 AND u.deleted_at IS NULL".$query." GROUP BY u.id";
         $query = $this->db->query($sql);
         return $query->getResult();        
     }
@@ -2145,21 +2147,21 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
 	
 	public function get_first_listing_users()
     {
-        $sql = "SELECT u.id, u.fullname, u.email, COUNT(p.id) AS total_products FROM users u LEFT JOIN products p ON p.user_id = u.id where u.email_cc_first = 0 AND u.created_at <= (NOW() - INTERVAL 1 HOUR) AND u.id != 1 GROUP BY u.id, u.fullname, u.email HAVING total_products = 0";
+        $sql = "SELECT u.id, u.fullname, u.email, COUNT(p.id) AS total_products FROM users u LEFT JOIN products p ON p.user_id = u.id where u.email_cc_first = 0 AND u.created_at <= (NOW() - INTERVAL 1 HOUR) AND u.role != 1 GROUP BY u.id, u.fullname, u.email HAVING total_products = 0";
         $query = $this->db->query($sql);
         return $query->getResult();
     }
 	
 	public function get_first_listing_reminder_users()
     {
-        $sql = "SELECT u.id, u.fullname, u.email, COUNT(p.id) AS total_products FROM users u LEFT JOIN products p ON p.user_id = u.id where u.id != 1 GROUP BY u.id, u.fullname, u.email HAVING total_products = 0";
+        $sql = "SELECT u.id, u.fullname, u.email, COUNT(p.id) AS total_products FROM users u LEFT JOIN products p ON p.user_id = u.id where u.role != 1 GROUP BY u.id, u.fullname, u.email HAVING total_products = 0";
         $query = $this->db->query($sql);
         return $query->getResult();
     }
 	
 	public function get_favorite_still_available_users()
 	{
-		$sql = "SELECT u.id, u.fullname, u.email, COUNT(p.product_id) AS total_products FROM users u LEFT JOIN user_favorites p ON p.user_id = u.id where u.id != 1 GROUP BY u.id, u.fullname, u.email HAVING total_products > 0";
+		$sql = "SELECT u.id, u.fullname, u.email, COUNT(p.product_id) AS total_products FROM users u LEFT JOIN user_favorites p ON p.user_id = u.id where u.role != 1 GROUP BY u.id, u.fullname, u.email HAVING total_products > 0";
         $query = $this->db->query($sql);
         return $query->getResult();
 		

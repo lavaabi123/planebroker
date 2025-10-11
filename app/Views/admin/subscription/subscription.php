@@ -8,7 +8,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6 d-flex">
-                    <h1 class="m-0"><?php echo $title ?></h1><a href="<?php echo admin_url() . 'subscription/add-subscription/'; ?>"><button type="button" class="btn small btn-primary ms-3"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></button></a>
+                    <h1 class="m-0"><?php echo $title ?></h1><a href="<?php echo admin_url() . 'subscription/add-subscription/'; ?>" class="permission_show"><button type="button" class="btn small btn-primary ms-3"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></button></a>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -45,7 +45,7 @@
                                                     <th width="200px"><?php echo trans('Stripe ID'); ?></th>
                                                     <th><?php echo trans('Status'); ?></th>
                                                     <th><?php echo trans('Recommended?'); ?></th>
-                                                    <th class="text-center max-width-120"><?php echo trans('options'); ?></th>
+                                                    <th class="permission_show text-center max-width-120"><?php echo trans('options'); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -57,7 +57,7 @@ if($subscription['id'] != 999){												?>
                                                         <td style="word-break: break-all;"><?php echo $subscription['stripe_price_id']; ?> </td>
                                                         <td><?php echo ($subscription['status'] == 1) ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>'; ?> </td>
                                                         <td><?php echo ($subscription['is_recommended'] == 1) ? '<span class="badge bg-success">Yes</span>' : '<span class="badge bg-danger">No</span>'; ?> </td>
-                                                        <td>
+                                                        <td class="permission_show">
                                                             <div class="dropdown btn-group">
                                                                 <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                     <i class="mdi mdi-circle-edit-outline mr-2"></i><?php echo trans('select_an_option'); ?>

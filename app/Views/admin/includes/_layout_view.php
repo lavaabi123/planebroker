@@ -465,6 +465,28 @@ tinymce.init({
   min-height: 150px;    /* prevent collapsing too much */
   max-height: 800px;    /* optional: cap the growth */
 }
+<?php if(user()->role ==1 || (!empty($menu_permission) && $menu_permission['is_edit'] == 1)){ ?>
+
+.table-striped tbody tr:nth-of-type(even) {
+    background: none !important;
+}
+<?php }else{ ?>
+.permission_show{
+	display:none;
+}
+th.permission_show {
+	width: 120px !important;border-radius: 0 28px 0 0;
+}
+.table:not(.permission_show1) th:nth-last-child(2) {
+  border-radius: 0 28px 0 0;
+}
+.table-striped:not(.permission_show1) tbody tr:last-child td:nth-last-child(2){
+	border-radius: 0 0 28px 0;
+}
+.table-striped:not(.permission_show1) tbody tr:nth-of-type(even) {
+    background: none !important;
+}
+<?php } ?>
 </style>
 <link rel="stylesheet" href="<?php echo base_url(); ?>/assets/rte-content.css">
 

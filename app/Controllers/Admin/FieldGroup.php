@@ -34,7 +34,8 @@ class FieldGroup extends AdminController
 
     public function index()
     {
-        $categoryId = $this->request->uri->getSegment(4);
+		
+        $categoryId = $this->request->uri->getSegment(5);
         if ($categoryId == '') {
             return redirect()->to(admin_url().'/categories');
         }

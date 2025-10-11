@@ -185,7 +185,7 @@ $routes->group("admin", ["namespace" => "App\Controllers\Admin"], function ($rou
     $routes->get('dashboard', 'Dashboard::index');
     $routes->get('report-profiles', 'UserManagement::report_profiles');
     $routes->post('report-profiles/bulk-delete-post', 'UserManagement::bulk_delete_report_post');
-	$routes->get('groups/index/(:any)', 'FieldGroup::index/$1'); 
+	$routes->get('categories/groups/index/(:any)', 'FieldGroup::index/$1'); 
 	$routes->post('fields_group/saved_fields_group_post', 'FieldGroup::saved_fields_group_post');
 	$routes->post('fields_group/delete_fields_group_post', 'FieldGroup::delete_fields_group_post');
 	$routes->post('fields_group/update_order_post', 'FieldGroup::update_order_post');
@@ -238,6 +238,8 @@ $routes->group("admin", ["namespace" => "App\Controllers\Admin"], function ($rou
         $routes->post('change-menu-category-permission', 'RoleManagement::changeMenuCategoryPermission');
         $routes->post('change-menu-permission', 'RoleManagement::changeMenuPermission');
         $routes->post('change-submenu-permission', 'RoleManagement::changeSubMenuPermission');
+        $routes->post('change-menu-permission-edit', 'RoleManagement::changeMenuEditPermission');
+        $routes->post('change-submenu-permission-edit', 'RoleManagement::changeSubMenuEditPermission');
     });
     $routes->group("menu-management", function ($routes) {
         $routes->get('', 'MenuManagement::index');

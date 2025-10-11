@@ -42,7 +42,7 @@
 					<!--<h6 class="text-right"><b>Total Amount : <?php echo !empty($total_amount['total_amount']) ? $total_amount['total_amount'] : '0.00'; ?></b></h6>-->
 						<div class="table-responsive">
 
-							<table class="table table-bordered table-striped">
+							<table class="permission_show1 table table-bordered table-striped">
 								<thead>
 									<tr role="row">
 										<th><?php echo trans('Listing Name'); ?></th>
@@ -61,7 +61,7 @@
 									<?php foreach ($sales as $s => $sale) :
 if($sale['provider'] != ''){									?>
 										<tr>
-											<td><?php echo !empty($sale['display_name']) ? $sale['display_name'] : '<a href="'.admin_url().'listings/add?user_id='.$sale['user_id'].'&sale_id='.$sale['id'].'&plan_id='.$sale['plan_id'].'&payment_type=stripe&proceed=listing" class="btn btn-sm">Add Listing</a>'; ?></td>
+											<td><?php echo !empty($sale['display_name']) ? $sale['display_name'] : '<a href="'.admin_url().'listings/add?user_id='.$sale['user_id'].'&sale_id='.$sale['id'].'&plan_id='.$sale['plan_id'].'&payment_type=stripe&proceed=listing" class="permission_show btn btn-sm">Add Listing</a>'; ?></td>
 											<td><?php echo $sale['plan_name']; ?></td>
 											<td><?php echo $sale['provider']; ?></td>
 											<td><?php echo ($sale['stripe_subscription_start_date'] != NULL) ? formatted_date($sale['stripe_subscription_start_date'],'m/d/Y') : '-'; ?></td>
@@ -101,19 +101,19 @@ if($sale['provider'] != ''){									?>
 											
 											<?php if(!empty($sale['user_level'])){
 												if(!empty($sale['is_cancel'])){ ?>
-													<a class="dropdown-item" href="javascript:void(0);" onclick="change_subs_status('<?php echo $sale['id']; ?>','<?php echo $sale['product_id']; ?>')" ><?php echo trans('Activate'); ?></a>
+													<a class="permission_show dropdown-item" href="javascript:void(0);" onclick="change_subs_status('<?php echo $sale['id']; ?>','<?php echo $sale['product_id']; ?>')" ><?php echo trans('Activate'); ?></a>
 												<?php }
 											}else{ ?>
-											<a class="dropdown-item" href="<?php echo admin_url() . 'listings/change_plan?sale_id='.$sale['id'].'&user_id='.$sale['user_id'].'&plan_id='.$sale['plan_id']; ?>"><?php echo trans('Upgrade'); ?></a>
+											<a class="permission_show dropdown-item" href="<?php echo admin_url() . 'listings/change_plan?sale_id='.$sale['id'].'&user_id='.$sale['user_id'].'&plan_id='.$sale['plan_id']; ?>"><?php echo trans('Upgrade'); ?></a>
 											<?php } ?>
 											<?php if(empty($sale['is_cancel'])){ ?>
-											<div class="dropdown-divider"></div>
-											<a class="dropdown-item" onclick="confirm_cancel('<?php echo $sale['id'];?>','<?php echo $sale['payment_type'];?>')" href="javascript:void(0)" ><?php echo trans('Cancel'); ?></a>
+											<div class="permission_show dropdown-divider"></div>
+											<a class="permission_show dropdown-item" onclick="confirm_cancel('<?php echo $sale['id'];?>','<?php echo $sale['payment_type'];?>')" href="javascript:void(0)" ><?php echo trans('Cancel'); ?></a>
 											<?php if(!empty($sale['stripe_subscription_id']) && $sale['stripe_subscription_amount_paid'] > 0){ ?>
-											<div class="dropdown-divider"></div>
-											<a class="dropdown-item" onclick="confirm_cancel_refund('<?php echo $sale['id'];?>','<?php echo $sale['payment_type'];?>')" href="javascript:void(0)" ><?php echo trans('Cancel and Refund'); ?></a>
+											<div class="permission_show dropdown-divider"></div>
+											<a class="permission_show dropdown-item" onclick="confirm_cancel_refund('<?php echo $sale['id'];?>','<?php echo $sale['payment_type'];?>')" href="javascript:void(0)" ><?php echo trans('Cancel and Refund'); ?></a>
 											<?php } } ?>
-											<div class="dropdown-divider"></div>
+											<div class="permission_show dropdown-divider"></div>
 											<?php if(!empty($sale['display_name'])){ ?>
 											<a class="dropdown-item" target="_blank" href="<?php echo base_url().'/listings/'.$sale['permalink'].'/'.$sale['id'].'/'.(!empty($sale['display_name'])?str_replace(' ','-',strtolower($sale['display_name'])):''); ?>"><?php echo trans('View Listing'); ?></a>
 											<?php } ?>

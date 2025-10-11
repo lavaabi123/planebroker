@@ -66,18 +66,24 @@ class AdminController extends BaseController
         $this->userModel      = new UsersModel();
         $this->RolesPermissionsModel      = new RolesPermissionsModel();
         $this->data = array();
+		$menu_per = array();
         if (!empty(user())) {
             $user    = $this->userModel->getUser(user()->username);
-            $segment = $this->request->uri->getSegment(2);
+            $segment = $this->request->uri->getSegment(2);			
             if ($segment) {
+				$menu_per = $this->RolesPermissionsModel->getMenuPermission(user()->role,$segment);
                 $subsegment     = $this->request->uri->getSegment(3);
+				if(!empty($subsegment) && ($subsegment != 'groups' && $subsegment != 'permission')){
+					$menu_per = $this->RolesPermissionsModel->getSubMenuPermission(user()->role,$subsegment);
+				}
             } else {
                 $subsegment     = '';
             }
 
             $this->data            = [
-                'segment'         => $segment,
-                'subsegment'     => $subsegment,
+                'segment'          => $segment,
+                'subsegment'       => $subsegment,
+                'menu_permission'  => $menu_per,
                 'user'             => $user,
                 'MenuCategory'     => $this->RolesPermissionsModel->getAccessMenuCategory(user()->role)
             ];

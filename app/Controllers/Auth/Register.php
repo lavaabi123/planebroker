@@ -125,7 +125,7 @@ class Register extends AuthController
                     $this->session->setFlashData('success_form', trans("msg_register_success"));
                 }
                 if ($userModel->is_logged_in()) {
-                    if($this->session->get('admin_sess_user_role') > 1){
+                    if($this->session->get('admin_sess_user_role') == 2){
                         return redirect()->to(base_url('/'));
                     }else{
                         return redirect()->to(admin_url());

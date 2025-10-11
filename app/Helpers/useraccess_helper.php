@@ -13,17 +13,17 @@ function check_menuCategory_access($role_id, $menu_category_id)
 function check_menu_access($role_id, $menu_id)
 {
     $db                 = \Config\Database::connect();
-    $accessMenu         = $db->table('user_access')->where(['role_id' => $role_id, 'menu_id' => $menu_id])->countAllResults();
-    if ($accessMenu > 0) {
-        return "checked";
+    $accessMenu         = $db->table('user_access')->where(['role_id' => $role_id, 'menu_id' => $menu_id])->get()->getRow();
+    if (!empty($accessMenu)) {
+        return $accessMenu;
     }
 }
 
 function check_submenu_access($role_id, $submenu_id)
 {
     $db                 = \Config\Database::connect();
-    $accessMenu         = $db->table('user_access')->where(['role_id' => $role_id, 'submenu_id' => $submenu_id])->countAllResults();
-    if ($accessMenu > 0) {
-        return "checked";
+    $accessMenu         = $db->table('user_access')->where(['role_id' => $role_id, 'submenu_id' => $submenu_id])->get()->getRow();
+    if (!empty($accessMenu)) {
+        return $accessMenu;
     }
 }

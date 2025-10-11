@@ -13,7 +13,7 @@ td:hover {
             <div class="row mb-2">
                 <div class="col-sm-6 d-flex">
                     <h1 class="m-0"><?php echo $title ?></h1>
-					<a href="javascript:void(0)" class="btn small bg-primary ms-3" onclick="$('#modal-modalLabel').text('<?php echo trans('add'); ?>');manage_fields('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
+					<a href="javascript:void(0)" class="permission_show btn small bg-primary ms-3" onclick="$('#modal-modalLabel').text('<?php echo trans('add'); ?>');manage_fields('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -53,7 +53,7 @@ td:hover {
                                                     <th><?php echo trans('Order'); ?></th>
                                                     <th><?php echo trans('Condition'); ?></th>
                                                     <th class="text-center"><?php echo trans('status'); ?></th>
-                                                    <th class="text-center"><?php echo trans('options'); ?></th>
+                                                    <th class="permission_show text-center max-width-120"><?php echo trans('options'); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -73,7 +73,7 @@ td:hover {
                                                                 <button class="btn btn-sm bg-danger"><?php echo trans("inactive"); ?></button>
                                                             <?php endif; ?>
                                                         </td>	
-                                                        <td class="text-center">
+                                                        <td class="permission_show text-center">
                                                             <div class="dropdown btn-group">
                                                                 <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                     <i class="mdi mdi-circle-edit-outline mr-2"></i><?php echo trans('select_an_option'); ?>

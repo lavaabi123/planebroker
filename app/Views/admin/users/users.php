@@ -20,7 +20,7 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                   <h1 class="m-0"><?php echo $title ?> 
-                    <a class="btn btn-primary" href="<?php echo admin_url() . 'add-user/'; ?>"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
+                    <a class="permission_show btn btn-primary" href="<?php echo admin_url() . 'add-user/'; ?>"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
                   </h1>                     
                 </div><!-- /.col -->
                 <div class="col-sm-6">
@@ -52,7 +52,7 @@
 					<div class="filter_list">
 						<div class="table-responsive">
 
-							<table class="table table-bordered table-striped">
+							<table class="permission_show1 table table-bordered table-striped">
 								<thead>
 									<tr role="row">
 										<th><?php echo trans('fullname'); ?></th>
@@ -88,10 +88,10 @@
 
 														<?php 
 															if (is_admin()) : ?>
-															<a class="dropdown-item" href="<?php echo admin_url() . 'edit-user/'; ?><?php echo html_escape($user['id']); ?>/<?php echo (!empty($_GET) && !empty($_GET['page'])) ? $_GET['page'] : '1' ?>"><?php echo trans('edit'); ?></a>
-															<div class="dropdown-divider"></div>
-															<a class="dropdown-item" href="javascript:void(0)" onclick="delete_item('/admin/delete_user_post','<?php echo $user['id']; ?>','<?php echo trans('confirm_user'); ?>')"><?php echo trans('delete'); ?></a>
-															<div class="dropdown-divider"></div>
+															<a class="permission_show dropdown-item" href="<?php echo admin_url() . 'edit-user/'; ?><?php echo html_escape($user['id']); ?>/<?php echo (!empty($_GET) && !empty($_GET['page'])) ? $_GET['page'] : '1' ?>"><?php echo trans('edit'); ?></a>
+															<div class="permission_show dropdown-divider"></div>
+															<a class="permission_show dropdown-item" href="javascript:void(0)" onclick="delete_item('/admin/delete_user_post','<?php echo $user['id']; ?>','<?php echo trans('confirm_user'); ?>')"><?php echo trans('delete'); ?></a>
+															<div class="permission_show dropdown-divider"></div>
 															<a class="dropdown-item" target="_blank" href="<?php echo base_url('user-listings?seller_id='.$user['id']); ?>"><?php echo trans('View Listings'); ?></a>
 														<?php endif;  ?>
 														

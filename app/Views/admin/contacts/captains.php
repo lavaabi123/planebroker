@@ -39,7 +39,7 @@
                                 <div class="col-sm-12">
                                     <div class="table-responsive">
 
-                                        <table class="table table-bordered table-striped">
+                                        <table class="permission_show1 table table-bordered table-striped">
                                             <thead>
                                                 <tr role="row">
                                                     <th><?php echo trans('From Name'); ?></th>

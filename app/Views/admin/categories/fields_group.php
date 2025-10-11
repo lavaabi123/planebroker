@@ -12,7 +12,7 @@ td:hover {
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6 d-flex">
-                    <h1 class="m-0"><?php echo $title ?></h1><a href="javascript:void(0)" class="btn small bg-primary ms-3" onclick="$('#modal-modalLabel').text('<?php echo trans('add'); ?>');manage_fields_group('<?php echo html_escape($categoryId); ?>','','');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
+                    <h1 class="m-0"><?php echo $title ?></h1><a href="javascript:void(0)" class="permission_show btn small bg-primary ms-3" onclick="$('#modal-modalLabel').text('<?php echo trans('add'); ?>');manage_fields_group('<?php echo html_escape($categoryId); ?>','','');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -47,7 +47,7 @@ td:hover {
                                                 <tr class="">
                                                     <th><?php echo trans('name'); ?></th>
                                                     <th class="text-center"><?php echo trans('Sort Order'); ?></th>
-                                                    <th class="text-center max-width-120"><?php echo trans('options'); ?></th>
+                                                    <th class="permission_show text-center max-width-120"><?php echo trans('options'); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -55,7 +55,7 @@ td:hover {
                                                     <tr data-id="<?= $item->id; ?>">
                                                         <td><?php echo html_escape($item->name); ?></td>
                                                         <td class="text-center"><?php echo html_escape($item->sort_order); ?></td>
-                                                        <td class="text-center">
+                                                        <td class="text-center permission_show">
                                                             <div class="dropdown btn-group">
                                                                 <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                     <i class="mdi mdi-circle-edit-outline mr-2"></i><?php echo trans('select_an_option'); ?>
@@ -63,7 +63,7 @@ td:hover {
 
                                                                 <div class="dropdown-menu dropdown-menu-animated">
                                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="$('#modal-modalLabel').text('<?php echo trans('edit'); ?>'); manage_fields_group('<?php echo html_escape($categoryId); ?>','<?php echo html_escape($item->id); ?>','<?php echo html_escape($item->name); ?>');"><?php echo trans('edit'); ?></a>
-                                                                    <div class=" dropdown-divider">
+                                                                    <div class="dropdown-divider">
                                                                     </div>
                                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="delete_item('/admin/fields_group/delete_fields_group_post','<?php echo $item->id; ?>','<?php echo trans('confirm_delete'); ?>');"><?php echo trans('delete'); ?></a>
                                                                 </div>

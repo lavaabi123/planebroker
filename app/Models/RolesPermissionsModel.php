@@ -137,17 +137,21 @@ class RolesPermissionsModel extends Model
 
 
     public function getAccessMenuCategory($role)
-    {
-        return $this->db->table('user_menu_category')
-            ->select('*,user_menu_category.id AS menuCategoryID, user_menu_category.position_order')
-            ->join('user_access', 'user_menu_category.id = user_access.menu_category_id')
-            ->orderBy('user_menu_category.position_order', 'ASC')
-            ->where(['user_access.role_id' => $role])
-            ->get()->getResultArray();
+    {		
+		$sql = "SELECT id AS menuCategoryID,position_order from user_menu_category c where c.id in (select menu_category from user_menu where id in (select menu_id from user_access where role_id=? and menu_id>0)) OR c.id=1 order by c.position_order asc";
+        $query = $this->db->query($sql, array($role));
+        return $query->getResultArray();
     }
 
+	public function getMenuPermission($role,$segment)
+	{
+        return $url_menu_id = $this->db->query("SELECT * from user_access where role_id = ? AND menu_id = (SELECT id from user_menu where url= ? limit 1)", array($role,$segment))->getRowArray();
+    }
 
-
+	public function getSubMenuPermission($role,$segment)
+	{
+        return $url_menu_id = $this->db->query("SELECT * from user_access where role_id = ? AND submenu_id = (SELECT id from user_submenu where url= ? )", array($role,$segment))->getRowArray();
+    }
     public function getAccessMenu($role)
     {
         return $this->db->table('user_menu')
@@ -191,29 +195,68 @@ class RolesPermissionsModel extends Model
     }
     public function insertMenuCategoryPermission($dataAccess)
     {
-        return $this->db->table('user_access')->insert(['role_id' => $dataAccess['roleID'], 'menu_category_id' => $dataAccess['menuCategoryID']]);
+        return $this->db->table('user_access')->insert(['role_id' => $dataAccess['roleID'], 'menu_category_id' => $dataAccess['menuCategoryID'],
+                'is_edit' => $dataAccess['is_edit'],
+                'is_view' => $dataAccess['is_view']]);
     }
+	
+    public function updateMenuPermission($dataAccess)
+    {
+		return $this->db->table('user_access')
+        ->where([
+            'role_id'    => $dataAccess['roleID'],
+            'menu_id' => $dataAccess['menuID']
+        ])
+        ->update([
+            'is_edit' => $dataAccess['is_edit'],
+            'is_view' => $dataAccess['is_view']
+        ]);
+    }
+	
+    public function updateSubmenuPermission($dataAccess)
+    {
+        return $this->db->table('user_access')
+        ->where([
+            'role_id'    => $dataAccess['roleID'],
+            'submenu_id' => $dataAccess['submenuID']
+        ])
+        ->update([
+            'is_edit' => $dataAccess['is_edit'],
+            'is_view' => $dataAccess['is_view']
+        ]);
+    }
+	
     public function deleteMenuCategoryPermission($dataAccess)
     {
-        return $this->db->table('user_access')->delete(['role_id' => $dataAccess['roleID'], 'menu_category_id' => $dataAccess['menuCategoryID']]);
+        return $this->db->table('user_access')->delete(['role_id' => $dataAccess['roleID'], 'menu_category_id' => $dataAccess['menuCategoryID'],
+                'is_edit' => $dataAccess['is_edit'],
+                'is_view' => $dataAccess['is_view']]);
     }
 
     public function insertMenuPermission($dataAccess)
     {
-        return $this->db->table('user_access')->insert(['role_id' => $dataAccess['roleID'], 'menu_id' => $dataAccess['menuID']]);
+        return $this->db->table('user_access')->insert(['role_id' => $dataAccess['roleID'], 'menu_id' => $dataAccess['menuID'],
+                'is_edit' => $dataAccess['is_edit'],
+                'is_view' => $dataAccess['is_view']]);
     }
     public function deleteMenuPermission($dataAccess)
     {
-        return $this->db->table('user_access')->delete(['role_id' => $dataAccess['roleID'], 'menu_id' => $dataAccess['menuID']]);
+        return $this->db->table('user_access')->delete(['role_id' => $dataAccess['roleID'], 'menu_id' => $dataAccess['menuID'],
+                'is_edit' => $dataAccess['is_edit'],
+                'is_view' => $dataAccess['is_view']]);
     }
 
     public function insertSubmenuPermission($dataAccess)
     {
-        return $this->db->table('user_access')->insert(['role_id' => $dataAccess['roleID'], 'submenu_id' => $dataAccess['submenuID']]);
+        return $this->db->table('user_access')->insert(['role_id' => $dataAccess['roleID'], 'submenu_id' => $dataAccess['submenuID'],
+                'is_edit' => $dataAccess['is_edit'],
+                'is_view' => $dataAccess['is_view']]);
     }
 
     public function deleteSubmenuPermission($dataAccess)
     {
-        return $this->db->table('user_access')->delete(['role_id' => $dataAccess['roleID'], 'submenu_id' => $dataAccess['submenuID']]);
+        return $this->db->table('user_access')->delete(['role_id' => $dataAccess['roleID'], 'submenu_id' => $dataAccess['submenuID'],
+                'is_edit' => $dataAccess['is_edit'],
+                'is_view' => $dataAccess['is_view']]);
     }
 }

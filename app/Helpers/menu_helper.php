@@ -99,12 +99,16 @@ if (!function_exists('render_menu')) {
 function getMenu($menu_category_id, $role)
 {
     $db       = \Config\Database::connect();
-    $menu     =  $db->table('user_menu')
-        ->orderBy('user_menu.position_order', 'ASC')
-        ->join('user_access', 'user_menu.id = user_access.menu_id')
-        ->where(['menu_category' => $menu_category_id, 'user_access.role_id' => $role])
-        ->get()->getResultArray();
-    return $menu;
+	if($menu_category_id == 1){
+		$sql = "SELECT * FROM `user_menu` right JOIN `user_access` ON `user_menu`.`id` = `user_access`.`menu_id` WHERE (`menu_category` = ? AND (is_edit > 0 or is_view>0))  OR (`user_menu`.id in (select menu from user_submenu where id in (select submenu_id from user_access where `menu_category` = ? AND submenu_id > 0 AND (is_edit > 0 or is_view>0)))) group by `user_menu`.id ORDER BY `user_menu`.`position_order` ASC";
+		$query = $db->query($sql, array($menu_category_id,$menu_category_id));
+	}else{
+		$sql = "SELECT * FROM `user_menu` right JOIN `user_access` ON `user_menu`.`id` = `user_access`.`menu_id` WHERE (`menu_category` = ? AND `user_access`.`role_id` = ? AND (is_edit > 0 or is_view>0))  OR (`user_menu`.id in (select menu from user_submenu where id in (select submenu_id from user_access where `menu_category` = ? AND submenu_id > 0 AND `user_access`.`role_id` = ? AND (is_edit > 0 or is_view>0)))) group by `user_menu`.id ORDER BY `user_menu`.`position_order` ASC";
+		$query = $db->query($sql, array($menu_category_id,$role,$menu_category_id,$role));
+	}
+	
+    
+        return $query->getResultArray();
 }
 
 

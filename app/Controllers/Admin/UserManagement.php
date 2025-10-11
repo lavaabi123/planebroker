@@ -511,6 +511,7 @@ class UserManagement extends AdminController
         $data = array_merge($this->data, [
             'title' => trans('update_profile'),
             'user_detail' => $this->userModel->get_user($id),
+			'roles' => $this->RolesPermissionsModel->getRole(),
         ]);
 
 		$data['page'] = $page;

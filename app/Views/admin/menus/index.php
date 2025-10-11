@@ -60,7 +60,7 @@ $render = function($pid) use (&$render,$byParent) {
     <li class="dd-item" data-id="<?= $row['id'] ?>">
       <div class="dd-handle">
         <span class="title"><?= esc($row['title']) ?></span>
-        <div class="actions">
+        <div class="actions permission_show">
           <a class="ml-3 text-danger del" type="button" href="javascript:void(0);" data-id="<?= $row['id'] ?>"><i class="fas fa-trash"></i></a>
         </div>
       </div>
@@ -138,7 +138,7 @@ foreach ($subs as $s) $catSubs[$s['category_id']][] = $s;
   <section class="card-body" id="menuScroll">
     <div class="d-flex justify-content-between align-items-center mb-2">
       <h5 class="m-0">Menu Structure</h5>
-      <button id="saveOrder" class="btn btn-success btn-sm saveOrder">Save Menu</button>
+      <button id="saveOrder" class="permission_show btn btn-success btn-sm saveOrder">Save Menu</button>
     </div>
 
     <ul id="menuNest" class="dd-list">
@@ -146,7 +146,7 @@ foreach ($subs as $s) $catSubs[$s['category_id']][] = $s;
     </ul>
 	
     <div class="d-flex justify-content-end align-items-center mb-2 mt-3">
-      <button id="saveOrder1" class="btn btn-success btn-sm saveOrder">Save Menu</button>
+      <button id="saveOrder1" class="permission_show btn btn-success btn-sm saveOrder">Save Menu</button>
     </div>
   </section>
   </div>

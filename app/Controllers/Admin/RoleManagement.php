@@ -193,7 +193,7 @@ class RoleManagement extends AdminController
         $userAccess = $this->RolesPermissionsModel->checkUserMenuAccess($this->request->getPost(null, FILTER_SANITIZE_FULL_SPECIAL_CHARS), 3);
 
         if ($userAccess > 0) {
-            $this->RolesPermissionsModel->deleteMenuPermission($this->request->getPost(null, FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+            $this->RolesPermissionsModel->updateMenuPermission($this->request->getPost(null, FILTER_SANITIZE_FULL_SPECIAL_CHARS));
         } else {
             $this->RolesPermissionsModel->insertMenuPermission($this->request->getPost(null, FILTER_SANITIZE_FULL_SPECIAL_CHARS));
         }
@@ -203,7 +203,7 @@ class RoleManagement extends AdminController
     {
         $userAccess = $this->RolesPermissionsModel->checkUserSubmenuAccess($this->request->getPost(null, FILTER_SANITIZE_FULL_SPECIAL_CHARS));
         if ($userAccess > 0) {
-            $this->RolesPermissionsModel->deleteSubmenuPermission($this->request->getPost(null, FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+            $this->RolesPermissionsModel->updateSubmenuPermission($this->request->getPost(null, FILTER_SANITIZE_FULL_SPECIAL_CHARS));
         } else {
             $this->RolesPermissionsModel->insertSubmenuPermission($this->request->getPost(null, FILTER_SANITIZE_FULL_SPECIAL_CHARS));
         }

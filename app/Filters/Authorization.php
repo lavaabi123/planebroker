@@ -37,7 +37,7 @@ class Authorization implements FilterInterface
 					'menuID' => $menu['id']
 				];
 				$userAccess = $this->permissionModel->checkUserMenuAccess($dataAccess);
-				if(session()->get('admin_sess_user_role') > 1){
+				if(session()->get('admin_sess_user_role') == 2){
 					return redirect()->to(base_url('/'));
 				}else if(!$userAccess && !is_superadmin()){					// not granted
 					return redirect()->to(base_url('admin/blocked'));

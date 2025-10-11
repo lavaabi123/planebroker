@@ -25,7 +25,7 @@ class Login extends AuthController
     public function index()
     {
         if ($this->session->get('admin_sess_logged_in') == TRUE) {
-			if ($this->session->get('admin_sess_user_role') == 1) {
+			if ($this->session->get('admin_sess_user_role') != 2) {
 				return redirect()->to(base_url('/admin/dashboard'));
 			}else{
 				return redirect()->to(base_url('/'));				
@@ -35,7 +35,7 @@ class Login extends AuthController
         $data['title'] = trans('login');
 		
 		if (!empty($_COOKIE['remember_admin_email']) && !empty($_COOKIE['remember_admin_pass'])) {
-			echo $data['remember_admin_email'] = base64_decode($_COOKIE['remember_admin_email']); exit;
+			$data['remember_admin_email'] = base64_decode($_COOKIE['remember_admin_email']);
 			$data['remember_admin_pass']  = base64_decode($_COOKIE['remember_admin_pass']);
 		}
 
@@ -70,6 +70,7 @@ class Login extends AuthController
         if ($this->validate($rules)) {
 
             $user = $userModel->get_user_by_email($this->request->getVar('email'));
+			
             if (!empty($user) && $user->role != 1 && get_general_settings()->maintenance_mode_status == 1) {
                 $this->session->setFlashData('errors_form', "Site under construction! Please try again later.");
                 return redirect()->back();
@@ -129,13 +130,13 @@ class Login extends AuthController
     }
 
     // Your existing redirects (unchanged)
-    if ($this->session->get('admin_sess_user_role') > 1) {
+    if ($this->session->get('admin_sess_user_role') == 2) {
         return redirect()->to(base_url('/'))->withCookies();
     } else {
         return redirect()->to(admin_url())->withCookies();
     }
 
-} else {
+} else {		
     return redirect()->back()->withInput();
 }
 

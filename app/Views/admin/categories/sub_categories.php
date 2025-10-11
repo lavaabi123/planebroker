@@ -7,7 +7,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6 d-flex">
-                    <h1 class="m-0"><?php echo $title ?></h1><a href="javascript:void(0)" class="btn small bg-primary ms-3" onclick="$('#modal-modalLabel').text('<?php echo trans('add'); ?>');manage_categories('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
+                    <h1 class="m-0"><?php echo $title ?></h1><a href="javascript:void(0)" class="permission_show btn small bg-primary ms-3" onclick="$('#modal-modalLabel').text('<?php echo trans('add'); ?>');manage_categories('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -41,7 +41,7 @@
                                                     <th><?php echo trans('name'); ?></th>
                                                     <th><?php echo trans('Parent Category'); ?></th>
                                                     <?php /*<th><?php echo trans('status'); ?></th> */ ?>
-                                                    <th class="text-center max-width-120"><?php echo trans('options'); ?></th>
+                                                    <th class="permission_show text-center max-width-120"><?php echo trans('options'); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -56,7 +56,7 @@
                                                                 <button class="btn btn-sm btn-danger"><?php echo trans("inactive"); ?></button>
                                                             <?php endif; ?>
                                                         </td> */ ?>
-                                                        <td class="text-center">
+                                                        <td class="text-center permission_show">
                                                             <div class="dropdown btn-group">
                                                                 <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                     <i class="mdi mdi-circle-edit-outline mr-2"></i><?php echo trans('select_an_option'); ?>

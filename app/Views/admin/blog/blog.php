@@ -8,7 +8,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6 d-flex">
-                    <h1 class="m-0"><?php echo $title ?></h1><a href="<?php echo admin_url() . 'blog/add-blog/'; ?>"><button type="button" class="btn small bg-primary ms-3"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></button></a>
+                    <h1 class="m-0"><?php echo $title ?></h1><a class="permission_show" href="<?php echo admin_url() . 'blog/add-blog/'; ?>"><button type="button" class="btn small bg-primary ms-3"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></button></a>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -43,7 +43,7 @@
                                                     <th><?php echo trans('Title'); ?></th><th><?php echo trans('Type'); ?></th>
                                                     <th><?php echo trans('Created at'); ?></th>
                                                     <th><?php echo trans('Status'); ?></th>
-                                                    <th class="text-center max-width-120"><?php echo trans('options'); ?></th>
+                                                    <th class="permission_show text-center max-width-120"><?php echo trans('options'); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -54,7 +54,7 @@
                                                         <td><?php echo !empty($blog['category']) ? 'News':'Articles'; ?> </td>
                                                         <td><?php echo date("m-d-Y", strtotime($blog['created_at'])); ?>
                                                         <td><?php echo ($blog['status'] == 1) ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>'; ?> </td></td>
-                                                        <td>
+                                                        <td class="permission_show">
                                                             <div class="dropdown btn-group">
                                                                 <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                     <i class="mdi mdi-circle-edit-outline mr-2"></i><?php echo trans('select_an_option'); ?>

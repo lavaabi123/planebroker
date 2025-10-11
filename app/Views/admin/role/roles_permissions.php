@@ -30,7 +30,7 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-lg-4 col-xl-4">
+                <div class="permission_show col-lg-4 col-xl-4">
                     <div class="card">
                         <div class="card-header">
                             <h5 class="card-title text-uppercase"><?php echo trans("add_role"); ?></h5>
@@ -57,25 +57,25 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table id="cs_datatable" class="table table-bordered table-striped" role="grid">
+                                <table id="cs_datkatable" class="table table-bordered table-striped" role="grid">
                                     <thead>
                                         <tr role="row">
                                             <th width="20" class="text-center"><?php echo trans('id'); ?></th>
-                                            <th class="text-center"><?php echo trans('role'); ?></th>
-                                            <th class="text-center"><?php echo trans('permissions'); ?></th>
-                                            <th class="text-center"><?php echo trans('options'); ?></th>
+                                            <th class=""><?php echo trans('role'); ?></th>
+                                            <th class=" text-center"><?php echo trans('permissions'); ?></th>
+                                            <th class="text-center permission_show"><?php echo trans('options'); ?></th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php foreach ($roles as $role) : ?>
 
-                                            <tr class="text-center">
+                                            <tr class="">
                                                 <td><strong style="font-weight: 600;"><?php echo $role->id; ?></strong></td>
                                                 <td><strong style="font-weight: 600;"><?php echo $role->role_name; ?></strong></td>
-                                                <td><a href="<?php echo admin_url() ?>role-management/permission?role=<?php echo $role->role_name; ?>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-primary"><?php echo trans('permissions') ?></a></td>
+                                                <td class=""><?php if ($role->id != 1 && $role->id != 2) : ?><a href="<?php echo admin_url() ?>role-management/permission?role=<?php echo $role->role_name; ?>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-primary"><?php echo trans('permissions') ?></a><?php endif; ?></td>
 
-                                                <td class="text-center">
-                                                    <?php if ($role->id != 1) : ?>
+                                                <td class="text-center permission_show">
+                                                    <?php if ($role->id != 1 && $role->id != 2) : ?>
                                                         <div class="dropdown btn-group">
                                                             <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                 <i class="mdi mdi-circle-edit-outline mr-2"></i><?php echo trans('select_an_option'); ?>

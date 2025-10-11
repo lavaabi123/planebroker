@@ -9,7 +9,7 @@
             <div class="row mb-2">
                 <div class="col-sm-6 d-flex">
                     <h1 class="m-0"><?php echo $title ?></h1>
-					<a href="<?php echo admin_url() . 'seo/add-seo/'; ?>"><button type="button" class="btn small btn-primary ms-3"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></button></a>
+					<a class="permission_show" href="<?php echo admin_url() . 'seo/add-seo/'; ?>"><button type="button" class="btn small btn-primary ms-3"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></button></a>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -46,7 +46,7 @@
                                                     <th><?php echo trans('Page Name'); ?></th>
                                                     <th><?php echo trans('Meta Title'); ?></th>
                                                    <!-- <th><?php echo trans('Meta Keywords'); ?></th>-->
-                                                    <th class="text-center max-width-120"><?php echo trans('options'); ?></th>
+                                                    <th class="permission_show text-center max-width-120"><?php echo trans('options'); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -55,7 +55,7 @@
                                                         <td><?php echo $seo['page_name']; ?> </td>      
                                                         <td><?php echo $seo['meta_title']; ?> </td>     
                                                         <!--<td><?php echo $seo['meta_keywords']; ?> </td>-->
-                                                        <td>
+                                                        <td class="permission_show">
                                                             <div class="dropdown btn-group">
                                                                 <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                     <i class="mdi mdi-circle-edit-outline mr-2"></i><?php echo trans('select_an_option'); ?>

@@ -20,8 +20,8 @@
             <div class="row mb-2">
                 <div class="col-sm-6 d-flex">
                   <h1 class="m-0"><?php echo $title ?> 
-                    <a class="btn btn-primary ms-3" href="<?php echo admin_url() . 'listings/add/'; ?>"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
-                  </h1>                     
+                  </h1>  
+                    <a class="permission_show btn btn-primary ms-3" href="<?php echo admin_url() . 'listings/add/'; ?>"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>                   
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -48,7 +48,7 @@
                 <div class="col-lg-12 col-xl-12">
 					<div class="table-responsive">
 
-						<table class="table table-bordered table-striped">
+						<table class="table table-bordered table-striped permission_show1">
 							<thead>
 								<tr role="row">
 									<th><?php echo trans('Name'); ?></th>
@@ -115,16 +115,16 @@
 												<div class="dropdown-menu dropdown-menu-animated">
 													<?php 
 														if (is_admin()) : ?>
-														<a class="dropdown-item" href="<?php echo admin_url() . 'listings/add?id='.$user['id'].'&category='.$user['category_id'].'&plan_id='.$user['plan_id'].'&user_id='.$user['user_id'].'&sale_id='.$user['sale_id']; ?>"><?php echo trans('edit'); ?></a>
-														<div class="dropdown-divider"></div>
-														<a class="dropdown-item openDeleteModal" data-id="<?php echo $user['id']; ?>" href="javascript:void(0)" ><?php echo trans('delete'); ?></a>
-														<div class="dropdown-divider"></div>
+														<a class="permission_show dropdown-item" href="<?php echo admin_url() . 'listings/add?id='.$user['id'].'&category='.$user['category_id'].'&plan_id='.$user['plan_id'].'&user_id='.$user['user_id'].'&sale_id='.$user['sale_id']; ?>"><?php echo trans('edit'); ?></a>
+														<div class="permission_show dropdown-divider"></div>
+														<a class="permission_show dropdown-item openDeleteModal" data-id="<?php echo $user['id']; ?>" href="javascript:void(0)" ><?php echo trans('delete'); ?></a>
+														<div class="permission_show dropdown-divider"></div>
 														<a class="dropdown-item" target="_blank" href="<?php echo base_url('/listings/'.$user['permalink'].'/'.$user['id'].'/'.(!empty($user['display_name'])?str_replace(' ','-',strtolower($user['display_name'])):'')); ?>"><?php echo trans('View Listing'); ?></a>
-														<div class="dropdown-divider"></div>
+														<div class="permission_show dropdown-divider"></div>
 														<?php if ($user['status'] == 1){ ?>
-															 <a class="dropdown-item toggle-status" data-id="<?php echo $user['id']; ?>" data-val="0" href="javascript:void(0)" >Disable</a>
+															 <a class="permission_show dropdown-item toggle-status" data-id="<?php echo $user['id']; ?>" data-val="0" href="javascript:void(0)" >Disable</a>
 														<?php }else if ($user['status'] == 0){ ?>
-															 <a class="dropdown-item toggle-status" data-id="<?php echo $user['id']; ?>" data-val="1" href="javascript:void(0)" >Enable</a>
+															 <a class="permission_show dropdown-item toggle-status" data-id="<?php echo $user['id']; ?>" data-val="1" href="javascript:void(0)" >Enable</a>
 														<?php } ?>
 													<?php endif;  ?>
 													

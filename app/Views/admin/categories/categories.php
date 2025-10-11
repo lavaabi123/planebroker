@@ -8,7 +8,9 @@
             <div class="row mb-2">
                 <div class="col-sm-6 d-flex">
                     <h1 class="m-0"><?php echo $title ?></h1>
-                    <a href="javascript:void(0)" class="btn small bg-primary ms-3" onclick="$('#modal-modalLabel').text('<?php echo trans('add'); ?>');manage_categories('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
+					
+                    <a href="javascript:void(0)" class="btn small bg-primary ms-3 permission_show" onclick="$('#modal-modalLabel').text('<?php echo trans('add'); ?>');manage_categories('');"><i class="fa fa-plus pr-2"></i><?php echo trans("add"); ?></a>
+					
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -36,7 +38,7 @@
                             <div class="tab-content" id="custom-tabs-categories">
                                 <div class="tab-pane fade show active" id="custom-tabs-categories" role="tabpanel" aria-labelledby="custom-tabs-categories-tab">
                                     <div class="table-responsive">
-                                        <table id="categories_table" class="table table-bordered table-striped nowrap w-100 pageResize">
+                                        <table id="categories_table" class="permission_show1 table table-bordered table-striped nowrap w-100 pageResize">
                                             <div class="row table-filter-container m-0">
                                                 <div class="text-right p-0">
                                                 </div>
@@ -69,16 +71,16 @@
                                                                 </button>
 
                                                                 <div class="dropdown-menu dropdown-menu-animated">  
-																	 <a class="dropdown-item" href="<?php echo admin_url() .'groups/index/'.html_escape($item->id);?>"><?php echo trans('Manage Field Groups'); ?></a>
-                                                                     <div class=" dropdown-divider"></div>               
+																	 <a class="dropdown-item" href="<?php echo admin_url() .'categories/groups/index/'.html_escape($item->id);?>"><?php echo trans('Manage Field Groups'); ?></a>
+                                                                     <div class="permission_show dropdown-divider"></div>               
                                                                     <?php if ($item->status == 1) : ?>
-                                                                        <a class="dropdown-item" href="javascript:void(0)" onclick="$('#modal-modalLabel').text('<?php echo trans('edit'); ?>'); manage_categories('<?php echo html_escape($item->id); ?>'); $('#status_1').prop('checked', true);"><?php echo trans('edit'); ?></a>
+                                                                        <a class="permission_show dropdown-item" href="javascript:void(0)" onclick="$('#modal-modalLabel').text('<?php echo trans('edit'); ?>'); manage_categories('<?php echo html_escape($item->id); ?>'); $('#status_1').prop('checked', true);"><?php echo trans('edit'); ?></a>
                                                                     <?php else : ?>
-                                                                        <a class="dropdown-item" href="javascript:void(0)" onclick="$('#modal-modalLabel').text('<?php echo trans('edit'); ?>'); manage_categories('<?php echo html_escape($item->id); ?>'); $('#status_2').prop('checked', true);"><?php echo trans('edit'); ?></a>
+                                                                        <a class="permission_show dropdown-item" href="javascript:void(0)" onclick="$('#modal-modalLabel').text('<?php echo trans('edit'); ?>'); manage_categories('<?php echo html_escape($item->id); ?>'); $('#status_2').prop('checked', true);"><?php echo trans('edit'); ?></a>
                                                                     <?php endif; ?>
-                                                                    <div class=" dropdown-divider">
+                                                                    <div class="permission_show dropdown-divider">
                                                                     </div>
-                                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="delete_item('/admin/categories/delete_categories_post','<?php echo $item->id; ?>','<?php echo trans('confirm_delete'); ?>');"><?php echo trans('delete'); ?></a>
+                                                                    <a class="permission_show dropdown-item" href="javascript:void(0)" onclick="delete_item('/admin/categories/delete_categories_post','<?php echo $item->id; ?>','<?php echo trans('confirm_delete'); ?>');"><?php echo trans('delete'); ?></a>
                                                                 </div>
                                                             </div>
 

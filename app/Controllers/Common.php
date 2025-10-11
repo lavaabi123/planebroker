@@ -578,6 +578,53 @@ class Common extends BaseController
         exit;
 	}
 	
+	public function send_email_to_friend_video(){
+		
+		if(!empty($this->request->getVar('check_bot'))){    
+        $email          = $this->request->getVar('email');
+        $remail         = $this->request->getVar('remail');
+        $link         	= $this->request->getVar('link');
+        $siteName       = get_general_settings()->application_name;
+        $subject        = $siteName.' Sharing Video';
+        $userMessage    = $this->request->getVar('message');
+        $message        = "<b>You received this message from a customer who visited ".$siteName." video and shared with you.</b><br><br>Email: ".$email."<br>Message:<br>".$userMessage."<br>Video Link:<br>".$link;
+		//$message        = "You have received a message from a customer.";
+		
+        
+        $data = array(
+            'subject'           => "You Have A Message",//$subject,
+            'message_text'      => $message,
+            'to'                => $remail,
+            'template_path'     => "email/email_to_provider",
+        );
+		$message_admin        = "<b>received this message from a customer who visited and shared video link via email to friend.</b><br><br>Email: ".$email."<br>Recipients Email: ".$remail."<br>Message:<br>".$userMessage;
+		$data_admin = array(
+            'subject'           => "Customer Sent Referral Email",//$subject,
+            'message_text'      => $message_admin,
+			'from_email' => get_general_settings()->admin_email,
+			'to' => get_general_settings()->mail_reply_to,
+            'template_path'     => "email/admin/new_user",
+        );
+		
+        $emailModel = new EmailModel();
+        $emailModel->send_email($data); 
+        $emailModel->send_email($data_admin);  
+				
+			
+        return $this->response->setJSON([
+                'success' => true,
+                'message' => trans("msg_email_sent")
+            ]);
+		}else {
+            return $this->response->setJSON([
+                'success' => false,
+                'error' => true,
+                'message' => trans("You are not a human!")
+            ]);
+        }        
+        exit;
+	}
+	
     public function send_message_to_provider()
     {
 		if(!empty($this->request->getVar('check_bot'))){

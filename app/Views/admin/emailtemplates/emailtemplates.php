@@ -44,7 +44,7 @@
                                                     <th><?php echo trans('Title'); ?></th>
                                                     <th><?php echo trans('subject'); ?></th>
                                                     <?php /*<th><?php echo trans('date'); ?></th> */?>
-                                                    <th class="text-center max-width-120"><?php echo trans('options'); ?></th>
+                                                    <th class="permission_show text-center max-width-120"><?php echo trans('options'); ?></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -53,7 +53,7 @@
                                                         <td><?php echo $emailtemplate['email_title']; ?> </td>
                                                         <td><?php echo $emailtemplate['name']; ?> </td>
                                                         <?php /*<td><?php echo formatted_dateonly($emailtemplate['created_at']); ?></td> */?>
-                                                        <td>
+                                                        <td class="permission_show">
                                                             <div class="dropdown btn-group">
                                                                 <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                     <i class="mdi mdi-circle-edit-outline mr-2"></i><?php echo trans('select_an_option'); ?>

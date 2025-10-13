@@ -96,9 +96,9 @@ class UserManagement extends AdminController
     public function users()
     {
         $request = service('request');
-        
         $data = array_merge($this->data, [
             'title' => trans('users'),
+			'roles' => $this->RolesPermissionsModel->getRole(),
         ]);
         $this->CategoriesModel = new CategoriesModel();
         $data['categories'] = $this->CategoriesModel->get_categories();

@@ -37,11 +37,11 @@
 						<?php if(!empty($users)){ ?>
 						<select name="user_id" class="form-control" required>
 						<option value="">Select</option>
-						<?php foreach($users as $user){
+						<?php foreach($users as $user){ if($user->role==2){
 						$display_name = !empty(trim($user->fullname)) ? $user->fullname : $user->business_name;
 						?>	
 							<option value="<?php echo $user->id; ?>"><?php echo $display_name ; ?></option>
-						<?php } ?>
+						<?php } } ?>
 						</select>
 						<?php } ?>
 						<div class="mt-4 text-center"><input type="submit" class="btn btn-sm" value="Next" /></div>

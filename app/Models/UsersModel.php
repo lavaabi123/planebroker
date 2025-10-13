@@ -1520,7 +1520,7 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
     }
     public function users_lists()
     {
-        $sql = "SELECT * FROM users WHERE role != ? order by id desc";
+        $sql = "SELECT u.*,role_name as user_role FROM users u left join user_role r on r.id = u.role WHERE u.role != ? order by u.id desc";
         $query = $this->db->query($sql, array(1));
         return $query->getResultArray();
     }

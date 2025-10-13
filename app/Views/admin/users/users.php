@@ -58,6 +58,7 @@
 										<th><?php echo trans('fullname'); ?></th>
 										<th><?php echo trans('email'); ?></th>
 										<th><?php echo trans('Phone'); ?></th>
+										<th><?php echo trans('Role'); ?></th>
 										<th><?php echo trans('User Level'); ?></th>
 										<th><?php echo trans('Registered at'); ?></th>
 										<th class="text-center max-width-120"><?php echo trans('options'); ?></th>
@@ -73,7 +74,8 @@
 											</td>         
 											<td><?php echo $user['email']; ?></td>
 											<td><?php echo $user['mobile_no']; ?></td>
-											<td><?php echo !empty($user['user_level']) ? 'Captain User' : 'Standard User'; ?></td>
+											<td><?php echo $user['user_role']; ?></td>
+											<td><?php echo (!empty($user['role']) && $user['role']==2) ? (!empty($user['user_level']) ? 'Captain User' : 'Standard User') : 'Admin User'; ?></td>
 											<td><?php echo formatted_date($user['created_at'],'m/d/Y h:i a'); ?></td>
 											<td>
 												<div class="dropdown btn-group">
@@ -242,7 +244,7 @@ $(function(){
     pageLength: 50,
     lengthMenu: [50, 100, 150, 200],
     dom: 
-	'<"d-flex align-items-center gap-2 mb-3"lf<"dropdown-filter"><"date-filter"><"reset-filter">>t<"d-flex justify-content-center align-items-center my-3"ip>',
+	'<"d-flex align-items-center gap-2 mb-3"lf<"role-filter"><"dropdown-filter"><"date-filter"><"reset-filter">>t<"d-flex justify-content-center align-items-center my-3"ip>',
     language: {
       paginate: {
         previous: "<i class='fas fa-caret-left'></i>",
@@ -286,6 +288,20 @@ $(function(){
           <option value="">All</option> 
           <option value="Captain User" >Captain User</option>
           <option value="Standard User" >Standard User</option>
+          <option value="Admin User" >Admin User</option>
+        </select>
+      `);
+	  $('.role-filter').html(`
+        <label>Role</label>
+        <select id="roleDropdown" class="form-control form-select-sm">
+          <option value=""><?php echo trans('All') ?></option>
+				<?php
+				if(!empty($roles)){
+					foreach($roles as $role){ if($role->id > 1){ ?>
+						<option value="<?php echo $role->role_name; ?>"><?php echo $role->role_name; ?></option>
+					<?php } }
+				}
+				?>
         </select>
       `);
 
@@ -336,6 +352,7 @@ $(function(){
 
     // Reset dropdown
     $('#filterDropdown').val('');
+    $('#roleDropdown').val('');
 
     // Reset date filter
     startDate = null;
@@ -351,6 +368,14 @@ $(function(){
 
   // Dropdown filter change
   $('#filterDropdown').on('change', function () {
+    const selectedValue = $(this).val();
+    if (selectedValue) {
+      dt.column(4).search(selectedValue).draw();
+    } else {
+      dt.column(4).search('').draw();
+    }
+  });
+  $('#roleDropdown').on('change', function () {
     const selectedValue = $(this).val();
     if (selectedValue) {
       dt.column(3).search(selectedValue).draw();

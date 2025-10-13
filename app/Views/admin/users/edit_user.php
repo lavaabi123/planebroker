@@ -88,7 +88,7 @@
                                          <div class="col-6">
                                             <div class="form-group ">
                                                 <label><?php echo trans("Role"); ?><span class="required"> *</span></label>
-												<select name="role" class="form-control">
+												<select name="role" id="role"  class="form-control">
 												<?php if(!empty($roles)){
 												foreach($roles as $role){
 												if($role->id != 1){	?>
@@ -97,7 +97,7 @@
 												</select>
                                             </div>
                                         </div>
-                                         <div class="col-6">
+                                         <div class="col-6" id="userLevelWrapper" style="display:none;">
                                             <div class="form-group ">
                                                 <label><?php echo trans("User Level"); ?><span class="required"> *</span></label>
 												<select onchange="confirm_once(this)" name="user_level" class="form-control">
@@ -721,5 +721,25 @@ function confirm_once(_this){
 }
 </style>
 
+<script>
+$(document).ready(function() {
+    // On page load
+    toggleUserLevel();
+
+    // On change of role dropdown
+    $('#role').on('change', function() {
+        toggleUserLevel();
+    });
+
+    function toggleUserLevel() {
+        const selectedRole = $('#role').val();
+        if (selectedRole == '2') {
+            $('#userLevelWrapper').show();
+        } else {
+            $('#userLevelWrapper').hide();
+        }
+    }
+});
+</script>
 <div class="loader"></div>
 <?php echo $this->endSection() ?>

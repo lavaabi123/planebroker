@@ -88,12 +88,12 @@
                                          <div class="col-6">
                                             <div class="form-group ">
                                                 <label><?php echo trans("Role"); ?><span class="required"> *</span></label>
-												<select name="role" id="role"  class="form-control">
+												<select name="role" id="role"  class="form-control" <?php echo ($user_detail->role == 1) ? 'disabled' : '' ; ?>>
 												<?php if(!empty($roles)){
 												foreach($roles as $role){
-												if($role->id != 1){	?>
+													?>
 													<option value="<?= $role->id; ?>" <?php echo ($user_detail->role == $role->id) ? 'selected' : '' ; ?>><?= $role->role_name; ?></option>
-												<?php } } } ?>
+												<?php  } } ?>
 												</select>
                                             </div>
                                         </div>

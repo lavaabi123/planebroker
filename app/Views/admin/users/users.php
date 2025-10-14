@@ -91,10 +91,13 @@
 														<?php 
 															if (is_admin()) : ?>
 															<a class="permission_show dropdown-item" href="<?php echo admin_url() . 'edit-user/'; ?><?php echo html_escape($user['id']); ?>/<?php echo (!empty($_GET) && !empty($_GET['page'])) ? $_GET['page'] : '1' ?>"><?php echo trans('edit'); ?></a>
-															<div class="permission_show dropdown-divider"></div>
-															<a class="permission_show dropdown-item" href="javascript:void(0)" onclick="delete_item('/admin/delete_user_post','<?php echo $user['id']; ?>','<?php echo trans('confirm_user'); ?>')"><?php echo trans('delete'); ?></a>
-															<div class="permission_show dropdown-divider"></div>
-															<a class="dropdown-item" target="_blank" href="<?php echo base_url('user-listings?seller_id='.$user['id']); ?>"><?php echo trans('View Listings'); ?></a>
+															
+											<?php 
+															if (!empty($user['role']) && $user['role']!=1) : ?>			<div class="permission_show dropdown-divider"></div>	<a class="permission_show dropdown-item" href="javascript:void(0)" onclick="delete_item('/admin/delete_user_post','<?php echo $user['id']; ?>','<?php echo trans('confirm_user'); ?>')"><?php echo trans('delete'); ?></a>
+															<?php endif;  ?>
+															
+										 <?php 
+															if (!empty($user['role']) && $user['role']==2) : ?>			<div class="permission_show dropdown-divider"></div>		<a class="dropdown-item" target="_blank" href="<?php echo base_url('user-listings?seller_id='.$user['id']); ?>"><?php echo trans('View Listings'); ?></a>	<?php endif;  ?>
 														<?php endif;  ?>
 														
 													</div>
@@ -297,7 +300,7 @@ $(function(){
           <option value=""><?php echo trans('All') ?></option>
 				<?php
 				if(!empty($roles)){
-					foreach($roles as $role){ if($role->id > 1){ ?>
+					foreach($roles as $role){ if($role->id >= 1){ ?>
 						<option value="<?php echo $role->role_name; ?>"><?php echo $role->role_name; ?></option>
 					<?php } }
 				}

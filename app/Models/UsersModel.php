@@ -947,7 +947,7 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
 		unset($data['username']);
 		unset($data['email']);
         $save_id = $this->protect(false)->update($id,$data);	
-		if($udetail->role == 1){
+		if($udetail->role != 2){
 			$this->session->set("admin_sess_user_ps", md5($data['password']));	
 		}else{
 			$this->session->set("vr_sess_user_ps", md5($data['password']));	
@@ -1520,8 +1520,8 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
     }
     public function users_lists()
     {
-        $sql = "SELECT u.*,role_name as user_role FROM users u left join user_role r on r.id = u.role WHERE u.role != ? order by u.id desc";
-        $query = $this->db->query($sql, array(1));
+        $sql = "SELECT u.*,role_name as user_role FROM users u left join user_role r on r.id = u.role order by u.id desc";
+        $query = $this->db->query($sql);
         return $query->getResultArray();
     }
 

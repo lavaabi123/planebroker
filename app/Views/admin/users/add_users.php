@@ -82,9 +82,14 @@
                                                 <input type="text" name="mobile_no" id="mobile_no" class="form-control auth-form-input" placeholder="<?php echo trans("Phone Number"); ?>" value="<?php echo old('mobile_no'); ?>">
                                             </div>
                                         </div>
+											
+										<div class="col-6">
+											<!--<input class="form-control" type="text" id="city" name="city" placeholder="<?php echo trans('City') ?>" value="<?php echo old("city"); ?>">-->
+											<input class="form-control city-state" type="text" id="cityState" name="address" placeholder="<?php echo trans('Location (City, State)') ?>" autocomplete="off" value="<?php echo old('address'); ?>">
+										</div>
                                          <div class="col-6">
                                             <div class="form-group ">
-                                                <label><?php echo trans("Role"); ?><span class="required"> *</span></label>
+                                                <label class="d-flex"><?php echo trans("Role"); ?><span class="required"> *</span></label>
 												<select id="role" name="role" class="form-control">
 												<?php if(!empty($roles)){
 												foreach($roles as $role){
@@ -96,17 +101,22 @@
                                         </div>
                                         <div class="col-6" id="userLevelWrapper" style="display:none;">
                                             <div class="form-group">
-                                                <label><?php echo trans("User Level"); ?><span class="required"> *</span></label>
+                                                <label class="d-flex"><?php echo trans("User Level"); ?><span class="required"> *</span></label>
 												<select name="user_level" class="form-control">
 													<option value="0">Standard User</option>
 													<option value="1">Captain User</option>
 												</select>
                                             </div>
-                                        </div>		
-										<div class="col-6">
-											<!--<input class="form-control" type="text" id="city" name="city" placeholder="<?php echo trans('City') ?>" value="<?php echo old("city"); ?>">-->
-											<input class="form-control city-state" type="text" id="cityState" name="address" placeholder="<?php echo trans('Location (City, State)') ?>" autocomplete="off" value="<?php echo old('address'); ?>">
-										</div>
+                                        </div>
+                                        <div class="col-6" id="userMailWrapper" style="display:none;">
+                                            <div class="form-group">
+                                                <label class="d-flex"><?php echo trans("Send all admin Emails to this user?"); ?><span class="required"> *</span></label>
+												<select name="admin_email_notify" class="form-control">
+													<option value="0">No</option>
+													<option value="1">Yes</option>
+												</select>
+                                            </div>
+                                        </div>	
 										<!--<div class="col-6">
 											<input class="form-control" type="text" id="state" name="state" placeholder="<?php echo trans('State') ?>" value="<?php echo old("state"); ?>">
 										</div>-->
@@ -711,8 +721,10 @@ $(document).ready(function() {
         const selectedRole = $('#role').val();
         if (selectedRole == '2') {
             $('#userLevelWrapper').show();
+            $('#userMailWrapper').hide();
         } else {
             $('#userLevelWrapper').hide();
+            $('#userMailWrapper').show();
         }
     }
 });

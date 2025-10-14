@@ -1277,7 +1277,7 @@ else if($this->request->getVar('check') == '3'){
 						'message_text'  => $user_detail->business_name.' - '.$user_detail->email. ' has been created new subscription(Stripe).',
 						'template_path' => "email/admin/new_user"	
 					);	
-					$emailModel->send_email($data_admin);
+					$emailModel->send_email_multiple($data_admin);
 				}
 				//return redirect()->to(base_url('billing'));
 				
@@ -2586,7 +2586,7 @@ else if($this->request->getVar('check') == '3'){
 					'message_text'  => $user_detail->business_name.' - '.$user_detail->email. ' has been created new subscription(Paypal).',
 					'template_path' => "email/admin/new_user"	
 				);
-				$emailModel->send_email($data_admin);	
+				$emailModel->send_email_multiple($data_admin);	
 				
 			}
 		}else{

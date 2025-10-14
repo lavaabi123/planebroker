@@ -302,7 +302,7 @@ class CronController extends BaseController
                     'from_name'         => "Plane Broker - CRON"
                     );
         $emailModel = new EmailModel();
-        $emailModel->send_email($data);
+        $emailModel->send_email_multiple($data);
     }
 
     public function cron_log($arrContent){

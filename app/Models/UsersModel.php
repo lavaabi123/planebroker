@@ -73,6 +73,7 @@ class UsersModel extends Model
         $data['status'] = 1;
         $data['email_status'] = 1;
         $data['user_level'] = !empty( $this->request->getVar('user_level') ) ? 1 : 0 ;
+		$data['admin_email_notify'] = !empty( $this->request->getVar('admin_email_notify') ) ? 1 : 0;	
         $data['token'] = generate_unique_id();
         $data['created_at'] = date('Y-m-d H:i:s');        
         $id = $this->protect(false)->insert($data);
@@ -191,6 +192,7 @@ class UsersModel extends Model
 			$data['password'] = empty($this->request->getVar('password')) ? $user->password : password_hash($this->request->getVar('password'), PASSWORD_BCRYPT);
 			$data['user_level'] = !empty( $this->request->getVar('user_level') ) ? 1 : 0;	
 			$data['role'] = !empty($this->request->getVar('role')) ? $this->request->getVar('role') : 2;
+			$data['admin_email_notify'] = !empty( $this->request->getVar('admin_email_notify') ) ? 1 : 0;	
           		
             return $this->protect(false)->update($user->id, $data);
         }

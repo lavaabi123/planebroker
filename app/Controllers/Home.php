@@ -298,7 +298,7 @@ class Home extends BaseController
 			$emailModel = new EmailModel();
 			$emailModel->send_email($data1);
 			$emailModel = new EmailModel();
-			$emailModel->send_email($data);
+			$emailModel->send_email_multiple($data);
 			
 			$insertData     = array();
 			$insertData['from_name']         = $name;
@@ -393,7 +393,7 @@ class Home extends BaseController
 			$emailModel = new EmailModel();
 			$emailModel->send_email($data1);
 			$emailModel = new EmailModel();
-			$emailModel->send_email($data);
+			$emailModel->send_email_multiple($data);
 			
 			$insertData     = array();
 			$insertData['from_name']         = $name;

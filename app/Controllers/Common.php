@@ -536,7 +536,7 @@ class Common extends BaseController
 		
         $emailModel = new EmailModel();
         $emailModel->send_email($data); 
-        $emailModel->send_email($data_admin);  
+        $emailModel->send_email_multiple($data_admin);  
 
         $insertData     = array();
         $logged_user_id = 0;
@@ -608,7 +608,7 @@ class Common extends BaseController
 		
         $emailModel = new EmailModel();
         $emailModel->send_email($data); 
-        $emailModel->send_email($data_admin);  
+        $emailModel->send_email_multiple($data_admin);  
 				
 			
         return $this->response->setJSON([
@@ -727,7 +727,7 @@ class Common extends BaseController
         $emailModel->send_email($data_customer);
 		
 		
-        //$emailModel->send_email($data_admin);  
+        $emailModel->send_email_multiple($data_admin);  
 
         $insertData     = array();
         $logged_user_id = 0;

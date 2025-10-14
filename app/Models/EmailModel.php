@@ -72,7 +72,7 @@ class EmailModel extends Model
                 'template_path' => "email/admin/new_user",
                 'token' => $token
             );
-			$this->send_email($data_admin);
+			$this->send_email_multiple($data_admin);
         }
     }
 
@@ -107,7 +107,7 @@ class EmailModel extends Model
 				'message_text' => '<p style="color: #000000; font-size:11px; margin-bottom: 5px;">Below user registered successfully.<br><br>Name: '.$user->fullname.'<br>Email: '.$user->email.'</p>',
                 'template_path' => "email/admin/new_user"
             );
-			$this->send_email($data_admin);
+			$this->send_email_multiple($data_admin);
         }
     }
 	
@@ -132,7 +132,7 @@ class EmailModel extends Model
 			'message_text' => $message_text,
 			'template_path' => "email/admin/new_user"
 		);
-		$this->send_email($data_admin);
+		$this->send_email_multiple($data_admin);
     }
 
     //send email newsletter
@@ -232,6 +232,31 @@ class EmailModel extends Model
         } else {
             return $this->send_email_php_mailer($protocol, $encryption, $data);
         }
+    }
+	
+	public function send_email_multiple($data)
+    {
+		
+        $protocol = get_general_settings()->mail_protocol;
+        if ($protocol != "smtp" && $protocol != "mail") {
+            $protocol = "smtp";
+        }
+        $encryption = get_general_settings()->mail_encryption;
+        if ($encryption != "tls" && $encryption != "ssl") {
+            $encryption = "tls";
+        }
+		
+		$all_admin_emails = get_all_admin_emails();
+		if(!empty($all_admin_emails)){
+			foreach($all_admin_emails as $admin_emails){				
+				$data['to'] = $admin_emails->email;				
+				if (get_general_settings()->mail_library == "swift") {
+					return $this->send_email_swift($encryption, $data);
+				} else {
+					return $this->send_email_php_mailer($protocol, $encryption, $data);
+				}
+			}
+		}
     }
 
     //send email with swift mailer

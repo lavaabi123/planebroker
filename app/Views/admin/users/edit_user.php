@@ -85,21 +85,26 @@
                                                 <input type="text" name="mobile_no" id="mobile_no" class="form-control auth-form-input" placeholder="<?php echo trans("Phone Number"); ?>" value="<?php echo html_escape($user_detail->mobile_no); ?>" required>
                                             </div>
                                         </div>  
+										<div class="col-6">
+											<!--<input class="form-control" type="text" id="city" name="city" placeholder="<?php echo trans('City') ?>" value="<?php echo $user_detail->city ?>">-->
+											<input class="form-control city-state" type="text" id="cityState" name="address" placeholder="<?php echo trans('Location (City, State)') ?>" autocomplete="off" value="<?php echo $user_detail->address; ?>">
+										</div>
                                          <div class="col-6">
                                             <div class="form-group ">
-                                                <label><?php echo trans("Role"); ?><span class="required"> *</span></label>
+                                                <label class="d-flex"><?php echo trans("Role"); ?><span class="required"> *</span></label>
 												<select name="role" id="role"  class="form-control" <?php echo ($user_detail->role == 1) ? 'disabled' : '' ; ?>>
 												<?php if(!empty($roles)){
 												foreach($roles as $role){
+													if(($user_detail->role == 1 && $role->id == 1) || ($user_detail->role != 1 && $role->id > 1)){
 													?>
 													<option value="<?= $role->id; ?>" <?php echo ($user_detail->role == $role->id) ? 'selected' : '' ; ?>><?= $role->role_name; ?></option>
-												<?php  } } ?>
+													<?php } } } ?>
 												</select>
                                             </div>
                                         </div>
                                          <div class="col-6" id="userLevelWrapper" style="display:none;">
                                             <div class="form-group ">
-                                                <label><?php echo trans("User Level"); ?><span class="required"> *</span></label>
+                                                <label class="d-flex"><?php echo trans("User Level"); ?><span class="required"> *</span></label>
 												<select onchange="confirm_once(this)" name="user_level" class="form-control">
 												<?php if($user_detail->user_level == 0 || $product_count == 0){ ?>
 													<option value="0" <?php echo ($user_detail->user_level == 0) ? 'selected' : '' ; ?>>Standard User</option>
@@ -108,6 +113,15 @@
 												</select>
                                             </div>
                                         </div> 
+                                        <div class="col-6" id="userMailWrapper" style="display:none;">
+                                            <div class="form-group">
+                                                <label class="d-flex"><?php echo trans("Send all admin Emails to this user?"); ?><span class="required"> *</span></label>
+												<select name="admin_email_notify" class="form-control">
+													<option value="0" <?php echo ($user_detail->admin_email_notify == 0) ? 'selected' : '' ; ?>>No</option>
+													<option value="1" <?php echo ($user_detail->admin_email_notify == 1) ? 'selected' : '' ; ?>>Yes</option>
+												</select>
+                                            </div>
+                                        </div>	
 										
 										<div class="col-6">
                                             <div class="form-group mb-3">
@@ -122,10 +136,6 @@
                                             </div>
                                         </div>
 										
-										<div class="col-6">
-											<!--<input class="form-control" type="text" id="city" name="city" placeholder="<?php echo trans('City') ?>" value="<?php echo $user_detail->city ?>">-->
-											<input class="form-control city-state" type="text" id="cityState" name="address" placeholder="<?php echo trans('Location (City, State)') ?>" autocomplete="off" value="<?php echo $user_detail->address; ?>">
-										</div>
 										<!--<div class="col-6">
 											<input class="form-control" type="text" id="state" name="state" placeholder="<?php echo trans('State') ?>" value="<?php echo $user_detail->state ?>">
 										</div>-->
@@ -735,8 +745,10 @@ $(document).ready(function() {
         const selectedRole = $('#role').val();
         if (selectedRole == '2') {
             $('#userLevelWrapper').show();
+            $('#userMailWrapper').hide();
         } else {
             $('#userLevelWrapper').hide();
+            $('#userMailWrapper').show();
         }
     }
 });

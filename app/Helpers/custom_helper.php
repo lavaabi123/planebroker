@@ -1190,6 +1190,10 @@ function get_ad($page_name, $page_position){
 	return $new_array;
 }
 
+function get_all_admin_emails(){
+	$db = \Config\Database::connect();
+	return $db->query("SELECT email FROM users WHERE admin_email_notify=1")->getResult();
+}
 
 if (! function_exists('wm_user_dir')) {
     function wm_user_dir(int $userId): string {

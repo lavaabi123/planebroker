@@ -94,6 +94,16 @@ $routes->post('remove_favorite', 'Providerauth\ProviderDashboard::remove_favorit
 $routes->get('renew_plan', 'Providerauth\ProviderDashboard::renew_plan');
 $routes->get('set-password', 'Providerauth\ProviderResetPassword::set_password');
 $routes->post('set-password-post', 'Providerauth\ProviderResetPassword::set_password_post'); 
+$routes->get('constant-contact/authorize', 'ConstantContactAuth::authorize');
+$routes->get('constant-contact/callback', 'ConstantContactAuth::callback');
+$routes->get('constant-contact/refresh', 'ConstantContactAuth::refreshToken');
+$routes->get('constant-contact/lists', 'ConstantContactAuth::getLists');
+$routes->post('newsletter/subscribe', 'Newsletter::subscribe');
+$routes->get('newsletter/check-status', 'Newsletter::checkStatus');
+$routes->get('newsletter/export', 'Newsletter::export');
+$routes->get('newsletter/test-api', 'Newsletter::testApi');
+$routes->get('constant-contact/migrate-to-db', 'ConstantContactAuth::migrateToDatabase');
+$routes->get('newsletter/test-db-tokens', 'Newsletter::testDatabaseTokens');
 
 
 $routes->group("api", ["namespace" => "App\Controllers\Api"], function ($routes) {

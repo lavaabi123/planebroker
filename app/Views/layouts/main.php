@@ -719,6 +719,8 @@ document.addEventListener("DOMContentLoaded", function () {
 	<?php } ?>
 	
 <script src="<?php echo base_url(); ?>/assets/frontend/js/croppie.js"></script>
+
+<?= view('partials/newsletter_popup'); ?>
 	</body>
 	<script>
 		jQuery(window).scroll(function() {    

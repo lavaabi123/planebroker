@@ -21,6 +21,12 @@
             <button type="submit" class="newsletter-submit">Subscribe</button>
             <div class="newsletter-message"></div>
         </form>
+        <!-- Add this new section -->
+        <div class="newsletter-footer">
+            <a href="#" onclick="neverShowNewsletter(); return false;" class="newsletter-never-show">
+                Don't show this again
+            </a>
+        </div>
     </div>
 </div>
 
@@ -185,6 +191,24 @@
         opacity: 1;
     }
 }
+.newsletter-footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.newsletter-never-show {
+    color: #999;
+    font-size: 13px;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.newsletter-never-show:hover {
+    color: #333;
+    text-decoration: underline;
+}
 </style>
 <script>
 // Newsletter Popup Logic
@@ -192,12 +216,30 @@
     const popup = document.getElementById('newsletterPopup');
     const form = document.getElementById('newsletterForm');
     const messageDiv = document.querySelector('.newsletter-message');
+    const closeBtn = document.querySelector('.newsletter-close');
     
-    // Check if user has already subscribed
+    // Check if user has already subscribed or dismissed
     function checkSubscriptionStatus() {
         const dontShowAgain = localStorage.getItem('newsletter_dont_show');
+        const dismissedUntil = localStorage.getItem('newsletter_dismissed_until');
+        
+        // Don't show if permanently dismissed
         if (dontShowAgain) {
             return;
+        }
+        
+        // Check if temporarily dismissed
+        if (dismissedUntil) {
+            const dismissedTime = parseInt(dismissedUntil);
+            const now = new Date().getTime();
+            
+            // If dismissed time hasn't passed, don't show
+            if (now < dismissedTime) {
+                return;
+            } else {
+                // Clear expired dismissal
+                localStorage.removeItem('newsletter_dismissed_until');
+            }
         }
         
         // Check server-side session
@@ -222,11 +264,30 @@
     window.closeNewsletterPopup = function() {
         popup.style.display = 'none';
         document.body.style.overflow = 'auto';
+        
+        // Store dismissal for 24 hours
+        const dismissedUntil = new Date().getTime() + (24 * 60 * 60 * 1000); // 24 hours
+        localStorage.setItem('newsletter_dismissed_until', dismissedUntil);
     }
     
     // Close popup when clicking outside
     popup.addEventListener('click', function(e) {
         if (e.target === popup) {
+            closeNewsletterPopup();
+        }
+    });
+    
+    // Close button handler
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            closeNewsletterPopup();
+        });
+    }
+    
+    // ESC key to close
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && popup.style.display === 'block') {
             closeNewsletterPopup();
         }
     });
@@ -257,12 +318,16 @@
                 messageDiv.textContent = data.message;
                 form.reset();
                 
-                // Set localStorage to not show again
+                // Set localStorage to not show again permanently
                 localStorage.setItem('newsletter_dont_show', 'true');
+                
+                // Remove temporary dismissal
+                localStorage.removeItem('newsletter_dismissed_until');
                 
                 // Close popup after 2 seconds
                 setTimeout(() => {
-                    closeNewsletterPopup();
+                    popup.style.display = 'none';
+                    document.body.style.overflow = 'auto';
                 }, 2000);
             } else {
                 messageDiv.className = 'newsletter-message error';
@@ -288,4 +353,19 @@
     // Initialize
     checkSubscriptionStatus();
 })();
+function neverShowNewsletter() {
+    // Set localStorage to never show again
+    localStorage.setItem('newsletter_dont_show', 'true');
+    
+    // Remove temporary dismissal
+    localStorage.removeItem('newsletter_dismissed_until');
+    
+    // Close popup
+    const popup = document.getElementById('newsletterPopup');
+    popup.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    
+    // Optional: Show a brief message
+    alert('You will not see this popup again.');
+}
 </script>

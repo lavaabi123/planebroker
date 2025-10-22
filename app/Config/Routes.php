@@ -410,6 +410,8 @@ $routes->group("admin", ["namespace" => "App\Controllers\Admin"], function ($rou
         $routes->post('send_email_post', 'Emails::send_email_post');
     });
 	
+	$routes->get('newsletter', 'Newsletter::index');
+	
 	$routes->group('contacts', function ($routes) {
         $routes->get('contacts', 'Contacts::index');      
     });

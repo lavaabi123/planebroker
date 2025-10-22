@@ -2,31 +2,31 @@
 <div id="newsletterPopup" class="newsletter-popup">
     <div class="newsletter-popup-content">
         <button class="newsletter-close" onclick="closeNewsletterPopup()">&times;</button>
-        <div class="newsletter-header">
+		
+        <div class="newsletter-header mb-4">
+		<img src="<?= base_url('assets/img/logo.png') ?>" alt="" class="mb-4" />
             <h2>Subscribe to Our Newsletter</h2>
-            <p>Stay updated with our latest news and updates</p>
+            <p>Stay up to date with our latest news, updates and listings.</p>
         </div>
         <form id="newsletterForm" class="newsletter-form">
             <div class="form-group">
                 <input type="email" name="email" id="newsletter-email" placeholder="Email Address *" required>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <input type="text" name="first_name" id="newsletter-first-name" placeholder="First Name">
-                </div>
-                <div class="form-group">
-                    <input type="text" name="last_name" id="newsletter-last-name" placeholder="Last Name">
-                </div>
-            </div>
-            <button type="submit" class="newsletter-submit">Subscribe</button>
+			<div class="form-group">
+				<input type="text" name="first_name" id="newsletter-first-name" placeholder="First Name">
+			</div>
+			<div class="form-group">
+				<input type="text" name="last_name" id="newsletter-last-name" placeholder="Last Name">
+			</div>
+            <button type="submit" class="btn blue-btn w-100">Subscribe</button>
             <div class="newsletter-message"></div>
         </form>
-        <!-- Add this new section -->
+        <!-- Add this new section 
         <div class="newsletter-footer">
             <a href="#" onclick="neverShowNewsletter(); return false;" class="newsletter-never-show">
                 Don't show this again
             </a>
-        </div>
+        </div>-->
     </div>
 </div>
 
@@ -50,18 +50,18 @@
     padding: 40px;
     width: 90%;
     max-width: 500px;
-    border-radius: 12px;
+    border-radius: 20px;
     box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
     animation: slideDown 0.4s ease;
 }
 
 .newsletter-close {
     position: absolute;
-    right: 15px;
-    top: 15px;
+    right: 10px;
+    top: 10px;
     font-size: 32px;
     font-weight: bold;
-    color: #aaa;
+    color: var(--d-blue);
     background: none;
     border: none;
     cursor: pointer;
@@ -72,38 +72,35 @@
 }
 
 .newsletter-close:hover {
-    color: #000;
+    color: var(--b-blue);
 }
 
 .newsletter-header {
     text-align: center;
-    margin-bottom: 30px;
 }
 
+.newsletter-header img {
+	max-width: 270px;
+    width: 75%;
+    margin: 0 auto;
+    display: block;
+}
 .newsletter-header h2 {
-    margin: 0 0 10px 0;
-    color: #333;
-    font-size: 28px;
+    margin: 0;
+    font-size: 27px;
+	font-weight: 900;
+    letter-spacing: 1px;
 }
 
 .newsletter-header p {
     margin: 0;
-    color: #666;
-    font-size: 16px;
+    color: #515151;
+    font-size: 14px;
+    font-weight: 500;
 }
-
-.newsletter-form .form-group {
-    margin-bottom: 15px;
-}
-
-.newsletter-form .form-row {
-    display: flex;
-    gap: 15px;
-}
-
 .newsletter-form input {
     width: 100%;
-    padding: 14px;
+    padding: 10px 20px !important;
     border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 15px;
@@ -114,28 +111,6 @@
 .newsletter-form input:focus {
     outline: none;
     border-color: #4CAF50;
-}
-
-.newsletter-submit {
-    width: 100%;
-    padding: 15px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.newsletter-submit:hover {
-    background-color: #45a049;
-}
-
-.newsletter-submit:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
 }
 
 .newsletter-message {
@@ -167,9 +142,11 @@
     }
     
     .newsletter-header h2 {
-        font-size: 24px;
+        font-size: var(--title-lg);
     }
-    
+    .newsletter-header p {
+    font-size: 12px;
+}
     .newsletter-form .form-row {
         flex-direction: column;
         gap: 15px;

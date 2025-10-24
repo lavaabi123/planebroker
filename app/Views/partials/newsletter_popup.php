@@ -5,7 +5,7 @@
 		
         <div class="newsletter-header mb-4">
             <img src="<?= base_url('assets/img/logo.png') ?>" alt="" class="mb-4" />
-            <h2>Subscribe to Our Newsletter</h2>
+            <h2>Subscribe to our Newsletter!</h2>
             <p>Stay up to date with our latest news, updates and listings.</p>
         </div>
         <form id="newsletterForm" class="newsletter-form">
@@ -35,6 +35,7 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
     animation: fadeIn 0.3s ease;
+    align-items: center;
 }
 
 .newsletter-popup-content {
@@ -138,11 +139,11 @@
     }
     
     .newsletter-header h2 {
-        font-size: var(--title-lg);
+        font-size: var(--title-md);
     }
     
     .newsletter-header p {
-        font-size: 12px;
+        font-size: 11px;
     }
 }
 
@@ -160,6 +161,10 @@
         transform: translateY(0);
         opacity: 1;
     }
+}
+
+.btn.disabled, .btn:disabled, fieldset:disabled .btn{
+    background: #1b2e5b;
 }
 </style>
 
@@ -216,7 +221,7 @@
     }
     
     function showPopup() {
-        popup.style.display = 'block';
+        popup.style.display = 'flex';
         document.body.style.overflow = 'hidden';
         
         // Store the current timestamp when popup is shown

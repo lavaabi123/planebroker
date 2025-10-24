@@ -37,9 +37,21 @@ class NewsletterSubscriberModel extends Model
             'is_unique' => 'This email is already subscribed to our newsletter'
         ]
     ];
-    
+
+    /**
+     * Return all subscribers sorted by latest date,
+     * formatting the subscribed_at date as M-d-Y
+     */
     public function exportSubscribers()
     {
-        return $this->orderBy('subscribed_at', 'DESC')->findAll();
+        $subscribers = $this->orderBy('subscribed_at', 'DESC')->findAll();
+
+        foreach ($subscribers as &$subscriber) {
+            if (!empty($subscriber['subscribed_at'])) {
+                $subscriber['subscribed_at'] = date('m-d-Y H:i:s', strtotime($subscriber['subscribed_at']));
+            }
+        }
+
+        return $subscribers;
     }
 }

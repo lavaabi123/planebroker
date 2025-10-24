@@ -44,9 +44,9 @@
                                         <a href="<?php echo base_url('admin/newsletter/export/csv'); ?>" class="btn btn-success">
                                             <i class="fas fa-file-csv"></i> Export CSV
                                         </a>
-                                        <a href="<?php echo base_url('admin/newsletter/export/excel'); ?>" class="btn btn-info">
+                                        <!--<a href="<?php echo base_url('admin/newsletter/export/excel'); ?>" class="btn btn-info">
                                             <i class="fas fa-file-excel"></i> Export Excel
-                                        </a>
+                                        </a>-->
                                     </div>
                                 </div>
                             </div>
@@ -70,7 +70,7 @@
                                                     <td><?php echo esc($provider_message->first_name); ?></td>
                                                     <td><?php echo esc($provider_message->last_name); ?></td>
                                                     <td><?php echo esc($provider_message->email); ?></td>
-                                                    <td><?php echo esc($provider_message->subscribed_at); ?></td>
+                                                    <td><?php echo date('m-d-Y H:i:s', strtotime($provider_message->subscribed_at)); ?></td>
                                                 </tr>
                                             <?php endforeach; ?>
                                         </tbody>

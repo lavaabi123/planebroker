@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use App\Models\NewsletterSubscriberModel;
 use App\Libraries\ConstantContactService;
+use App\Models\EmailModel;
 
 class Newsletter extends BaseController
 {
@@ -62,6 +63,20 @@ class Newsletter extends BaseController
         // Set session to prevent popup from showing again
         session()->set('newsletter_subscribed', true);
         
+		
+		$emailModel = new EmailModel();	
+		
+		$get_email_content = $this->db->table('email_templates')->where('email_title', 'thank_subscriber')->get()->getRowArray();
+		$emailContent = $get_email_content['content'];
+		$data_email = array(
+			'subject' => $get_email_content['name'],
+			'content' => $emailContent,
+			'to' => $data['email'],
+			'template_path' => "email/email_content",
+		);
+        $emailModel->send_email($data_email);
+		
+		
         return $this->response->setJSON([
             'success' => true,
             'message' => 'Thank you for subscribing to our newsletter!',

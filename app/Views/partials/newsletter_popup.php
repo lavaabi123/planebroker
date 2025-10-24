@@ -4,7 +4,7 @@
         <button class="newsletter-close" onclick="closeNewsletterPopup()">&times;</button>
 		
         <div class="newsletter-header mb-4">
-		<img src="<?= base_url('assets/img/logo.png') ?>" alt="" class="mb-4" />
+            <img src="<?= base_url('assets/img/logo.png') ?>" alt="" class="mb-4" />
             <h2>Subscribe to Our Newsletter</h2>
             <p>Stay up to date with our latest news, updates and listings.</p>
         </div>
@@ -12,21 +12,15 @@
             <div class="form-group">
                 <input type="email" name="email" id="newsletter-email" placeholder="Email Address *" required>
             </div>
-			<div class="form-group">
-				<input type="text" name="first_name" id="newsletter-first-name" placeholder="First Name">
-			</div>
-			<div class="form-group">
-				<input type="text" name="last_name" id="newsletter-last-name" placeholder="Last Name">
-			</div>
+            <div class="form-group">
+                <input type="text" name="first_name" id="newsletter-first-name" placeholder="First Name">
+            </div>
+            <div class="form-group">
+                <input type="text" name="last_name" id="newsletter-last-name" placeholder="Last Name">
+            </div>
             <button type="submit" class="btn blue-btn w-100">Subscribe</button>
             <div class="newsletter-message"></div>
         </form>
-        <!-- Add this new section 
-        <div class="newsletter-footer">
-            <a href="#" onclick="neverShowNewsletter(); return false;" class="newsletter-never-show">
-                Don't show this again
-            </a>
-        </div>-->
     </div>
 </div>
 
@@ -80,15 +74,16 @@
 }
 
 .newsletter-header img {
-	max-width: 270px;
+    max-width: 270px;
     width: 75%;
     margin: 0 auto;
     display: block;
 }
+
 .newsletter-header h2 {
     margin: 0;
     font-size: 27px;
-	font-weight: 900;
+    font-weight: 900;
     letter-spacing: 1px;
 }
 
@@ -98,6 +93,7 @@
     font-size: 14px;
     font-weight: 500;
 }
+
 .newsletter-form input {
     width: 100%;
     padding: 10px 20px !important;
@@ -144,12 +140,9 @@
     .newsletter-header h2 {
         font-size: var(--title-lg);
     }
+    
     .newsletter-header p {
-    font-size: 12px;
-}
-    .newsletter-form .form-row {
-        flex-direction: column;
-        gap: 15px;
+        font-size: 12px;
     }
 }
 
@@ -168,25 +161,8 @@
         opacity: 1;
     }
 }
-.newsletter-footer {
-    text-align: center;
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
-}
-
-.newsletter-never-show {
-    color: #999;
-    font-size: 13px;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.newsletter-never-show:hover {
-    color: #333;
-    text-decoration: underline;
-}
 </style>
+
 <script>
 // Newsletter Popup Logic
 (function() {
@@ -197,54 +173,59 @@
     
     // Check if user has already subscribed or dismissed
     function checkSubscriptionStatus() {
-        const dontShowAgain = localStorage.getItem('newsletter_dont_show');
-        const dismissedUntil = localStorage.getItem('newsletter_dismissed_until');
-        
-        // Don't show if permanently dismissed
-        if (dontShowAgain) {
-            return;
-        }
-        
-        // Check if temporarily dismissed
-        if (dismissedUntil) {
-            const dismissedTime = parseInt(dismissedUntil);
-            const now = new Date().getTime();
-            
-            // If dismissed time hasn't passed, don't show
-            if (now < dismissedTime) {
-                return;
-            } else {
-                // Clear expired dismissal
-                localStorage.removeItem('newsletter_dismissed_until');
-            }
-        }
-        
-        // Check server-side session
+        // Check server-side session for login status and subscription
         fetch('<?= base_url('newsletter/check-status') ?>')
             .then(response => response.json())
             .then(data => {
-                if (!data.subscribed) {
-                    // Show popup after 3 seconds
-                    setTimeout(() => {
-                        showPopup();
-                    }, 3000);
+                // Don't show popup if user is logged in
+                if (data.logged_in) {
+                    console.log('User is logged in - popup will not be shown');
+                    return;
                 }
+                
+                // Don't show if already subscribed
+                if (data.subscribed) {
+                    console.log('User already subscribed - popup will not be shown');
+                    return;
+                }
+                
+                // Check localStorage for dismissal (once per day for non-logged-in users)
+                const lastShown = localStorage.getItem('newsletter_last_shown');
+                
+                if (lastShown) {
+                    const lastShownTime = parseInt(lastShown);
+                    const now = new Date().getTime();
+                    const oneDayInMs = 24 * 60 * 60 * 1000; // 24 hours
+                    
+                    // If less than 24 hours have passed, don't show
+                    if (now - lastShownTime < oneDayInMs) {
+                        const hoursLeft = Math.ceil((oneDayInMs - (now - lastShownTime)) / (60 * 60 * 1000));
+                        console.log('Popup was shown recently. Will show again in ' + hoursLeft + ' hours');
+                        return;
+                    }
+                }
+                
+                // All checks passed - show popup after 3 seconds
+                setTimeout(() => {
+                    showPopup();
+                }, 3000);
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error checking newsletter status:', error);
+            });
     }
     
     function showPopup() {
         popup.style.display = 'block';
         document.body.style.overflow = 'hidden';
+        
+        // Store the current timestamp when popup is shown
+        localStorage.setItem('newsletter_last_shown', new Date().getTime().toString());
     }
     
     window.closeNewsletterPopup = function() {
         popup.style.display = 'none';
         document.body.style.overflow = 'auto';
-        
-        // Store dismissal for 24 hours
-        const dismissedUntil = new Date().getTime() + (24 * 60 * 60 * 1000); // 24 hours
-        localStorage.setItem('newsletter_dismissed_until', dismissedUntil);
     }
     
     // Close popup when clicking outside
@@ -273,7 +254,8 @@
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        const submitBtn = form.querySelector('.newsletter-submit');
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
         submitBtn.disabled = true;
         submitBtn.textContent = 'Subscribing...';
         
@@ -295,11 +277,8 @@
                 messageDiv.textContent = data.message;
                 form.reset();
                 
-                // Set localStorage to not show again permanently
-                localStorage.setItem('newsletter_dont_show', 'true');
-                
-                // Remove temporary dismissal
-                localStorage.removeItem('newsletter_dismissed_until');
+                // Clear the "last shown" timestamp since user subscribed
+                localStorage.removeItem('newsletter_last_shown');
                 
                 // Close popup after 2 seconds
                 setTimeout(() => {
@@ -314,7 +293,7 @@
                     messageDiv.textContent = data.message || 'An error occurred. Please try again.';
                 }
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Subscribe';
+                submitBtn.textContent = originalText;
             }
         })
         .catch(error => {
@@ -323,26 +302,11 @@
             messageDiv.className = 'newsletter-message error';
             messageDiv.textContent = 'An error occurred. Please try again.';
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Subscribe';
+            submitBtn.textContent = originalText;
         });
     });
     
-    // Initialize
+    // Initialize - check if we should show the popup
     checkSubscriptionStatus();
 })();
-function neverShowNewsletter() {
-    // Set localStorage to never show again
-    localStorage.setItem('newsletter_dont_show', 'true');
-    
-    // Remove temporary dismissal
-    localStorage.removeItem('newsletter_dismissed_until');
-    
-    // Close popup
-    const popup = document.getElementById('newsletterPopup');
-    popup.style.display = 'none';
-    document.body.style.overflow = 'auto';
-    
-    // Optional: Show a brief message
-    alert('You will not see this popup again.');
-}
 </script>

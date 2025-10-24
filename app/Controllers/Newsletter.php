@@ -149,11 +149,23 @@ class Newsletter extends BaseController
 }
     
     public function checkStatus()
-    {
-        return $this->response->setJSON([
-            'subscribed' => session()->get('newsletter_subscribed') ?? false
-        ]);
+{
+    $isLoggedIn = false;
+    
+    // Check if user is logged in (adjust based on your auth system)
+    // Example for CodeIgniter's session-based auth:
+    if (session()->has('vr_sess_user_id')) {
+        $isLoggedIn = true;
     }
+    
+    // Or if you're using a different auth method:
+    // $isLoggedIn = $this->isUserLoggedIn();
+    
+    return $this->response->setJSON([
+        'subscribed' => session()->get('newsletter_subscribed') ?? false,
+        'logged_in' => $isLoggedIn
+    ]);
+}
     
     public function export()
     {

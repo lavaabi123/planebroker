@@ -44,9 +44,9 @@
                                         <a href="<?php echo base_url('admin/newsletter/export/csv'); ?>" class="btn btn-success">
                                             <i class="fas fa-file-csv"></i> Export CSV
                                         </a>
-                                        <!--<a href="<?php echo base_url('admin/newsletter/export/excel'); ?>" class="btn btn-info">
+                                        <a href="<?php echo base_url('admin/newsletter/export/excel'); ?>" class="btn btn-info">
                                             <i class="fas fa-file-excel"></i> Export Excel
-                                        </a>-->
+                                        </a>
                                     </div>
                                 </div>
                             </div>

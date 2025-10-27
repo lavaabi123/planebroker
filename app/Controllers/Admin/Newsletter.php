@@ -102,41 +102,39 @@ class Newsletter extends AdminController
      * Export as Excel (HTML table that Excel can open)
      */
     private function exportExcel($subscribers)
-    {
-        $filename = 'newsletter_subscribers_' . date('Y-m-d_His') . '.xls';
-        
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        
-        echo '<?xml version="1.0"?>';
-        echo '<ss:Workbook xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">';
-        echo '<ss:Worksheet ss:Name="Subscribers">';
-        echo '<ss:Table>';
-        
-        // Header row
-        echo '<ss:Row>';
-        echo '<ss:Cell><ss:Data ss:Type="String">First Name</ss:Data></ss:Cell>';
-        echo '<ss:Cell><ss:Data ss:Type="String">Last Name</ss:Data></ss:Cell>';
-        echo '<ss:Cell><ss:Data ss:Type="String">Email</ss:Data></ss:Cell>';
-        echo '<ss:Cell><ss:Data ss:Type="String">Subscribed Date</ss:Data></ss:Cell>';
-        echo '</ss:Row>';
-        
-        // Data rows
-        foreach ($subscribers as $subscriber) {
-            echo '<ss:Row>';
-            echo '<ss:Cell><ss:Data ss:Type="String">' . htmlspecialchars($subscriber['first_name']) . '</ss:Data></ss:Cell>';
-            echo '<ss:Cell><ss:Data ss:Type="String">' . htmlspecialchars($subscriber['last_name']) . '</ss:Data></ss:Cell>';
-            echo '<ss:Cell><ss:Data ss:Type="String">' . htmlspecialchars($subscriber['email']) . '</ss:Data></ss:Cell>';
-            echo '<ss:Cell><ss:Data ss:Type="String">' . htmlspecialchars($subscriber['subscribed_at']) . '</ss:Data></ss:Cell>';
-            echo '</ss:Row>';
-        }
-        
-        echo '</ss:Table>';
-        echo '</ss:Worksheet>';
-        echo '</ss:Workbook>';
-        
-        exit;
+{
+    $filename = 'newsletter_subscribers_' . date('Y-m-d_His') . '.xlsx';
+    
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    
+    require 'vendor/autoload.php';
+    
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+    $sheet->setTitle('Subscribers');
+    
+    // Header row
+    $sheet->setCellValue('A1', 'First Name');
+    $sheet->setCellValue('B1', 'Last Name');
+    $sheet->setCellValue('C1', 'Email');
+    $sheet->setCellValue('D1', 'Subscribed Date');
+    
+    // Data rows
+    $row = 2;
+    foreach ($subscribers as $subscriber) {
+        $sheet->setCellValue('A' . $row, $subscriber['first_name']);
+        $sheet->setCellValue('B' . $row, $subscriber['last_name']);
+        $sheet->setCellValue('C' . $row, $subscriber['email']);
+        $sheet->setCellValue('D' . $row, $subscriber['subscribed_at']);
+        $row++;
     }
+    
+    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+    $writer->save('php://output');
+    
+    exit;
+}
     
     /**
      * Delete a subscriber (optional)

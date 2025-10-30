@@ -235,7 +235,7 @@ function radio($name, $val){
 		    }else{
                 if(!empty($category_detail->description)){
                     echo '
-		<div class="mb-5 mt-3">';
+		<div class="mb-5 mt-3 rte-output">';
                      echo '<h4>'.$category_detail->skill_name.'</h4>';
 		             echo $category_detail->description;
 		             echo '</div>';

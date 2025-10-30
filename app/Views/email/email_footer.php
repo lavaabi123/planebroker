@@ -7,16 +7,16 @@
 				<img src="<?php echo base_url(); ?>/assets/img/email_images/tag.png">
 				<table align="center" cellspacing="15" style="padding: 20px 10px;">
 					<tr>
-						<?php if (!empty(get_general_settings()->facebook_url)) : ?><td><a href="<?php echo html_escape(get_general_settings()->facebook_url); ?>" target="_blank"><img src="<?php echo base_url(); ?>/assets/img/email_images/facebook.png" /></a></td><?php endif; ?>	
-						<?php if (!empty(get_general_settings()->instagram_url)) : ?><td><a href="<?php echo html_escape(get_general_settings()->pinterest_url); ?>" target="_blank"><img src="<?php echo base_url(); ?>/assets/img/email_images/instagram.png" /></a></td><?php endif; ?>	
-						<?php if (!empty(get_general_settings()->twitter_url)) : ?><td><a href="<?php echo html_escape(get_general_settings()->twitter_url); ?>" target="_blank"><img src="<?php echo base_url(); ?>/assets/img/email_images/x.png" /></a></td><?php endif; ?>	
+						<?php if (!empty(get_general_settings()->facebook_url) && get_general_settings()->facebook_url != '#') : ?><td><a href="<?php echo html_escape(get_general_settings()->facebook_url); ?>" target="_blank"><img src="<?php echo base_url(); ?>/assets/img/email_images/facebook.png" /></a></td><?php endif; ?>	
+						<?php if (!empty(get_general_settings()->instagram_url) && get_general_settings()->instagram_url != '#') : ?><td><a href="<?php echo html_escape(get_general_settings()->instagram_url); ?>" target="_blank"><img src="<?php echo base_url(); ?>/assets/img/email_images/instagram.png" /></a></td><?php endif; ?>	
+						<?php if (!empty(get_general_settings()->twitter_url) && get_general_settings()->twitter_url != '#') : ?><td><a href="<?php echo html_escape(get_general_settings()->twitter_url); ?>" target="_blank"><img src="<?php echo base_url(); ?>/assets/img/email_images/x.png" /></a></td><?php endif; ?>	
 						
-						<?php if (!empty(get_general_settings()->linkedin_url)) : ?><td><a href="<?php echo html_escape(get_general_settings()->linkedin_url); ?>" target="_blank"><img src="<?php echo base_url(); ?>/assets/img/email_images/linkedin.png" /></a></td><?php endif; ?>						
-						<?php if (!empty(get_general_settings()->tiktok_url)) : ?><td><a href="<?php echo html_escape(get_general_settings()->tiktok_url); ?>" target="_blank"><img src="<?php echo base_url(); ?>/assets/img/email_images/tiktok.png" /></a></td><?php endif; ?>				
+						<?php if (!empty(get_general_settings()->linkedin_url) && get_general_settings()->linkedin_url != '#') : ?><td><a href="<?php echo html_escape(get_general_settings()->linkedin_url); ?>" target="_blank"><img src="<?php echo base_url(); ?>/assets/img/email_images/linkedin.png" /></a></td><?php endif; ?>						
+						<?php if (!empty(get_general_settings()->tiktok_url) && get_general_settings()->tiktok_url != '#') : ?><td><a href="<?php echo html_escape(get_general_settings()->tiktok_url); ?>" target="_blank"><img src="<?php echo base_url(); ?>/assets/img/email_images/tiktok.png" /></a></td><?php endif; ?>				
 						
 						
-						<?php if (!empty(get_general_settings()->youtube_url)) : ?><td><a href="<?php echo html_escape(get_general_settings()->youtube_url); ?>" target="_blank"><img src="<?php echo base_url(); ?>/assets/img/email_images/youtube.png" /></a></td><?php endif; ?>	
-						<?php if (!empty(get_general_settings()->pinterest_url)) : ?><td><a href="<?php echo html_escape(get_general_settings()->pinterest_url); ?>" target="_blank"><img src="<?php echo base_url(); ?>/assets/img/email_images/pinterest.png" /></a></td><?php endif; ?>	
+						<?php if (!empty(get_general_settings()->youtube_url) && get_general_settings()->youtube_url != '#') : ?><td><a href="<?php echo html_escape(get_general_settings()->youtube_url); ?>" target="_blank"><img src="<?php echo base_url(); ?>/assets/img/email_images/youtube.png" /></a></td><?php endif; ?>	
+						<?php if (!empty(get_general_settings()->pinterest_url) && get_general_settings()->pinterest_url != '#') : ?><td><a href="<?php echo html_escape(get_general_settings()->pinterest_url); ?>" target="_blank"><img src="<?php echo base_url(); ?>/assets/img/email_images/pinterest.png" /></a></td><?php endif; ?>	
 					</tr>
 				</table>
 				<img src="<?php echo base_url(); ?>/assets/img/email_images/logo.png" width="320px">

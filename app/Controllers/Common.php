@@ -660,19 +660,6 @@ class Common extends BaseController
 			'to' => get_general_settings()->mail_reply_to,
             'template_path'     => "email/admin/new_user",
         );
-		/*$message_cus        = "<p>Dear ".$name.",</p><p>Thank you for choosing <a href='".base_url()."'>planebroker.com!</a> Your message has been received, and we are pleased to confirm that your designated owner, ".( !empty($product_detail['business_name']) ? $product_detail['business_name'] : $user_detail->business_name).", will be in touch with you shortly. They will address any questions you may have, discuss your needs, and finalize the details to ensure a seamless buying experience.</p><p>Thank you!</p>";
-		
-		$additional = $this->ProductModel->get_products($category_name='all',$where='','RAND() LIMIT 3');
-		
-		$data_customer = array(
-            'subject'           => "Message Received - planebroker.com",//$subject,
-            'message_text'      => $message_cus,
-			'from_email' => get_general_settings()->mail_reply_to,
-			'to' => $email,
-            'template_path'     => "email/email_send_message",
-			'product_detail'=>$product_detail,
-			'additional'=>$additional
-        );*/
 		
         $emailModel = new EmailModel();
 		
@@ -716,14 +703,29 @@ class Common extends BaseController
 			$emailContent = str_replace($key, $value, $emailContent);
 		}
 		$emailModel = new EmailModel();
+		
+		$message_cus        = "<p>Dear ".$name.",</p><p>Thank you for choosing <a href='".base_url()."'>planebroker.com!</a> Your message has been received, and we are pleased to confirm that your designated owner, ".( !empty($product_detail['business_name']) ? $product_detail['business_name'] : $user_detail->business_name).", will be in touch with you shortly. They will address any questions you may have, discuss your needs, and finalize the details to ensure a seamless buying experience.</p><p>Thank you!</p>";
+		
+		$additional = $this->ProductModel->get_products($category_name='all',$where='','RAND() LIMIT 3');
+		
 		$data_customer = array(
+            'subject'           => "Thank you for contacting",//$subject,
+            'message_text'      => $message_cus,
+			'from_email' => get_general_settings()->mail_reply_to,
+			'to' => $email,
+            'template_path'     => "email/email_send_message",
+			'product_detail'=>$product_detail,
+			'additional'=>$additional
+        );
+		
+		/*$data_customer = array(
 			'subject' => $get_email_content['name'],
 			'content' => $emailContent,
 			'to' => $email,
 			'from_email' => !empty($product_detail['email']) ? $product_detail['email'] : $user_detail->email,
 			'from_name' => !empty($user_detail->fullname) ? $user_detail->fullname : '',
 			'template_path' => "email/email_content",
-		);
+		);*/
         $emailModel->send_email($data_customer);
 		
 		

@@ -27,19 +27,21 @@
 							<table width="100%" cellpadding="5" cellspacing="0" style="text-align:left;">
 							<tr>
 							<?php foreach($additional as $cat){ ?>
-								<td>
-									<img src="<?php echo !empty($cat['image']) ? $cat['image'] : 'images/plane1.png'; ?>" style="width: 100%;border-radius: 15px; overflow: hidden;" />
+								<td width="33.3%" style="vertical-align: top;">
+									<a href="<?php echo base_url('/listings/'.$cat['permalink'].'/'.$cat['id'].'/'.(!empty($cat['name'])?str_replace(' ','-',strtolower($cat['name'])):'')); ?>" style="text-decoration:none;">
+									<img src="<?php echo !empty($cat['image']) ? $cat['image'] : 'images/plane1.png'; ?>" style="width: 100%;border-radius: 15px; overflow: hidden;aspect-ratio: 3 / 2;" />
 									<h4 style="margin:10px 0 0;color: #07163a;"><?php echo !empty($cat['name']) ? $cat['name'] : '-'; ?></h4>
 									<h4 style="margin:0; color: #f89f1e;"><?php echo !empty($cat['sub_cat_name']) ? $cat['sub_cat_name'] : '-'; ?></h4>
 									<p style="margin:0;color:#8f8f8f;"><?php echo !empty($cat['address']) ? $cat['address'] : '-'; ?> </p>
 									<h4 style="color: #07163a;"><?php echo ($cat['price'] != NULL) ? 'USD $'.number_format($cat['price'], 2, '.', ',') : 'Call for Price'; ?></h4>
+									</a>
 								</td>
 							<?php } ?>
 							</tr>
 							</table>						
 							</div>
 							<?php } ?>
-							<a href="#" style=" background: #f89f1e; letter-spacing:1px; display: block; font-weight: 700; text-decoration: none; color: #ffffff; padding: 12px; border-radius: 25px;">VIEW ALL LISTINGS</a>
+							<a href="<?php echo base_url('/listings/aircraft-for-sale'); ?>" style=" background: #f89f1e; letter-spacing:1px; display: block; font-weight: 700; text-decoration: none; color: #ffffff; padding: 12px; border-radius: 25px;">VIEW ALL LISTINGS</a>
 						</td>
 					</tr>
 				</table>

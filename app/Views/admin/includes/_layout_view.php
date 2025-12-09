@@ -55,6 +55,80 @@
         var sys_lang_id = "<?php echo get_langguage_id(get_general_settings()->site_lang)->id; ?>";
     </script>    
     <script src="<?php echo base_url(); ?>/assets/admin/js/custom.js?v=1.3"></script>
+	<style>
+	/* Fix TinyMCE dialog z-index when inside Bootstrap modal */
+.tox-tinymce-aux,
+.tox.tox-silver-sink.tox-tinymce-aux {
+    z-index: 990060 !important;
+}
+
+.tox-dialog-wrap {
+    z-index: 990061 !important;
+}
+
+.tox-dialog {
+    z-index: 990062 !important;
+}
+
+.tox-dialog-wrap__backdrop {
+    z-index: 990059 !important;
+}
+
+/* Ensure inputs in TinyMCE dialog are clickable */
+Good progress! The text fields work but the dropdown doesn't. Let's fix the dropdown as well by adding more specific CSS and event handling:
+Update your CSS with these additional rules:
+css/* Fix TinyMCE dialog z-index when inside Bootstrap modal */
+.tox-tinymce-aux,
+.tox.tox-silver-sink.tox-tinymce-aux {
+    z-index: 10060 !important;
+}
+
+.tox-dialog-wrap {
+    z-index: 10061 !important;
+}
+
+.tox-dialog {
+    z-index: 10062 !important;
+}
+
+.tox-dialog-wrap__backdrop {
+    z-index: 10059 !important;
+}
+
+/* Ensure inputs in TinyMCE dialog are clickable */
+.modal-open .tox-dialog input,
+.modal-open .tox-dialog textarea,
+.modal-open .tox-dialog select,
+.modal-open .tox-dialog button {
+    pointer-events: auto !important;
+}
+/* Fix for TinyMCE dropdown menus */
+.tox-collection,
+.tox-collection__group,
+.tox-collection__item,
+.tox-menu,
+.tox-listboxfield,
+.tox-selectfield select {
+    pointer-events: auto !important;
+}
+
+/* Ensure dropdown list appears above everything */
+.tox-collection,
+.tox-menu {
+    z-index: 10063 !important;
+}
+
+/* Fix select box wrapper */
+.tox-selectfield {
+    pointer-events: auto !important;
+}
+
+.tox-listbox,
+.tox-listbox__select-label,
+.tox-listbox__select-chevron {
+    pointer-events: auto !important;
+}
+</style>
 </head>
 
 <body class="hold-transition sidebar-mini <?php echo check_dark_mode_enabled() ? 'dark-mode' : '' ?> layout-fixed layout-footer-fixed layout-navbar-fixed">
@@ -409,35 +483,42 @@ $(function () {
 <script>
 tinymce.init({
   selector: '.show_text_editor',
-  // license_key: 'gpl', // keep if you're on the OSS build
-  menubar: false,                 // set true if you want the top menus
-  plugins: 'lists advlist image autolink autoresize codesample emoticons link media pagebreak preview searchreplace table visualblocks wordcount nonbreaking',
+  menubar: false,
+  plugins: 'lists advlist image autolink autoresize codesample emoticons link media pagebreak preview searchreplace table visualblocks wordcount',
   toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image table | removeformat',
-  toolbar_mode: 'wrap',           // so icons don’t disappear on small widths
-  // optional: extra list styles
+  toolbar_mode: 'wrap',
   advlist_bullet_styles: 'default circle disc square',
   advlist_number_styles: 'default lower-alpha lower-roman upper-alpha upper-roman',
   statusbar: false,
+  promotion: false,
+  
+  link_default_target: '_self',
+  link_title: true,
+  target_list: [
+    {text: 'Current window', value: ''},
+    {text: 'New window', value: '_blank'}
+  ],
+  
   setup(editor) {
     editor.on('init', () => {
-      // pull the data-label from the source <textarea>
-      const src = editor.targetElm;            // original textarea
+      const src = editor.targetElm;
       const label = src.getAttribute('data-label') || '';
       const body = editor.getBody();
       body.setAttribute('data-inline-label', label);
     });
   },
+  
   content_css: ['<?php echo base_url(); ?>/assets/rte-content.css'],
   content_style: `
-    body { line-height: 1.25; }           /* overall line height */
-    p { margin: 0.25em 0; }               /* less space between paragraphs */
+    body { line-height: 1.25; }
+    p { margin: 0.25em 0; }
     ul,ol { margin: 0.25em 0 0.25em 1.25em; padding-left: 1.25em; }
-    li { margin: 0.15em 0; }              /* tighter list items */
+    li { margin: 0.15em 0; }
     h1,h2,h3,h4,h5,h6 { margin: .6em 0 .3em; }	
-	html,body{background:#fff}
+    html,body{background:#fff}
     body{
       position:relative;
-      padding-top:24px; /* room for the label */
+      padding-top:24px;
       font-family:system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       font-size:14px;
     }
@@ -446,16 +527,31 @@ tinymce.init({
       position:absolute;
       top:4px;
       font-size:12px;
-      color:#667085;         /* subtle grey */
+      color:#667085;
       font-weight:600;
-      pointer-events:none;   /* never selectable */
+      pointer-events:none;
       line-height:1;
     }
-    /* optional: show stronger color when editor focused */
     body.mce-content-focus:before{
       color:#111827;
     }
   `
+});
+// Fix Bootstrap modal interference with TinyMCE dialogs
+$(document).on('focusin', function(e) {
+    if ($(e.target).closest(".tox-dialog, .moxman-window, .tam-assetmanager-root").length) {
+        e.stopImmediatePropagation();
+    }
+});
+
+// When the categories modal opens, remove tabindex to allow TinyMCE dialogs to work
+$('#modal-categories').on('shown.bs.modal', function() {
+    $(this).removeAttr('tabindex');
+});
+
+// When the categories modal closes, restore tabindex
+$('#modal-categories').on('hidden.bs.modal', function() {
+    $(this).attr('tabindex', '-1');
 });
 </script>
 <style>

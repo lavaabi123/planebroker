@@ -749,7 +749,9 @@ foreach ($uploadedFiles as $groupKey => $fileGroup) {
 					'to' => $p_detail['email'],
 					'template_path' => "email/email_content",
 				);
-				$emailModel->send_email($data_email);
+				if(!empty($p_detail['email'])){
+					//$emailModel->send_email($data_email);
+				}
 			}
 			$update_data = $this->db->table('products')->where('id', $id)->update($data);
 			$save_id = $id;

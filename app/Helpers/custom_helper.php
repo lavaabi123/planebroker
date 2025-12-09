@@ -904,6 +904,14 @@ function getFirstName($user_id)
         ->get()->getRow();
     return $user_detail->first_name;
 }
+function getFullName($user_id)
+{
+    $db       = \Config\Database::connect();
+    $user_detail  = $db->table('users')->select('fullname')
+        ->where(['users.id' => $user_id])
+        ->get()->getRow();
+    return $user_detail->fullname;
+}
 
 function getUserLevel($user_id)
 {

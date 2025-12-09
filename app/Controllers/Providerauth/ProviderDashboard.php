@@ -1321,13 +1321,13 @@ else if($this->request->getVar('check') == '3'){
         $customer = Customer::create([
             'email' => $this->session->get('vr_sess_user_email'),
 			'source' => $token,
-			'name' => 'Amit Sharma',
+			'name' => getFullName($this->session->get('vr_sess_user_id')),
 			'address' => [
 				'line1' => '123 MG Road',
-				'city' => 'Mumbai',
-				'state' => 'MH',
-				'postal_code' => '400001',
-				'country' => 'IN',
+				'city' => 'Las Vegas',
+				'state' => 'NV',
+				'postal_code' => '10001',
+				'country' => 'US',
 			],
 			
         ]);

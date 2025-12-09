@@ -21,7 +21,7 @@
                 <?php else : ?>
 				<div class="form-section">
                     <div class="form-group mb-3">
-                        <input type="password" name="password" class="form-control form-input" value="<?php echo old("password"); ?>" placeholder="<?php echo trans("form_password"); ?>" required>
+                        <input type="password" name="password" id="password" class="form-control form-input" value="<?php echo old("password"); ?>" placeholder="<?php echo trans("form_password"); ?>" required>
                     </div>
 
                     <div class="form-group mb-3">

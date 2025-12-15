@@ -714,6 +714,9 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 	</script>
 	<?php if($uri->getTotalSegments() >= (env('urlsegment')-1) && ($uri->getSegment(env('urlsegment')-1) == 'checkout' || $uri->getSegment(env('urlsegment')-1) == 'update-card'  || $uri->getSegment(env('urlsegment')-1) == 'billing')) { ?>
+		<script>
+			var STRIPE_PUBLIC_KEY = '<?= getenv('stripe.key') ?>';
+		</script>
 		<script src="https://js.stripe.com/v3/" ></script>
 		<script src="<?php echo base_url(); ?>/assets/frontend/js/charge.js"></script>
 	<?php } ?>

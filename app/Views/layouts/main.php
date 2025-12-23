@@ -4,7 +4,6 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
     <title><?php echo !empty($meta_title) ? $meta_title : 'Find a Plane Broker Near You!'; ?></title>
     <meta name="description" content="<?php echo !empty($meta_desc) ? $meta_desc : 'Plane Broker is built for aircraft owners, buyers, and sellers who want a smarter, more straightforward way to navigate the market. Whether you\'re listing a single aircraft or searching for your next one, our platform gives you the tools to take off with confidence.'; ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -75,6 +74,9 @@ if (!empty($blogimage)) {
         
     </style>
 	<style>
+.rte-output a{
+	color: var(--primary) !important;
+}
 	.ss-main .ss-single-selected {
   transition: color 0.2s ease;
 }
@@ -139,7 +141,6 @@ if (!empty($blogimage)) {
     </script>
     <script src="<?php echo base_url(); ?>/assets/frontend/js/custom-frontend.js?version=2.0"></script>
     
-
 </head>
 <?php $uri = current_url(true);?>
 <body class="hold-transition <?php echo (session()->get('vr_sess_logged_in') == TRUE) ? ' logged-in ' : ''; ?> <?php echo (base_url() == str_replace('/index.php/','',$uri)) ? 'home' : ''; ?> " >
@@ -714,9 +715,9 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 	</script>
 	<?php if($uri->getTotalSegments() >= (env('urlsegment')-1) && ($uri->getSegment(env('urlsegment')-1) == 'checkout' || $uri->getSegment(env('urlsegment')-1) == 'update-card'  || $uri->getSegment(env('urlsegment')-1) == 'billing')) { ?>
-		<script>
-			var STRIPE_PUBLIC_KEY = '<?= getenv('stripe.key') ?>';
-		</script>
+	<script>
+        var STRIPE_PUBLIC_KEY = '<?= getenv('stripe.key') ?>';
+    </script>
 		<script src="https://js.stripe.com/v3/" ></script>
 		<script src="<?php echo base_url(); ?>/assets/frontend/js/charge.js"></script>
 	<?php } ?>
@@ -1054,6 +1055,7 @@ $(function () {
         if (sel) new SlimSelect({ select: sel });
       }
     });
+    
     dt.on('page.dt', function () {
         //if (window.innerWidth < 768) { // run only on mobile
             $('html, body').animate({

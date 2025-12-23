@@ -904,6 +904,7 @@ function getFirstName($user_id)
         ->get()->getRow();
     return $user_detail->first_name;
 }
+
 function getFullName($user_id)
 {
     $db       = \Config\Database::connect();

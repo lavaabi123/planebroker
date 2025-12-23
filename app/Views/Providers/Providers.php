@@ -227,7 +227,7 @@ function radio($name, $val){
 		    if(!empty($_GET['from'])){
 		         if(!empty($sub_category_des)){
 		             echo '
-		<div class="mb-5 mt-3">';
+		<div class="mb-5 mt-3 rte-output">';
 		             echo '<h4>'.$sub_category_name.'</h4>';
 		             echo $sub_category_des;
 		             echo '</div>';
@@ -962,6 +962,9 @@ $(document).ready(function () {
 })();
 </script>
 <style>
+.rte-output p {
+    margin: 0 !important;
+}
 .hidden-filter {
     display: none;
 }

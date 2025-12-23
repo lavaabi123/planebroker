@@ -443,7 +443,6 @@
 		</div>
 	</div>
 </div>
-
 <?= view('partials/newsletter_popup'); ?>
 <style>
 .testimonial{

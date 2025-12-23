@@ -1171,10 +1171,10 @@ else if($this->request->getVar('check') == '3'){
 
 				// Retrieve the invoice associated with the subscription
 				$invoice = \Stripe\Invoice::retrieve($subscription->latest_invoice);
-				
+				//echo "<pre>";print_r($invoice);exit;
 				$stripe_subscription_id               = $invoice->subscription;
 				$stripe_subscription_customer_id      = $invoice->customer;
-				$stripe_subscription_price_id         = $invoice->lines->data[0]->price->id;
+				$stripe_subscription_price_id         = !empty($invoice->lines->data[0]->pricing->price_details->price) ? $invoice->lines->data[0]->pricing->price_details->price : '';
 
 				$stripe_subscription_amount_paid      = $invoice->amount_paid;
 				$stripe_subscription_amount_paid      = number_format($stripe_subscription_amount_paid / 100, 2, '.', '');
@@ -1191,7 +1191,7 @@ else if($this->request->getVar('check') == '3'){
 				
 				$data_insert = [
 					'user_id'                         => $user_id,
-					'stripe_subscription_id'          => $stripe_subscription_id,
+					'stripe_subscription_id'          => $subscriptionId,
 					'stripe_subscription_customer_id' => $stripe_subscription_customer_id,
 					'stripe_subscription_price_id'    => $stripe_subscription_price_id,
 					'stripe_subscription_amount_paid' => $stripe_subscription_amount_paid,
@@ -1228,7 +1228,7 @@ else if($this->request->getVar('check') == '3'){
 								'stripe_subscription_customer_id' => $stripe_subscription_customer_id,
 								'stripe_invoice_id'               => $stripe_invoice_id,
 								'stripe_subscription_price_id'    => $stripe_subscription_price_id,
-								'stripe_subscription_id'          => $stripe_subscription_id,
+								'stripe_subscription_id'          => $subscriptionId,
 								'stripe_subscription_start_date'  => $stripe_subscription_start_date,
 								'stripe_subscription_end_date'    => $stripe_subscription_end_date,
 								'stripe_subscription_item_id'     => $subscriptionItemId,

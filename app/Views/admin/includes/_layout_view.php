@@ -55,7 +55,7 @@
         var sys_lang_id = "<?php echo get_langguage_id(get_general_settings()->site_lang)->id; ?>";
     </script>    
     <script src="<?php echo base_url(); ?>/assets/admin/js/custom.js?v=1.3"></script>
-	<style>
+    <style>
 	/* Fix TinyMCE dialog z-index when inside Bootstrap modal */
 .tox-tinymce-aux,
 .tox.tox-silver-sink.tox-tinymce-aux {
@@ -129,6 +129,7 @@ css/* Fix TinyMCE dialog z-index when inside Bootstrap modal */
     pointer-events: auto !important;
 }
 </style>
+
 </head>
 
 <body class="hold-transition sidebar-mini <?php echo check_dark_mode_enabled() ? 'dark-mode' : '' ?> layout-fixed layout-footer-fixed layout-navbar-fixed">
@@ -481,6 +482,7 @@ $(function () {
 
 
 <script>
+
 tinymce.init({
   selector: '.show_text_editor',
   menubar: false,

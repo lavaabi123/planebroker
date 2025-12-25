@@ -45,6 +45,7 @@
                                                     <th width="200px"><?php echo trans('Stripe ID'); ?></th>
                                                     <th><?php echo trans('Status'); ?></th>
                                                     <th><?php echo trans('Recommended?'); ?></th>
+                                                    <th><?php echo trans('Trial Allowed?'); ?></th>
                                                     <th class="permission_show text-center max-width-120"><?php echo trans('options'); ?></th>
                                                 </tr>
                                             </thead>
@@ -57,6 +58,7 @@ if($subscription['id'] != 999){												?>
                                                         <td style="word-break: break-all;"><?php echo $subscription['stripe_price_id']; ?> </td>
                                                         <td><?php echo ($subscription['status'] == 1) ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>'; ?> </td>
                                                         <td><?php echo ($subscription['is_recommended'] == 1) ? '<span class="badge bg-success">Yes</span>' : '<span class="badge bg-danger">No</span>'; ?> </td>
+														<td><?php echo ($subscription['is_trial_allowed'] == 1) ? '<span class="badge bg-success">Yes</span>' : '<span class="badge bg-danger">No</span>'; ?> </td>
                                                         <td class="permission_show">
                                                             <div class="dropdown btn-group">
                                                                 <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

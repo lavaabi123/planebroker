@@ -29,7 +29,7 @@
 					<a></a>
 					<?php }else{ ?>					
 					<?php 
-					if((empty($user_trial_detail) || !in_array($plan->id,explode(',',$user_trial_detail->plan_ids))) && empty($_GET['sale_id'])){ ?>
+					if((empty($user_trial_detail) || !in_array($plan->id,explode(',',$user_trial_detail->plan_ids))) && empty($_GET['sale_id']) && $plan->is_trial_allowed == 1){ ?>
 					<a href="<?php echo base_url('/select-plan?id='.$plan->id.'&type=trial'.$query); ?>" class="btn min-w-auto w-100 py-3">Start Free Trial</a>
 					<?php }else{ ?>
 						<a href="<?php echo base_url('/select-plan?id='.$plan->id.''.$query); ?>" class="btn min-w-auto w-100 py-3"><?php echo 'Select';  ?></a>
@@ -48,7 +48,7 @@
 					<a href="javascript:void(0);" class="btn min-w-auto w-100 py-3">CURRENT PLAN</a>
 					<a></a>
 					<?php }else{ ?>					
-					<?php if((empty($user_trial_detail) || !in_array($plan->id,explode(',',$user_trial_detail->plan_ids))) && empty($_GET['sale_id'])){  ?>
+					<?php if((empty($user_trial_detail) || !in_array($plan->id,explode(',',$user_trial_detail->plan_ids))) && empty($_GET['sale_id']) && $plan->is_trial_allowed ==1){  ?>
 					<a href="<?php echo base_url('/select-plan?id='.$plan->id.'&type=trial'.$query); ?>" class="btn min-w-auto w-100 py-3">Start Free Trial</a>
 					<p class="fw-bold mt-4 text-orange">30 Day Free Trial</p>
 					<?php }else{ ?>

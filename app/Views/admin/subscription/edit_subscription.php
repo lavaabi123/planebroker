@@ -143,6 +143,17 @@
 							<div class="row">
 								<div class="col-6">
 									<div class="form-group mb-3">
+										<label><?php echo trans("Trial Allowed?"); ?><span class="required"> *</span></label>
+										<select name="is_trial_allowed" class="form-control auth-form-input" required>
+											<option value="0" <?php echo ($subscription->is_trial_allowed == 1) ? 'selected':''; ?>>No</option>
+											<option value="1" <?php echo ($subscription->is_trial_allowed == 1) ? 'selected':''; ?>>Yes</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-6">
+									<div class="form-group mb-3">
 										<label class=""><?php echo trans("Status"); ?><span class="required"> *</span></label>
 										<select name="status" class="form-control" required>
 										<option value="1" <?php echo ($subscription->status == 1) ? 'selected':''; ?>>Active</option>

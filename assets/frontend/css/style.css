@@ -2178,6 +2178,27 @@ span.save-listing
     margin-right: 10px;
 	font-size: 24px;
 }
+.recent-posts li {
+    padding-left: 14px;
+    position: relative;
+    margin-bottom: 6px;
+}
+.recent-posts li:before {
+    content: "-";
+    position: absolute;
+    left: 0;
+}
+.recent-posts li a {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--d-blue);
+}
+.recent-posts li:hover a {
+    color: var(--primary);
+}
+.recent-posts li:hover:before {
+    color: var(--primary);
+}
 @media(min-width:768px) {
 .left-section {
     width: 30%;

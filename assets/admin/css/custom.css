@@ -1116,6 +1116,11 @@ a {
 #custom-tabs-four-tabContent textarea.form-control {
     height: auto;
 }
+input.error + label.error {
+    position: absolute;
+    bottom: -4px;
+    font-size: 11px;
+}
 .form-group .bootstrap-tagsinput {
     background-color: #f2f2f2;
     box-shadow: none;
@@ -1435,13 +1440,20 @@ body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-head
 .modal {
 	--bs-modal-zindex: 99999;
 }
+button.close {
+    opacity: 1;
+}
 /** SWAL POPUP **/
 div:where(.swal2-icon).swal2-warning {
     border-color: var(--primary) !important;
     color: var(--primary) !important;
 }
+body.swal2-toast-shown .swal2-container {
+    z-index: 99999;
+}
 div:where(.swal2-container) div:where(.swal2-popup) {
     border-radius: var(--bs-border-radius-xxl) !important;
+	z-index:9999999;
  }
  .swal2-container h2 {
     color: #000000;
@@ -1527,4 +1539,42 @@ input.ui-autocomplete-loading {
 }
 .form-group {
     margin-bottom: 0;
+}
+#provider-message-content {
+	margin-bottom: 0;
+    border: 1px solid #eeee;
+    border-radius: 30px;
+    overflow: hidden;
+}
+#provider-message-content table.table {
+    border-radius: 20px;
+    margin-bottom: 0;
+}
+#notifDropdown {
+    margin-right: 15px;
+}
+#notifDropdown img {
+    height: 100%;
+}
+#notifDropdown .dropdown-toggle::after {
+	display: none;
+}
+#notifDropdown button {
+    text-decoration: none;
+}
+/* Scrollbar width */
+#notifDropdown .dropdown-menu::-webkit-scrollbar {
+  width: 2px;  /* Vertical scrollbar */
+}
+
+/* Track (background) */
+#notifDropdown .dropdown-menu::-webkit-scrollbar-track {
+  background: #ffffff;
+    border-radius: 0;
+    margin: 35px 0;
+}
+
+/* Handle (draggable part) */
+#notifDropdown .dropdown-menu::-webkit-scrollbar-thumb {
+      background: var(--b-blue);
 }

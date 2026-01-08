@@ -140,7 +140,7 @@ $(document).on('blur', '#website,#facebook,#linkedin,#instagram,#tiktok_link,#yo
   //$(this).val(normalized);
 });
 // Auto-format (xxx) xxx-xxxx without blocking typing
-$('#mobile_no').on('input', function () {
+$('#mobile_no,#phone').on('input', function () {
   const el = this;
 
   // keep only digits, hard-limit to 10
@@ -364,6 +364,9 @@ $.validator.addMethod('mceRequired', function (value, element) {
   return $.trim(value || '') !== '';
 });
 
+$.validator.addMethod("tenDigits", function (value, element) {
+  return this.optional(element) || value.replace(/\D/g, '').length === 10;
+}, "Please enter a valid 10-digit phone number.");
 /* =========================
    2) jQuery Validate init
 ========================= */
@@ -371,6 +374,15 @@ $form.validate({
   // IMPORTANT: we must validate the hidden originals (SS + TinyMCE)
   ignore: [],
 
+  rules: {
+    phone: {
+    tenDigits: true,
+    minlength: 10,
+    maxlength: 10,
+    normalizer: function (value) {
+      return value.replace(/\D/g, ''); // keeps only digits
+    }
+    }},
   errorElement: 'label',
   errorClass: 'error-border',
 
@@ -451,9 +463,21 @@ success: function (label, element) {
   },
   rules: {
     password: { minlength: 12 },
-    mobile_no: { }
+    phone: {
+    tenDigits: true,
+    minlength: 10,
+    maxlength: 10,
+    normalizer: function (value) {
+      return value.replace(/\D/g, ''); // keeps only digits
+    }
+    }
   },
-  messages: {}
+  messages: {
+	phone: {
+      minlength: "Enter exactly 10 digits.",
+      maxlength: "Enter exactly 10 digits."
+    }
+  }
 });
 // --- Location fields wiring ---
 const $locMirror = $form.find('#cityState');                      // do NOT validate this

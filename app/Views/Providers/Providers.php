@@ -452,35 +452,34 @@ function fetchProducts(opts = {}) {
         return params.toString();                        // "cat=A|B&price=..."
     }
 $(function () {
+    fetchProducts({ preserveExisting: true });  // first load
 
-    fetchProducts({ preserveExisting: true });                                 // first load
-
-    // run on *any* change inside the filter panel
-    $('#searchFilter').on('input change', 'input,select', debounce(function () {
-  fetchProducts({ preserveExisting: false });  // always rebuild from form only
-}, 350));
-	$('#searchFilter').on('change', 'input[type="radio"][name="sort_by"]', function () {
-		fetchProducts({ preserveExisting: false });                   // run immediately on click
-	});
-
-
-    // keep any “Search” buttons from doing a full‑page submit
-    $('#searchFilter').on('click', '.btn', function (e) {
-        e.preventDefault();
-        fetchProducts();
+    // TEXT INPUTS (state) - 800ms debounce
+    $('#searchFilter').on('input', 'input[type="text"]', debounce(function () {
+        fetchProducts({ preserveExisting: false });
+    }, 1000)); // ⬆️ Longer wait for text
+    
+    // CHECKBOXES - 250ms (fast response)
+    $('#searchFilter').on('change', 'input[type="checkbox"], select', debounce(function () {
+        fetchProducts({ preserveExisting: false });
+    }, 250));
+    
+    // SORT & APPLY - IMMEDIATE
+    $('#searchFilter').on('change', 'input[type="radio"][name="sort_by"]', function () {
+        fetchProducts({ preserveExisting: false });
     });
 
-    /* -------------------------------------------------- */
+    $('#searchFilter').on('click', '.btn, .apply-filter-btn', function (e) {
+        e.preventDefault();
+        if (window.filterDebounceTimer) clearTimeout(window.filterDebounceTimer);
+        fetchProducts({ preserveExisting: false });
+    });
 
-    /* -------------------------------------------------- */
-    /* Turn the form into a ?foo=bar|baz&min=10&max=99…   */
-
-    /* 🔹 simple debounce helper so we don’t flood requests */
     function debounce(fn, delay) {
         let id;
         return function () {
             clearTimeout(id);
-            id = setTimeout(fn, delay);
+            window.filterDebounceTimer = id = setTimeout(fn, delay);
         };
     }
 });
@@ -501,6 +500,10 @@ $(document).on('click', '#appliedFilters .remove-filter', function () {
     $(`#searchFilter input[name="${name}[]"], #searchFilter input[name="${name}"]`).val('');
     $('#searchFilter input[name="price_static[]"], #searchFilter input[name="price_static"]').prop('checked', false);
   }
+  if (name === 'state') {
+		$('#searchFilter #state').val('');
+		$('#searchFilter input[name="state"]').val('');
+	}
   if (name === 'keywords') {
     $('#mySearchForm input[name="keywords"]').val('');
 	$('#mySearchForm2 input[name="keywords"]').val('');
@@ -960,6 +963,7 @@ $(document).ready(function () {
     loadManufacturers();
   }
 })();
+
 </script>
 <style>
 .rte-output p {

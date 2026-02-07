@@ -461,4 +461,123 @@ class Home extends BaseController
 		}
 		echo "success";exit;
 	}
+		
+	private function sanitizeFileName($filename)
+	{
+		$extension = pathinfo($filename, PATHINFO_EXTENSION);
+		$nameWithoutExt = pathinfo($filename, PATHINFO_FILENAME);
+		
+		// Replace spaces with underscores
+		$nameWithoutExt = str_replace(' ', '_', $nameWithoutExt);
+		
+		// Replace %20 if present
+		$nameWithoutExt = str_replace('%20', '_', $nameWithoutExt);
+		
+		// Remove other problematic characters (keep alphanumeric, underscore, hyphen)
+		$nameWithoutExt = preg_replace('/[^a-zA-Z0-9_-]/', '', $nameWithoutExt);
+		
+		// Remove multiple consecutive underscores
+		$nameWithoutExt = preg_replace('/_+/', '_', $nameWithoutExt);
+		
+		// Trim underscores from start/end
+		$nameWithoutExt = trim($nameWithoutExt, '_');
+		
+		return $nameWithoutExt . '.' . $extension;
+	}
+	
+	public function changeimagename()
+	{
+				
+		$db = \Config\Database::connect();
+		
+		// Find all images with spaces
+		$query = $db->query("
+			SELECT id, user_id, product_id, file_name 
+			FROM user_images 
+			WHERE file_name LIKE '% %'
+			ORDER BY user_id, id
+		");
+		
+		$results = $query->getResultArray();
+		
+		$success = 0;
+		$failed = 0;
+		$errors = [];
+		
+		echo "<h2>Processing " . count($results) . " images...</h2>";
+		echo "<pre>";
+		
+		foreach ($results as $row) {
+			$oldFilename = $row['file_name'];
+			$newFilename = $this->sanitizeFileName($oldFilename);
+			$userId = $row['user_id'];
+			
+			// Build paths
+			$oldPath = FCPATH . 'uploads/userimages/' . $userId . '/' . $oldFilename;
+			$newPath = FCPATH . 'uploads/userimages/' . $userId . '/' . $newFilename;
+			
+			echo "\n[ID: {$row['id']}] Processing: $oldFilename\n";
+			
+			// Check if old file exists
+			if (!file_exists($oldPath)) {
+				echo "  ❌ File not found: $oldPath\n";
+				$failed++;
+				$errors[] = "ID {$row['id']}: File not found";
+				continue;
+			}
+			
+			// Check if new filename already exists (collision)
+			if ($newPath !== $oldPath && file_exists($newPath)) {
+				echo "  ⚠️  Collision detected! Adding unique suffix...\n";
+				$newFilename = $this->makeUnique($userId, $newFilename);
+				$newPath = FCPATH . 'uploads/userimages/' . $userId . '/' . $newFilename;
+			}
+			
+			// Rename the file
+			if (rename($oldPath, $newPath)) {
+				// Update database
+				$db->table('user_images')
+				   ->where('id', $row['id'])
+				   ->update(['file_name' => $newFilename]);
+				
+				echo "  ✅ Success: $oldFilename → $newFilename\n";
+				$success++;
+			} else {
+				echo "  ❌ Failed to rename file\n";
+				$failed++;
+				$errors[] = "ID {$row['id']}: Failed to rename";
+			}
+		}
+		
+		echo "</pre>";
+		echo "<h3>Summary:</h3>";
+		echo "<p style='color: green;'>✅ Successfully fixed: $success</p>";
+		echo "<p style='color: red;'>❌ Failed: $failed</p>";
+		
+		if (!empty($errors)) {
+			echo "<h4>Errors:</h4><ul>";
+			foreach ($errors as $error) {
+				echo "<li>$error</li>";
+			}
+			echo "</ul>";
+		}
+		
+		echo "<br><a href='/admin/findImagesWithSpaces'>View remaining images with spaces</a>";
+	}
+
+	private function makeUnique($userId, $filename)
+	{
+		$extension = pathinfo($filename, PATHINFO_EXTENSION);
+		$nameWithoutExt = pathinfo($filename, PATHINFO_FILENAME);
+		
+		$counter = 1;
+		$newFilename = $filename;
+		
+		while (file_exists(FCPATH . 'uploads/userimages/' . $userId . '/' . $newFilename)) {
+			$newFilename = $nameWithoutExt . '_' . $counter . '.' . $extension;
+			$counter++;
+		}
+		
+		return $newFilename;
+	}
 }

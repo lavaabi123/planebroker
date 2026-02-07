@@ -80,9 +80,29 @@ class Providers extends BaseController
 		
 		$data['wishlist_added'] = !empty($this->session->get('vr_sess_user_id')) ? $this->ProductModel->wishlist_check($this->session->get('vr_sess_user_id'),$productId) : 0;		
 		
-		$data['meta_title'] = ''.(!empty($data['product_detail']['name']) ? $data['product_detail']['name'] : '').' '.(!empty($data['product_detail']['sub_cat_name']) ? $data['product_detail']['sub_cat_name'] : '').' For Sale';
-		$data['meta_desc'] = ''.(!empty($data['product_detail']['name']) ? $data['product_detail']['name'] : '').' '.(!empty($data['product_detail']['sub_cat_name']) ? $data['product_detail']['sub_cat_name'] : '').' For Sale '.(!empty($data['product_detail']['address']) ? $data['product_detail']['address'] : '').' Search 1000\'s of Aircraft listings updated daily from 100\'s of dealers & private sellers';
-		$data['meta_keywords'] = ''.(!empty($data['product_detail']['name']) ? $data['product_detail']['name'].','.$data['product_detail']['name'].' For Sale'.',Used'.$data['product_detail']['name'].','.$data['product_detail']['name'].' for sale' : '').'';
+		// Build the base strings first
+		$name = !empty($data['product_detail']['name']) ? $data['product_detail']['name'] : '';
+		$sub_cat = !empty($data['product_detail']['sub_cat_name']) ? $data['product_detail']['sub_cat_name'] : '';
+		$heading = !empty($data['product_detail']['heading_text']) ? $data['product_detail']['heading_text'] : '';
+		$address = !empty($data['product_detail']['address']) ? $data['product_detail']['address'] : '';
+
+		// Combine and remove duplicate "For Sale"
+		$title_parts = trim($name . ' ' . $sub_cat . ' ' . $heading);
+		$title_parts = preg_replace('/\bFor Sale\s+For Sale\b/i', 'For Sale', $title_parts);
+		$data['meta_title'] = $title_parts;
+
+		// Meta description
+		$desc_parts = trim($name . ' ' . $sub_cat . ' ' . $heading . ' ' . $address);
+		$desc_parts = preg_replace('/\bFor Sale\s+For Sale\b/i', 'For Sale', $desc_parts);
+		$data['meta_desc'] = $desc_parts . ' Search 1000\'s of Aircraft listings updated daily from 100\'s of dealers & private sellers';
+
+		// Meta keywords
+		if (!empty($name)) {
+			$keyword_base = $name . ',' . $name . ' ' . $heading . ',Used ' . $name . ',' . $name . ' ' . $heading;
+			$data['meta_keywords'] = preg_replace('/\bFor Sale\s+For Sale\b/i', 'For Sale', $keyword_base);
+		} else {
+			$data['meta_keywords'] = '';
+		}
 		
 
 		return view('Providers/ProviderViewProfile', $data);
@@ -285,8 +305,26 @@ class Providers extends BaseController
 				$filter_texts['featured'] = 'Featured';
 				$filter_ids['featured'] = 'yes';
 			}
+			// STATE TEXT FILTER - NEW
+			if(!empty($_GET['state'])) {
+				$state = trim($_GET['state']);
+				
+				if (!empty($state)) {
+					// Sanitize input
+					$state = $this->db->escapeString($state);
+					
+					// Search for state code or full name
+					$where .= " AND (
+						UPPER(p.state) LIKE '%" . strtoupper($state) . "%'
+						OR UPPER(p.address) LIKE '%" . strtoupper($state) . "%'
+					)";
+					
+					$filter_texts['state'] = 'State: ' . $state;
+					$filter_ids['state'] = $state;
+				}
+			}
 			foreach($_GET as $g => $getparam){
-				if($g != 'category' && $g != 'created_at' && $g != 'featured'){
+				if($g != 'category' && $g != 'created_at' && $g != 'featured' && $g != 'state'){
 					
 					$slugToFind = $g;
 					$slugText = $g;

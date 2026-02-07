@@ -93,9 +93,11 @@
 												<select id="role" name="role" class="form-control">
 												<?php if(!empty($roles)){
 												foreach($roles as $role){
-												if($role->id != 1){	?>
+												//if($role->id != 1){	
+												?>
 													<option value="<?= $role->id; ?>"><?= $role->role_name; ?></option>
-												<?php } } } ?>
+												<?php //} 
+												} } ?>
 												</select>
                                             </div>
                                         </div>

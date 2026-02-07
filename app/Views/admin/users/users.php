@@ -75,7 +75,7 @@
 											<td><?php echo $user['email']; ?></td>
 											<td><?php echo $user['mobile_no']; ?></td>
 											<td><?php echo $user['user_role']; ?></td>
-											<td><?php echo (!empty($user['role']) && $user['role']==2) ? (!empty($user['user_level']) ? 'Captain User' : 'Standard User') : 'Admin User'; ?></td>
+											<td><?php echo (!empty($user['role']) && $user['role']==2) ? (!empty($user['user_level']) ? 'Captain User' : 'Standard User') : ( $user['role']==1?'Super Admin' : 'Admin'); ?></td>
 											<td><?php echo formatted_date($user['created_at'],'m/d/Y h:i a'); ?></td>
 											<td>
 												<div class="dropdown btn-group">
@@ -291,7 +291,8 @@ $(function(){
           <option value="">All</option> 
           <option value="Captain User" >Captain User</option>
           <option value="Standard User" >Standard User</option>
-          <option value="Admin User" >Admin User</option>
+          <option value="Admin" >Admin</option>
+          <option value="Super Admin" >Super Admin</option>
         </select>
       `);
 	  $('.role-filter').html(`

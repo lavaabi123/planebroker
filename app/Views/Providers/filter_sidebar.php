@@ -140,6 +140,31 @@
 				  </div>
 				</div>
 			</div>
-			
+			<!-- STATE TEXT FILTER -->
+<div class="accordion-item">
+    <h2 class="accordion-header" id="flush-heading-state">
+      <button class="accordion-button collapsed" 
+              type="button" 
+              data-bs-toggle="collapse" 
+              data-bs-target="#flush-collapse-state" 
+              aria-expanded="false" 
+              aria-controls="flush-collapse-state">
+        State
+      </button>
+    </h2>
+    <div id="flush-collapse-state" class="accordion-collapse collapse" aria-labelledby="flush-heading-state">
+      <div class="accordion-body">
+        <div class="sFields">
+            <input type="text" 
+                   name="state" 
+                   id="state" 
+                   class="text-input form-control" 
+                   placeholder="Enter city or state" 
+                   value="<?php echo (!empty($filter_ids['state'])) ? htmlspecialchars($filter_ids['state']) : ''; ?>">
+            
+        </div>
+      </div>
+    </div>
+</div>
 					
 		</div>

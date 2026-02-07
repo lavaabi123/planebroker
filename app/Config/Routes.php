@@ -32,6 +32,7 @@ $routes->setAutoRoute(true);
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'Home::index');
+$routes->get('/changeimagename', 'Home::changeimagename');
 $routes->get('/maintenance', 'Home::maintenance');
 $routes->get('/about-us', 'Home::aboutus');
 $routes->get('/faq', 'Home::faq');
@@ -302,6 +303,7 @@ $routes->group("admin", ["namespace" => "App\Controllers\Admin"], function ($rou
         $routes->get('', 'Profile::index');
         $routes->get('address-information', 'Profile::address_information');
         $routes->get('change-password', 'Profile::change_password');
+        $routes->post('change_password_post', 'Profile::change_password_post');
         $routes->get('delete-account', 'Profile::delete_account');
     });
 

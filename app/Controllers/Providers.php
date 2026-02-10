@@ -305,22 +305,72 @@ class Providers extends BaseController
 				$filter_texts['featured'] = 'Featured';
 				$filter_ids['featured'] = 'yes';
 			}
-			// STATE TEXT FILTER - NEW
+			// STATE FILTER - Match BOTH state code AND full state name
 			if(!empty($_GET['state'])) {
-				$state = trim($_GET['state']);
+				$states = explode('|', $_GET['state']);
+				$states = array_map('strtoupper', array_map('trim', $states));
+				$states = array_filter($states);
 				
-				if (!empty($state)) {
-					// Sanitize input
-					$state = $this->db->escapeString($state);
+				if (!empty($states)) {
+					// State code to name mapping
+					$stateNames = [
+						'NY' => 'New York',
+						'CA' => 'California',
+						'FL' => 'Florida',
+						'TX' => 'Texas',
+						'OH' => 'Ohio',
+						'OR' => 'Oregon',
+						'NV' => 'Nevada',
+						'NM' => 'New Mexico',
+						//'LV' => 'Las Vegas', // Special case
+						'MD' => 'Maryland',
+						'MN' => 'Minnesota',
+						'ND' => 'North Dakota',
+						'NC' => 'North Carolina',
+						'VT' => 'Vermont',
+						// Add all other states...
+						'AL' => 'Alabama', 'AK' => 'Alaska', 'AZ' => 'Arizona', 'AR' => 'Arkansas',
+						'CO' => 'Colorado', 'CT' => 'Connecticut', 'DE' => 'Delaware', 'GA' => 'Georgia',
+						'HI' => 'Hawaii', 'ID' => 'Idaho', 'IL' => 'Illinois', 'IN' => 'Indiana',
+						'IA' => 'Iowa', 'KS' => 'Kansas', 'KY' => 'Kentucky', 'LA' => 'Louisiana',
+						'ME' => 'Maine', 'MA' => 'Massachusetts', 'MI' => 'Michigan', 'MS' => 'Mississippi',
+						'MO' => 'Missouri', 'MT' => 'Montana', 'NE' => 'Nebraska', 'NH' => 'New Hampshire',
+						'NJ' => 'New Jersey', 'OK' => 'Oklahoma', 'PA' => 'Pennsylvania', 'RI' => 'Rhode Island',
+						'SC' => 'South Carolina', 'SD' => 'South Dakota', 'TN' => 'Tennessee', 'UT' => 'Utah',
+						'VA' => 'Virginia', 'WA' => 'Washington', 'WV' => 'West Virginia', 'WI' => 'Wisconsin',
+						'WY' => 'Wyoming'
+					];
 					
-					// Search for state code or full name
-					$where .= " AND (
-						UPPER(p.state) LIKE '%" . strtoupper($state) . "%'
-						OR UPPER(p.address) LIKE '%" . strtoupper($state) . "%'
-					)";
+					// Build conditions for each selected state
+					$stateConditions = [];
+					foreach($states as $stateCode) {
+						// Sanitize
+						$stateCode = $this->db->escapeString($stateCode);
+						
+						// Get full name
+						$stateName = isset($stateNames[$stateCode]) ? $stateNames[$stateCode] : $stateCode;
+						$stateName = $this->db->escapeString($stateName);
+						
+						// Match EITHER code OR full name in address
+						// Patterns: "City, NY" or "City, New York" or "City, NY 12345"
+						$stateConditions[] = "(
+							p.address LIKE '%,$stateCode' 
+							OR p.address LIKE '%,$stateCode %' 
+							OR p.address LIKE '%, $stateCode' 
+							OR p.address LIKE '%, $stateCode %'
+							OR p.address LIKE '%,$stateName' 
+							OR p.address LIKE '%,$stateName %'
+							OR p.address LIKE '%, $stateName'
+							OR p.address LIKE '%, $stateName %'
+						)";
+					}
 					
-					$filter_texts['state'] = 'State: ' . $state;
-					$filter_ids['state'] = $state;
+					if (!empty($stateConditions)) {
+						$where .= " AND (" . implode(' OR ', $stateConditions) . ")";
+					}
+					
+					$filter_texts['state'] = $states;
+					$filter_ids['state'] = $states;
 				}
 			}
 			foreach($_GET as $g => $getparam){
@@ -433,6 +483,7 @@ class Providers extends BaseController
 		}
 		
 		$data['filters'] = $this->ProductModel->get_filters($category,$wherecat);
+		$data['states_list'] = $this->get_states_from_addresses($category, $wherecat);
 		//echo "<pre>";print_r($data['filters']);exit;
 		//get products list
 		$this->ProductModel = new ProductModel();
@@ -1003,5 +1054,185 @@ class Providers extends BaseController
 		echo view("email/email_subscription_failed", $data);exit;
 	}
 	
-	
+	public function get_states_from_addresses($category = 'all', $where = '')
+	{
+		$db = \Config\Database::connect();
+		
+		// Clean WHERE clause
+		$cleanWhere = trim($where);
+		$cleanWhere = ltrim($cleanWhere, 'AND ');
+		
+		// Get category condition
+		$categoryCondition = '';
+		if ($category != 'all') {
+			$category_detail = $db->query("
+				SELECT id FROM categories 
+				WHERE permalink LIKE ?
+			", [$category])->getRowArray();
+			
+			if (!empty($category_detail)) {
+				$categoryCondition = " AND p.category_id = " . (int)$category_detail['id'];
+			}
+		}
+		
+		// Get all products with addresses
+		$sql = "
+			SELECT 
+				p.id,
+				p.address
+			FROM products p
+			LEFT JOIN sales s ON s.id = p.sale_id
+			WHERE p.address IS NOT NULL 
+			AND p.address != ''
+			AND p.status = 1
+			AND (p.is_cancel = 0 OR s.stripe_subscription_end_date >= NOW())
+			AND p.sale_id > 0
+			$categoryCondition
+		";
+		
+		if (!empty($cleanWhere)) {
+			$sql .= " AND " . $cleanWhere;
+		}
+		
+		$products = $db->query($sql)->getResultArray();
+		
+		// Extract states from addresses
+		$stateCounts = [];
+		
+		foreach ($products as $product) {
+			$address = $product['address'];
+			
+			// Extract state from address
+			// Patterns we'll look for:
+			// "City, ST Zip" -> ST
+			// "City, ST" -> ST
+			// "City, State Name" -> State Name
+			
+			$state = $this->extractStateFromAddress($address);
+			
+			if (!empty($state)) {
+				// Normalize to uppercase
+				$state = strtoupper(trim($state));
+				
+				// Count occurrences
+				if (!isset($stateCounts[$state])) {
+					$stateCounts[$state] = 0;
+				}
+				$stateCounts[$state]++;
+			}
+		}
+		
+		// Convert to array format for view
+		$statesList = [];
+		$stateNames = $this->getStateNames(); // Map of state codes to full names
+		
+		foreach ($stateCounts as $code => $count) {
+			$statesList[] = [
+				'id' => $code,
+				'code' => $code,
+				'name' => isset($stateNames[$code]) ? $stateNames[$code] : $code,
+				'count' => $count
+			];
+		}
+		
+		// Sort by name
+		usort($statesList, function($a, $b) {
+			return strcmp($a['name'], $b['name']);
+		});
+		
+		return $statesList;
+	}
+
+	/**
+	 * Extract state from address string
+	 */
+	private function extractStateFromAddress($address)
+	{
+		if (empty($address)) {
+			return null;
+		}
+		
+		// Pattern 1: Match 2-letter state code after comma
+		// "Las Vegas, NV" -> "NV"
+		if (preg_match('/,\s*([A-Z]{2})(?:\s+\d|$)/i', $address, $matches)) {
+			$stateCode = strtoupper($matches[1]);
+			
+			// *** VALIDATE it's a real state code ***
+			if ($this->isValidStateCode($stateCode)) {
+				return $stateCode;
+			}
+		}
+		
+		// Pattern 2: Match full state name
+		if (preg_match('/,\s*([A-Za-z\s]+?)(?:\s+\d|$)/', $address, $matches)) {
+			$possibleState = trim($matches[1]);
+			
+			// *** VALIDATE it's a real state name ***
+			$stateCode = $this->getStateCodeFromName($possibleState);
+			if ($stateCode) {
+				return $stateCode;
+			}
+		}
+		
+		return null;
+	}
+	private function isValidStateCode($code)
+	{
+		$validStates = [
+			'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+			'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+			'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+			'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+			'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+		];
+		
+		return in_array(strtoupper($code), $validStates);
+	}
+	/**
+	 * Get state code from full name
+	 */
+	private function getStateCodeFromName($name)
+	{
+		$name = strtolower(trim($name));
+		
+		$stateMap = [
+			'alabama' => 'AL', 'alaska' => 'AK', 'arizona' => 'AZ', 'arkansas' => 'AR',
+			'california' => 'CA', 'colorado' => 'CO', 'connecticut' => 'CT', 'delaware' => 'DE',
+			'florida' => 'FL', 'georgia' => 'GA', 'hawaii' => 'HI', 'idaho' => 'ID',
+			'illinois' => 'IL', 'indiana' => 'IN', 'iowa' => 'IA', 'kansas' => 'KS',
+			'kentucky' => 'KY', 'louisiana' => 'LA', 'maine' => 'ME', 'maryland' => 'MD',
+			'massachusetts' => 'MA', 'michigan' => 'MI', 'minnesota' => 'MN', 'mississippi' => 'MS',
+			'missouri' => 'MO', 'montana' => 'MT', 'nebraska' => 'NE', 'nevada' => 'NV',
+			'new hampshire' => 'NH', 'new jersey' => 'NJ', 'new mexico' => 'NM', 'new york' => 'NY',
+			'north carolina' => 'NC', 'north dakota' => 'ND', 'ohio' => 'OH', 'oklahoma' => 'OK',
+			'oregon' => 'OR', 'pennsylvania' => 'PA', 'rhode island' => 'RI', 'south carolina' => 'SC',
+			'south dakota' => 'SD', 'tennessee' => 'TN', 'texas' => 'TX', 'utah' => 'UT',
+			'vermont' => 'VT', 'virginia' => 'VA', 'washington' => 'WA', 'west virginia' => 'WV',
+			'wisconsin' => 'WI', 'wyoming' => 'WY'
+		];
+		
+		return isset($stateMap[$name]) ? $stateMap[$name] : null;
+	}
+
+	/**
+	 * Get full state names
+	 */
+	private function getStateNames()
+	{
+		return [
+			'AL' => 'Alabama', 'AK' => 'Alaska', 'AZ' => 'Arizona', 'AR' => 'Arkansas',
+			'CA' => 'California', 'CO' => 'Colorado', 'CT' => 'Connecticut', 'DE' => 'Delaware',
+			'FL' => 'Florida', 'GA' => 'Georgia', 'HI' => 'Hawaii', 'ID' => 'Idaho',
+			'IL' => 'Illinois', 'IN' => 'Indiana', 'IA' => 'Iowa', 'KS' => 'Kansas',
+			'KY' => 'Kentucky', 'LA' => 'Louisiana', 'ME' => 'Maine', 'MD' => 'Maryland',
+			'MA' => 'Massachusetts', 'MI' => 'Michigan', 'MN' => 'Minnesota', 'MS' => 'Mississippi',
+			'MO' => 'Missouri', 'MT' => 'Montana', 'NE' => 'Nebraska', 'NV' => 'Nevada',
+			'NH' => 'New Hampshire', 'NJ' => 'New Jersey', 'NM' => 'New Mexico', 'NY' => 'New York',
+			'NC' => 'North Carolina', 'ND' => 'North Dakota', 'OH' => 'Ohio', 'OK' => 'Oklahoma',
+			'OR' => 'Oregon', 'PA' => 'Pennsylvania', 'RI' => 'Rhode Island', 'SC' => 'South Carolina',
+			'SD' => 'South Dakota', 'TN' => 'Tennessee', 'TX' => 'Texas', 'UT' => 'Utah',
+			'VT' => 'Vermont', 'VA' => 'Virginia', 'WA' => 'Washington', 'WV' => 'West Virginia',
+			'WI' => 'Wisconsin', 'WY' => 'Wyoming'
+		];
+	}
 }

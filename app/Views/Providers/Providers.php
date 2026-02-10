@@ -963,8 +963,50 @@ $(document).ready(function () {
     loadManufacturers();
   }
 })();
-
+function filterStateCheckboxes(searchTerm) {
+    searchTerm = searchTerm.toLowerCase();
+    document.querySelectorAll('.state-checkbox-item').forEach(function(item) {
+        const stateName = item.querySelector('label span').textContent.toLowerCase();
+        if (stateName.includes(searchTerm)) {
+            item.style.display = '';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
 </script>
+<style>
+#flush-collapse-state .accordion-body {
+    /*max-height: 400px;
+    overflow-y: auto;*/
+}
+
+.state-checkbox-item {
+    transition: background-color 0.2s;
+    padding: 4px 0;
+}
+
+.state-checkbox-item:hover {
+    background-color: #f8f9fa;
+}
+
+#stateSearch {
+    border: 1px solid #ddd;
+    padding: 6px 10px;
+    border-radius: 4px;
+}
+
+#stateSearch:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+</style>
+
+
+
+
+
 <style>
 .rte-output p {
     margin: 0 !important;

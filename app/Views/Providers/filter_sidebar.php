@@ -154,15 +154,26 @@
     </h2>
     <div id="flush-collapse-state" class="accordion-collapse collapse" aria-labelledby="flush-heading-state">
       <div class="accordion-body">
-        <div class="sFields">
-            <input type="text" 
-                   name="state" 
-                   id="state" 
-                   class="text-input form-control" 
-                   placeholder="Enter city or state" 
-                   value="<?php echo (!empty($filter_ids['state'])) ? htmlspecialchars($filter_ids['state']) : ''; ?>">
-            
-        </div>
+                
+        <!-- State checkboxes -->
+        <?php if(!empty($states_list)){ ?>
+            <?php foreach($states_list as $row){ ?>
+                <div class="sFields state-checkbox-item">
+                    <label for="state_<?php echo $row['code']; ?>">
+                        <input type="checkbox" 
+                               <?php echo (!empty($filter_ids['state']) && in_array($row['code'], $filter_ids['state'])) ? 'checked' : ''; ?> 
+                               name="state[]" 
+                               value="<?php echo $row['code']; ?>" 
+                               id="state_<?php echo $row['code']; ?>"> 
+                        <span><?php echo $row['name']; ?></span>
+                        <span class="text-muted">(<?php echo $row['count'] ?? 0; ?>)</span>
+                    </label>
+                </div>
+            <?php } ?>
+        <?php } else { ?>
+            <p class="text-muted mb-0 small">No states found</p>
+        <?php } ?>
+        
       </div>
     </div>
 </div>

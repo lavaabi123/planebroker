@@ -92,13 +92,14 @@
                                          <div class="col-6">
                                             <div class="form-group ">
                                                 <label class="d-flex"><?php echo trans("Role"); ?><span class="required"> *</span></label>
-												<select name="role" id="role"  class="form-control" <?php echo ($user_detail->role == 1) ? 'disabled' : '' ; ?>>
+												<select name="role" id="role"  class="form-control" <?php echo ($user_detail->role == 1) ? 'isabled' : '' ; ?>>
 												<?php if(!empty($roles)){
 												foreach($roles as $role){
 													if(($user_detail->role == 1 && $role->id == 1) || ($user_detail->role != 1 && $role->id > 1)){
 													?>
 													<option value="<?= $role->id; ?>" <?php echo ($user_detail->role == $role->id) ? 'selected' : '' ; ?>><?= $role->role_name; ?></option>
-													<?php } } } ?>
+													<?php } 
+                                                } } ?>
 												</select>
                                             </div>
                                         </div>
